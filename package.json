@@ -1,0 +1,22 @@
+{
+  "name": "osm-teams",
+  "version": "0.0.0",
+  "description": "teams API for OSM",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/developmentseed/osm-teams.git"
+  },
+  "keywords": [
+    "osm"
+  ],
+  "author": "sethvincent <sethvincent@gmail.com> (https://sethvincent.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/developmentseed/osm-teams/issues"
+  },
+  "homepage": "https://github.com/developmentseed/osm-teams#readme"
+}
