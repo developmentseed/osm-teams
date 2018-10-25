@@ -1,25 +1,31 @@
 {
   "name": "osm-teams",
   "description": "A teams API for OpenStreetMap",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "scripts": {
     "lint": "standard",
     "test": "ava tests/*.test.js",
     "test-lint": "npm run test && npm run lint",
-    "docs-api": "swagger-markdown -i api/api.yml -o docs/api.md",
+    "docs-api": "swagger-markdown -i api/api.yaml -o docs/api.md",
+    "migrate": "knex migrate:latest --cwd db",
     "build-docs": "npm run docs-api",
     "build": "npm run build-docs && next build",
     "start": "npm run build && node server.js"
   },
   "dependencies": {
+    "boom": "^7.2.0",
     "fastify": "1.8.0",
     "fastify-boom": "^0.1.0",
+    "fastify-swagger": "^0.15.1",
+    "knex": "^0.15.2",
     "next": "^7.0.2",
+    "pg": "^7.5.0",
     "react": "^16.5.2",
     "react-dom": "^16.5.2"
   },
   "devDependencies": {
     "ava": "^0.25.0",
+    "eslint-config-standard-react": "^7.0.2",
     "standard": "^12.0.1",
     "supertest": "^3.3.0",
     "swagger-markdown": "^1.1.5"

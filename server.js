@@ -1,4 +1,9 @@
+const path = require('path')
+
 const fastify = require('fastify')({ logger: { level: 'error' } })
+const fastifySwagger = require('fastify-swagger')
+const fastifyBoom = require('fastify-boom')
+
 const Next = require('next')
 
 const api = require('./api')
@@ -39,6 +44,17 @@ fastify.register((fastify, opts, next) => {
       next()
     })
     .catch((err) => next(err))
+})
+
+fastify.register(fastifyBoom)
+
+fastify.register(fastifySwagger, {
+  routePrefix: '/api-docs',
+  mode: 'static',
+  exposeRoute: true,
+  specification: {
+    path: path.join('api', 'api.yaml')
+  }
 })
 
 fastify.listen(port, (err) => {
