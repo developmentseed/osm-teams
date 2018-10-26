@@ -19,14 +19,14 @@ test.after.always(async () => {
 function getTeam (id, callback) {
   server.inject({
     method: 'GET',
-    url: `/api/teams/${id}`,
+    url: `/api/teams/${id}`
   }, callback)
 }
 
 function getTeamList (callback) {
   server.inject({
     method: 'GET',
-    url: '/api/teams',
+    url: '/api/teams'
   }, callback)
 }
 
