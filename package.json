@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "lint": "standard",
-    "test": "ava tests/*.test.js",
+    "test": "NODE_ENV=test ava tests/*.test.js -c 1",
     "test-lint": "npm run test && npm run lint",
     "docs-api": "swagger-markdown -i api/api.yaml -o docs/api.md",
     "migrate": "knex migrate:latest --cwd db",
@@ -27,7 +27,6 @@
     "ava": "^0.25.0",
     "eslint-config-standard-react": "^7.0.2",
     "standard": "^12.0.1",
-    "supertest": "^3.3.0",
     "swagger-markdown": "^1.1.5"
   },
   "repository": {

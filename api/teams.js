@@ -2,7 +2,13 @@ const boom = require('boom')
 const team = require('../lib/team')
 
 async function list (req, reply) {
-  reply.send({ teams: [] })
+  try {
+    const data = await team.list()
+    reply.send(data)
+  } catch (err) {
+    console.log(err)
+    return boom.badRequest()
+  }
 }
 
 async function get (req, reply) {
@@ -12,13 +18,18 @@ async function get (req, reply) {
     return boom.badRequest('team id is required')
   }
 
-  const [data] = await team.get(id)
+  try {
+    const [data] = await team.get(id)
 
-  if (!data) {
-    return boom.notFound()
+    if (!data) {
+      return boom.notFound()
+    }
+
+    reply.send(data)
+  } catch (err) {
+    console.log(err)
+    return boom.badRequest()
   }
-
-  reply.send(data)
 }
 
 async function create (req, reply) {
@@ -28,6 +39,7 @@ async function create (req, reply) {
     const [data] = await team.create(body)
     reply.send(data)
   } catch (err) {
+    console.log(err)
     return boom.badRequest()
   }
 }
@@ -44,6 +56,7 @@ async function update (req, reply) {
     const [data] = await team.update(id, body)
     reply.send(data)
   } catch (err) {
+    console.log(err)
     return boom.badRequest()
   }
 }
@@ -59,6 +72,7 @@ async function destroy (req, reply) {
     await team.destroy(id)
     reply.send(200)
   } catch (err) {
+    console.log(err)
     return boom.badRequest()
   }
 }
