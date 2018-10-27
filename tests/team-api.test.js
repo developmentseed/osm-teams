@@ -54,43 +54,43 @@ function destroyTeam (id, callback) {
 }
 
 test.cb('create a team', (t) => {
-  createTeam({ name: 'road team' }, (err, response) => {
+  createTeam({ name: 'road team 1' }, (err, response) => {
     t.falsy(err)
     const { payload, headers, statusCode } = response
     const data = JSON.parse(payload)
     t.true(statusCode === 200)
     t.true(headers['content-type'] === 'application/json; charset=utf-8')
-    t.true(data.name === 'road team')
+    t.true(data.name === 'road team 1')
     t.end()
   })
 })
 
 test.cb('update a team', (t) => {
-  createTeam({ name: 'map team' }, (err, response) => {
+  createTeam({ name: 'map team 1' }, (err, response) => {
     t.falsy(err)
     const { payload, statusCode } = response
     const data = JSON.parse(payload)
     t.true(statusCode === 200)
-    t.true(data.name === 'map team')
+    t.true(data.name === 'map team 1')
 
-    updateTeam(data.id, { name: 'poi team' }, (err, response) => {
+    updateTeam(data.id, { name: 'poi team 1' }, (err, response) => {
       t.falsy(err)
       const { payload, statusCode } = response
       const updated = JSON.parse(payload)
       t.true(statusCode === 200)
-      t.true(updated.name === 'poi team')
+      t.true(updated.name === 'poi team 1')
       t.end()
     })
   })
 })
 
 test.cb('destroy a team', (t) => {
-  createTeam({ name: 'map team' }, (err, response) => {
+  createTeam({ name: 'map team 2' }, (err, response) => {
     t.falsy(err)
     const { payload, statusCode } = response
     const data = JSON.parse(payload)
     t.true(statusCode === 200)
-    t.true(data.name === 'map team')
+    t.true(data.name === 'map team 2')
 
     destroyTeam(data.id, (err, response) => {
       t.falsy(err)
@@ -101,7 +101,7 @@ test.cb('destroy a team', (t) => {
 })
 
 test.cb('get a team', (t) => {
-  createTeam({ name: 'map team' }, (err, response) => {
+  createTeam({ name: 'map team 3' }, (err, response) => {
     t.falsy(err)
     const { payload, statusCode } = response
     const data = JSON.parse(payload)
@@ -120,7 +120,7 @@ test.cb('get a team', (t) => {
 })
 
 test.cb('get team list', (t) => {
-  createTeam({ name: 'map team' }, (err, response) => {
+  createTeam({ name: 'map team 4' }, (err, response) => {
     t.falsy(err)
     t.true(response.statusCode === 200)
 

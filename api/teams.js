@@ -77,10 +77,52 @@ async function destroy (req, reply) {
   }
 }
 
+async function addMember (req, reply) {
+  const { id, osmId } = req.params
+
+  if (!id) {
+    return boom.badRequest('team id is required')
+  }
+
+  if (!osmId) {
+    return boom.badRequest('osm id is required')
+  }
+
+  try {
+    team.addMember(id, osmId)
+    return reply.send(200)
+  } catch (err) {
+    console.log(err)
+    return boom.badRequest()
+  }
+}
+
+async function removeMember (req, reply) {
+  const { id, osmId } = req.params
+
+  if (!id) {
+    return boom.badRequest('team id is required')
+  }
+
+  if (!osmId) {
+    return boom.badRequest('osm id is required')
+  }
+
+  try {
+    team.removeMember(id, osmId)
+    return reply.send(200)
+  } catch (err) {
+    console.log(err)
+    return boom.badRequest()
+  }
+}
+
 module.exports = {
   list,
   get,
   create,
   update,
-  destroy
+  destroy,
+  addMember,
+  removeMember
 }
