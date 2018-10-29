@@ -14,7 +14,7 @@ A teams API for OpenStreetMap.
 - `cd osm-teams`
 - run `docker-compose up`
 - `yarn`
-- `yarn start`
+- `NODE_ENV=development yarn start`
 
 ### Running tests
 - `yarn test`
