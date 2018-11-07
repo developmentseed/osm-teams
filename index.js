@@ -11,7 +11,7 @@ const fastifyBoom = require('fastify-boom')
 const Next = require('next')
 
 const api = require('./api')
-const passport = require('./passport')
+const { openstreetmap, ensureLogin } = require('./passport')
 
 module.exports = function createServer () {
   const server = fastify({ logger: { level: 'error' } })
@@ -39,14 +39,23 @@ module.exports = function createServer () {
           })
         }
 
-        server.get('/openstreetmap', passport.openstreetmap)
-        server.get('/openstreetmap/callback', passport.openstreetmap)
+        server.get('/openstreetmap', openstreetmap)
+        server.get('/openstreetmap/callback', openstreetmap)
 
         server.get('/api/teams', api.teams.list)
         server.post('/api/teams', api.teams.create)
         server.get('/api/teams/:id', api.teams.get)
         server.put('/api/teams/:id', api.teams.update)
         server.delete('/api/teams/:id', api.teams.destroy)
+
+        /* Ensure login for home */
+        server.route({
+          method: 'GET',
+          url: '/',
+          beforeHandler: ensureLogin(),
+          handler: (req, res) => app.handleRequest(req.req, res.res)
+            .then(() => { res.sent = true })
+        })
 
         server.get('/*', (req, reply) => {
           return app.handleRequest(req.req, reply.res)
