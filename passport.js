@@ -1,15 +1,16 @@
+
 const passport = require('passport-light')
 const OSMStrategy = require('passport-openstreetmap').Strategy
 
-const { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET, API_URL } = process.env
+const { serverRuntimeConfig, publicRuntimeConfig } = require('./next.config')
 
 const strategy = new OSMStrategy({
   requestTokenURL: 'https://www.openstreetmap.org/oauth/request_token',
   accessTokenURL: 'https://www.openstreetmap.org/oauth/access_token',
   userAuthorizationURL: 'https://www.openstreetmap.org/oauth/authorize',
-  consumerKey: OSM_CONSUMER_KEY,
-  consumerSecret: OSM_CONSUMER_SECRET,
-  callbackURL: `${API_URL}/openstreetmap/callback`
+  consumerKey: serverRuntimeConfig.OSM_CONSUMER_KEY,
+  consumerSecret: serverRuntimeConfig.OSM_CONSUMER_SECRET,
+  callbackURL: `${publicRuntimeConfig.apiUrl}/openstreetmap/callback`
 }, async (token, tokenSecret, profile, done) => {
   // Store token / tokenSecret somewhere
   done(null, profile)
@@ -19,7 +20,7 @@ const strategy = new OSMStrategy({
 function ensureLogin () {
   return function (req, res, next) {
     if (req.session && !req.session.user) {
-      req.session.returnTo = req.raw.url
+      req.session.returnTo = req.raw.originalURL || req.raw.url
       return res.redirect('/login')
     }
     next()

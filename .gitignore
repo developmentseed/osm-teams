@@ -4,3 +4,4 @@ tmp
 *.log*
 .next
 .env
+.vscode
