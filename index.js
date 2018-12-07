@@ -47,6 +47,9 @@ module.exports = function createServer () {
         server.get('/api/teams/:id', api.teams.get)
         server.put('/api/teams/:id', api.teams.update)
         server.delete('/api/teams/:id', api.teams.destroy)
+        server.put('/api/teams/add/:id/:osmId', api.teams.addMember)
+        server.put('/api/teams/remove/:id/:osmId', api.teams.removeMember)
+        server.put('/api/teams/add-multiple/:id', api.teams.addMembers)
 
         /* Ensure login for home */
         server.route({
