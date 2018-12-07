@@ -53,6 +53,28 @@ function destroyTeam (id, callback) {
   }, callback)
 }
 
+function addMember (id, osmId, callback) {
+  server.inject({
+    method: 'PUT',
+    url: `/api/teams/add/${id}/${osmId}`
+  }, callback)
+}
+
+function addMembers (id, body, callback) {
+  server.inject({
+    method: 'PUT',
+    url: `/api/teams/add-multiple/${id}`,
+    payload: body
+  }, callback)
+}
+
+function removeMember (id, osmId, callback) {
+  server.inject({
+    method: 'PUT',
+    url: `/api/teams/remove/${id}/${osmId}`
+  }, callback)
+}
+
 test.cb('create a team', (t) => {
   createTeam({ name: 'road team 1' }, (err, response) => {
     t.falsy(err)
@@ -136,6 +158,79 @@ test.cb('get team list', (t) => {
         t.truthy(item.id)
       })
       t.end()
+    })
+  })
+})
+
+test.cb('add member to team', t => {
+  createTeam({ name: 'map team 24' }, (err, response) => {
+    t.falsy(err)
+    const { payload, statusCode } = response
+    const data = JSON.parse(payload)
+    t.true(statusCode === 200)
+
+    addMember(data.id, 1, (err) => {
+      t.falsy(err)
+      getTeam(data.id, (err, response) => {
+        t.falsy(err)
+        const { payload, headers, statusCode } = response
+        const retrieved = JSON.parse(payload)
+        t.true(statusCode === 200)
+        t.true(headers['content-type'] === 'application/json; charset=utf-8')
+        t.true(retrieved.id === data.id)
+        t.true(retrieved.members.length === 1)
+        t.true(retrieved.members[0] === '1')
+        t.end()
+      })
+    })
+  })
+})
+
+test.cb('remove member to team', t => {
+  createTeam({ name: 'map team 25' }, (err, response) => {
+    t.falsy(err)
+    const { payload, statusCode } = response
+    const data = JSON.parse(payload)
+    t.true(statusCode === 200)
+
+    addMember(data.id, 1, (err) => {
+      t.falsy(err)
+      removeMember(data.id, 1, (err) => {
+        t.falsy(err)
+        getTeam(data.id, (err, response) => {
+          t.falsy(err)
+          const { payload, headers, statusCode } = response
+          const retrieved = JSON.parse(payload)
+          t.true(statusCode === 200)
+          t.true(headers['content-type'] === 'application/json; charset=utf-8')
+          t.true(retrieved.id === data.id)
+          t.true(retrieved.members.length === 0)
+          t.end()
+        })
+      })
+    })
+  })
+})
+
+test.cb('add members to team', t => {
+  createTeam({ name: 'map team 26' }, (err, response) => {
+    t.falsy(err)
+    const { payload, statusCode } = response
+    const data = JSON.parse(payload)
+    t.true(statusCode === 200)
+
+    addMembers(data.id, { osmIds: [1, 2, 3] }, (err) => {
+      t.falsy(err)
+      getTeam(data.id, (err, response) => {
+        t.falsy(err)
+        const { payload, headers, statusCode } = response
+        const retrieved = JSON.parse(payload)
+        t.true(statusCode === 200)
+        t.true(headers['content-type'] === 'application/json; charset=utf-8')
+        t.true(retrieved.id === data.id)
+        t.true(retrieved.members.length === 3)
+        t.end()
+      })
     })
   })
 })

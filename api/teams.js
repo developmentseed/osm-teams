@@ -19,13 +19,14 @@ async function get (req, reply) {
   }
 
   try {
-    const [data] = await team.get(id)
+    const [teamData] = await team.get(id)
+    const members = await team.getMembers(id).map(obj => obj.osm_id)
 
-    if (!data) {
+    if (!teamData && !members) {
       return boom.notFound()
     }
 
-    reply.send(data)
+    reply.send(Object.assign({}, teamData, { members }))
   } catch (err) {
     console.log(err)
     return boom.badRequest()
@@ -89,7 +90,28 @@ async function addMember (req, reply) {
   }
 
   try {
-    team.addMember(id, osmId)
+    await team.addMember(id, osmId)
+    return reply.send(200)
+  } catch (err) {
+    console.log(err)
+    return boom.badRequest()
+  }
+}
+
+async function addMembers (req, reply) {
+  const { id } = req.params
+  const { osmIds } = req.body
+
+  if (!id) {
+    return boom.badRequest('team id is required')
+  }
+
+  if (!osmIds || osmIds.length < 1) {
+    return boom.badRequest('osm ids are required')
+  }
+
+  try {
+    await team.addMembers(id, osmIds)
     return reply.send(200)
   } catch (err) {
     console.log(err)
@@ -109,7 +131,7 @@ async function removeMember (req, reply) {
   }
 
   try {
-    team.removeMember(id, osmId)
+    await team.removeMember(id, osmId)
     return reply.send(200)
   } catch (err) {
     console.log(err)
@@ -124,5 +146,6 @@ module.exports = {
   update,
   destroy,
   addMember,
+  addMembers,
   removeMember
 }
