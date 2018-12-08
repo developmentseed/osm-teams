@@ -98,20 +98,20 @@ async function addMember (req, reply) {
   }
 }
 
-async function addMembers (req, reply) {
+async function updateMembers (req, reply) {
   const { id } = req.params
-  const { osmIds } = req.body
+  const { add, remove } = req.body
 
   if (!id) {
     return boom.badRequest('team id is required')
   }
 
-  if (!osmIds || osmIds.length < 1) {
+  if (!add && !remove) {
     return boom.badRequest('osm ids are required')
   }
 
   try {
-    await team.addMembers(id, osmIds)
+    await team.updateMembers(id, add, remove)
     return reply.send(200)
   } catch (err) {
     console.log(err)
@@ -146,6 +146,6 @@ module.exports = {
   update,
   destroy,
   addMember,
-  addMembers,
+  updateMembers,
   removeMember
 }
