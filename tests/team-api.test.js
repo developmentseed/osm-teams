@@ -63,7 +63,7 @@ function addMember (id, osmId, callback) {
 function updateMembers (id, body, callback) {
   server.inject({
     method: 'PATCH',
-    url: `/api/teams/add-multiple/${id}`,
+    url: `/api/teams/${id}/members`,
     payload: body
   }, callback)
 }

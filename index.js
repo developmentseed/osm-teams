@@ -49,7 +49,7 @@ module.exports = function createServer () {
         server.delete('/api/teams/:id', api.teams.destroy)
         server.put('/api/teams/add/:id/:osmId', api.teams.addMember)
         server.put('/api/teams/remove/:id/:osmId', api.teams.removeMember)
-        server.patch('/api/teams/add-multiple/:id', api.teams.updateMembers)
+        server.patch('/api/teams/:id/members', api.teams.updateMembers)
 
         /* Ensure login for home */
         server.route({
