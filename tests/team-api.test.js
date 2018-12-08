@@ -60,9 +60,9 @@ function addMember (id, osmId, callback) {
   }, callback)
 }
 
-function addMembers (id, body, callback) {
+function updateMembers (id, body, callback) {
   server.inject({
-    method: 'PUT',
+    method: 'PATCH',
     url: `/api/teams/add-multiple/${id}`,
     payload: body
   }, callback)
@@ -212,14 +212,14 @@ test.cb('remove member to team', t => {
   })
 })
 
-test.cb('add members to team', t => {
+test.cb('update members to team', t => {
   createTeam({ name: 'map team 26' }, (err, response) => {
     t.falsy(err)
     const { payload, statusCode } = response
     const data = JSON.parse(payload)
     t.true(statusCode === 200)
 
-    addMembers(data.id, { osmIds: [1, 2, 3] }, (err) => {
+    updateMembers(data.id, { add: ['1', '2', '3'] }, (err) => {
       t.falsy(err)
       getTeam(data.id, (err, response) => {
         t.falsy(err)

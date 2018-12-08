@@ -62,8 +62,8 @@ test('get team members', async t => {
 
 test('add team member', async t => {
   const [created] = await team.create({ name: 'boundary team 3' })
-  await team.addMember(created.id, 1)
-  await team.addMember(created.id, 2)
+  await team.addMember(created.id, '1')
+  await team.addMember(created.id, '2')
   const members = await team.getMembers(created.id)
   t.truthy(members)
   t.true(members.length === 2)
@@ -71,18 +71,20 @@ test('add team member', async t => {
 
 test('remove team member', async t => {
   const [created] = await team.create({ name: 'boundary team 4' })
-  await team.addMember(created.id, 1)
+  await team.addMember(created.id, '1')
   const members = await team.getMembers(created.id)
   t.true(members.length === 1)
 
-  await team.removeMember(created.id, 1)
+  await team.removeMember(created.id, '1')
   const newMembers = await team.getMembers(created.id)
   t.true(newMembers.length === 0)
 })
 
-test('add team members', async t => {
+test('update team members', async t => {
   const [created] = await team.create({ name: 'boundary team 5' })
-  await team.addMembers(created.id, [1, 2, 3])
+  await team.addMember(created.id, '1')
+  await team.addMember(created.id, '4')
+  await team.updateMembers(created.id, ['1', '2', '3'], ['4'])
   const members = await team.getMembers(created.id)
   t.truthy(members)
   t.true(members.length === 3)
