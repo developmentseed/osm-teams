@@ -2,8 +2,15 @@ const boom = require('boom')
 const team = require('../lib/team')
 
 async function list (req, reply) {
+  const { osmId } = req.query
+
   try {
-    const data = await team.list()
+    let data
+    if (osmId) {
+      data = await team.findByOsmId(osmId)
+    } else {
+      data = await team.list()
+    }
     reply.send(data)
   } catch (err) {
     console.log(err)

@@ -30,6 +30,13 @@ function getTeamList (callback) {
   }, callback)
 }
 
+function getTeamListByOsmId (id, callback) {
+  server.inject({
+    method: 'GET',
+    url: `/api/teams?osmId=${id}`
+  }, callback)
+}
+
 function createTeam (body, callback) {
   server.inject({
     method: 'POST',
@@ -179,7 +186,7 @@ test.cb('add member to team', t => {
         t.true(headers['content-type'] === 'application/json; charset=utf-8')
         t.true(retrieved.id === data.id)
         t.true(retrieved.members.length === 1)
-        t.true(retrieved.members[0] === '1')
+        t.true(retrieved.members[0] === 1)
         t.end()
       })
     })
@@ -219,7 +226,7 @@ test.cb('update members to team', t => {
     const data = JSON.parse(payload)
     t.true(statusCode === 200)
 
-    updateMembers(data.id, { add: ['1', '2', '3'] }, (err) => {
+    updateMembers(data.id, { add: [1, 2, 3] }, (err) => {
       t.falsy(err)
       getTeam(data.id, (err, response) => {
         t.falsy(err)
@@ -232,5 +239,22 @@ test.cb('update members to team', t => {
         t.end()
       })
     })
+  })
+})
+
+test.cb('get list of teams by osm id', (t) => {
+  getTeamListByOsmId(1, (err, response) => {
+    t.falsy(err)
+    const { payload, headers, statusCode } = response
+    const data = JSON.parse(payload)
+
+    t.true(statusCode === 200)
+    t.true(headers['content-type'] === 'application/json; charset=utf-8')
+    t.true(data.length > 0)
+    data.forEach((item) => {
+      t.truthy(item.name)
+      t.truthy(item.id)
+    })
+    t.end()
   })
 })
