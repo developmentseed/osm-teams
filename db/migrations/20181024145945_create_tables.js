@@ -11,20 +11,20 @@ exports.up = async (knex) => {
 
   await knex.schema.createTable('moderator', (table) => {
     table.increments('id')
-    table.string('team_id')
-    table.string('osm_id')
+    table.integer('team_id')
+    table.integer('osm_id')
   })
 
   await knex.schema.createTable('member', (table) => {
     table.increments('id')
-    table.string('team_id')
-    table.string('osm_id')
+    table.integer('team_id')
+    table.integer('osm_id')
   })
 
   await knex.schema.createTable('join_request', (table) => {
     table.increments('id')
-    table.string('team_id')
-    table.string('osm_id')
+    table.integer('team_id')
+    table.integer('osm_id')
   })
 }
 
