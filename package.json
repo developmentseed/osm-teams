@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon -w server.js server.js",
     "lint": "standard",
-    "test": "NODE_ENV=test ava tests/*.test.js -c 1",
+    "test": "NODE_ENV=test ava tests/*.test.js -c 1 --serial",
     "test-lint": "npm run test && npm run lint",
     "docs-api": "swagger-markdown -i api/api.yaml -o docs/api.md",
     "migrate": "knex migrate:latest --cwd db",
