@@ -11,7 +11,7 @@ const fastifyBoom = require('fastify-boom')
 const Next = require('next')
 
 const api = require('./api')
-const { openstreetmap, ensureLogin } = require('./passport')
+const { openstreetmap, ensureLogin, authorizeModerator } = require('./passport')
 
 module.exports = function createServer () {
   const server = fastify({ logger: { level: 'error' } })
@@ -43,13 +43,13 @@ module.exports = function createServer () {
         server.get('/openstreetmap/callback', openstreetmap)
 
         server.get('/api/teams', api.teams.list)
-        server.post('/api/teams', api.teams.create)
+        server.post('/api/teams', { preHandler: authorizeModerator() }, api.teams.create)
         server.get('/api/teams/:id', api.teams.get)
-        server.put('/api/teams/:id', api.teams.update)
-        server.delete('/api/teams/:id', api.teams.destroy)
-        server.put('/api/teams/add/:id/:osmId', api.teams.addMember)
-        server.put('/api/teams/remove/:id/:osmId', api.teams.removeMember)
-        server.patch('/api/teams/:id/members', api.teams.updateMembers)
+        server.put('/api/teams/:id', { preHandler: authorizeModerator() }, api.teams.update)
+        server.delete('/api/teams/:id', { preHandler: authorizeModerator() }, api.teams.destroy)
+        server.put('/api/teams/add/:id/:osmId', { preHandler: authorizeModerator() }, api.teams.addMember)
+        server.put('/api/teams/remove/:id/:osmId', { preHandler: authorizeModerator() }, api.teams.removeMember)
+        server.patch('/api/teams/:id/members', { preHandler: authorizeModerator() }, api.teams.updateMembers)
 
         /* Ensure login for home */
         server.route({

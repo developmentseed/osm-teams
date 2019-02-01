@@ -41,10 +41,14 @@ async function get (req, reply) {
 }
 
 async function create (req, reply) {
-  const { body } = req
+  const { body, session: { user } } = req
 
   try {
     const [data] = await team.create(body)
+    // user that creates a team should be both member and moderator
+    // TODO: consider adding a createTeamAndModerator method or something like that
+    await team.addMember(data.id, user.id)
+    await team.addModerator(data.id, user.id)
     reply.send(data)
   } catch (err) {
     console.log(err)

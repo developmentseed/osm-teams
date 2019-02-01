@@ -101,3 +101,29 @@ test('list teams a user belongs to', async (t) => {
     t.truthy(item.id)
   })
 })
+
+test('add team moderator', async t => {
+  const [created] = await team.create({ name: 'boundary team 7' })
+  await team.addModerator(created.id, 1)
+  const moderators = await team.getModerators(created.id)
+  t.truthy(moderators)
+  t.true(moderators.length === 1)
+})
+
+test('remove team moderator', async t => {
+  const [created] = await team.create({ name: 'boundary team 8' })
+  await team.addModerator(created.id, 1)
+  const moderators = await team.getModerators(created.id)
+  t.true(moderators.length === 1)
+
+  await team.removeModerator(created.id, 1)
+  const updatedModerators = await team.getModerators(created.id)
+  t.true(updatedModerators.length === 0)
+})
+
+test('check if user is team moderator', async t => {
+  const [created] = await team.create({ name: 'boundary team 9' })
+  await team.addModerator(created.id, 1)
+  t.true(await team.isModerator(created.id, 1))
+  t.false(await team.isModerator(created.id, 2))
+})
