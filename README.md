@@ -1,43 +1,55 @@
-# osm-teams
+# osm-teams 🐉
 
-A teams API for OpenStreetMap.
-
-[![CircleCI](https://circleci.com/gh/developmentseed/osm-teams.svg?style=svg)](https://circleci.com/gh/developmentseed/osm-teams)
-
-# Documentation
-
-- [API docs](docs/api.md)
-- [Tests](tests/README.md)
-
-## Development
-
+## Installation
 ### Requirements
+- Postgresql. On macOS, the easiest is to install [Postgres.app](https://postgresapp.com/).
+- NodeJS v10+ 
+- Docker & Docker Compose
 
-- [yarn](https://yarnpkg.com/en/)
-- [Docker](https://docs.docker.com/install/) & [Docker Compose](https://docs.docker.com/compose/install/) to run the database
-  - alternately you can use a Postgresql database and provide the url to the database using the `DATABASE_URL` environment variable
-- [An OSM Consumer Key and Secret](https://wiki.openstreetmap.org/wiki/OAuth)
+Build the images:
+```
+docker-compose build
+```
 
-### Initial setup
-- `git clone` this repository
-- `cd osm-teams`
-- `yarn`
+### Setting up Hydra
 
-Copy over `.env.sample` to `.env` and fill in the OSM consumer key and secret, as well as your site location. For example in local development `API_URL` will default to `http://localhost:3000`.
+1. Create the database for tokens
+```
+createdb osm-teams
+```
+For the rest of this documentation, we will assume that the database location is `postgres://postgres@localhost/osm-teams?sslmode=disable` on your local machine. Inside docker, that location is `postgres://postgres@host.docker.internal/osm-teams?sslmode=disable`
 
-#### If you're using Docker Compose
-- run `docker-compose up`
-  - to run docker-compose in a background process, use `docker-compose up -d`
-- `yarn migrate`
-- `yarn run dev`
+2. Create a a `docker.env` file with the following entries. `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` are values obtained by creating a new OAuth app on openstreetmap.org
+```
+OSM_CONSUMER_KEY=<osm-teams-app>
+OSM_CONSUMER_SECRET=<osm-teams-app-secret>
+DSN=postgres://postgres@host.docker.internal/osm-teams?sslmode=disable
+SECRETS_SYSTEM=<random-guid>
+```
 
-#### If you're using a Postgresql db on your local computer
-- create a database for osm-teams
-  - you can use the [create-dev-db.sh](scripts/create-dev-db.sh) script as an example, or run it directly:
-    `./scripts/create-dev-db.sh`
-- `DATABASE_URL=postgres://osm_teams:test@127.0.0.1/osm_teams yarn migrate`
-- `DATABASE_URL=postgres://osm_teams:test@localhost/osm_teams yarn run dev`
+3. Migrate the database
+```
+docker-compose run --rm hydra migrate sql --yes postgres://postgres@host.docker.internal/osm-teams?sslmode=disable
+```
 
-### Running tests
-- `yarn test`
-  - make sure to use `DATABASE_URL` if not using docker-compose
+4. Start Hydra and the server
+```
+docker-compose up
+```
+
+This will start hydra where the token issuer is at `http://localhost:4444` and the admin interface is at `http://localhost:4445`. This also sets up the consent and login interface at `http://localhost:8989` (where we will create a first-party oauth app)
+
+### Starting the first party app
+
+Create the first party "manage" app
+```
+docker-compose exec hydra hydra clients create --endpoint http://localhost:4445 \
+  --id manage \
+  --secret manage-secret \
+  --response-types code,id_token \
+  --grant-types refresh_token,authorization_code \
+  --scope openid,offline,clients \
+  --callbacks http://localhost:8989/login/accept
+```
+
+✨ You can now login to the app at http://localhost:8989

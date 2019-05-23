@@ -1,0 +1,37 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css" />
+</head>
+
+<body class="bg-washed-green sans-serif dark-gray">
+    <article class="mw7 pa4 mt5 center ba b--black-10 bg-white br1">
+        <h1 class="f2 tracked-tight">Example osmose app 📚</h1>
+        <p class="measure-copy lh-copy f5">
+            This example application takes your registered key pair on OSM/Hydra and makes an authenticated request
+            to your profile. You will see your <code class="f6 bg-near-white dark-red">username</code>, 
+            <code class="f6 bg-near-white dark-red">profile picture</code> and any 
+            <code class="f6 bg-near-white dark-red">places</code> that you've added. The app will call OSMOSE with
+            your saved places to show errors to fix 🐛 on OSM.
+        </p>
+        <p class="measure-copy lh-copy f5">
+            Don't have a key pair? Log in to OSM/Hydra and create an app!
+        </p>
+        <div class="bt b--black-10 w6"></div>
+        <form action="/auth" method="POST">
+            <div class="mt3">
+                <label for="clientId" class="b db fw4 lh-copy f5">Client ID</label>
+                <input name="clientId" type="text" placeholder="Enter ClientID" class="i f6 pa2 input-reset ba bg-transparent w-100"/>
+            </div>
+            <div class="mt3">
+                <label for="clientSecret" class="b db fw4 lh-copy f5">Client Secret</label>
+                <input name="clientSecret" type="text" placeholder="Enter ClientSecret" class="i f6 pa2 input-reset ba bg-transparent w-100"/>
+            </div>
+            <div class="mt4">
+                <button class="yyb ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6" type="submit">Click Me ✨</button>
+            </div>
+        </form>
+    </article>
+</body>
+
+</html>

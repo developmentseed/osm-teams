@@ -3,5 +3,6 @@ node_modules
 tmp
 *.log*
 .next
-.env
+*.env
 .vscode
+*.db
