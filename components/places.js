@@ -129,7 +129,7 @@ export default class Places extends Component {
         <br />
         {
           places.map(place => {
-            let center = JSON.parse(place.center)
+            let center = place.center
             return (
               <div className="mt3 mb3">
                 <Map center={center} zoom={10} width={300} height={200} key={place.id} mouseEvents={false} touchEvents={false} >
