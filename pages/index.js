@@ -13,9 +13,9 @@ class Home extends Component {
   render() {
     return (
       <section>
-        <h1>OSM with Hydra</h1>
+        <h1>OSM Teams!</h1>
         <p className="measure-copy">
-          The purpose of this application is to demonstrate the ORY/Hydra Oauth2 server using OSM as the login middleware.
+          Create teams of OSM users and import them into your apps.
         </p>
         {
           this.props.user

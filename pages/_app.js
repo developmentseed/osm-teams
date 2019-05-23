@@ -19,7 +19,7 @@ class OSMHydra extends App {
     return (
       <Container>
         <Head>
-          <title>OSM/Hydra</title>
+          <title>OSM Teams</title>
           <link rel="stylesheet" href="https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css" />
           <link rel="shortcut icon" href="/static/favicon.ico" />
           <link rel="icon" type="image/png" href="/static/favicon.png" />

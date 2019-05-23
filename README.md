@@ -39,7 +39,7 @@ docker-compose up
 
 This will start hydra where the token issuer is at `http://localhost:4444` and the admin interface is at `http://localhost:4445`. This also sets up the consent and login interface at `http://localhost:8989` (where we will create a first-party oauth app)
 
-### Starting the first party app
+### Setting up the first party app
 
 Create the first party "manage" app
 ```
@@ -52,4 +52,37 @@ docker-compose exec hydra hydra clients create --endpoint http://localhost:4445 
   --callbacks http://localhost:8989/login/accept
 ```
 
+Migrate the database
+```
+npm run migrate
+```
+
 ✨ You can now login to the app at http://localhost:8989
+
+## Running the example
+The example app authenticates using an access token minted by `app/manage`, so first we need to create a key pair.
+
+1. Go to `http://localhost:8989/clients`
+2. Create an app with the following inputs:
+```
+Name:
+example-client
+
+Callback URL:
+http://localhost:9090/callback
+```
+3. Click on "Add new app"
+4. Record the `client_id` and `client_secret`
+
+Then, start the example-client:
+```
+npm install 
+npm run example
+```
+
+When you navigate to `http://localhost:9090` it will ask you for a key pair. After you enter your id and secret, you will be redirected to an example app. 
+
+This app uses the profile information in `http://localhost:8989/profile` to call OSMOSE. Try adding new places in your profile and see them displayed in the example client! Then try building your own client!.
+
+## Acknowledgments
+- This app is based off of [OSM/Hydra](https://github.com/kamicut/osmhydra)
