@@ -37,6 +37,8 @@ docker-compose run --rm hydra migrate sql --yes postgres://postgres@host.docker.
 docker-compose up
 ```
 
+⚠️ In development, you can use `docker-compose -f docker-compose.dev.yml` for hot module reloading while you make modifications to the code.
+
 This will start hydra where the token issuer is at `http://localhost:4444` and the admin interface is at `http://localhost:4445`. This also sets up the consent and login interface at `http://localhost:8989` (where we will create a first-party oauth app)
 
 ### Setting up the first party app
