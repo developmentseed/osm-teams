@@ -74,7 +74,7 @@ http://localhost:9090/callback
 3. Click on "Add new app"
 4. Record the `client_id` and `client_secret`
 
-Then, start the example-client:
+Then, start the example client:
 ```
 npm install 
 npm run example
