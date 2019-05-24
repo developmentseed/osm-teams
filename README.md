@@ -54,6 +54,7 @@ docker-compose exec hydra hydra clients create --endpoint http://localhost:4445 
 
 Migrate the database
 ```
+npm install
 npm run migrate
 ```
 
