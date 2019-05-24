@@ -26,6 +26,7 @@ services:
      - HYDRA_AUTHZ_URL=http://localhost:4444
     ports:
     - 8989:8989
+    - 3007:3007
     env_file:
       docker.env
     volumes:

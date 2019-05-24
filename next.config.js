@@ -17,6 +17,9 @@ module.exports = {
   publicRuntimeConfig: {
     APP_URL: process.env.APP_URL || 'http://localhost:8989'
   },
+  onDemandEntries: {
+    websocketPort: 3007
+  },
   webpack: (config) => {
     config.plugins = config.plugins || []
 
