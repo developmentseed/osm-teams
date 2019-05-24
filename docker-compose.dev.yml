@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+  hydra:
+    image: oryd/hydra:v1.0.0-rc.11
+    ports:
+    - 4444:4444
+    - 4445:4445
+    - 5555:5555
+    command:  
+      serve all --dangerous-force-http
+    environment:
+      - URLS_SELF_ISSUER=http://localhost:4444
+      - URLS_CONSENT=http://localhost:8989/oauth/consent
+      - URLS_LOGIN=http://localhost:8989/oauth/login
+    env_file:
+      docker.env
+    
+  teams:
+    build: .
+    depends_on:
+    - hydra
+    environment:
+     - HYDRA_ADMIN_URL=http://hydra:4445
+     - HYDRA_TOKEN_URL=http://hydra:4444
+     - HYDRA_AUTHZ_URL=http://localhost:4444
+    ports:
+    - 8989:8989
+    env_file:
+      docker.env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command:
+      npm run dev
+      
