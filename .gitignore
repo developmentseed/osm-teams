@@ -6,3 +6,5 @@ tmp
 *.env
 .vscode
 *.db
+# ignore node_modules symlink
+node_modules.nosync
