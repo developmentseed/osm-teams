@@ -1,15 +1,16 @@
 const h = React.createElement
 
 const OsmoseFrame = function ({ places }) {
-  const firstPlace = JSON.parse(places[0].center)
+  if (!places.length) return null
+  const firstPlace = places[0].center
   const [center, setCenter] = React.useState(firstPlace)
 
   const placeButtons = places.map(place => {
-    let center = JSON.parse(place.center)
+    let center = place.center
     return h('li', { className: "dib mr3" }, h('button',
       {
         className: "yyb ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6",
-        onClick: function (e) { 
+        onClick: function (e) {
           e.preventDefault()
           setCenter(center)
         }
