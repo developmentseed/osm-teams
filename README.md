@@ -3,7 +3,7 @@
 ## Installation
 ### Requirements
 - Postgresql. On macOS, the easiest is to install [Postgres.app](https://postgresapp.com/).
-- NodeJS v10+ 
+- NodeJS v10+
 - Docker & Docker Compose
 
 Build the images:
@@ -37,7 +37,7 @@ docker-compose run --rm hydra migrate sql --yes postgres://postgres@host.docker.
 docker-compose up
 ```
 
-⚠️ In development, you can use `docker-compose -f docker-compose.dev.yml` for hot module reloading while you make modifications to the code.
+⚠️ In development, you can use `docker-compose -f docker-compose.dev.yml up` for hot module reloading while you make modifications to the code.
 
 This will start hydra where the token issuer is at `http://localhost:4444` and the admin interface is at `http://localhost:4445`. This also sets up the consent and login interface at `http://localhost:8989` (where we will create a first-party oauth app)
 
@@ -79,11 +79,11 @@ http://localhost:9090/callback
 
 Then, start the example client:
 ```
-npm install 
+npm install
 npm run example
 ```
 
-When you navigate to `http://localhost:9090` it will ask you for a key pair. After you enter your id and secret, you will be redirected to an example app. 
+When you navigate to `http://localhost:9090` it will ask you for a key pair. After you enter your id and secret, you will be redirected to an example app.
 
 This app uses the profile information in `http://localhost:8989/profile` to call OSMOSE. Try adding new places in your profile and see them displayed in the example client! Then try building your own client!.
 
