@@ -12,24 +12,26 @@ class Consent extends Component {
     }
   }
 
-  render() {
+  render () {
     const { user, client, requested_scope, challenge } = this.props
 
-    if (!client) return <div>
-      Invalid parameters, go back <a href="/">home</a>?
-    </div>
+    if (!client) {
+      return <div>
+      Invalid parameters, go back <a href='/'>home</a>?
+      </div>
+    }
 
-    const clientDisplayName = client.client_name || client.client_id 
+    const clientDisplayName = client.client_name || client.client_id
     return (
       <section>
-        <form method="post">
-          <input type="hidden" value={challenge} name="challenge" />
+        <form method='post'>
+          <input type='hidden' value={challenge} name='challenge' />
           <p>
             Hi, {user}, <strong>{clientDisplayName}</strong> wants to access resources on your behalf and needs the following permissions:
           </p>
           {
             requested_scope.map(scope => {
-              let scopeLabel = ""
+              let scopeLabel = ''
               switch (scope) {
                 case 'clients': {
                   scopeLabel = 'Read and update your OAuth clients'
@@ -49,8 +51,8 @@ class Consent extends Component {
                 }
               }
               return <div key={scope}>
-                <input type="checkbox" readOnly="readonly" checked="checked" id={scope} value={scope} name="grant_scope" />
-                <label className="pl2" htmlFor={scope}>{scopeLabel}</label>
+                <input type='checkbox' readOnly='readonly' checked='checked' id={scope} value={scope} name='grant_scope' />
+                <label className='pl2' htmlFor={scope}>{scopeLabel}</label>
                 <br />
               </div>
             })
@@ -63,12 +65,12 @@ class Consent extends Component {
             {client.tos_uri ? <li><a href={client.tos_uri}>Terms of Service</a></li> : <div />}
           </ul>
           <p>
-            <input type="checkbox" id="remember" name="remember" value="1" />
-            <label className="pl2" htmlFor="remember">Do not ask me again</label>
+            <input type='checkbox' id='remember' name='remember' value='1' />
+            <label className='pl2' htmlFor='remember'>Do not ask me again</label>
           </p>
           <p>
-            <input type="submit" id="accept" name="submit" value="Allow access" />
-            <input type="submit" id="reject" name="submit" value="Deny access" />
+            <input type='submit' id='accept' name='submit' value='Allow access' />
+            <input type='submit' id='reject' name='submit' value='Deny access' />
           </p>
         </form>
       </section>

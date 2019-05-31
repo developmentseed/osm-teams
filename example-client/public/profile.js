@@ -1,3 +1,5 @@
+/* global React, ReactDOM */
+
 const h = React.createElement
 
 const OsmoseFrame = function ({ places }) {
@@ -7,9 +9,9 @@ const OsmoseFrame = function ({ places }) {
 
   const placeButtons = places.map(place => {
     let center = place.center
-    return h('li', { className: "dib mr3" }, h('button',
+    return h('li', { className: 'dib mr3' }, h('button',
       {
-        className: "yyb ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6",
+        className: 'yyb ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6',
         onClick: function (e) {
           e.preventDefault()
           setCenter(center)
@@ -23,8 +25,8 @@ const OsmoseFrame = function ({ places }) {
       h('ul', { className: 'list pl0' }, placeButtons),
       h('iframe',
         {
-          width: "600px",
-          height: "400px",
+          width: '600px',
+          height: '400px',
           src: `http://osmose.openstreetmap.fr/en/map/#zoom=15&lat=${center[0]}&lon=${center[1]}`
         }
       )
@@ -49,9 +51,9 @@ class Profile extends React.Component {
     }).then(data => {
       this.setState(Object.assign({ loading: false }, data))
     })
-    .catch(err => {
-      console.error(err)
-    })
+      .catch(err => {
+        console.error(err)
+      })
   }
 
   render () {
@@ -63,25 +65,25 @@ class Profile extends React.Component {
 
     return h('article',
       {
-        className: "mw7 pa4 mt5 center ba b--black-10 bg-white br1"
+        className: 'mw7 pa4 mt5 center ba b--black-10 bg-white br1'
       },
       [
         h('h2', {
-          className: "flex items-center bb b--black-10 pb3"
+          className: 'flex items-center bb b--black-10 pb3'
         },
-          [
-            h('img', {
-              src: picture,
-              key: "user-pic",
-              className: "br2 h3 w3 dib"
-            }),
-            h('span', {
-              key: "username",
-              className: "pl3 flex-auto f2 black-70"
-            }, username)
-          ]
+        [
+          h('img', {
+            src: picture,
+            key: 'user-pic',
+            className: 'br2 h3 w3 dib'
+          }),
+          h('span', {
+            key: 'username',
+            className: 'pl3 flex-auto f2 black-70'
+          }, username)
+        ]
         ),
-        h('p', { className: "measure-copy lh-copy"}, "Fix errors osmose has found in your places!"),
+        h('p', { className: 'measure-copy lh-copy' }, 'Fix errors osmose has found in your places!'),
         h(OsmoseFrame, { places })
       ]
     )

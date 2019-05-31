@@ -8,8 +8,8 @@ const migrationsDirectory = path.join(__dirname, '..', 'db', 'migrations')
 test.before(async () => {
   const conn = await db()
   await conn.migrate.latest({ directory: migrationsDirectory })
-  
-  // seed 
+
+  // seed
   await conn('users').insert({ id: 1 })
   await conn('users').insert({ id: 2 })
   await conn('users').insert({ id: 3 })
