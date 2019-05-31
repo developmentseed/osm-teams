@@ -13,15 +13,16 @@ const { serverRuntimeConfig, publicRuntimeConfig } = require('../../next.config'
 
 // get an authentication token pair from openstreetmap
 function openstreetmap (req, res) {
+  const { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET, OSM_API, OSM_DOMAIN } = serverRuntimeConfig
   const query = url.parse(req.url, true).query
   const challenge = query.login_challenge
 
   const strategy = new OSMStrategy({
-    requestTokenURL: 'https://www.openstreetmap.org/oauth/request_token',
-    accessTokenURL: 'https://www.openstreetmap.org/oauth/access_token',
-    userAuthorizationURL: 'https://www.openstreetmap.org/oauth/authorize',
-    consumerKey: serverRuntimeConfig.OSM_CONSUMER_KEY,
-    consumerSecret: serverRuntimeConfig.OSM_CONSUMER_SECRET,
+    requestTokenURL: `${OSM_API}/oauth/request_token`,
+    accessTokenURL: `${OSM_API}/oauth/access_token`,
+    userAuthorizationURL: `${OSM_DOMAIN}/oauth/authorize`,
+    consumerKey: OSM_CONSUMER_KEY,
+    consumerSecret: OSM_CONSUMER_SECRET,
     callbackURL: `${publicRuntimeConfig.APP_URL}/oauth/openstreetmap/callback?login_challenge=${encodeURIComponent(challenge)}`
   }, async (token, tokenSecret, profile, done) => {
     let conn = await db()

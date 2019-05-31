@@ -6,6 +6,8 @@ const Dotenv = require('dotenv-webpack')
 module.exports = {
   serverRuntimeConfig: {
     NODE_ENV: process.env.NODE_ENV || 'development',
+    OSM_DOMAIN: process.env.OSM_DOMAIN || 'https://www.openstreetmap.org', 
+    OSM_API: process.env.OSM_API || process.env.OSM_DOMAIN || 'https://www.openstreetmap.org',
     OSM_HYDRA_ID: process.env.OSM_HYDRA_ID || 'manage',
     OSM_HYDRA_SECRET: process.env.OSM_HYDRA_SECRET || 'manage-secret',
     OSM_CONSUMER_KEY: process.env.OSM_CONSUMER_KEY,
