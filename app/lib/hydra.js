@@ -10,7 +10,7 @@ const qs = require('qs')
 const { URL } = require('url')
 
 const { serverRuntimeConfig } = require('../../next.config')
-const hydraUrl = serverRuntimeConfig.HYDRA_ADMIN_URL
+const hydraUrl = serverRuntimeConfig.HYDRA_ADMIN_HOST
 
 var mockTlsTermination = {}
 
@@ -45,7 +45,7 @@ function put(flow, action, challenge, body) {
   const url = new URL(`/oauth2/auth/requests/${flow}/${action}`, hydraUrl)
   url.search = querystring.stringify({[`${flow}_challenge`]: challenge})
   return fetch(
-    // Joins process.env.HYDRA_ADMIN_URL with the request path
+    // Joins process.env.HYDRA_ADMIN_HOST with the request path
     url.toString(),
     {
       method: 'PUT',
