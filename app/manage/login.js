@@ -8,10 +8,10 @@ const credentials = {
     secret: serverRuntimeConfig.OSM_HYDRA_SECRET,
   },
   auth: {
-    tokenHost: serverRuntimeConfig.HYDRA_TOKEN_URL,
-    tokenPath: '/oauth2/token',
-    authorizeHost: serverRuntimeConfig.HYDRA_AUTHZ_URL || serverRuntimeConfig.HYDRA_TOKEN_URL,
-    authorizePath: '/oauth2/auth'
+    tokenHost: serverRuntimeConfig.HYDRA_TOKEN_HOST,
+    tokenPath: serverRuntimeConfig.HYDRA_TOKEN_PATH,
+    authorizeHost: serverRuntimeConfig.HYDRA_AUTHZ_HOST || serverRuntimeConfig.HYDRA_TOKEN_HOST,
+    authorizePath: serverRuntimeConfig.HYDRA_AUTZ_PATH,
   }
 }
 
