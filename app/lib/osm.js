@@ -31,8 +31,9 @@ function openstreetmap (req, res) {
         if (err) { return done(err) };
 
         var profile = { provider: 'openstreetmap' }
-        profile.id = xml.user['@'].id
-        profile.displayName = xml.user['@'].display_name
+        const user = xml.osm.user[0]
+        profile.id = user['$'].id
+        profile.displayName = user['$'].display_name
 
         profile._raw = body
         profile._xml2json =
