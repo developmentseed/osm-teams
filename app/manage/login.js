@@ -70,7 +70,7 @@ async function loginAccept (req, res) {
       
       // Store id token in session
       req.session.idToken = result.id_token
-      return res.redirect('/')
+      return res.redirect(publicRuntimeConfig.APP_URL)
 
     } catch (error) {
       console.error(error)
@@ -87,7 +87,7 @@ async function loginAccept (req, res) {
 function logout (req, res) {
   req.session.destroy(function (err) {
     if (err) console.error(err)
-    res.redirect('/')
+    res.redirect(publicRuntimeConfig.APP_URL)
   })
 }
 
