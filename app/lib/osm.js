@@ -7,6 +7,7 @@ const passport = require('passport-light')
 const hydra = require('./hydra')
 const url = require('url')
 const db = require('../db')
+const xml2js = require('xml2js')
 const OSMStrategy = require('passport-openstreetmap').Strategy
 
 const { serverRuntimeConfig, publicRuntimeConfig } = require('../../next.config')
