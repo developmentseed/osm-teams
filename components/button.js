@@ -4,7 +4,6 @@ import join from 'url-join'
 const { publicRuntimeConfig } = getConfig()
 
 export default function Button ({href, onClick, children, danger, small}) { 
-  const fullUrl = join(publicRuntimeConfig.APP_URL, href)
   let color = 'dark-green'
   let size = "bw2 ph3 pv2 mb2"
   if (danger) {
@@ -16,6 +15,7 @@ export default function Button ({href, onClick, children, danger, small}) {
 
   const commonStyle = `${color} ${size} f6 link dim br1 ba dib pointer`
   if (href) {
+    const fullUrl = join(publicRuntimeConfig.APP_URL, href)
     return <a href={fullUrl} className={`link ${commonStyle}`}>{children}</a>
   }
   return <div onClick={onClick} className={commonStyle}>{children}</div>

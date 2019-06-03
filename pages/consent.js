@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import getConfig from 'next/config'
+const { publicRuntimeConfig } = getConfig()
 
 class Consent extends Component {
   static async getInitialProps ({ query }) {
@@ -16,7 +18,7 @@ class Consent extends Component {
     const { user, client, requested_scope, challenge } = this.props
 
     if (!client) return <div>
-      Invalid parameters, go back <a href="/">home</a>?
+      Invalid parameters, go back <a href={publicRuntimeConfig.APP_URL}>home</a>?
     </div>
 
     const clientDisplayName = client.client_name || client.client_id 

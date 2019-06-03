@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 import Button from '../components/button'
+import join from 'url-join'
+import getConfig from 'next/config'
+const { publicRuntimeConfig } = getConfig()
 
 class Home extends Component {
   static async getInitialProps ({ query }) {
@@ -23,8 +26,8 @@ class Home extends Component {
               <div className="mt4">
                 <h2>Welcome, {this.props.user}!</h2>
                 <ul className="mt4 mb4 list pl2">
-                  <li><a href='/profile' className="link dib">💁‍♀️ Profile</a></li>
-                  <li><a href='/clients' className="link dib">⚙️ Connected Apps</a></li>
+                  <li><a href={join(publicRuntimeConfig.APP_URL, '/profile')} className="link dib">💁‍♀️ Profile</a></li>
+                  <li><a href={join(publicRuntimeConfig.APP_URL, '/clients')} className="link dib">⚙️ Connected Apps</a></li>
                 </ul>
                 <Button href="/logout">Logout</Button>
               </div>
