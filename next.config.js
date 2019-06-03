@@ -12,10 +12,10 @@ module.exports = {
     OSM_HYDRA_SECRET: process.env.OSM_HYDRA_SECRET || 'manage-secret',
     OSM_CONSUMER_KEY: process.env.OSM_CONSUMER_KEY,
     OSM_CONSUMER_SECRET: process.env.OSM_CONSUMER_SECRET,
-    HYDRA_TOKEN_DOMAIN: process.env.HYDRA_TOKEN_HOST || 'http://localhost:4444',
+    HYDRA_TOKEN_HOST: process.env.HYDRA_TOKEN_HOST || 'http://localhost:4444',
     HYDRA_TOKEN_PATH: process.env.HYDRA_TOKEN_PATH || '/oauth2/token',
     HYDRA_AUTHZ_HOST: process.env.HYDRA_AUTHZ_HOST || 'http://localhost:4444',
-    HYDRA_AUTHZ_PATH: process.env.AUTHZ_PATH || '/oauth2/auth',
+    HYDRA_AUTHZ_PATH: process.env.HYDRA_AUTHZ_PATH || '/oauth2/auth',
     HYDRA_ADMIN_HOST: process.env.HYDRA_ADMIN_HOST || 'http://localhost:4445'
   },
   publicRuntimeConfig: {
