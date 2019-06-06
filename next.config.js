@@ -4,6 +4,7 @@ const path = require('path')
 const Dotenv = require('dotenv-webpack')
 
 module.exports = {
+  assetPrefix: process.env.APP_URL || 'http://localhost:8989',
   serverRuntimeConfig: {
     NODE_ENV: process.env.NODE_ENV || 'development',
     OSM_DOMAIN: process.env.OSM_DOMAIN || 'https://www.openstreetmap.org', 
