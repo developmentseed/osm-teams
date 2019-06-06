@@ -3,6 +3,7 @@ import Button from './button';
 import Map from 'pigeon-maps'
 import Marker from './marker'
 import join from 'url-join'
+import getConfig from 'next/config'
 const { publicRuntimeConfig } = getConfig()
 
 class NewPlaceForm extends Component {

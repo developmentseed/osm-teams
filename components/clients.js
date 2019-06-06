@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Button from './button'
 import join from 'url-join'
+import getConfig from 'next/config'
 const { publicRuntimeConfig } = getConfig()
 
 function newClient ({ client_id, client_name, client_secret}) {
