@@ -11,7 +11,7 @@ const credentials = {
     tokenHost: serverRuntimeConfig.HYDRA_TOKEN_HOST,
     tokenPath: serverRuntimeConfig.HYDRA_TOKEN_PATH,
     authorizeHost: serverRuntimeConfig.HYDRA_AUTHZ_HOST || serverRuntimeConfig.HYDRA_TOKEN_HOST,
-    authorizePath: serverRuntimeConfig.HYDRA_AUTHZ_PATH,
+    authorizePath: serverRuntimeConfig.HYDRA_AUTHZ_PATH
   }
 }
 
@@ -71,7 +71,6 @@ async function loginAccept (req, res) {
       // Store id token in session
       req.session.idToken = result.id_token
       return res.redirect(publicRuntimeConfig.APP_URL)
-
     } catch (error) {
       console.error(error)
       return res.status(500).json('Authentication failed')

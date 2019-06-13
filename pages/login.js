@@ -12,7 +12,7 @@ class Login extends Component {
     }
   }
 
-  render() {
+  render () {
     const OSM_NAME = publicRuntimeConfig.OSM_NAME
     return (
       <section>

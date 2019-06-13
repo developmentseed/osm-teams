@@ -17,7 +17,7 @@ class Home extends Component {
     return (
       <section>
         <h1>Teams!</h1>
-        <p className="measure-copy">
+        <p className='measure-copy'>
           Create teams of {publicRuntimeConfig.OSM_NAME} users and import them into your apps.
         </p>
         {
@@ -25,9 +25,9 @@ class Home extends Component {
             ? (
               <div className='mt4'>
                 <h2>Welcome, {this.props.user}!</h2>
-                <ul className="mt4 mb4 list pl2">
-                  <li><a href={join(publicRuntimeConfig.APP_URL, '/profile')} className="link dib">💁‍♀️ Profile</a></li>
-                  <li><a href={join(publicRuntimeConfig.APP_URL, '/clients')} className="link dib">⚙️ Connected Apps</a></li>
+                <ul className='mt4 mb4 list pl2'>
+                  <li><a href={join(publicRuntimeConfig.APP_URL, '/profile')} className='link dib'>💁‍♀️ Profile</a></li>
+                  <li><a href={join(publicRuntimeConfig.APP_URL, '/clients')} className='link dib'>⚙️ Connected Apps</a></li>
                 </ul>
                 <Button href='/logout'>Logout</Button>
               </div>

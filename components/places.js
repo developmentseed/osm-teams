@@ -88,15 +88,14 @@ export default class Places extends Component {
 
   async getPlaces () {
     let res = await fetch(join(publicRuntimeConfig.APP_URL, '/api/places'))
-    if (res.status == 200) {
-      return await res.json()
-    }
-    else {
+    if (res.status === 200) {
+      return res.json()
+    } else {
       throw new Error('Could not retrieve places')
     }
   }
 
-  async deletePlace(id) {
+  async deletePlace (id) {
     await fetch(join(publicRuntimeConfig.APP_URL, `/api/places/${id}`), { method: 'DELETE' })
     await this.refreshPlaces()
   }

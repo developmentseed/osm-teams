@@ -8,10 +8,10 @@ const hydra = require('./hydra')
 const url = require('url')
 const db = require('../db')
 const xml2js = require('xml2js')
+const InternalOAuthError = require('passport-oauth').InternalOAuthError
 const OSMStrategy = require('passport-openstreetmap').Strategy
 
 const { serverRuntimeConfig, publicRuntimeConfig } = require('../../next.config')
-
 
 // get an authentication token pair from openstreetmap
 function openstreetmap (req, res) {

@@ -17,9 +17,11 @@ class Consent extends Component {
   render () {
     const { user, client, requested_scope, challenge } = this.props
 
-    if (!client) return <div>
+    if (!client) {
+      return <div>
       Invalid parameters, go back <a href={publicRuntimeConfig.APP_URL}>home</a>?
-    </div>
+      </div>
+    }
 
     const clientDisplayName = client.client_name || client.client_id
     return (

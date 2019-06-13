@@ -7,7 +7,7 @@ module.exports = {
   assetPrefix: process.env.APP_URL || 'http://localhost:8989',
   serverRuntimeConfig: {
     NODE_ENV: process.env.NODE_ENV || 'development',
-    OSM_DOMAIN: process.env.OSM_DOMAIN || 'https://www.openstreetmap.org', 
+    OSM_DOMAIN: process.env.OSM_DOMAIN || 'https://www.openstreetmap.org',
     OSM_API: process.env.OSM_API || process.env.OSM_DOMAIN || 'https://www.openstreetmap.org',
     OSM_HYDRA_ID: process.env.OSM_HYDRA_ID || 'manage',
     OSM_HYDRA_SECRET: process.env.OSM_HYDRA_SECRET || 'manage-secret',
@@ -21,7 +21,7 @@ module.exports = {
   },
   publicRuntimeConfig: {
     APP_URL: process.env.APP_URL || 'http://localhost:8989',
-    OSM_NAME: process.env.OSM_NAME || 'OSM',
+    OSM_NAME: process.env.OSM_NAME || 'OSM'
   },
   onDemandEntries: {
     websocketPort: 3007

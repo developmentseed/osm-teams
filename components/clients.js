@@ -33,10 +33,9 @@ class Clients extends Component {
 
   async getClients () {
     let res = await fetch(join(publicRuntimeConfig.APP_URL, '/api/clients'))
-    if (res.status == 200) {
-      return await res.json()
-    }
-    else {
+    if (res.status === 200) {
+      return res.json()
+    } else {
       throw new Error('Could not retrieve clients')
     }
   }
@@ -64,7 +63,7 @@ class Clients extends Component {
     await this.refreshClients()
   }
 
-  async deleteClient(id) {
+  async deleteClient (id) {
     await fetch(join(publicRuntimeConfig.APP_URL, `/api/clients/${id}`), { method: 'DELETE' })
     await this.refreshClients()
   }

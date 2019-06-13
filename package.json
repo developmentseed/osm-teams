@@ -26,6 +26,7 @@
     "next": "^8.0.1",
     "node-fetch": "^2.3.0",
     "passport-light": "^1.0.1",
+    "passport-oauth": "^1.0.0",
     "passport-openstreetmap": "^0.1.2",
     "pg": "^7.10.0",
     "pigeon-maps": "^0.11.10",
