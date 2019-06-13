@@ -3,14 +3,14 @@ const expressPino = require('express-pino-logger')
 const bodyParser = require('body-parser')
 
 const { getLogin } = require('./login')
-const { getConsent, postConsent} = require('./consent')
+const { getConsent, postConsent } = require('./consent')
 const { openstreetmap } = require('../lib/osm')
 const logger = require('../lib/logger')
 
 /**
- * The oauthRouter handles the oauth flow and displaying login and 
+ * The oauthRouter handles the oauth flow and displaying login and
  * consent dialogs
- * 
+ *
  * @param {Object} nextApp the NextJS Server
  */
 function oauthRouter (nextApp) {

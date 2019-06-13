@@ -1,5 +1,5 @@
-import React, { Component} from 'react'
-import Button from './button';
+import React, { Component } from 'react'
+import Button from './button'
 import Map from 'pigeon-maps'
 import Marker from './marker'
 import join from 'url-join'
@@ -7,7 +7,7 @@ import getConfig from 'next/config'
 const { publicRuntimeConfig } = getConfig()
 
 class NewPlaceForm extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
 
     this.state = {
@@ -25,22 +25,22 @@ class NewPlaceForm extends Component {
   }
 
   // Do something when the map moves
-  onMove({ center, zoom, bounds }) {
+  onMove ({ center, zoom, bounds }) {
     this.setState({ center, zoom, bounds })
   }
 
   render () {
-    const { center, zoom }  = this.state
+    const { center, zoom } = this.state
     return (
-      <div className="flex mt3 mb5">
+      <div className='flex mt3 mb5'>
         <Map center={center} zoom={zoom} width={300} height={200} onBoundsChanged={this.onMove}>
           <Marker anchor={center} payload={1} />
         </Map>
-        <div className="ml3 flex-auto">
-          <p className="f6 mw4 flex-auto">
+        <div className='ml3 flex-auto'>
+          <p className='f6 mw4 flex-auto'>
             Drag the map to find a location and hit "Save"
-        </p>
-        <Button onClick={this.onSave}>Save</Button>
+          </p>
+          <Button onClick={this.onSave}>Save</Button>
         </div>
       </div>
     )
@@ -79,7 +79,7 @@ export default class Places extends Component {
         'Content-Type': 'application/json; charset=utf-8'
       }
     })
-    if (res.status != 200) {
+    if (res.status !== 200) {
       throw new Error('Could not create place')
     }
     this.setState({ isEditing: false })
@@ -103,7 +103,7 @@ export default class Places extends Component {
 
   async refreshPlaces () {
     try {
-      let { places } = await this.getPlaces() 
+      let { places } = await this.getPlaces()
       this.setState({
         places,
         loading: false
@@ -122,23 +122,23 @@ export default class Places extends Component {
     this.refreshPlaces()
   }
 
-  render() {
+  render () {
     let { places } = this.state
 
     return (
       <section>
-        <h2 className="mt4">🌎 Your places</h2>
+        <h2 className='mt4'>🌎 Your places</h2>
         <p>Add places that you want to keep track of or would like to map!</p>
         <br />
         {
           places.map(place => {
             let center = place.center
             return (
-              <div className="mt3 mb3">
+              <div className='mt3 mb3'>
                 <Map center={center} zoom={10} width={300} height={200} key={place.id} mouseEvents={false} touchEvents={false} >
                   <Marker anchor={center} payload={1} />
                 </Map>
-                <div className="mt2">
+                <div className='mt2'>
                   <Button small danger onClick={() => this.deletePlace(place.id)}>Delete</Button>
                 </div>
               </div>
@@ -147,9 +147,9 @@ export default class Places extends Component {
         }
         <br />
         {
-          this.state.isEditing 
-          ? <NewPlaceForm savePlace={this.savePlace} /> 
-          : <Button onClick={this.addPlace}>Add a new place</Button>
+          this.state.isEditing
+            ? <NewPlaceForm savePlace={this.savePlace} />
+            : <Button onClick={this.addPlace}>Add a new place</Button>
         }
       </section>
     )

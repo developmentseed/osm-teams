@@ -14,7 +14,6 @@ class Login extends Component {
 
   render() {
     const OSM_NAME = publicRuntimeConfig.OSM_NAME
-    console.log(OSM_NAME)
     return (
       <section>
         <h1>Login Provider</h1>

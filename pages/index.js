@@ -13,7 +13,7 @@ class Home extends Component {
     }
   }
 
-  render() {
+  render () {
     return (
       <section>
         <h1>Teams!</h1>
@@ -23,16 +23,16 @@ class Home extends Component {
         {
           this.props.user
             ? (
-              <div className="mt4">
+              <div className='mt4'>
                 <h2>Welcome, {this.props.user}!</h2>
                 <ul className="mt4 mb4 list pl2">
                   <li><a href={join(publicRuntimeConfig.APP_URL, '/profile')} className="link dib">💁‍♀️ Profile</a></li>
                   <li><a href={join(publicRuntimeConfig.APP_URL, '/clients')} className="link dib">⚙️ Connected Apps</a></li>
                 </ul>
-                <Button href="/logout">Logout</Button>
+                <Button href='/logout'>Logout</Button>
               </div>
             )
-            : <Button href="/login">Sign in →</Button>
+            : <Button href='/login'>Sign in →</Button>
         }
       </section>
     )

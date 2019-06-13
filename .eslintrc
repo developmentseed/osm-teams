@@ -1,4 +1,10 @@
 {
   "root": true,
-  "extends": ["standard", "standard-react"]
+  "extends": ["devseed-standard"],
+  "rules": {
+    "camelcase": "off",
+    "node/no-deprecated-api": ["error", {
+        "ignoreModuleItems": ["url.parse"]
+    }]
+  }
 }

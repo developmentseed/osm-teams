@@ -1,6 +1,6 @@
 /**
  * OSM SDK
- * 
+ *
  * Route middleware to interact with OSM OAuth
  */
 const passport = require('passport-light')
@@ -71,7 +71,6 @@ function openstreetmap (req, res) {
           profile: JSON.stringify(profile)
         }
       )
-
     }
     done(null, profile)
   })
@@ -98,7 +97,6 @@ function openstreetmap (req, res) {
       } else {
         return res.redirect('/')
       }
-
     },
     pass: function () { res.sendStatus(401) },
     fail: function (challenge, status) { res.status(status).send(challenge) },

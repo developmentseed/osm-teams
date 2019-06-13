@@ -25,19 +25,19 @@ const API_URL = process.env.API_URL || `http://localhost:8989`
 app.use(bodyParser.json())
 app.use(compression())
 app.use(boom())
-app.use(session({ 
-  name: 'osm-hydra-example', 
+app.use(session({
+  name: 'osm-hydra-example',
   resave: true,
   secret: 'super-secret',
-  saveUninitialized: true ,
-  store: new Filestore({ path: path.join(require("os").tmpdir(), 'osm-hydra-example')})
+  saveUninitialized: true,
+  store: new Filestore({ path: path.join(require('os').tmpdir(), 'osm-hydra-example') })
 }))
 
 /**
  * Take in the client id and secret and start the flow
  */
-function authorizationFlow (req, res)  {
-  const {clientId, clientSecret} = req.body
+function authorizationFlow (req, res) {
+  const { clientId, clientSecret } = req.body
   const state = Math.random().toString(36).substring(2, 15)
   req.session.login_csrf = state
 
@@ -132,13 +132,14 @@ async function profile (req, res) {
     })
     .then(res => res.json())
     .catch(err => {
+      console.error(err)
       res.status(500).send('Could not fetch user data')
     })
 
-  return res.json( { places, username, picture, uid })
+  return res.json({ places, username, picture, uid })
 }
 
-/** 
+/**
  * Routes
  */
 app.use(express.static('public'))
