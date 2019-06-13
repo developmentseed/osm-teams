@@ -1,4 +1,7 @@
 import React from 'react'
+import getConfig from 'next/config'
+import join from 'url-join'
+const { publicRuntimeConfig } = getConfig()
 
 export default function Button ({ href, onClick, children, danger, small }) {
   let color = 'dark-green'
@@ -12,7 +15,8 @@ export default function Button ({ href, onClick, children, danger, small }) {
 
   const commonStyle = `${color} ${size} f6 link dim br1 ba dib pointer`
   if (href) {
-    return <a href={href} className={`link ${commonStyle}`}>{children}</a>
+    const fullUrl = join(publicRuntimeConfig.APP_URL, href)
+    return <a href={fullUrl} className={`link ${commonStyle}`}>{children}</a>
   }
   return <div onClick={onClick} className={commonStyle}>{children}</div>
 }

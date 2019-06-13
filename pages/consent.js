@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import getConfig from 'next/config'
+const { publicRuntimeConfig } = getConfig()
 
 class Consent extends Component {
   static async getInitialProps ({ query }) {
@@ -17,7 +19,7 @@ class Consent extends Component {
 
     if (!client) {
       return <div>
-      Invalid parameters, go back <a href='/'>home</a>?
+      Invalid parameters, go back <a href={publicRuntimeConfig.APP_URL}>home</a>?
       </div>
     }
 

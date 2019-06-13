@@ -21,9 +21,9 @@ services:
     depends_on:
     - hydra
     environment:
-     - HYDRA_ADMIN_URL=http://hydra:4445
-     - HYDRA_TOKEN_URL=http://hydra:4444
-     - HYDRA_AUTHZ_URL=http://localhost:4444
+     - HYDRA_ADMIN_HOST=http://hydra:4445
+     - HYDRA_TOKEN_HOST=http://hydra:4444
+     - HYDRA_AUTHZ_HOST=http://localhost:4444
     ports:
     - 8989:8989
     env_file:

@@ -8,10 +8,10 @@ const credentials = {
     secret: serverRuntimeConfig.OSM_HYDRA_SECRET
   },
   auth: {
-    tokenHost: serverRuntimeConfig.HYDRA_TOKEN_URL,
-    tokenPath: '/oauth2/token',
-    authorizeHost: serverRuntimeConfig.HYDRA_AUTHZ_URL || serverRuntimeConfig.HYDRA_TOKEN_URL,
-    authorizePath: '/oauth2/auth'
+    tokenHost: serverRuntimeConfig.HYDRA_TOKEN_HOST,
+    tokenPath: serverRuntimeConfig.HYDRA_TOKEN_PATH,
+    authorizeHost: serverRuntimeConfig.HYDRA_AUTHZ_HOST || serverRuntimeConfig.HYDRA_TOKEN_HOST,
+    authorizePath: serverRuntimeConfig.HYDRA_AUTHZ_PATH
   }
 }
 
@@ -70,7 +70,7 @@ async function loginAccept (req, res) {
 
       // Store id token in session
       req.session.idToken = result.id_token
-      return res.redirect('/')
+      return res.redirect(publicRuntimeConfig.APP_URL)
     } catch (error) {
       console.error(error)
       return res.status(500).json('Authentication failed')
@@ -86,7 +86,7 @@ async function loginAccept (req, res) {
 function logout (req, res) {
   req.session.destroy(function (err) {
     if (err) console.error(err)
-    res.redirect('/')
+    res.redirect(publicRuntimeConfig.APP_URL)
   })
 }
 

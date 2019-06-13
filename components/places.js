@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import Button from './button'
 import Map from 'pigeon-maps'
 import Marker from './marker'
+import join from 'url-join'
+import getConfig from 'next/config'
+const { publicRuntimeConfig } = getConfig()
 
 class NewPlaceForm extends Component {
   constructor (props) {
@@ -67,7 +70,7 @@ export default class Places extends Component {
   }
 
   async savePlace (center) {
-    let res = await fetch(`/api/places`, {
+    let res = await fetch(join(publicRuntimeConfig.APP_URL, `/api/places`), {
       method: 'POST',
       body: JSON.stringify({
         center
@@ -84,7 +87,7 @@ export default class Places extends Component {
   }
 
   async getPlaces () {
-    let res = await fetch('/api/places')
+    let res = await fetch(join(publicRuntimeConfig.APP_URL, '/api/places'))
     if (res.status === 200) {
       return res.json()
     } else {
@@ -93,7 +96,7 @@ export default class Places extends Component {
   }
 
   async deletePlace (id) {
-    await fetch(`/api/places/${id}`, { method: 'DELETE' })
+    await fetch(join(publicRuntimeConfig.APP_URL, `/api/places/${id}`), { method: 'DELETE' })
     await this.refreshPlaces()
   }
 

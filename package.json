@@ -26,6 +26,7 @@
     "next": "^8.0.1",
     "node-fetch": "^2.3.0",
     "passport-light": "^1.0.1",
+    "passport-oauth": "^1.0.0",
     "passport-openstreetmap": "^0.1.2",
     "pg": "^7.10.0",
     "pigeon-maps": "^0.11.10",
@@ -42,7 +43,8 @@
     "sinon": "^7.3.2",
     "sqlite3": "^4.0.6",
     "supertest": "^4.0.2",
-    "url-join": "^4.0.0"
+    "url-join": "^4.0.0",
+    "xml2js": "^0.4.19"
   },
   "devDependencies": {
     "devseed-standard": "^1.1.0"
