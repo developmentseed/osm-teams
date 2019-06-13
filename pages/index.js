@@ -16,9 +16,9 @@ class Home extends Component {
   render() {
     return (
       <section>
-        <h1>OSM Teams!</h1>
+        <h1>Teams!</h1>
         <p className="measure-copy">
-          Create teams of OSM users and import them into your apps.
+          Create teams of {publicRuntimeConfig.OSM_NAME} users and import them into your apps.
         </p>
         {
           this.props.user

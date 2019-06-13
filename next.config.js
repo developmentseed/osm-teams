@@ -20,7 +20,8 @@ module.exports = {
     HYDRA_ADMIN_HOST: process.env.HYDRA_ADMIN_HOST || 'http://localhost:4445'
   },
   publicRuntimeConfig: {
-    APP_URL: process.env.APP_URL || 'http://localhost:8989'
+    APP_URL: process.env.APP_URL || 'http://localhost:8989',
+    OSM_NAME: process.env.OSM_NAME || 'OSM',
   },
   onDemandEntries: {
     websocketPort: 3007
