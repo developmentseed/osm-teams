@@ -2,7 +2,6 @@ const path = require('path')
 const test = require('ava')
 const sinon = require('sinon')
 
-
 const db = require('../db')
 const authz = require('../manage/authz')
 
@@ -13,16 +12,16 @@ test.before(async () => {
   const conn = await db()
   await conn.migrate.latest({ directory: migrationsDirectory })
 
-  // seed 
+  // seed
   await conn('users').insert({ id: 1 })
   await conn('users').insert({ id: 2 })
   await conn('users').insert({ id: 3 })
   await conn('users').insert({ id: 4 })
 
-  // Ensure protected middleware always goes through
-  let protectedStub = sinon.stub(authz, 'protected')
-  protectedStub.callsArg(2)
-  
+  // Ensure authenticate middleware always goes through
+  let authenticateStub = sinon.stub(authz, 'authenticate')
+  authenticateStub.callsArg(2)
+
   agent = require('supertest').agent(await require('../index')())
 })
 
@@ -36,7 +35,7 @@ test('create a team', async t => {
   let res = await agent.post('/api/teams')
     .send({ name: 'road team 1' })
     .expect(200)
-  
+
   t.is(res.body.name, 'road team 1')
 })
 
@@ -44,13 +43,13 @@ test('update a team', async t => {
   let res = await agent.post('/api/teams')
     .send({ name: 'map team 1' })
     .expect(200)
-  
+
   t.is(res.body.name, 'map team 1')
 
   let updated = await agent.put(`/api/teams/${res.body.id}`)
     .send({ name: 'poi team 1' })
     .expect(200)
-  
+
   t.is(updated.body.name, 'poi team 1')
 })
 
@@ -58,7 +57,7 @@ test('destroy a team', async t => {
   let res = await agent.post('/api/teams')
     .send({ name: 'map team 2' })
     .expect(200)
-  
+
   t.is(res.body.name, 'map team 2')
 
   await agent.delete(`/api/teams/${res.body.id}`)
@@ -69,12 +68,12 @@ test('get a team', async t => {
   let res = await agent.post('/api/teams')
     .send({ name: 'map team 3' })
     .expect(200)
-  
+
   t.is(res.body.name, 'map team 3')
 
   let team = await agent.get(`/api/teams/${res.body.id}`)
     .expect(200)
-  
+
   t.is(team.body.id, res.body.id)
   t.is(team.body.name, res.body.name)
   t.is(team.body.members.length, 0)
@@ -87,7 +86,7 @@ test('get team list', async t => {
 
   let teams = await agent.get(`/api/teams`)
     .expect(200)
-  
+
   t.true(teams.body.length > 0)
   teams.body.forEach(item => {
     t.truthy(item.name)
@@ -99,10 +98,10 @@ test('add member to team', async t => {
   let team = await agent.post('/api/teams')
     .send({ name: 'map team 6' })
     .expect(200)
-  
+
   await agent.put(`/api/teams/add/${team.body.id}/1`)
     .expect(200)
-  
+
   let updated = await agent.get(`/api/teams/${team.body.id}`)
     .expect(200)
 
@@ -118,7 +117,7 @@ test('remove member from team', async t => {
 
   await agent.put(`/api/teams/add/${team.body.id}/1`)
     .expect(200)
-  
+
   await agent.put(`/api/teams/remove/${team.body.id}/1`)
     .expect(200)
 
@@ -137,10 +136,10 @@ test('updated members in team', async t => {
   await agent.patch(`/api/teams/${team.body.id}/members`)
     .send({ add: [1, 2, 3] })
     .expect(200)
-  
+
   let updated = await agent.get(`/api/teams/${team.body.id}`)
     .expect(200)
-  
+
   t.is(updated.body.id, team.body.id)
   t.is(updated.body.members.length, 3)
 })
@@ -148,6 +147,6 @@ test('updated members in team', async t => {
 test('get list of teams by osm id', async t => {
   let teams = await agent.get(`/api/teams?osmId=1`)
     .expect(200)
-  
+
   t.true(teams.body.length > 0)
 })

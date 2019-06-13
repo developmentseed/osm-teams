@@ -12,9 +12,9 @@ async function idTokenExtraParams (sub) {
   const conn = await db()
   const [user] = await conn('users').where('id', sub)
   const { profile } = user
-  const displayName = profile.displayName || consent.subject
-  const picture = path(['_xml2json', 'user', 'img', '@', 'href'], profile)
-    || `https://www.gravatar.com/avatar/${sub}?d=identicon`
+  const displayName = profile.displayName || sub
+  const picture = path(['_xml2json', 'user', 'img', '@', 'href'], profile) ||
+    `https://www.gravatar.com/avatar/${sub}?d=identicon`
   return {
     preferred_username: displayName,
     picture
@@ -31,7 +31,7 @@ function getConsent (app) {
       let idToken = await idTokenExtraParams(consent.subject)
 
       // We can skip if skip is set to yes or if the requesting app is the management UI
-      if (consent.skip || consent.client.client_id === serverRuntimeConfig.OSM_HYDRA_ID) { 
+      if (consent.skip || consent.client.client_id === serverRuntimeConfig.OSM_HYDRA_ID) {
         let accept = await hydra.acceptConsentRequest(challenge, {
           grant_scope: consent.requested_scope,
           grant_access_token_audience: consent.requested_access_token_audience,

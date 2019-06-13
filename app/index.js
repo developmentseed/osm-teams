@@ -23,7 +23,7 @@ app.use(boom())
 /**
  * Initialize subapps after nextJS initializes
  */
-async function init() {
+async function init () {
   await nextApp.prepare()
 
   /**

@@ -6,10 +6,10 @@ const hydra = require('../lib/hydra')
 const url = require('url')
 
 function getLogin (app) {
-  return async function login(req, res, next) {
+  return async function login (req, res, next) {
     const query = url.parse(req.url, true).query
     const challenge = query.login_challenge
-    if (!challenge) return next(e)
+    if (!challenge) return next()
 
     try {
       let { subject, skip } = await hydra.getLoginRequest(challenge)

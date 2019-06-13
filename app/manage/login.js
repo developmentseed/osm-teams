@@ -5,7 +5,7 @@ const db = require('../db')
 const credentials = {
   client: {
     id: serverRuntimeConfig.OSM_HYDRA_ID,
-    secret: serverRuntimeConfig.OSM_HYDRA_SECRET,
+    secret: serverRuntimeConfig.OSM_HYDRA_SECRET
   },
   auth: {
     tokenHost: serverRuntimeConfig.HYDRA_TOKEN_URL,
@@ -17,13 +17,13 @@ const credentials = {
 
 const oauth2 = require('simple-oauth2').create(credentials)
 
-var generateState = function(length) {
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for(var i = 0; i < length; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
+var generateState = function (length) {
+  var text = ''
+  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  for (var i = 0; i < length; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length))
   }
-  return text;
+  return text
 }
 
 function login (req, res) {
@@ -67,11 +67,10 @@ async function loginAccept (req, res) {
       await conn('users').where('id', sub).update({
         manageToken: JSON.stringify(result)
       })
-      
+
       // Store id token in session
       req.session.idToken = result.id_token
       return res.redirect('/')
-
     } catch (error) {
       console.error(error)
       return res.status(500).json('Authentication failed')
@@ -81,8 +80,8 @@ async function loginAccept (req, res) {
 
 /**
  * Logout deletes the session from the manage app
- * @param {*} req 
- * @param {*} res 
+ * @param {*} req
+ * @param {*} res
  */
 function logout (req, res) {
   req.session.destroy(function (err) {

@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Marker() {
+export default function Marker () {
   return (
     <div>
       <style jsx>{`
@@ -35,8 +35,7 @@ export default function Marker() {
        }
       `}</style>
       <div style={{
-      }} className='marker' >
-      </div>
+      }} className='marker' />
     </div>
   )
 }

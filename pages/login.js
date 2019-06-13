@@ -10,7 +10,7 @@ class Login extends Component {
     }
   }
 
-  render() {
+  render () {
     return (
       <section>
         <h1>Login Provider</h1>

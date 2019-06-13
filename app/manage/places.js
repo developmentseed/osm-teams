@@ -30,7 +30,7 @@ async function createPlace (req, res) {
 
   let conn = await db()
   try {
-    await conn('places').insert({ 'user': uid, center: JSON.stringify(center)})
+    await conn('places').insert({ 'user': uid, center: JSON.stringify(center) })
     res.sendStatus(200)
   } catch (e) {
     req.log.error(e)
