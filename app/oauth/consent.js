@@ -12,7 +12,7 @@ async function idTokenExtraParams (sub) {
   const conn = await db()
   const [user] = await conn('users').where('id', sub)
   const { profile } = user
-  const displayName = profile.displayName
+  const displayName = profile.displayName || sub
   const picture = path(['_xml2json', 'user', 'img', '@', 'href'], profile) ||
     `https://www.gravatar.com/avatar/${sub}?d=identicon`
   return {
