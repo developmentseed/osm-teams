@@ -31,6 +31,7 @@ async function createClient (req, res) {
   toCreate['scope'] = 'openid offline'
   toCreate['response_types'] = ['code', 'id_token']
   toCreate['grant_types'] = ['refresh_token', 'authorization_code']
+  toCreate['owner'] = req.session.user_id
   let client = await hydra.createClient(toCreate)
   return res.send({ client })
 }
