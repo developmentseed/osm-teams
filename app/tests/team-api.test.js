@@ -3,7 +3,7 @@ const test = require('ava')
 const sinon = require('sinon')
 
 const db = require('../db')
-const authz = require('../manage/authz')
+const permissions = require('../manage/permissions')
 
 const migrationsDirectory = path.join(__dirname, '..', 'db', 'migrations')
 
@@ -19,7 +19,7 @@ test.before(async () => {
   await conn('users').insert({ id: 4 })
 
   // Ensure authenticate middleware always goes through
-  let authenticateStub = sinon.stub(authz, 'authenticate')
+  let authenticateStub = sinon.stub(permissions, 'authenticate')
   authenticateStub.callsArg(2)
 
   agent = require('supertest').agent(await require('../index')())

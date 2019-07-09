@@ -1,13 +1,12 @@
 const router = require('express-promise-router')()
-const session = require('express-session')
 const expressPino = require('express-pino-logger')
 
 const { getClients, createClient, deleteClient } = require('./client')
 const { getPlaces, createPlace, deletePlace } = require('./places')
 const { login, loginAccept, logout } = require('./login')
 const { listTeams, createTeam, getTeam, updateTeam, destroyTeam, addMember, removeMember, updateMembers } = require('./teams')
-const { attachUser, authenticate } = require('./authz')
-const { serverRuntimeConfig } = require('../../next.config')
+const authenticate = require('./permissions')
+const sessionMiddleware = require('./sessions')
 const logger = require('../lib/logger')
 
 /**
@@ -23,19 +22,6 @@ function manageRouter (nextApp) {
     }))
   }
 
-  /**
-   * Attach a user session for these routes
-   */
-  const SESSION_SECRET = serverRuntimeConfig.SESSION_SECRET || 'super-secret-sessions'
-  let sessionConfig = {
-    name: 'osm-hydra-sid',
-    secret: SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    expires: new Date(Date.now() + (30 * 86400 * 1000))
-  }
-
-  const sessionMiddleware = [session(sessionConfig), attachUser()]
   router.use(sessionMiddleware)
 
   /**

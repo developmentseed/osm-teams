@@ -1,49 +1,5 @@
-const jwt = require('jsonwebtoken')
-const db = require('../db')
-const hydra = require('../lib/hydra')
-
-/**
- * Returns true if a jwt is still valid
- *
- * @param {jwt} decoded the decoded jwt token
- */
-function assertAlive (decoded) {
-  const now = Date.now().valueOf() / 1000
-  if (typeof decoded.exp !== 'undefined' && decoded.exp < now) {
-    return false
-  }
-  if (typeof decoded.nbf !== 'undefined' && decoded.nbf > now) {
-    return false
-  }
-  return true
-}
-
-/**
- * Attaches the user from the jwt to the session
- */
-function attachUser () {
-  return function (req, res, next) {
-    if (req.session) {
-      if (req.session.idToken) {
-        // We have an id_token, let's check if it's still valid
-        const decoded = jwt.decode(req.session.idToken)
-        if (assertAlive(decoded)) {
-          req.session.user_id = decoded.sub
-          req.session.user = decoded.preferred_username
-          req.session.user_picture = decoded.picture
-          return next()
-        } else {
-          // no longer alive, let's flush the session
-          req.session.destroy(function (err) {
-            if (err) next(err)
-            return next()
-          })
-        }
-      }
-    }
-    next()
-  }
-}
+const db = require('../../db')
+const hydra = require('../../lib/hydra')
 
 /**
  * Takes an access token
@@ -71,7 +27,7 @@ async function acceptToken (token, res, next) {
  * the accessToken validity with hydra. If there isn't a session,
  * it checks for an Authorization header with a valid access token
  */
-async function authenticate (req, res, next) {
+export default async function authenticate (req, res, next) {
   if (req.session && req.session.user_id) {
     // We have a session, we can use the user id to get the access token
     try {
@@ -91,9 +47,4 @@ async function authenticate (req, res, next) {
       return res.status(401).send('Access denied')
     }
   }
-}
-
-module.exports = {
-  attachUser,
-  authenticate
 }
