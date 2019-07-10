@@ -19,8 +19,13 @@ test.before(async () => {
   await conn('users').insert({ id: 4 })
 
   // Ensure authenticate middleware always goes through
-  let authenticateStub = sinon.stub(permissions, 'authenticate')
-  authenticateStub.callsArg(2)
+  sinon.stub(permissions, 'can').callsFake(
+    function () {
+      return function (req, res, next) {
+        return next()
+      }
+    }
+  )
 
   agent = require('supertest').agent(await require('../index')())
 })
