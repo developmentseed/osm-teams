@@ -1,9 +1,22 @@
 const db = require('../../db')
 const hydra = require('../../lib/hydra')
+const { mergeAll } = require('ramda')
+
+const metaPermissions = {
+  'public': () => true
+}
+
+const teamPermissions = {
+  'team:create': require('./create-team.js'),
+  'team:update': require('./update-team'),
+  'team:delete': require('./delete-team')
+}
+
+const clientPermissions = {}
 
 /**
  * Takes an access token
- * If it's valid, set the user id in the response and forward to the next
+ * If it's valid, set the user id in the response object res.locals and forward to the next
  * middleware. If it's not valid, send a 401
  *
  * @param {String} token Access Token
@@ -27,7 +40,7 @@ async function acceptToken (token, res, next) {
  * the accessToken validity with hydra. If there isn't a session,
  * it checks for an Authorization header with a valid access token
  */
-export default async function authenticate (req, res, next) {
+async function authenticate (req, res, next) {
   if (req.session && req.session.user_id) {
     // We have a session, we can use the user id to get the access token
     try {
@@ -47,4 +60,34 @@ export default async function authenticate (req, res, next) {
       return res.status(401).send('Access denied')
     }
   }
+}
+
+/**
+ * Given a permission, check if the user is allowed to perform the action
+ * @param {string} ability the permission
+ */
+function check (ability) {
+  return async function (req, res, next) {
+    const isAllowed = mergeAll([
+      metaPermissions,
+      teamPermissions,
+      clientPermissions
+    ])
+
+    // A permissions function follows the signature (res.locals, request object) => boolean
+    let allowed = await isAllowed[ability](res.locals, req)
+    if (allowed) {
+      next()
+    } else {
+      res.status(403).send('Forbidden')
+    }
+  }
+}
+
+module.exports = {
+  can: (ability) => {
+    return [authenticate, check(ability)]
+  },
+  authenticate,
+  check
 }
