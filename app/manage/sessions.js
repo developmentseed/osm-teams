@@ -60,4 +60,4 @@ function attachUser () {
 }
 
 const sessionMiddleware = [session(sessionConfig), attachUser()]
-export default sessionMiddleware
+module.exports = sessionMiddleware
