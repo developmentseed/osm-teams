@@ -2,7 +2,7 @@
   "scripts": {
     "dev": "NODE_ENV=development node app/index.js",
     "migrate": "knex --knexfile app/db/knexfile.js migrate:latest",
-    "test": "NODE_ENV=test ava app/tests/*.test.js -c 1 --serial",
+    "test": "NODE_ENV=test ava app/tests/**/*.test.js -c 1 --serial",
     "lint": "devseed-standard",
     "lintfix": "devseed-standard --fix",
     "build": "next build",
