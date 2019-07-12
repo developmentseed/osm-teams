@@ -2,10 +2,10 @@ const path = require('path')
 const test = require('ava')
 const sinon = require('sinon')
 
-const db = require('../db')
-const permissions = require('../manage/permissions')
+const db = require('../../db')
+const permissions = require('../../manage/permissions')
 
-const migrationsDirectory = path.join(__dirname, '..', 'db', 'migrations')
+const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
 
 let agent
 test.before(async () => {
@@ -22,12 +22,13 @@ test.before(async () => {
   sinon.stub(permissions, 'can').callsFake(
     function () {
       return function (req, res, next) {
+        res.locals.user_id = 1
         return next()
       }
     }
   )
 
-  agent = require('supertest').agent(await require('../index')())
+  agent = require('supertest').agent(await require('../../index')())
 })
 
 test.after.always(async () => {
@@ -81,7 +82,7 @@ test('get a team', async t => {
 
   t.is(team.body.id, res.body.id)
   t.is(team.body.name, res.body.name)
-  t.is(team.body.members.length, 0)
+  t.is(team.body.members.length, 1)
 })
 
 test('get team list', async t => {
