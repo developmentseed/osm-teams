@@ -1,10 +1,5 @@
-const db = require('../../db')
+const { isModerator } = require('../../lib/team')
 
-module.exports = async function ({ user_id }) {
-  let conn = await db()
-  const [user] = await conn('users').where('id', user_id)
-  if (user) {
-    console.log(user)
-  }
-  return true
+module.exports = async function ({ user_id }, { params: { id } }) {
+  return isModerator(id, user_id)
 }
