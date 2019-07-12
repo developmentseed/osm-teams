@@ -26,7 +26,7 @@ async function getTeam (req, reply) {
   }
 
   try {
-    const [teamData] = await team.get(id)
+    const teamData = await team.get(id)
     const members = (await team.getMembers(id)).map(obj => obj.osm_id)
 
     if (!teamData && !members) {
@@ -42,9 +42,10 @@ async function getTeam (req, reply) {
 
 async function createTeam (req, reply) {
   const { body } = req
+  const { user_id } = reply.locals
 
   try {
-    const [data] = await team.create(body)
+    const data = await team.create(body, user_id)
     reply.send(data)
   } catch (err) {
     console.log(err)
@@ -61,7 +62,7 @@ async function updateTeam (req, reply) {
   }
 
   try {
-    const [data] = await team.update(id, body)
+    const data = await team.update(id, body)
     reply.send(data)
   } catch (err) {
     console.log(err)
@@ -119,7 +120,7 @@ async function updateMembers (req, reply) {
 
   try {
     await team.updateMembers(id, add, remove)
-    return reply.send(200)
+    return reply.sendStatus(200)
   } catch (err) {
     console.log(err)
     return boom.badRequest()
@@ -139,7 +140,7 @@ async function removeMember (req, reply) {
 
   try {
     await team.removeMember(id, osmId)
-    return reply.send(200)
+    return reply.sendStatus(200)
   } catch (err) {
     console.log(err)
     return boom.badRequest()
