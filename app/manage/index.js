@@ -74,13 +74,13 @@ function manageRouter (nextApp) {
    * Page renders
    */
   router.get('/clients', authenticate, (req, res) => {
-    const { user, user_picture } = req.session
-    return nextApp.render(req, res, '/clients', { user, user_picture })
+    return nextApp.render(req, res, '/clients')
   })
 
   router.get('/profile', authenticate, (req, res) => {
-    const { user, user_picture } = req.session
-    return nextApp.render(req, res, '/profile', { user, user_picture })
+    return nextApp.render(req, res, '/profile')
+  })
+
   })
 
   return router
