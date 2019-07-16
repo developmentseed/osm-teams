@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import Places from '../components/places'
 
 export default class Profile extends Component {
   static async getInitialProps ({ query }) {
@@ -20,7 +19,6 @@ export default class Profile extends Component {
           <img src={picture} className='br2 h3 w3 dib' />
           <span className='pl3 flex-auto f2 black-70'>{user}</span>
         </h2>
-        <Places />
       </div>
     )
   }
