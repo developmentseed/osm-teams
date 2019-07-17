@@ -56,7 +56,7 @@ function manageRouter (nextApp) {
    * List / Create / Delete teams
    */
   router.get('/api/teams', listTeams)
-  router.post('/api/teams', can('teams:create'), createTeam)
+  router.post('/api/teams', can('team:create'), createTeam)
   router.get('/api/teams/:id', can('team:view'), getTeam)
   router.put('/api/teams/:id', can('team:update'), updateTeam)
   router.delete('/api/teams/:id', can('team:delete'), destroyTeam)

@@ -7,7 +7,7 @@ const metaPermissions = {
 }
 
 const teamPermissions = {
-  'teams:create': require('./create-team.js'),
+  'team:create': require('./create-team'),
   'team:update': require('./update-team'),
   'team:delete': require('./delete-team')
 }
