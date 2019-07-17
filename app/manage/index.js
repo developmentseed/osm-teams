@@ -81,6 +81,8 @@ function manageRouter (nextApp) {
     return nextApp.render(req, res, '/profile')
   })
 
+  router.get('/team/:id', authenticate, (req, res) => {
+    return nextApp.render(req, res, '/team', { id: req.params.id })
   })
 
   return router
