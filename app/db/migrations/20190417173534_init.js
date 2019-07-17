@@ -34,17 +34,10 @@ exports.up = async (knex) => {
     table.integer('team_id').references('id').inTable('team').onDelete('CASCADE')
     table.integer('osm_id')
   })
-
-  await knex.schema.createTable('places', db => {
-    db.increments()
-    db.integer('user').references('id').inTable('users').onDelete('CASCADE')
-    db.json('center')
-  })
 }
 
 exports.down = async (knex) => {
   try {
-    await knex.schema.dropTable('places')
     await knex.schema.dropTable('moderator')
     await knex.schema.dropTable('member')
     await knex.schema.dropTable('join_request')

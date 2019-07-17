@@ -2,7 +2,6 @@ const router = require('express-promise-router')()
 const expressPino = require('express-pino-logger')
 
 const { getClients, createClient, deleteClient } = require('./client')
-const { getPlaces, createPlace, deletePlace } = require('./places')
 const { login, loginAccept, logout } = require('./login')
 const { listTeams, createTeam, getTeam, updateTeam, destroyTeam, addMember, removeMember, updateMembers } = require('./teams')
 const { can } = require('./permissions')
@@ -44,13 +43,6 @@ function manageRouter (nextApp) {
   router.get('/api/clients', can('clients:view'), getClients)
   router.post('/api/clients', can('clients:create'), createClient)
   router.delete('/api/clients/:id', can('clients:delete'), deleteClient)
-
-  /**
-   * List / Create / Delete places
-   */
-  router.get('/api/places', getPlaces)
-  router.post('/api/places', createPlace)
-  router.delete('/api/places/:id', deletePlace)
 
   /**
    * List / Create / Delete teams
