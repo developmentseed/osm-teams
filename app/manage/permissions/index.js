@@ -12,7 +12,9 @@ const teamPermissions = {
   'team:delete': require('./delete-team')
 }
 
-const clientPermissions = {}
+const clientPermissions = {
+  'clients:view': require('./view-clients')
+}
 
 /**
  * Takes an access token
