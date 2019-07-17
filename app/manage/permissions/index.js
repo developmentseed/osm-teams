@@ -76,8 +76,14 @@ function check (ability) {
       clientPermissions
     ])
 
-    // A permissions function follows the signature (res.locals, request object) => boolean
-    let allowed = await isAllowed[ability](res.locals, req)
+    /**
+     * Permissions decision function
+     * @param {string} uid user id
+     * @param {Object} params request parameters
+     * @returns {boolean} can the request go through?
+     */
+    let allowed = await isAllowed[ability](res.locals.user_id, req.params)
+
     if (allowed) {
       next()
     } else {
