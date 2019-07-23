@@ -1,12 +1,11 @@
 const router = require('express-promise-router')()
-const session = require('express-session')
 const expressPino = require('express-pino-logger')
 
 const { getClients, createClient, deleteClient } = require('./client')
 const { login, loginAccept, logout } = require('./login')
 const { listTeams, createTeam, getTeam, updateTeam, destroyTeam, addMember, removeMember, updateMembers } = require('./teams')
-const { attachUser, authenticate } = require('./authz')
-const { serverRuntimeConfig } = require('../../next.config')
+const { can } = require('./permissions')
+const sessionMiddleware = require('./sessions')
 const logger = require('../lib/logger')
 
 /**
@@ -22,19 +21,6 @@ function manageRouter (nextApp) {
     }))
   }
 
-  /**
-   * Attach a user session for these routes
-   */
-  const SESSION_SECRET = serverRuntimeConfig.SESSION_SECRET || 'super-secret-sessions'
-  let sessionConfig = {
-    name: 'osm-hydra-sid',
-    secret: SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    expires: new Date(Date.now() + (30 * 86400 * 1000))
-  }
-
-  const sessionMiddleware = [session(sessionConfig), attachUser()]
   router.use(sessionMiddleware)
 
   /**
@@ -54,33 +40,31 @@ function manageRouter (nextApp) {
   /**
    * List / Create / Delete clients
    */
-  router.get('/api/clients', authenticate, getClients)
-  router.post('/api/clients', authenticate, createClient)
-  router.delete('/api/clients/:id', authenticate, deleteClient)
+  router.get('/api/clients', can('clients:view'), getClients)
+  router.post('/api/clients', can('clients:create'), createClient)
+  router.delete('/api/clients/:id', can('clients:delete'), deleteClient)
 
   /**
    * List / Create / Delete teams
    */
   router.get('/api/teams', listTeams)
-  router.post('/api/teams', authenticate, createTeam)
-  router.get('/api/teams/:id', getTeam)
-  router.put('/api/teams/:id', authenticate, updateTeam)
-  router.delete('/api/teams/:id', authenticate, destroyTeam)
-  router.put('/api/teams/add/:id/:osmId', authenticate, addMember)
-  router.put('/api/teams/remove/:id/:osmId', authenticate, removeMember)
-  router.patch('/api/teams/:id/members', authenticate, updateMembers)
+  router.post('/api/teams', can('team:create'), createTeam)
+  router.get('/api/teams/:id', can('team:view'), getTeam)
+  router.put('/api/teams/:id', can('team:update'), updateTeam)
+  router.delete('/api/teams/:id', can('team:delete'), destroyTeam)
+  router.put('/api/teams/add/:id/:osmId', can('team:update'), addMember)
+  router.put('/api/teams/remove/:id/:osmId', can('team:update'), removeMember)
+  router.patch('/api/teams/:id/members', can('team:update'), updateMembers)
 
   /**
    * Page renders
    */
-  router.get('/clients', authenticate, (req, res) => {
+  router.get('/clients', can('clients:view'), (req, res) => {
     return nextApp.render(req, res, '/clients')
   })
 
-  router.get('/profile', authenticate, (req, res) => {
+  router.get('/profile', can('clients:view'), (req, res) => {
     return nextApp.render(req, res, '/profile')
-  })
-
   })
 
   return router

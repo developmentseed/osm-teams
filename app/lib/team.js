@@ -1,5 +1,10 @@
 
 const db = require('../db')
+const { head } = require('ramda')
+
+async function unpack (promise) {
+  return promise.then(head)
+}
 
 /**
 * Get a team
@@ -9,7 +14,7 @@ const db = require('../db')
 **/
 async function get (id) {
   const conn = await db()
-  return conn('team').where('id', id)
+  return unpack(conn('team').where('id', id))
 }
 
 /**
@@ -39,20 +44,29 @@ async function list () {
 async function findByOsmId (osmId) {
   const conn = await db()
   return conn('team').select().whereIn('id', function () {
-    this.select('team_id').from('member').where('osm_id', String(osmId))
+    this.select('team_id').from('member').where('osm_id', osmId)
   })
 }
 
 /**
 * Create a team
+* Teams have to have moderators, so we give an osm id
+* as the second param
 *
 * @param {object} data - params for a team
 * @param {string} data.name - name of the team
+* @param {int} osmId - id of first moderator
 * @return {promise}
 **/
-async function create (data) {
+async function create (data, osmId) {
+  if (!osmId) throw new Error('Team must have moderator id')
   const conn = await db()
-  return conn('team').insert(data).returning('*')
+  return conn.transaction(async trx => {
+    const [row] = await trx('team').insert(data).returning('*')
+    await trx('member').insert({ team_id: row.id, osm_id: osmId })
+    await trx('moderator').insert({ team_id: row.id, osm_id: osmId })
+    return row
+  })
 }
 
 /**
@@ -64,7 +78,7 @@ async function create (data) {
 **/
 async function update (id, data) {
   const conn = await db()
-  return conn('team').where('id', id).update(data).returning('*')
+  return unpack(conn('team').where('id', id).update(data).returning('*'))
 }
 
 /**
@@ -81,17 +95,6 @@ async function destroy (id) {
 }
 
 /**
-* Add an osm user as a team member
-* @param {int} teamId - team id
-* @param {int} osmId - osm id
-* @return {promise}
-**/
-async function addMember (teamId, osmId) {
-  const conn = await db()
-  return conn('member').insert({ team_id: teamId, osm_id: osmId }).returning('*')
-}
-
-/**
 * Add multiple osm users as team members
 * @param {int} teamId - team id
 * @param {int} osmIds - osm ids
@@ -99,6 +102,11 @@ async function addMember (teamId, osmId) {
 **/
 async function updateMembers (teamId, osmIdsToAdd, osmIdstoRemove) {
   const conn = await db()
+
+  // Make sure we have integers
+  osmIdsToAdd = (osmIdsToAdd || []).map(x => parseInt(x))
+  osmIdstoRemove = (osmIdstoRemove || []).map(x => parseInt(x))
+
   return conn.transaction(async trx => {
     if (osmIdsToAdd) {
       const members = await trx('member').where('team_id', teamId)
@@ -120,14 +128,55 @@ async function updateMembers (teamId, osmIdsToAdd, osmIdstoRemove) {
 }
 
 /**
+* Add an osm user as a team member
+* @param {int} teamId - team id
+* @param {int} osmId - osm id
+* @return {promise}
+**/
+async function addMember (teamId, osmId) {
+  return updateMembers(teamId, [osmId], [])
+}
+
+/**
 * Remove an osm user as a team member
 * @param {int} teamId - team id
 * @param {int} osmId - osm id
 * @return {promise}
 **/
 async function removeMember (teamId, osmId) {
+  return updateMembers(teamId, [], [osmId])
+}
+
+/**
+ * Add a moderator to a team
+ * @param {int} teamId - team id
+ * @param {int} osmId - osm id
+ */
+async function assignModerator (teamId, osmId) {
   const conn = await db()
-  return conn('member').where({ team_id: teamId, osm_id: osmId }).del()
+  return unpack(conn('moderator').insert({ team_id: teamId, osm_id: osmId }))
+}
+
+/**
+ * Remove a moderator from a team
+ * @param {int} teamId - team id
+ * @param {int} osmId - osm id
+ */
+async function removeModerator (teamId, osmId) {
+  const conn = await db()
+  return unpack(conn('moderator').where({ team_id: teamId, osm_id: osmId }).del())
+}
+
+/**
+ * Checks if an osm user is a moderator for a team
+ * @param {int} teamId - team id
+ * @param {int} osmId - osm id
+ * @returns boolean
+ */
+async function isModerator (teamId, osmId) {
+  const conn = await db()
+  const [{ count }] = await conn('moderator').where({ team_id: teamId, osm_id: osmId }).count()
+  return count > 0
 }
 
 module.exports = {
@@ -140,5 +189,8 @@ module.exports = {
   addMember,
   updateMembers,
   removeMember,
+  assignModerator,
+  removeModerator,
+  isModerator,
   findByOsmId
 }
