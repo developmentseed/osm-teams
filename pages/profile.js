@@ -63,7 +63,6 @@ export default class Profile extends Component {
     } else {
       throw new Error('Could not create new team')
     }
-
   }
 
   componentDidMount () {
