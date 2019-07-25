@@ -1,53 +1,24 @@
-const jwt = require('jsonwebtoken')
-const db = require('../db')
-const hydra = require('../lib/hydra')
+const db = require('../../db')
+const hydra = require('../../lib/hydra')
+const { mergeAll } = require('ramda')
 
-/**
- * Returns true if a jwt is still valid
- *
- * @param {jwt} decoded the decoded jwt token
- */
-function assertAlive (decoded) {
-  const now = Date.now().valueOf() / 1000
-  if (typeof decoded.exp !== 'undefined' && decoded.exp < now) {
-    return false
-  }
-  if (typeof decoded.nbf !== 'undefined' && decoded.nbf > now) {
-    return false
-  }
-  return true
+const metaPermissions = {
+  'public': () => true
 }
 
-/**
- * Attaches the user from the jwt to the session
- */
-function attachUser () {
-  return function (req, res, next) {
-    if (req.session) {
-      if (req.session.idToken) {
-        // We have an id_token, let's check if it's still valid
-        const decoded = jwt.decode(req.session.idToken)
-        if (assertAlive(decoded)) {
-          req.session.user_id = decoded.sub
-          req.session.user = decoded.preferred_username
-          req.session.user_picture = decoded.picture
-          return next()
-        } else {
-          // no longer alive, let's flush the session
-          req.session.destroy(function (err) {
-            if (err) next(err)
-            return next()
-          })
-        }
-      }
-    }
-    next()
-  }
+const teamPermissions = {
+  'team:create': require('./create-team'),
+  'team:update': require('./update-team'),
+  'team:delete': require('./delete-team')
+}
+
+const clientPermissions = {
+  'clients:view': require('./view-clients')
 }
 
 /**
  * Takes an access token
- * If it's valid, set the user id in the response and forward to the next
+ * If it's valid, set the user id in the response object res.locals and forward to the next
  * middleware. If it's not valid, send a 401
  *
  * @param {String} token Access Token
@@ -93,7 +64,38 @@ async function authenticate (req, res, next) {
   }
 }
 
+/**
+ * Given a permission, check if the user is allowed to perform the action
+ * @param {string} ability the permission
+ */
+function check (ability) {
+  return async function (req, res, next) {
+    const isAllowed = mergeAll([
+      metaPermissions,
+      teamPermissions,
+      clientPermissions
+    ])
+
+    /**
+     * Permissions decision function
+     * @param {string} uid user id
+     * @param {Object} params request parameters
+     * @returns {boolean} can the request go through?
+     */
+    let allowed = await isAllowed[ability](res.locals.user_id, req.params)
+
+    if (allowed) {
+      next()
+    } else {
+      res.status(403).send('Forbidden')
+    }
+  }
+}
+
 module.exports = {
-  attachUser,
-  authenticate
+  can: (ability) => {
+    return [authenticate, check(ability)]
+  },
+  authenticate,
+  check
 }
