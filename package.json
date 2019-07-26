@@ -39,6 +39,8 @@
     "ramda": "^0.26.1",
     "react": "^16.8.2",
     "react-dom": "^16.8.2",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
     "session-file-store": "^1.2.0",
     "simple-oauth2": "^2.2.1",
     "sinon": "^7.3.2",

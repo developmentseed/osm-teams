@@ -37,7 +37,6 @@ async function acceptToken (token, res, next) {
   }
 }
 
-
 /**
  * Routes with `authenticate` middleware first check the session for the user,
  * Get the associated accessToken from the database, and check for
