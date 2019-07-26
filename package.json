@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "NODE_ENV=development node app/index.js",
+    "dev": "NODE_ENV=development nodemon --watch app app/index.js",
     "migrate": "knex --knexfile app/db/knexfile.js migrate:latest",
     "test": "NODE_ENV=test ava app/tests/**/*.test.js -c 1 --serial --verbose",
     "lint": "devseed-standard",
@@ -42,6 +42,8 @@
     "ramda": "^0.26.1",
     "react": "^16.8.2",
     "react-dom": "^16.8.6",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
     "session-file-store": "^1.2.0",
     "simple-oauth2": "^2.2.1",
     "sinon": "^7.3.2",
@@ -56,6 +58,7 @@
     "@babel/preset-react": "^7.0.0",
     "babelify": "^10.0.0",
     "budo": "^11.6.2",
-    "devseed-standard": "^1.1.0"
+    "devseed-standard": "^1.1.0",
+    "nodemon": "^1.19.1"
   }
 }

@@ -3,6 +3,18 @@ import join from 'url-join'
 import getConfig from 'next/config'
 const { publicRuntimeConfig } = getConfig()
 
+export class TeamList extends Component {
+  render () {
+    const { members } = this.props
+
+    const membersToDisplay = members.map(member => (
+      <li>{member.name} - #{member.id}</li>
+    ))
+
+    return <ul>{membersToDisplay}</ul>
+  }
+}
+
 export default class Team extends Component {
   static async getInitialProps ({ query }) {
     if (query) {
@@ -23,7 +35,7 @@ export default class Team extends Component {
   async componentDidMount () {
     const { id } = this.props
     try {
-      let { team } = await this.getTeam(id)
+      let team = await this.getTeam(id)
       this.setState({
         team,
         loading: false
@@ -48,8 +60,27 @@ export default class Team extends Component {
   }
 
   render () {
+    const { team } = this.state
+    if (!team) {
+      return <div />
+    }
     return (
-      <h1>Team</h1>
+      <article>
+        <h1>{team.name}</h1>
+        <section className='mt4 mb4 ba b3 b--black-10 pa3'>
+          <h2 className='dark-green'>Team Details</h2>
+          <dl>
+            <dt>Bio: </dt>
+            <dd>{team.bio}</dd>
+            <dt>Hashtag: </dt>
+            <dd>{team.hashtag}</dd>
+          </dl>
+        </section>
+        <section className='mt4 mb4 ba b3 b--black-10 pa3'>
+          <h2 className='dark-green'>Team Members</h2>
+          <TeamList members={team.members} />
+        </section>
+      </article>
     )
   }
 }

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import join from 'url-join'
 import getConfig from 'next/config'
+import Link from 'next/link'
 import Button from '../components/button'
 import Chance from 'chance'
 const chance = Chance()
@@ -75,13 +76,15 @@ export default class Profile extends Component {
     }
 
     let teams = this.state.teams.map((team, idx) => (
-      <li key={team.id} className='flex mb3'>
-        <div className='flex f5 pr3'>{idx + 1}. </div>
-        <div className='flex-auto'>
-          <span className='f5 tracked b'>{team.name}</span>
-          <div className='f6' >{team.hashtag}</div>
-        </div>
-      </li>
+      <Link key={team.id} href={`/team?id=${team.id}`} as={`/team/${team.id}`}>
+        <li className='flex mb3'>
+          <div className='flex f5 pr3'>{idx + 1}. </div>
+          <div className='flex-auto'>
+            <span className='f5 tracked b'>{team.name}</span>
+            <div className='f6' >{team.hashtag}</div>
+          </div>
+        </li>
+      </Link>
     ))
     return <ul className='list pl1 mt3'>{teams}</ul>
   }
