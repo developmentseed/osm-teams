@@ -3,6 +3,7 @@ const test = require('ava')
 const sinon = require('sinon')
 
 const db = require('../../db')
+const team = require('../../lib/team')
 const permissions = require('../../manage/permissions')
 
 const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
@@ -27,6 +28,11 @@ test.before(async () => {
       }
     }
   )
+
+  // Ensure that resolveMemberNames never calls osm
+  sinon.stub(team, 'resolveMemberNames').callsFake((ids) => {
+    return ids.map(id => ({ id, name: 'fake name' }))
+  })
 
   agent = require('supertest').agent(await require('../../index')())
 })
@@ -113,7 +119,7 @@ test('add member to team', async t => {
 
   t.is(updated.body.id, team.body.id)
   t.is(updated.body.members.length, 1)
-  t.is(updated.body.members[0], 1)
+  t.is(updated.body.members[0].id, 1)
 })
 
 test('remove member from team', async t => {
