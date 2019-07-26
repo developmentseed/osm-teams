@@ -1,5 +1,6 @@
 const boom = require('boom')
 const team = require('../lib/team')
+const { prop, map } = require('ramda')
 
 async function listTeams (req, reply) {
   const { osmId } = req.query
@@ -27,7 +28,8 @@ async function getTeam (req, reply) {
 
   try {
     const teamData = await team.get(id)
-    const members = (await team.getMembers(id)).map(obj => obj.osm_id)
+    const memberIds = map(prop('osm_id'), (await team.getMembers(id)))
+    const members = await team.resolveMemberNames(memberIds)
 
     if (!teamData && !members) {
       return boom.notFound()
