@@ -4,6 +4,10 @@ import getConfig from 'next/config'
 import Link from 'next/link'
 import Button from '../components/button'
 import Chance from 'chance'
+import Section from '../components/section'
+import SectionHeader from '../components/section-header'
+import { TeamDetailSmall } from '../components/team'
+import List from '../components/list'
 const chance = Chance()
 
 const { publicRuntimeConfig } = getConfig()
@@ -75,18 +79,20 @@ export default class Profile extends Component {
       return <p className='measure-copy'>No teams created</p>
     }
 
-    let teams = this.state.teams.map((team, idx) => (
-      <Link key={team.id} href={`/team?id=${team.id}`} as={`/team/${team.id}`}>
-        <li className='flex mb3'>
-          <div className='flex f5 pr3'>{idx + 1}. </div>
-          <div className='flex-auto'>
-            <span className='f5 tracked b'>{team.name}</span>
-            <div className='f6' >{team.hashtag}</div>
-          </div>
-        </li>
-      </Link>
-    ))
-    return <ul className='list pl1 mt3'>{teams}</ul>
+    const teamsWithPaths = this.state.teams.map(team => {
+      return Object.assign({
+        href: `/team?id=${team.id}`,
+        as: `/team/${team.id}`
+      }, team)
+    })
+
+    return <List items={teamsWithPaths}>
+      {
+        (team) => (
+          <TeamDetailSmall {...team} />
+        )
+      }
+    </List>
   }
 
   render () {
@@ -96,10 +102,10 @@ export default class Profile extends Component {
     return (
       <div>
         <h2>Profile</h2>
-        <section className='mt4 mb4 ba br3 b--black-10 pa3'>
-          <h3 className='dark-green'>Teams</h3>
+        <Section>
+          <SectionHeader>Teams</SectionHeader>
           {this.renderTeams()}
-        </section>
+        </Section>
         <Button onClick={() => this.createTeam()} >Create team</Button>
       </div>
     )

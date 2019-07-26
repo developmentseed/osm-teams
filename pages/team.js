@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import join from 'url-join'
 import getConfig from 'next/config'
+import Section from '../components/section'
+import SectionHeader from '../components/section-header'
 const { publicRuntimeConfig } = getConfig()
 
 export class TeamList extends Component {
@@ -67,19 +69,19 @@ export default class Team extends Component {
     return (
       <article>
         <h1>{team.name}</h1>
-        <section className='mt4 mb4 ba b3 b--black-10 pa3'>
-          <h2 className='dark-green'>Team Details</h2>
+        <Section>
+          <SectionHeader>Team Details</SectionHeader>
           <dl>
             <dt>Bio: </dt>
             <dd>{team.bio}</dd>
             <dt>Hashtag: </dt>
             <dd>{team.hashtag}</dd>
           </dl>
-        </section>
-        <section className='mt4 mb4 ba b3 b--black-10 pa3'>
-          <h2 className='dark-green'>Team Members</h2>
+        </Section>
+        <Section>
+          <SectionHeader>Team Members</SectionHeader>
           <TeamList members={team.members} />
-        </section>
+        </Section>
       </article>
     )
   }
