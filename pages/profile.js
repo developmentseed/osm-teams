@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import join from 'url-join'
 import getConfig from 'next/config'
 import Button from '../components/button'
+import Chance from 'chance'
+const chance = Chance()
 
 const { publicRuntimeConfig } = getConfig()
 
@@ -46,8 +48,11 @@ export default class Profile extends Component {
     let res = await fetch(join(publicRuntimeConfig.APP_URL, '/api/teams'), {
       method: 'POST',
       body: JSON.stringify({
-        name: 'test',
-        hashtag: '#test'
+        name: `${chance.country({ full: true })} ${chance.animal()} ${chance.pickone([
+          'Group', 'Inc.', 'Ltd.', 'Team', 'Associates', 'Party', 'LLC', 'Corp.'
+        ]
+        )}`,
+        hashtag: chance.hashtag()
       }),
       headers: {
         'Content-Type': 'application/json; charset=utf-8'
