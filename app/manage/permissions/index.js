@@ -9,6 +9,7 @@ const metaPermissions = {
 const teamPermissions = {
   'team:create': require('./create-team'),
   'team:update': require('./update-team'),
+  'team:view': require('./view-team'),
   'team:delete': require('./delete-team')
 }
 
@@ -35,6 +36,7 @@ async function acceptToken (token, res, next) {
     return res.status(401).send('Access denied, expired token')
   }
 }
+
 
 /**
  * Routes with `authenticate` middleware first check the session for the user,
