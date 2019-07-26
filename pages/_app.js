@@ -1,6 +1,7 @@
 import React from 'react'
 import App, { Container } from 'next/app'
 import Head from 'next/head'
+import Header from '../components/header'
 
 class OSMHydra extends App {
   static async getInitialProps ({ Component, ctx }) {
@@ -10,11 +11,17 @@ class OSMHydra extends App {
       pageProps = await Component.getInitialProps(ctx)
     }
 
-    return { pageProps }
+    let userData = { }
+    if (ctx.req && ctx.req.session) {
+      userData.user = ctx.req.session.user
+      userData.picture = ctx.req.session.user_picture
+    }
+
+    return { pageProps, userData }
   }
 
   render () {
-    const { Component, pageProps } = this.props
+    const { Component, pageProps, userData } = this.props
 
     return (
       <Container>
@@ -26,6 +33,7 @@ class OSMHydra extends App {
           <style>{`body { margin: 0; background: #F4F4F4; color: #111 }`}</style>
         </Head>
         <article className='code mw6 pa3 ma5 center bg-white ba bw2'>
+          {userData.user ? <Header {...userData} /> : <div />}
           <Component {...pageProps} />
         </article>
       </Container>

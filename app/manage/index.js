@@ -60,13 +60,15 @@ function manageRouter (nextApp) {
    * Page renders
    */
   router.get('/clients', can('clients:view'), (req, res) => {
-    const { user, user_picture } = req.session
-    return nextApp.render(req, res, '/clients', { user, user_picture })
+    return nextApp.render(req, res, '/clients')
   })
 
   router.get('/profile', can('clients:view'), (req, res) => {
-    const { user, user_picture } = req.session
-    return nextApp.render(req, res, '/profile', { user, user_picture })
+    return nextApp.render(req, res, '/profile')
+  })
+
+  router.get('/team/:id', can('team:view'), (req, res) => {
+    return nextApp.render(req, res, '/team', { id: req.params.id })
   })
 
   return router

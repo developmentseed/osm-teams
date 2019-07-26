@@ -1,9 +1,42 @@
-
 const db = require('../db')
 const { head } = require('ramda')
+const join = require('url-join')
+const xml2js = require('xml2js')
+const request = require('request-promise-native')
+
+const { serverRuntimeConfig } = require('../../next.config')
 
 async function unpack (promise) {
   return promise.then(head)
+}
+
+/**
+ * resolveMemberNames
+ * Get the member details for osm ids
+ *
+ * @param {Array[int]} ids - list of osm ids
+ * @returns {Array[Object]} users - ids augmented
+ * with user information:
+ *  - name: displayName
+ *  - id: osm id
+ *
+ */
+async function resolveMemberNames (ids) {
+  const resp = await request(join(serverRuntimeConfig.OSM_API, `/api/0.6/users?users=${ids.join(',')}`))
+  var parser = new xml2js.Parser()
+
+  return new Promise((resolve, reject) => {
+    parser.parseString(resp, (err, xml) => {
+      if (err) { reject(err) }
+
+      let users = xml.osm.user.map(user => ({
+        id: user['$'].id,
+        name: user['$'].display_name
+      }))
+
+      resolve(users)
+    })
+  })
 }
 
 /**
@@ -192,5 +225,6 @@ module.exports = {
   assignModerator,
   removeModerator,
   isModerator,
-  findByOsmId
+  findByOsmId,
+  resolveMemberNames
 }
