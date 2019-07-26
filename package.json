@@ -7,7 +7,10 @@
     "lintfix": "devseed-standard --fix",
     "build": "next build",
     "start": "NODE_ENV=production node app/index.js",
-    "example": "cd example-client && node server.js"
+    "sandbox": "budo sandbox/index.js --dir sandbox/ --live"
+  },
+  "browserify": {
+    "transform": [["babelify", { "presets": ["@babel/preset-env", "@babel/preset-react"] }]]
   },
   "dependencies": {
     "ava": "^1.4.1",
@@ -38,7 +41,7 @@
     "querystring": "^0.2.0",
     "ramda": "^0.26.1",
     "react": "^16.8.2",
-    "react-dom": "^16.8.2",
+    "react-dom": "^16.8.6",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
     "session-file-store": "^1.2.0",
@@ -50,6 +53,11 @@
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "babelify": "^10.0.0",
+    "budo": "^11.6.2",
     "devseed-standard": "^1.1.0",
     "nodemon": "^1.19.1"
   }
