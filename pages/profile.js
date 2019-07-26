@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import join from 'url-join'
 import getConfig from 'next/config'
-import Link from 'next/link'
 import Button from '../components/button'
 import Chance from 'chance'
 import Section from '../components/section'
