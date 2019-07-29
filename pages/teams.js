@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Router from 'next/router'
 import Section from '../components/section'
 import Table from '../components/table'
-import { getTeams } from '../services/teams-api'
+import { getTeams } from '../lib/teams-api'
 
 export default class TeamList extends Component {
   static async getInitialProps ({ query }) {}
