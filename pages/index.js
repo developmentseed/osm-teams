@@ -26,8 +26,9 @@ class Home extends Component {
               <div className='mt4'>
                 <h2>Welcome, {this.props.user}!</h2>
                 <ul className='mt4 mb4 list pl2'>
-                  <li><a href={join(publicRuntimeConfig.APP_URL, '/profile')} className='link dib'>💁‍♀️ Profile</a></li>
-                  <li><a href={join(publicRuntimeConfig.APP_URL, '/clients')} className='link dib'>⚙️ Connected Apps</a></li>
+                  <li className='pv1'><a href={join(publicRuntimeConfig.APP_URL, '/teams')} className='link dib'>🌏 All Teams</a></li>
+                  <li className='pv1'><a href={join(publicRuntimeConfig.APP_URL, '/profile')} className='link dib'>💁‍♀️ Profile</a></li>
+                  <li className='pv1'><a href={join(publicRuntimeConfig.APP_URL, '/clients')} className='link dib'>⚙️ Connected Apps</a></li>
                 </ul>
                 <Button href='/logout'>Logout</Button>
               </div>

@@ -15,8 +15,15 @@ const Item = ({ item, children }) => {
 export default function List ({ items, children }) {
   return (
     <div>
-      {items.map((item) => {
-        return (<Item item={item}>{children}</Item>)
+      {items.map((item, index) => {
+        return (
+          <Item
+            key={`list-item-${index}`}
+            item={item}
+          >
+            {children}
+          </Item>
+        )
       })}
     </div>
   )

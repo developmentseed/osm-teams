@@ -10,7 +10,17 @@
     "sandbox": "budo sandbox/index.js --dir sandbox/ --live"
   },
   "browserify": {
-    "transform": [["babelify", { "presets": ["@babel/preset-env", "@babel/preset-react"] }]]
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "@babel/preset-env",
+            "@babel/preset-react"
+          ]
+        }
+      ]
+    ]
   },
   "dependencies": {
     "ava": "^1.4.1",
