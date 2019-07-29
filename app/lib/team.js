@@ -212,6 +212,24 @@ async function isModerator (teamId, osmId) {
   return count > 0
 }
 
+/**
+ * Checks if an osm user is a member of a team
+ * @param {int} teamId - team id
+ * @param {int} osmId - osm id
+ * @returns boolean
+ */
+async function isMember (teamId, osmId) {
+  const conn = await db()
+  const [{ count }] = await conn('member').where({ team_id: teamId, osm_id: osmId }).count()
+  return count > 0
+}
+
+async function isPublic (teamId) {
+  const conn = await db()
+  const { privacy } = unpack(await conn('team').where({ id: teamId }))
+  return (privacy === 'public')
+}
+
 module.exports = {
   get,
   list,
@@ -225,6 +243,8 @@ module.exports = {
   assignModerator,
   removeModerator,
   isModerator,
+  isMember,
+  isPublic,
   findByOsmId,
   resolveMemberNames
 }
