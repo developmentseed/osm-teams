@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import join from 'url-join'
+import { map, prop, contains } from 'ramda'
 import getConfig from 'next/config'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
+import Button from '../components/button'
 import Table from '../components/table'
 const { publicRuntimeConfig } = getConfig()
 
@@ -73,9 +75,14 @@ export default class Team extends Component {
 
     if (!team) return null
 
+    // Check if the user is a moderator for this team
+    const moderators = map(prop('osm_id'), team.moderators)
+    const isUserModerator = contains(parseInt(this.props.user.uid), moderators)
+
     return (
       <article>
         <h2>{team.name}</h2>
+        { isUserModerator ? <Button href={`/team/${team.id}/edit`}>Edit Team</Button> : <div /> }
         <Section>
           <SectionHeader>Team Details</SectionHeader>
           <dl>
