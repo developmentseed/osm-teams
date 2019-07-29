@@ -26,7 +26,7 @@ export default class TeamList extends Component {
       console.error(e)
       this.setState({
         error: e,
-        teamsk: [],
+        teams: [],
         loading: false
       })
     }
