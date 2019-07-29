@@ -57,18 +57,37 @@ export default class Team extends Component {
     if (res.status === 200) {
       return res.json()
     } else {
-      throw new Error('could not retrieve team')
+      const err = new Error('could not retrieve team')
+      err.status = res.status
+      throw err
     }
   }
 
   render () {
-    const { team } = this.state
-    if (!team) {
-      return <div />
+    const { team, error } = this.state
+    console.log('state', this.state)
+    if (error) {
+      console.log('error', error, error.status >= 400 && error.status < 500)
+      if (error.status >= 400 && error.status < 500) {
+        return (
+          <article>
+            <h1>Team not found</h1>
+          </article>
+        )
+      } else if (error.status >= 500) {
+        return (
+          <article>
+            <h1>Error fetching team</h1>
+          </article>
+        )
+      }
     }
+
+    if (!team) return null
+
     return (
       <article>
-        <h1>{team.name}</h1>
+        <h2>{team.name}</h2>
         <Section>
           <SectionHeader>Team Details</SectionHeader>
           <dl>

@@ -5,6 +5,7 @@ import Header from '../components/header'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import List from '../components/list'
+import Table from '../components/table'
 import { TeamDetailSmall } from '../components/team'
 
 const teams = [
@@ -40,6 +41,12 @@ const teams = [
   }
 ]
 
+const teamColumns = [
+  { key: 'id' },
+  { key: 'name' },
+  { key: 'hashtag' }
+]
+
 function Wrapper ({ title, description, children }) {
   return (
     <div className=''>
@@ -69,7 +76,7 @@ class App extends React.Component {
           </Section>
         </Wrapper>
 
-        <Wrapper title='Section' description='Create sections of content'>
+        <Wrapper title='SectionHeader' description='Create headers for sections of content'>
           <SectionHeader>
             Example header
           </SectionHeader>
@@ -105,6 +112,16 @@ class App extends React.Component {
               }}
             </List>
           </Section>
+        </Wrapper>
+
+        <Wrapper title='Table'>
+          <Table
+            rows={teams}
+            columns={teamColumns}
+            onRowClick={(row, index) => {
+              console.log('onRowClick', row, index)
+            }}
+          />
         </Wrapper>
       </div>
     )

@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
+import Router from 'next/router'
 import Section from '../components/section'
-import SectionHeader from '../components/section-header'
-import { TeamDetailSmall } from '../components/team'
-import List from '../components/list'
+import Table from '../components/table'
 import { getTeams } from '../services/teams-api'
 
 export default class TeamList extends Component {
@@ -34,32 +33,33 @@ export default class TeamList extends Component {
   }
 
   renderTeams () {
-    if (this.state.teams.length === 0) {
+    const { teams } = this.state
+    if (!teams) return null
+
+    if (teams.length === 0) {
       return <p className='measure-copy'>No teams created</p>
     }
 
-    const teamsWithPaths = this.state.teams.map(team => {
-      return Object.assign({
-        href: `/team?id=${team.id}`,
-        as: `/team/${team.id}`
-      }, team)
-    })
-
-    return <List items={teamsWithPaths}>
-      {
-        (team) => (
-          <TeamDetailSmall {...team} />
-        )
-      }
-    </List>
+    return (
+      <Table
+        rows={teams}
+        columns={[
+          { key: 'id' },
+          { key: 'name' },
+          { key: 'hashtag' }
+        ]}
+        onRowClick={(row, index) => {
+          Router.push(`/team?id=${row.id}`, `/team/${row.id}`)
+        }}
+      />
+    )
   }
 
   render () {
     return (
       <div>
-        <h2>Profile</h2>
+        <h2>Teams</h2>
         <Section>
-          <SectionHeader>Teams</SectionHeader>
           {this.renderTeams()}
         </Section>
       </div>
