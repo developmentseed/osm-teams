@@ -62,6 +62,18 @@ async function getMembers (id) {
 }
 
 /**
+ * getModerators
+ * Get the moderators of a team
+ *
+ * @param {int} id - team Id
+ * @returns {Promise[Array]} list of moderators
+ */
+async function getModerators (id) {
+  const conn = await db()
+  return conn('moderator').where('team_id', id)
+}
+
+/**
 * Get all teams
 * @return {promise}
 **/
@@ -224,9 +236,16 @@ async function isMember (teamId, osmId) {
   return count > 0
 }
 
+/**
+ * isPublic
+ * Checks if a team privacy is public
+ *
+ * @param teamId - team id
+ * @returns {Boolean} is the team public?
+ */
 async function isPublic (teamId) {
   const conn = await db()
-  const { privacy } = unpack(await conn('team').where({ id: teamId }))
+  const { privacy } = await unpack(conn('team').where({ id: teamId }))
   return (privacy === 'public')
 }
 
@@ -237,6 +256,7 @@ module.exports = {
   update,
   destroy,
   getMembers,
+  getModerators,
   addMember,
   updateMembers,
   removeMember,
