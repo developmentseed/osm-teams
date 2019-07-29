@@ -65,9 +65,8 @@ export default class Team extends Component {
 
   render () {
     const { team, error } = this.state
-    console.log('state', this.state)
+
     if (error) {
-      console.log('error', error, error.status >= 400 && error.status < 500)
       if (error.status >= 400 && error.status < 500) {
         return (
           <article>
