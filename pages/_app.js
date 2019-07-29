@@ -13,7 +13,9 @@ class OSMHydra extends App {
 
     let userData = { }
     if (ctx.req && ctx.req.session) {
-      userData.user = ctx.req.session.user
+      console.log(ctx.req.session)
+      userData.uid = ctx.req.session.user_id
+      userData.username = ctx.req.session.user
       userData.picture = ctx.req.session.user_picture
     }
 
@@ -22,6 +24,23 @@ class OSMHydra extends App {
 
   render () {
     const { Component, pageProps, userData } = this.props
+
+    let { uid, username, picture } = userData
+
+    // store the userdata in localstorage if in browser
+    let authed
+    if (typeof window !== 'undefined') {
+      authed = window.sessionStorage.getItem('authed')
+      if (userData && authed === null) {
+        window.sessionStorage.setItem('uid', userData.uid)
+        window.sessionStorage.setItem('username', userData.username)
+        window.sessionStorage.setItem('picture', userData.picture)
+        window.sessionStorage.setItem('authed', true)
+      }
+      uid = window.sessionStorage.getItem('uid')
+      username = window.sessionStorage.getItem('username')
+      picture = window.sessionStorage.getItem('picture')
+    }
 
     return (
       <Container>
@@ -33,8 +52,8 @@ class OSMHydra extends App {
           <style>{`body { margin: 0; background: #F4F4F4; color: #111 }`}</style>
         </Head>
         <article className='code mw6 pa3 ma5 center bg-white ba bw2'>
-          {userData.user ? <Header {...userData} /> : <div />}
-          <Component {...pageProps} />
+          {uid ? <Header {...{ uid, picture, username }} /> : <div />}
+          <Component {...Object.assign({ user: { uid, username, picture } }, pageProps)} />
         </article>
       </Container>
     )
