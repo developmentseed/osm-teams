@@ -3,19 +3,8 @@ import join from 'url-join'
 import getConfig from 'next/config'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
+import Table from '../components/table'
 const { publicRuntimeConfig } = getConfig()
-
-export class TeamList extends Component {
-  render () {
-    const { members } = this.props
-
-    const membersToDisplay = members.map(member => (
-      <li>{member.name} - #{member.id}</li>
-    ))
-
-    return <ul>{membersToDisplay}</ul>
-  }
-}
 
 export default class Team extends Component {
   static async getInitialProps ({ query }) {
@@ -98,7 +87,13 @@ export default class Team extends Component {
         </Section>
         <Section>
           <SectionHeader>Team Members</SectionHeader>
-          <TeamList members={team.members} />
+          <Table
+            rows={team.members}
+            columns={[
+              { key: 'id' },
+              { key: 'name' }
+            ]}
+          />
         </Section>
       </article>
     )
