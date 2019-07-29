@@ -13,7 +13,6 @@ class OSMHydra extends App {
 
     let userData = { }
     if (ctx.req && ctx.req.session) {
-      console.log(ctx.req.session)
       userData.uid = ctx.req.session.user_id
       userData.username = ctx.req.session.user
       userData.picture = ctx.req.session.user_picture
@@ -31,15 +30,17 @@ class OSMHydra extends App {
     let authed
     if (typeof window !== 'undefined') {
       authed = window.sessionStorage.getItem('authed')
-      if (userData && authed === null) {
+      if (userData && userData.uid && authed === null) {
         window.sessionStorage.setItem('uid', userData.uid)
         window.sessionStorage.setItem('username', userData.username)
         window.sessionStorage.setItem('picture', userData.picture)
         window.sessionStorage.setItem('authed', true)
       }
-      uid = window.sessionStorage.getItem('uid')
-      username = window.sessionStorage.getItem('username')
-      picture = window.sessionStorage.getItem('picture')
+      if (authed) {
+        uid = window.sessionStorage.getItem('uid')
+        username = window.sessionStorage.getItem('username')
+        picture = window.sessionStorage.getItem('picture')
+      }
     }
 
     return (
