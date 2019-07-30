@@ -4,7 +4,9 @@ import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Button from '../components/button'
 import Table from '../components/table'
-import { getTeam } from '../lib/teams-api'
+import AddMemberForm from '../components/add-member-form'
+
+import { getTeam, updateMembers } from '../lib/teams-api'
 
 export default class Team extends Component {
   static async getInitialProps ({ query }) {
@@ -88,6 +90,14 @@ export default class Team extends Component {
               { key: 'name' }
             ]}
           />
+          <div className='mt4'>
+            <AddMemberForm
+              onSubmit={async ({ osmId }) => {
+                console.log('osmId', osmId)
+                return updateMembers(team.id, [osmId])
+              }}
+            />
+          </div>
         </Section>
       </article>
     )
