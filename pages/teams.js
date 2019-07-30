@@ -1,8 +1,13 @@
 import React, { Component } from 'react'
+import getConfig from 'next/config'
 import Router from 'next/router'
 import Section from '../components/section'
 import Table from '../components/table'
+import join from 'url-join'
 import { getTeams } from '../lib/teams-api'
+
+const { publicRuntimeConfig } = getConfig()
+const URL = publicRuntimeConfig.APP_URL
 
 export default class TeamList extends Component {
   static async getInitialProps ({ query }) {}
@@ -49,7 +54,7 @@ export default class TeamList extends Component {
           { key: 'hashtag' }
         ]}
         onRowClick={(row, index) => {
-          Router.push(`/team?id=${row.id}`, `/team/${row.id}`)
+          Router.push(join(URL, `/team?id=${row.id}`), join(URL, `/teams/${row.id}`))
         }}
       />
     )

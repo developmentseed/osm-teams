@@ -7,6 +7,7 @@ import SectionHeader from '../components/section-header'
 import Button from '../components/button'
 import Table from '../components/table'
 const { publicRuntimeConfig } = getConfig()
+const URL = publicRuntimeConfig.APP_URL
 
 export default class Team extends Component {
   static async getInitialProps ({ query }) {
@@ -44,7 +45,7 @@ export default class Team extends Component {
   }
 
   async getTeam (id) {
-    let res = await fetch(join(publicRuntimeConfig.APP_URL, `/api/teams/${id}`))
+    let res = await fetch(join(URL, `/api/teams/${id}`))
     if (res.status === 200) {
       return res.json()
     } else {
@@ -82,7 +83,7 @@ export default class Team extends Component {
     return (
       <article>
         <h2>{team.name}</h2>
-        { isUserModerator ? <Button href={`/team/${team.id}/edit`}>Edit Team</Button> : <div /> }
+        { isUserModerator ? <Button href={join(URL, `/teams/${team.id}/edit`)}>Edit Team</Button> : <div /> }
         <Section>
           <SectionHeader>Team Details</SectionHeader>
           <dl>

@@ -91,7 +91,7 @@ export default class Team extends Component {
             try {
               await this.saveTeam(team.id, values)
               actions.setSubmitting(false)
-              Router.push(join(publicRuntimeConfig.APP_URL, `/team/${team.id}`))
+              Router.push(join(publicRuntimeConfig.APP_URL, `/teams/${team.id}`))
             } catch (e) {
               console.error(e)
               actions.setSubmitting(false)

@@ -10,6 +10,7 @@ import Table from '../components/table'
 const chance = Chance()
 
 const { publicRuntimeConfig } = getConfig()
+const URL = publicRuntimeConfig.APP_URL
 
 export default class Profile extends Component {
   constructor (props) {
@@ -23,7 +24,7 @@ export default class Profile extends Component {
   }
 
   async getTeams () {
-    let res = await fetch(join(publicRuntimeConfig.APP_URL, '/api/teams'))
+    let res = await fetch(join(URL, '/api/teams'))
     if (res.status === 200) {
       return res.json()
     } else {
@@ -49,7 +50,7 @@ export default class Profile extends Component {
   }
 
   async createTeam () {
-    let res = await fetch(join(publicRuntimeConfig.APP_URL, '/api/teams'), {
+    let res = await fetch(join(URL, '/api/teams'), {
       method: 'POST',
       body: JSON.stringify({
         name: `${chance.country({ full: true })} ${chance.animal()} ${chance.pickone([
@@ -90,7 +91,7 @@ export default class Profile extends Component {
           { key: 'hashtag' }
         ]}
         onRowClick={(row, index) => {
-          Router.push(`/team?id=${row.id}`, `/team/${row.id}`)
+          Router.push(join(URL, `/teams?id=${row.id}`), join(URL, `/teams/${row.id}`))
         }}
       />
     )
