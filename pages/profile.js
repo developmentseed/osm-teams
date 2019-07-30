@@ -91,7 +91,7 @@ export default class Profile extends Component {
           { key: 'hashtag' }
         ]}
         onRowClick={(row, index) => {
-          Router.push(join(URL, `/teams?id=${row.id}`), join(URL, `/teams/${row.id}`))
+          Router.push(join(URL, `/team?id=${row.id}`), join(URL, `/teams/${row.id}`))
         }}
       />
     )

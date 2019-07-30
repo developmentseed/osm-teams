@@ -83,7 +83,7 @@ export default class Team extends Component {
     return (
       <article>
         <h2>{team.name}</h2>
-        { isUserModerator ? <Button href={join(URL, `/teams/${team.id}/edit`)}>Edit Team</Button> : <div /> }
+        { isUserModerator ? <Button href={`/teams/${team.id}/edit`}>Edit Team</Button> : <div /> }
         <Section>
           <SectionHeader>Team Details</SectionHeader>
           <dl>
