@@ -62,6 +62,18 @@ async function getMembers (id) {
 }
 
 /**
+ * getModerators
+ * Get the moderators of a team
+ *
+ * @param {int} id - team Id
+ * @returns {Promise[Array]} list of moderators
+ */
+async function getModerators (id) {
+  const conn = await db()
+  return conn('moderator').where('team_id', id)
+}
+
+/**
 * Get all teams
 * @return {promise}
 **/
@@ -212,6 +224,31 @@ async function isModerator (teamId, osmId) {
   return count > 0
 }
 
+/**
+ * Checks if an osm user is a member of a team
+ * @param {int} teamId - team id
+ * @param {int} osmId - osm id
+ * @returns boolean
+ */
+async function isMember (teamId, osmId) {
+  const conn = await db()
+  const [{ count }] = await conn('member').where({ team_id: teamId, osm_id: osmId }).count()
+  return count > 0
+}
+
+/**
+ * isPublic
+ * Checks if a team privacy is public
+ *
+ * @param teamId - team id
+ * @returns {Boolean} is the team public?
+ */
+async function isPublic (teamId) {
+  const conn = await db()
+  const { privacy } = await unpack(conn('team').where({ id: teamId }))
+  return (privacy === 'public')
+}
+
 module.exports = {
   get,
   list,
@@ -219,12 +256,15 @@ module.exports = {
   update,
   destroy,
   getMembers,
+  getModerators,
   addMember,
   updateMembers,
   removeMember,
   assignModerator,
   removeModerator,
   isModerator,
+  isMember,
+  isPublic,
   findByOsmId,
   resolveMemberNames
 }

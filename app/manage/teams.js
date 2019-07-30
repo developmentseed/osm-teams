@@ -30,12 +30,13 @@ async function getTeam (req, reply) {
     const teamData = await team.get(id)
     const memberIds = map(prop('osm_id'), (await team.getMembers(id)))
     const members = await team.resolveMemberNames(memberIds)
+    const moderators = await team.getModerators(id)
 
     if (!teamData && !members) {
       return boom.notFound()
     }
 
-    reply.send(Object.assign({}, teamData, { members }))
+    reply.send(Object.assign({}, teamData, { members, moderators }))
   } catch (err) {
     console.log(err)
     return boom.badRequest()

@@ -1,21 +1,10 @@
 import React, { Component } from 'react'
-import join from 'url-join'
-import getConfig from 'next/config'
+import { map, prop, contains } from 'ramda'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
-const { publicRuntimeConfig } = getConfig()
-
-export class TeamList extends Component {
-  render () {
-    const { members } = this.props
-
-    const membersToDisplay = members.map(member => (
-      <li>{member.name} - #{member.id}</li>
-    ))
-
-    return <ul>{membersToDisplay}</ul>
-  }
-}
+import Button from '../components/button'
+import Table from '../components/table'
+import { getTeam } from '../lib/teams-api'
 
 export default class Team extends Component {
   static async getInitialProps ({ query }) {
@@ -37,7 +26,7 @@ export default class Team extends Component {
   async componentDidMount () {
     const { id } = this.props
     try {
-      let team = await this.getTeam(id)
+      let team = await getTeam(id)
       this.setState({
         team,
         loading: false
@@ -49,17 +38,6 @@ export default class Team extends Component {
         team: null,
         loading: false
       })
-    }
-  }
-
-  async getTeam (id) {
-    let res = await fetch(join(publicRuntimeConfig.APP_URL, `/api/teams/${id}`))
-    if (res.status === 200) {
-      return res.json()
-    } else {
-      const err = new Error('could not retrieve team')
-      err.status = res.status
-      throw err
     }
   }
 
@@ -84,9 +62,14 @@ export default class Team extends Component {
 
     if (!team) return null
 
+    // Check if the user is a moderator for this team
+    const moderators = map(prop('osm_id'), team.moderators)
+    const isUserModerator = contains(parseInt(this.props.user.uid), moderators)
+
     return (
       <article>
         <h2>{team.name}</h2>
+        { isUserModerator ? <Button href={`/teams/${team.id}/edit`}>Edit Team</Button> : <div /> }
         <Section>
           <SectionHeader>Team Details</SectionHeader>
           <dl>
@@ -98,7 +81,13 @@ export default class Team extends Component {
         </Section>
         <Section>
           <SectionHeader>Team Members</SectionHeader>
-          <TeamList members={team.members} />
+          <Table
+            rows={team.members}
+            columns={[
+              { key: 'id' },
+              { key: 'name' }
+            ]}
+          />
         </Section>
       </article>
     )

@@ -67,8 +67,12 @@ function manageRouter (nextApp) {
     return nextApp.render(req, res, '/profile')
   })
 
-  router.get('/team/:id', can('team:view'), (req, res) => {
+  router.get('/teams/:id', can('team:view'), (req, res) => {
     return nextApp.render(req, res, '/team', { id: req.params.id })
+  })
+
+  router.get('/teams/:id/edit', can('team:update'), (req, res) => {
+    return nextApp.render(req, res, '/team-edit', { id: req.params.id })
   })
 
   return router
