@@ -1,13 +1,10 @@
 import React, { Component } from 'react'
-import join from 'url-join'
 import { map, prop, contains } from 'ramda'
-import getConfig from 'next/config'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Button from '../components/button'
 import Table from '../components/table'
-const { publicRuntimeConfig } = getConfig()
-const URL = publicRuntimeConfig.APP_URL
+import { getTeam } from '../lib/teams-api'
 
 export default class Team extends Component {
   static async getInitialProps ({ query }) {
@@ -29,7 +26,7 @@ export default class Team extends Component {
   async componentDidMount () {
     const { id } = this.props
     try {
-      let team = await this.getTeam(id)
+      let team = await getTeam(id)
       this.setState({
         team,
         loading: false
@@ -41,17 +38,6 @@ export default class Team extends Component {
         team: null,
         loading: false
       })
-    }
-  }
-
-  async getTeam (id) {
-    let res = await fetch(join(URL, `/api/teams/${id}`))
-    if (res.status === 200) {
-      return res.json()
-    } else {
-      const err = new Error('could not retrieve team')
-      err.status = res.status
-      throw err
     }
   }
 

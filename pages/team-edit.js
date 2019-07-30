@@ -3,6 +3,7 @@ import join from 'url-join'
 import Router from 'next/router'
 import { pick } from 'ramda'
 import { Formik, Field, Form, ErrorMessage } from 'formik'
+import { getTeam, updateTeam } from '../lib/teams-api'
 import getConfig from 'next/config'
 const { publicRuntimeConfig } = getConfig()
 
@@ -26,7 +27,7 @@ export default class Team extends Component {
   async componentDidMount () {
     const { id } = this.props
     try {
-      let team = await this.getTeam(id)
+      let team = await getTeam(id)
       this.setState({
         team,
         loading: false
@@ -39,27 +40,6 @@ export default class Team extends Component {
         loading: false
       })
     }
-  }
-
-  async getTeam (id) {
-    let res = await fetch(join(publicRuntimeConfig.APP_URL, `/api/teams/${id}`))
-    if (res.status === 200) {
-      return res.json()
-    } else {
-      const err = new Error('could not retrieve team')
-      err.status = res.status
-      throw err
-    }
-  }
-
-  async saveTeam (id, values) {
-    return fetch(join(publicRuntimeConfig.APP_URL, `/api/teams/${id}`), {
-      method: 'PUT',
-      body: JSON.stringify(values),
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      }
-    })
   }
 
   render () {
@@ -89,7 +69,7 @@ export default class Team extends Component {
           initialValues={pick(['name', 'bio'], team)}
           onSubmit={async (values, actions) => {
             try {
-              await this.saveTeam(team.id, values)
+              await updateTeam(team.id, values)
               actions.setSubmitting(false)
               Router.push(join(publicRuntimeConfig.APP_URL, `/teams/${team.id}`))
             } catch (e) {
