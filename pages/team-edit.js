@@ -5,6 +5,8 @@ import { pick } from 'ramda'
 import { Formik, Field, Form, ErrorMessage } from 'formik'
 import { getTeam, updateTeam } from '../lib/teams-api'
 import getConfig from 'next/config'
+import Button from '../components/button'
+import { FormikMap } from '../components/formikmap'
 const { publicRuntimeConfig } = getConfig()
 
 export default class Team extends Component {
@@ -66,8 +68,9 @@ export default class Team extends Component {
     return (
       <article>
         <Formik
-          initialValues={pick(['name', 'bio'], team)}
+          initialValues={pick(['name', 'bio', 'hashtag', 'location'], team)}
           onSubmit={async (values, actions) => {
+            console.log(values)
             try {
               await updateTeam(team.id, values)
               actions.setSubmitting(false)
@@ -79,16 +82,30 @@ export default class Team extends Component {
               actions.setStatus(e.message)
             }
           }}
-          render={({ status, isSubmitting }) => (
+          render={({ status, isSubmitting, submitForm, values, setFieldValue }) => (
             <Form>
-              <Field type='text' name='name' />
-              <ErrorMessage name='name' component='div' />
-              <Field type='text' name='bio' />
-              <ErrorMessage name='bio' component='div' />
-              { status && status.msg && <div>{status.msg}</div> }
-              <button type='submit' disabled={isSubmitting}>
-                Submit
-              </button>
+              <div className='mt3'>
+                <label htmlFor='name' className='db fw4 lh-copy f6'>Name:</label>
+                <Field type='text' name='name' />
+                <ErrorMessage name='name' component='div' />
+              </div>
+              <div className='mt3'>
+                <label htmlFor='hashtag' className='db fw4 lh-copy f6'>Hashtag:</label>
+                <Field type='text' name='hashtag' />
+                <ErrorMessage name='hashtag' component='div' />
+              </div>
+              <div className='mt3'>
+                <label htmlFor='bio' className='db fw4 lh-copy f6'>Description:</label>
+                <Field type='textarea' name='bio' />
+                <ErrorMessage name='bio' component='div' />
+              </div>
+              <div className='mt3'>
+                <FormikMap name='location' value={values.location} onChange={setFieldValue} />
+              </div>
+              <div className='mt3'>
+                { status && status.msg && <div>{status.msg}</div> }
+                <Button disabled={isSubmitting} onClick={() => submitForm()}>Submit</Button>
+              </div>
             </Form>
           )}
         />
