@@ -23,21 +23,25 @@ async function unpack (promise) {
  *
  */
 async function resolveMemberNames (ids) {
-  const resp = await request(join(serverRuntimeConfig.OSM_API, `/api/0.6/users?users=${ids.join(',')}`))
-  var parser = new xml2js.Parser()
+  try {
+    const resp = await request(join(serverRuntimeConfig.OSM_API, `/api/0.6/users?users=${ids.join(',')}`))
+    var parser = new xml2js.Parser()
 
-  return new Promise((resolve, reject) => {
-    parser.parseString(resp, (err, xml) => {
-      if (err) { reject(err) }
+    return new Promise((resolve, reject) => {
+      parser.parseString(resp, (err, xml) => {
+        if (err) { reject(err) }
 
-      let users = xml.osm.user.map(user => ({
-        id: user['$'].id,
-        name: user['$'].display_name
-      }))
+        let users = xml.osm.user.map(user => ({
+          id: user['$'].id,
+          name: user['$'].display_name
+        }))
 
-      resolve(users)
+        resolve(users)
+      })
     })
-  })
+  } catch (e) {
+    throw new Error('Could not resolve usernames')
+  }
 }
 
 /**

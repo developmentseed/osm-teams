@@ -111,13 +111,19 @@ export default class Team extends Component {
     const { team, error } = this.state
 
     if (error) {
-      if (error.status >= 400 && error.status < 500) {
+      if (error.status === 401 || error.status === 403) {
+        return (
+          <article>
+            <h1>Unauthorized</h1>
+          </article>
+        )
+      } else if (error.status === 404) {
         return (
           <article>
             <h1>Team not found</h1>
           </article>
         )
-      } else if (error.status >= 500) {
+      } else {
         return (
           <article>
             <h1>Error fetching team</h1>
