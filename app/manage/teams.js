@@ -1,4 +1,3 @@
-const boom = require('boom')
 const team = require('../lib/team')
 const { prop, map } = require('ramda')
 
@@ -15,7 +14,7 @@ async function listTeams (req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return boom.badRequest()
+    return reply.boom.badRequest()
   }
 }
 
@@ -23,7 +22,7 @@ async function getTeam (req, reply) {
   const { id } = req.params
 
   if (!id) {
-    return boom.badRequest('team id is required')
+    return reply.boom.badRequest('team id is required')
   }
 
   try {
@@ -33,13 +32,13 @@ async function getTeam (req, reply) {
     const moderators = await team.getModerators(id)
 
     if (!teamData && !members) {
-      return boom.notFound()
+      return reply.boom.notFound()
     }
 
-    reply.send(Object.assign({}, teamData, { members, moderators }))
+    return reply.send(Object.assign({}, teamData, { members, moderators }))
   } catch (err) {
     console.log(err)
-    return boom.badRequest()
+    return reply.boom.badRequest()
   }
 }
 
@@ -52,7 +51,7 @@ async function createTeam (req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return boom.badRequest()
+    return reply.boom.badRequest()
   }
 }
 
@@ -61,7 +60,7 @@ async function updateTeam (req, reply) {
   const { body } = req
 
   if (!id) {
-    return boom.badRequest('team id is required')
+    return reply.boom.badRequest('team id is required')
   }
 
   try {
@@ -69,7 +68,7 @@ async function updateTeam (req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return boom.badRequest()
+    return reply.boom.badRequest()
   }
 }
 
@@ -77,7 +76,7 @@ async function destroyTeam (req, reply) {
   const { id } = req.params
 
   if (!id) {
-    return boom.badRequest('team id is required')
+    return reply.boom.badRequest('team id is required')
   }
 
   try {
@@ -85,7 +84,7 @@ async function destroyTeam (req, reply) {
     reply.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return boom.badRequest()
+    return reply.boom.badRequest()
   }
 }
 
@@ -93,11 +92,11 @@ async function addMember (req, reply) {
   const { id, osmId } = req.params
 
   if (!id) {
-    return boom.badRequest('team id is required')
+    return reply.boom.badRequest('team id is required')
   }
 
   if (!osmId) {
-    return boom.badRequest('osm id is required')
+    return reply.boom.badRequest('osm id is required')
   }
 
   try {
@@ -105,7 +104,7 @@ async function addMember (req, reply) {
     return reply.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return boom.badRequest()
+    return reply.boom.badRequest()
   }
 }
 
@@ -114,11 +113,11 @@ async function updateMembers (req, reply) {
   const { add, remove } = req.body
 
   if (!id) {
-    return boom.badRequest('team id is required')
+    return reply.boom.badRequest('team id is required')
   }
 
   if (!add && !remove) {
-    return boom.badRequest('osm ids are required')
+    return reply.boom.badRequest('osm ids are required')
   }
 
   try {
@@ -126,7 +125,7 @@ async function updateMembers (req, reply) {
     return reply.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return boom.badRequest()
+    return reply.boom.badRequest()
   }
 }
 
@@ -134,11 +133,11 @@ async function removeMember (req, reply) {
   const { id, osmId } = req.params
 
   if (!id) {
-    return boom.badRequest('team id is required')
+    return reply.boom.badRequest('team id is required')
   }
 
   if (!osmId) {
-    return boom.badRequest('osm id is required')
+    return reply.boom.badRequest('osm id is required')
   }
 
   try {
@@ -146,7 +145,7 @@ async function removeMember (req, reply) {
     return reply.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return boom.badRequest()
+    return reply.boom.badRequest()
   }
 }
 
