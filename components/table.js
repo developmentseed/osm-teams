@@ -31,12 +31,13 @@ function Row ({ columns, row, index, onRowClick }) {
       }}
     >
       {columns.map(({ key }) => {
+        const item = typeof row[key] === 'function' ? row[key](row, index, columns) : row[key]
         return (
           <td
             key={`row-${index}-key-${key}`}
             className='pl3 pv3 pr3 bb b--black-20'
           >
-            {row[key]}
+            {item}
           </td>
         )
       })}
