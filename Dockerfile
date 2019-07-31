@@ -7,6 +7,7 @@ WORKDIR /usr/src/app
 COPY package.json ./
 
 RUN npm install -g nodemon
+npm install
 
 # Bundle app source
 COPY . .
