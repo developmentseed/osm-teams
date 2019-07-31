@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
-import { map, prop, contains } from 'ramda'
+import { map, prop, contains, reverse } from 'ramda'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Button from '../components/button'
 import Table from '../components/table'
 import { getTeam } from '../lib/teams-api'
+import Map from 'pigeon-maps'
+import Marker from '../components/marker'
 
 export default class Team extends Component {
   static async getInitialProps ({ query }) {
@@ -39,6 +41,20 @@ export default class Team extends Component {
         loading: false
       })
     }
+  }
+
+  renderMap (location) {
+    if (!location) {
+      return <div>No location specified</div>
+    }
+    let centerGeojson = location
+    let center = reverse(JSON.parse(centerGeojson).coordinates)
+
+    return (
+      <Map center={center} zoom={10} width={300} height={200} >
+        <Marker anchor={center} payload={1} />
+      </Map>
+    )
   }
 
   render () {
@@ -78,6 +94,8 @@ export default class Team extends Component {
             <dt>Hashtag: </dt>
             <dd>{team.hashtag}</dd>
           </dl>
+          <h3>Location</h3>
+          { this.renderMap(team.location) }
         </Section>
         <Section>
           <SectionHeader>Team Members</SectionHeader>

@@ -6,7 +6,6 @@ import Marker from './marker'
 export class FormikMap extends Component {
   render () {
     let centerGeojson = this.props.value || '{ "type": "Point", "coordinates": [-77.03637, 38.89511] }'
-    console.log('value', centerGeojson)
     let center = reverse(JSON.parse(centerGeojson).coordinates)
 
     return (

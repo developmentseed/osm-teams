@@ -70,7 +70,6 @@ export default class Team extends Component {
         <Formik
           initialValues={pick(['name', 'bio', 'hashtag', 'location'], team)}
           onSubmit={async (values, actions) => {
-            console.log(values)
             try {
               await updateTeam(team.id, values)
               actions.setSubmitting(false)
