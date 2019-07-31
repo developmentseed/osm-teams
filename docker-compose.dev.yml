@@ -7,15 +7,14 @@ services:
     - 4444:4444
     - 4445:4445
     - 5555:5555
-    command:  
+    command:
       serve all --dangerous-force-http
     environment:
       - URLS_SELF_ISSUER=http://localhost:4444
       - URLS_CONSENT=http://localhost:8989/oauth/consent
       - URLS_LOGIN=http://localhost:8989/oauth/login
     env_file:
-      docker.env
-    
+      .env
   teams:
     build: .
     depends_on:
@@ -28,10 +27,9 @@ services:
     - 8989:8989
     - 3007:3007
     env_file:
-      docker.env
+      .env
     volumes:
       - .:/usr/src/app
-      - /usr/src/app/node_modules
+      - ./node_modules:/usr/src/app/node_modules
     command:
       npm run dev
-      
