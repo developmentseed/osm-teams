@@ -1,10 +1,13 @@
 import React, { Component } from 'react'
-import { map, prop, contains } from 'ramda'
+import { map, prop, contains, reverse } from 'ramda'
 import Popup from 'reactjs-popup'
+import Map from 'pigeon-maps'
+
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Button from '../components/button'
 import Table from '../components/table'
+import Marker from '../components/marker'
 import AddMemberForm from '../components/add-member-form'
 
 import { getTeam, addMember, removeMember } from '../lib/teams-api'
@@ -46,6 +49,20 @@ export default class Team extends Component {
         loading: false
       })
     }
+  }
+
+  renderMap (location) {
+    if (!location) {
+      return <div>No location specified</div>
+    }
+    let centerGeojson = location
+    let center = reverse(JSON.parse(centerGeojson).coordinates)
+
+    return (
+      <Map center={center} zoom={10} width={300} height={200} >
+        <Marker anchor={center} payload={1} />
+      </Map>
+    )
   }
 
   async removeMember (osmId) {
@@ -148,6 +165,8 @@ export default class Team extends Component {
             <dt>Hashtag: </dt>
             <dd>{team.hashtag}</dd>
           </dl>
+          <h3>Location</h3>
+          { this.renderMap(team.location) }
         </Section>
         <Section>
           <SectionHeader>Team Members</SectionHeader>

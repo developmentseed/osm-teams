@@ -1,4 +1,5 @@
 const db = require('../db')
+const knexPostgis = require('knex-postgis')
 const { head } = require('ramda')
 const join = require('url-join')
 const xml2js = require('xml2js')
@@ -47,7 +48,8 @@ async function resolveMemberNames (ids) {
 **/
 async function get (id) {
   const conn = await db()
-  return unpack(conn('team').where('id', id))
+  const st = knexPostgis(conn)
+  return unpack(conn('team').select('*', st.asGeoJSON('location')).where('id', id))
 }
 
 /**
@@ -100,14 +102,24 @@ async function findByOsmId (osmId) {
 *
 * @param {object} data - params for a team
 * @param {string} data.name - name of the team
+* @param {geojson} data.location - lat/lon of team
 * @param {int} osmId - id of first moderator
 * @return {promise}
 **/
 async function create (data, osmId) {
   if (!osmId) throw new Error('Team must have moderator id')
   const conn = await db()
+  const st = knexPostgis(conn)
+
+  // convert location to postgis geom
+  if (data.location) {
+    data = Object.assign(data, {
+      location: st.setSRID(st.geomFromGeoJSON(data.location), 4326)
+    })
+  }
+
   return conn.transaction(async trx => {
-    const [row] = await trx('team').insert(data).returning('*')
+    const [row] = await trx('team').insert(data).returning(['*', st.asGeoJSON('location')])
     await trx('member').insert({ team_id: row.id, osm_id: osmId })
     await trx('moderator').insert({ team_id: row.id, osm_id: osmId })
     return row
@@ -123,7 +135,16 @@ async function create (data, osmId) {
 **/
 async function update (id, data) {
   const conn = await db()
-  return unpack(conn('team').where('id', id).update(data).returning('*'))
+  const st = knexPostgis(conn)
+
+  // convert location to postgis geom
+  if (data.location) {
+    data = Object.assign(data, {
+      location: st.setSRID(st.geomFromGeoJSON(data.location), 4326)
+    })
+  }
+
+  return unpack(conn('team').where('id', id).update(data).returning(['*', st.asGeoJSON('location')]))
 }
 
 /**
