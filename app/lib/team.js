@@ -109,12 +109,14 @@ async function findByOsmId (osmId) {
 async function create (data, osmId) {
   if (!osmId) throw new Error('Team must have moderator id')
   const conn = await db()
+  const st = knexPostgis(conn)
 
   // convert location to postgis geom
-  const st = knexPostgis(conn)
-  data = Object.assign(data, {
-    location: st.setSRID(st.geomFromGeoJSON(data.location), 4326)
-  })
+  if (data.location) {
+    data = Object.assign(data, {
+      location: st.setSRID(st.geomFromGeoJSON(data.location), 4326)
+    })
+  }
 
   return conn.transaction(async trx => {
     const [row] = await trx('team').insert(data).returning(['*', st.asGeoJSON('location')])
@@ -133,12 +135,14 @@ async function create (data, osmId) {
 **/
 async function update (id, data) {
   const conn = await db()
+  const st = knexPostgis(conn)
 
   // convert location to postgis geom
-  const st = knexPostgis(conn)
-  data = Object.assign(data, {
-    location: st.setSRID(st.geomFromGeoJSON(data.location), 4326)
-  })
+  if (data.location) {
+    data = Object.assign(data, {
+      location: st.setSRID(st.geomFromGeoJSON(data.location), 4326)
+    })
+  }
 
   return unpack(conn('team').where('id', id).update(data).returning(['*', st.asGeoJSON('location')]))
 }
