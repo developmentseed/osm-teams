@@ -115,7 +115,7 @@ export default class Team extends Component {
     const moderators = map(prop('osm_id'), team.moderators)
     const isUserModerator = contains(parseInt(this.props.user.uid), moderators)
 
-    let members = team
+    let members = team.members
 
     const columns = [
       { key: 'id' },
