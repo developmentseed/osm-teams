@@ -6,11 +6,6 @@
 - NodeJS v10+
 - Docker & Docker Compose
 
-Build the images:
-```
-docker-compose build
-```
-
 ### Setting up Hydra
 
 1. Create the database for tokens
@@ -19,7 +14,7 @@ createdb osm-teams
 ```
 For the rest of this documentation, we will assume that the database location is `postgres://postgres@localhost/osm-teams?sslmode=disable` on your local machine. Inside docker, that location is `postgres://postgres@host.docker.internal/osm-teams?sslmode=disable`
 
-2. Create a a `docker.env` file with the following entries. `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` are values obtained by creating a new OAuth app on openstreetmap.org
+2. Create a a `.env` file by copying `.env.sample` and replacing the values as needed. `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` are values obtained by creating a new OAuth app on openstreetmap.org. The .env file can contain:
 ```
 OSM_CONSUMER_KEY=<osm-teams-app>
 OSM_CONSUMER_SECRET=<osm-teams-app-secret>
@@ -32,12 +27,17 @@ SECRETS_SYSTEM=<random-guid>
 docker-compose run --rm hydra migrate sql --yes postgres://postgres@host.docker.internal/osm-teams?sslmode=disable
 ```
 
-4. Start Hydra and the server
+4. Build the images:
 ```
-docker-compose up
+docker-compose build
 ```
 
-⚠️ In development, you can use `docker-compose -f docker-compose.dev.yml up` for hot module reloading while you make modifications to the code.
+5. Start Hydra and the server
+```
+docker-compose -f docker-compose.dev.yml up
+```
+
+⚠️ In development, `docker-compose -f docker-compose.dev.yml up` enables hot module reloading while you make modifications to the code. `docker-compose up` should be used for production/staging deployments.
 
 This will start hydra where the token issuer is at `http://localhost:4444` and the admin interface is at `http://localhost:4445`. This also sets up the consent and login interface at `http://localhost:8989` (where we will create a first-party oauth app)
 
