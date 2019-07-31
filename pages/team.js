@@ -1,12 +1,16 @@
 import React, { Component } from 'react'
 import { map, prop, contains, reverse } from 'ramda'
+import Popup from 'reactjs-popup'
+import Map from 'pigeon-maps'
+
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Button from '../components/button'
 import Table from '../components/table'
-import { getTeam } from '../lib/teams-api'
-import Map from 'pigeon-maps'
 import Marker from '../components/marker'
+import AddMemberForm from '../components/add-member-form'
+
+import { getTeam, addMember, removeMember } from '../lib/teams-api'
 
 export default class Team extends Component {
   static async getInitialProps ({ query }) {
@@ -26,6 +30,10 @@ export default class Team extends Component {
   }
 
   async componentDidMount () {
+    this.getTeam()
+  }
+
+  async getTeam () {
     const { id } = this.props
     try {
       let team = await getTeam(id)
@@ -57,6 +65,48 @@ export default class Team extends Component {
     )
   }
 
+  async removeMember (osmId) {
+    const { id } = this.props
+    try {
+      await removeMember(id, osmId)
+      await this.getTeam()
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e,
+        team: null,
+        loading: false
+      })
+    }
+  }
+
+  renderActions (row, index, columns) {
+    return (
+      <Popup
+        trigger={<span className='pointer'>⚙️</span>}
+        position='right top'
+        on='click'
+        closeOnDocumentClick
+        contentStyle={{ padding: '10px', border: 'none' }}
+      >
+        <ul className='list pa0 ma0'>
+          <li
+            className='pointer pa1 pl2 hover-bg-near-white'
+            onClick={async () => {
+              // TODO: show message if error
+              // TODO: require confirmation
+              if (row.id !== this.props.user.uid) {
+                this.removeMember(row.id)
+              }
+            }}
+          >
+            Remove team member
+          </li>
+        </ul>
+      </Popup>
+    )
+  }
+
   render () {
     const { team, error } = this.state
 
@@ -82,6 +132,27 @@ export default class Team extends Component {
     const moderators = map(prop('osm_id'), team.moderators)
     const isUserModerator = contains(parseInt(this.props.user.uid), moderators)
 
+    let members = team.members
+
+    const columns = [
+      { key: 'id' },
+      { key: 'name' }
+    ]
+
+    if (isUserModerator) {
+      columns.push({ key: 'actions' })
+
+      members = members.map((member) => {
+        if (isUserModerator) {
+          member.actions = (row, index, columns) => {
+            return this.renderActions(row, index, columns, isUserModerator)
+          }
+        }
+
+        return member
+      })
+    }
+
     return (
       <article>
         <h2>{team.name}</h2>
@@ -100,12 +171,19 @@ export default class Team extends Component {
         <Section>
           <SectionHeader>Team Members</SectionHeader>
           <Table
-            rows={team.members}
-            columns={[
-              { key: 'id' },
-              { key: 'name' }
-            ]}
+            rows={members}
+            columns={columns}
           />
+          <div className='mt4'>
+            { isUserModerator && (
+              <AddMemberForm
+                onSubmit={async ({ osmId }) => {
+                  await addMember(team.id, osmId)
+                  return this.getTeam()
+                }}
+              />
+            )}
+          </div>
         </Section>
       </article>
     )
