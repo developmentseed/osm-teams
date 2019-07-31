@@ -115,13 +115,26 @@ export default class Team extends Component {
     const moderators = map(prop('osm_id'), team.moderators)
     const isUserModerator = contains(parseInt(this.props.user.uid), moderators)
 
-    const members = team.members.map((member) => {
-      member.actions = (row, index, columns) => {
-        return this.renderActions(row, index, columns)
-      }
+    let members = team
 
-      return member
-    })
+    const columns = [
+      { key: 'id' },
+      { key: 'name' }
+    ]
+
+    if (isUserModerator) {
+      columns.push({ key: 'actions' })
+
+      members = members.map((member) => {
+        if (isUserModerator) {
+          member.actions = (row, index, columns) => {
+            return this.renderActions(row, index, columns, isUserModerator)
+          }
+        }
+
+        return member
+      })
+    }
 
     return (
       <article>
@@ -140,19 +153,17 @@ export default class Team extends Component {
           <SectionHeader>Team Members</SectionHeader>
           <Table
             rows={members}
-            columns={[
-              { key: 'id' },
-              { key: 'name' },
-              { key: 'actions' }
-            ]}
+            columns={columns}
           />
           <div className='mt4'>
-            <AddMemberForm
-              onSubmit={async ({ osmId }) => {
-                await addMember(team.id, osmId)
-                return this.getTeam()
-              }}
-            />
+            { isUserModerator && (
+              <AddMemberForm
+                onSubmit={async ({ osmId }) => {
+                  await addMember(team.id, osmId)
+                  return this.getTeam()
+                }}
+              />
+            )}
           </div>
         </Section>
       </article>
