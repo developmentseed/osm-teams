@@ -23,6 +23,8 @@ function Layout (props) {
           }
 
           body {
+            margin: 0;
+            padding: 0;
             background: ${theme.colors.secondaryPale};
             color: ${theme.typography.baseFontColor};
             font-size: ${theme.typography.baseFontSize};
@@ -37,11 +39,17 @@ function Layout (props) {
             overflow: hidden;
           }
 
-          .page {
-            display: flex;
-            flex-flow: column nowrap;
-            min-height: 100vh;
-            overflow: hidden;
+          .page-layout {
+            display: grid;
+            position: relative;
+            grid-template-columns: 100%;
+            grid-template-rows: 5rem 1fr 6rem;
+            grid-template-areas:
+              'header'
+              'main'
+              'footer';
+            height: 100vh;
+            overflow-x: hidden;
           }
 
           .inner {
@@ -84,6 +92,10 @@ function Layout (props) {
           ::selection {
             color: ${theme.colors.background};
             background-color: ${theme.colors.primaryColor};
+          }
+
+          .hidden {
+            display: none;
           }
         `}
       </style>
