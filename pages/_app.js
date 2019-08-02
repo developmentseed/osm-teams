@@ -48,14 +48,16 @@ class OSMHydra extends App {
         <Head>
           <title>OSM Teams</title>
           <link rel='stylesheet' href='https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css' />
+          <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Inconsolata:400,700|Work+Sans:400,700&display=swap' />
           <link rel='shortcut icon' href='/static/favicon.ico' />
           <link rel='icon' type='image/png' href='/static/favicon.png' />
-          <style>{`body { margin: 0; background: #F4F4F4; color: #111 }`}</style>
         </Head>
-        <article className='code mw6 pa3 ma5 center bg-white ba bw2'>
-          {uid ? <Header {...{ uid, picture, username }} /> : <div />}
-          <Component {...Object.assign({ user: { uid, username, picture } }, pageProps)} />
-        </article>
+        <Layout>
+          <article>
+            {uid ? <Header {...{ uid, picture, username }} /> : <div />}
+            <Component {...Object.assign({ user: { uid, username, picture } }, pageProps)} />
+          </article>
+        </Layout>
       </Container>
     )
   }
