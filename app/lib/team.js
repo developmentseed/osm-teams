@@ -1,6 +1,6 @@
 const db = require('../db')
 const knexPostgis = require('knex-postgis')
-const { head } = require('ramda')
+const { head, reverse } = require('ramda')
 const join = require('url-join')
 const xml2js = require('xml2js')
 const request = require('request-promise-native')
@@ -81,22 +81,32 @@ async function getModerators (id) {
 
 /**
 * Get all teams
+*
+* @param options
+* @param options.osmId - filter by whether osmId is a member
+* @param options.bbox - filter for teams whose location is in bbox (NESW)
 * @return {promise}
 **/
-async function list () {
-  const conn = await db()
-  return conn('team').select()
-}
+async function list (options) {
+  options = options || {}
+  const { osmId, bbox } = options
 
-/**
-* Find teams by member id
-* @return {promise}
-**/
-async function findByOsmId (osmId) {
   const conn = await db()
-  return conn('team').select().whereIn('id', function () {
-    this.select('team_id').from('member').where('osm_id', osmId)
-  })
+  const st = knexPostgis(conn)
+
+  let query = conn('team').select('*', st.asGeoJSON('location'))
+
+  if (osmId) {
+    query = query.whereIn('id', function () {
+      this.select('team_id').from('member').where('osm_id', osmId)
+    })
+  }
+
+  if (bbox) {
+    query = query.where(st.boundingBoxContains('location', st.makeEnvelope(...reverse(bbox))))
+  }
+
+  return query
 }
 
 /**
@@ -290,6 +300,5 @@ module.exports = {
   isModerator,
   isMember,
   isPublic,
-  findByOsmId,
   resolveMemberNames
 }

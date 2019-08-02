@@ -2,15 +2,10 @@ const team = require('../lib/team')
 const { prop, map } = require('ramda')
 
 async function listTeams (req, reply) {
-  const { osmId } = req.query
+  const { osmId, bbox } = req.query
 
   try {
-    let data
-    if (osmId) {
-      data = await team.findByOsmId(osmId)
-    } else {
-      data = await team.list()
-    }
+    const data = await team.list({ osmId, bbox })
     reply.send(data)
   } catch (err) {
     console.log(err)
