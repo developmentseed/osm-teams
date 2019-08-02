@@ -3,6 +3,8 @@ import App, { Container } from 'next/app'
 import Head from 'next/head'
 import Header from '../components/header'
 
+import Layout from '../components/layout.js'
+
 class OSMHydra extends App {
   static async getInitialProps ({ Component, ctx }) {
     let pageProps = {}

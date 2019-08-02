@@ -1,4 +1,5 @@
 import React from 'react'
+import theme from '../styles/theme'
 
 function TableHead ({ columns }) {
   return (
@@ -8,7 +9,6 @@ function TableHead ({ columns }) {
           return (
             <th
               key={`column-${column.key}`}
-              className='fw6 bb b--black-20 tl pb2 ph3 bg-white ttc'
               onClick={() => {
                 column.onClick && column.onClick()
               }}
@@ -25,7 +25,6 @@ function TableHead ({ columns }) {
 function Row ({ columns, row, index, onRowClick }) {
   return (
     <tr
-      className={onRowClick && 'pointer hover-bg-near-white'}
       onClick={() => {
         onRowClick && onRowClick(row, index)
       }}
@@ -35,7 +34,6 @@ function Row ({ columns, row, index, onRowClick }) {
         return (
           <td
             key={`row-${index}-key-${key}`}
-            className='pl3 pv3 pr3 bb b--black-20'
           >
             {item}
           </td>
@@ -67,9 +65,45 @@ function TableBody ({ columns, rows, onRowClick }) {
 
 export default function Table ({ columns, rows, onRowClick }) {
   return (
-    <table className='collapse f6 w-100 mw8 center'>
+    <table>
       <TableHead columns={columns} />
       <TableBody columns={columns} rows={rows} onRowClick={onRowClick} />
+      <style jsx global>
+        {`
+          table {
+            border-collapse: collapse;
+            width: 100%;
+            border-spacing: 0;
+            max-width: 100%;
+            margin-bottom: ${theme.layout.globalSpacing};
+          }
+
+          thead th {
+            padding: 0 1rem 1rem;
+            vertical-align: middle;
+            position: relative;
+            text-transform: uppercase;
+            text-align: left;
+            font-family: ${theme.typography.headingFontFamily};
+            font-size: 0.875rem;
+            letter-spacing: 0.125rem;
+            border-bottom: 2px solid ${theme.colors.primaryColor};
+          }
+
+          tbody tr td {
+            padding: 1rem;
+            border-bottom: 1px solid ${theme.colors.baseColorLight};
+          }
+
+          tbody tr {
+            cursur: pointer;
+          }
+
+          tbody tr:hover {
+            background: ${theme.colors.primaryLite};
+          }
+          `}
+      </style>
     </table>
   )
 }
