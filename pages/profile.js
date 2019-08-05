@@ -102,10 +102,10 @@ export default class Profile extends Component {
     if (this.state.error) return <div> {this.state.error.message} </div>
 
     return (
-      <div>
+      <div className='inner'>
         <h2>Profile</h2>
         <Section>
-          <SectionHeader>Teams</SectionHeader>
+          <SectionHeader>Your Teams</SectionHeader>
           {this.renderTeams()}
         </Section>
         <Button onClick={() => this.createTeam()} >Create team</Button>

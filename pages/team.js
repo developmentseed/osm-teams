@@ -3,12 +3,14 @@ import { map, prop, contains, reverse } from 'ramda'
 import Popup from 'reactjs-popup'
 import Map from 'pigeon-maps'
 
+import Card from '../components/card'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Button from '../components/button'
 import Table from '../components/table'
 import Marker from '../components/marker'
 import AddMemberForm from '../components/add-member-form'
+import theme from '../styles/theme'
 
 import { getTeam, addMember, removeMember } from '../lib/teams-api'
 
@@ -160,37 +162,87 @@ export default class Team extends Component {
     }
 
     return (
-      <article>
+      <article className='inner'>
         <h2>{team.name}</h2>
         { isUserModerator ? <Button href={`/teams/${team.id}/edit`}>Edit Team</Button> : <div /> }
-        <Section>
-          <SectionHeader>Team Details</SectionHeader>
-          <dl>
-            <dt>Bio: </dt>
-            <dd>{team.bio}</dd>
-            <dt>Hashtag: </dt>
-            <dd>{team.hashtag}</dd>
-          </dl>
-          <h3>Location</h3>
-          { this.renderMap(team.location) }
-        </Section>
-        <Section>
-          <SectionHeader>Team Members</SectionHeader>
-          <Table
-            rows={members}
-            columns={columns}
-          />
-          <div className='mt4'>
-            { isUserModerator && (
-              <AddMemberForm
-                onSubmit={async ({ osmId }) => {
-                  await addMember(team.id, osmId)
-                  return this.getTeam()
-                }}
-              />
-            )}
-          </div>
-        </Section>
+        <div className='team__details'>
+          <Card>
+            <SectionHeader>Team Details</SectionHeader>
+            <dl>
+              <dt>Bio: </dt>
+              <dd>{team.bio}</dd>
+              <dt>Hashtag: </dt>
+              <dd>{team.hashtag}</dd>
+            </dl>
+            <SectionHeader>Location</SectionHeader>
+            { this.renderMap(team.location) }
+          </Card>
+        </div>
+        <div className='team__table'>
+          <Section>
+            <SectionHeader>Team Members</SectionHeader>
+            <Table
+              rows={members}
+              columns={columns}
+            />
+            <div>
+              { isUserModerator && (
+                <AddMemberForm
+                  onSubmit={async ({ osmId }) => {
+                    await addMember(team.id, osmId)
+                    return this.getTeam()
+                  }}
+                />
+              )}
+            </div>
+          </Section>
+        </div>
+        <style jsx>
+          {`
+            .inner {
+              display: grid;
+              grid-template-columns: repeat(12, 1fr);
+              grid-gap: ${theme.layout.globalSpacing};
+              margin-top: calc(${theme.layout.globalSpacing} * 2);
+              margin-bottom: calc(${theme.layout.globalSpacing} * 2);
+            }
+
+            .team__details {
+              grid-column: 1 / span 6;
+            }
+
+            h2 {
+              font-family: ${theme.typography.headingFontFamily};
+              font-weight: ${theme.typography.baseFontWeight};
+              font-size: 2.25rem;
+              color: ${theme.colors.primaryColor};
+              grid-column: 1 / span 12;
+            }
+
+            dl {
+              line-height: calc(${theme.layout.globalSpacing} * 2);
+              display: flex;
+              flex-flow: row wrap;
+            }
+
+            dt {
+              font-family: ${theme.typography.headingFontFamily};
+              text-transform: uppercase;
+              flex-basis: 20%;
+              margin-right: ${theme.layout.globalSpacing};
+            }
+
+            dd {
+              margin: 0;
+              flex-basis: 70%;
+              flex-grow: 1;
+            }
+
+            .team__table {
+              grid-column: 1 / span 12;
+            }
+          `}
+        </style>
       </article>
     )
   }

@@ -41,13 +41,22 @@ export default function Header ({ username, picture }) {
         .header__input {
           outline: none;
           border: none;
+          margin-left: ${theme.layout.globalSpacing};
+          padding: 0.25rem 0;
+          background: transparent;
+          border-bottom: 1px inset ${theme.colors.baseColorLight};
+          transition: all 0.3s ease;
+        }
+        .header__input:focus,
+        .header__input:active {
+          border-bottom: 1px inset ${theme.colors.primaryColor};
         }
 
         .user__heading {
           display: flex;
           flex-flow: row nowrap;
           align-items: center;
-          margin-right: ${theme.layout.globalSpacing};
+          margin-right: calc(${theme.layout.globalSpacing} * 2);
           margin-left: auto;
         }
 

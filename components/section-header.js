@@ -3,15 +3,18 @@ import theme from '../styles/theme'
 
 export default function SectionHeader ({ children }) {
   return (
-    <h1>
+    <h3>
       {children}
       <style jsx>{`
-          h1 {
-            font-size: 2.75rem;
+          h3 {
+            color: ${theme.colors.primaryColor};
+            font-family: ${theme.typography.headingFontFamily};
             font-weight: ${theme.typography.baseFontWeight};
+            font-size: 1.25rem;
+            letter-spacing: 0.0125rem;
           }
         `}
       </style>
-    </h1>
+    </h3>
   )
 }

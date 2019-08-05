@@ -3,6 +3,8 @@ import Button from '../components/button'
 import Router from 'next/router'
 import join from 'url-join'
 import getConfig from 'next/config'
+import theme from '../styles/theme'
+
 const { publicRuntimeConfig } = getConfig()
 
 class Home extends Component {
@@ -18,20 +20,20 @@ class Home extends Component {
 
   render () {
     return (
-      <section>
+      <section className='inner welcome'>
         <h1>Teams!</h1>
-        <p className='measure-copy'>
+        <p>
           Create teams of {publicRuntimeConfig.OSM_NAME} users and import them into your apps.
         </p>
         {
           this.props.user.username
             ? (
-              <div className='mt4'>
+              <div>
                 <h2>Welcome, {this.props.user.username}!</h2>
-                <ul className='mt4 mb4 list pl2'>
-                  <li className='pv1'><a href={join(publicRuntimeConfig.APP_URL, '/teams')} className='link dib'>🌏 All Teams</a></li>
-                  <li className='pv1'><a href={join(publicRuntimeConfig.APP_URL, '/profile')} className='link dib'>💁‍♀️ Profile</a></li>
-                  <li className='pv1'><a href={join(publicRuntimeConfig.APP_URL, '/clients')} className='link dib'>⚙️ Connected Apps</a></li>
+                <ul className='welcome__actions'>
+                  <li className=''><a href={join(publicRuntimeConfig.APP_URL, '/teams')} className=''>🌏 All Teams</a></li>
+                  <li className=''><a href={join(publicRuntimeConfig.APP_URL, '/profile')} className=''>💁‍♀️ Profile</a></li>
+                  <li className=''><a href={join(publicRuntimeConfig.APP_URL, '/clients')} className=''>⚙️ Connected Apps</a></li>
                 </ul>
                 <Button onClick={() => {
                   window.sessionStorage.clear()
@@ -42,6 +44,28 @@ class Home extends Component {
             )
             : <Button href='/login'>Sign in →</Button>
         }
+        <style jsx>
+          {`
+            .inner.welcome {
+              grid-area: main;
+              width: 100%;
+            }
+
+            .welcome__actions {
+              list-style: none;
+              display: flex;
+              flex-direction: column;
+              margin-block-start: 0;
+              margin-block-end: 0;
+              padding-inline-start: 0;
+              padding: ${theme.layout.globalSpacing} 0;
+            }
+
+            .welcome__actions li {
+              padding-bottom: ${theme.layout.globalSpacing};
+            }
+          `}
+        </style>
       </section>
     )
   }

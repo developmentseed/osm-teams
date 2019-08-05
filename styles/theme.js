@@ -3,7 +3,7 @@ let colors = {
   primaryColor: '#384A9E',
   primaryLite: '#E8ECFF',
   secondaryColor: '#FF6341',
-  background: '#F6F6F6',
+  backgroundColor: '#F6F6F6',
 
   dangerColor: '#d85d3f',
   successColor: '#216869',
@@ -17,7 +17,6 @@ colors = {
   baseColorLight: '#E1E1E1'
   // baseAlphaColor: rgba(colors.baseColor, 0.08),
   // baseColorMed: tint(0.3, colors.baseColor),
-  // baseColorLight: tint(0.7, colors.baseColor),
   // primaryDark: shade(0.3, colors.primaryColor),
   // primaryLight: tint(0.7, colors.primaryColor),
   // secondaryMed: tint(0.5, colors.secondaryColor),

@@ -1,14 +1,15 @@
 import React, { Component } from 'react'
 import Button from './button'
+import Card from './card'
 import join from 'url-join'
 import getConfig from 'next/config'
 const { publicRuntimeConfig } = getConfig()
 
 function newClient ({ client_id, client_name, client_secret }) {
-  return <ul className='list pl0'>
+  return <ul>
     <li><label className='b'>client_id: </label>{client_id}</li>
-    <li><label className='b'>client_name: </label>{client_name}</li>
-    <li><label className='b'>client_secret: </label>{client_secret}</li>
+    <li><label>client_name: </label>{client_name}</li>
+    <li><label>client_secret: </label>{client_secret}</li>
   </ul>
 }
 
@@ -106,16 +107,16 @@ class Clients extends Component {
     if (this.state.error) return <div> {this.state.error.message} </div>
 
     let clients = this.state.clients
-    let clientSection = <p className='measure-copy'>No clients created</p>
+    let clientSection = <p>No clients created</p>
     if (clients.length > 0) {
-      clientSection = (<ul className='list pl1 mt3'>
+      clientSection = (<ul>
         {
           clients.map(client => {
             return (
-              <li key={client.client_id} className='flex mb3'>
-                <div className='flex-auto'>
-                  <span className='f5 tracked b'>{client.client_name}</span>
-                  <div className='f6'>({client.client_id})</div>
+              <li key={client.client_id}>
+                <div>
+                  <span>{client.client_name}</span>
+                  <div>({client.client_id})</div>
                 </div>
                 <Button small danger onClick={() => this.deleteClient(client.client_id)}>Delete</Button>
               </li>
@@ -126,15 +127,15 @@ class Clients extends Component {
     }
 
     return (
-      <div>
-        <h2 className='mt4'> ⚙️ OAuth2 settings</h2>
+      <div className='inner'>
+        <h2> ⚙️ OAuth2 settings</h2>
         <p>Add an OAuth app to integrate with OSM/Hydra.</p>
-        <section className='mt4 mb4 ba br3 b--black-10 pa3'>
+        <Card>
           <h3>Your apps</h3>
           {
             clientSection
           }
-        </section>
+        </Card>
         {
           this.state.newClient
             ? <section className='bg-washed-yellow pa3'>
@@ -148,20 +149,38 @@ class Clients extends Component {
           <h3>Add a new app</h3>
           <form onSubmit={this.createClient} className='mw6'>
             <label>Name: </label>
-            <input className='input-reset mt2 mb3 w-100 dib pa2 br2 ba b--black-10' type='text'
+            <input type='text'
               placeholder='My app'
               onChange={this.handleClientNameChange}
             />
             <label>Callback URL: </label>
-            <input className='input-reset mt2 mb3 w-100 dib pa2 br2 ba b--black-10' type='text'
+            <input type='text'
               placeholder='https://myapp/callback'
               onChange={this.handleClientCallbackChange}
             />
             <br />
             <br />
-            <input className='input-reset f6 link dim br1 ba bw2 ph3 pv2 mb2 dib dark-green pointer b--dark-green bg-white' type='submit' value='Add new app' />
+            <Button type='submit' value='Add new app'>Add New App </Button>
           </form>
         </section>
+        <style jsx>
+          {`
+            form {
+              display: flex;
+              flex-direction: column;
+              align-items: flex-start;
+            }
+
+            label {
+              margin-top: 1rem;
+            }
+
+            input {
+              padding: 0.5rem 0.2rem;
+              width: 100%;
+            }
+          `}
+        </style>
       </div>
     )
   }

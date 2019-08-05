@@ -17,11 +17,12 @@ export default css`
   }
 
   body {
-    background: ${theme.colors.secondaryPale};
+    margin: 0;
+    padding: 0;
+    background: ${theme.colors.backgroundColor};
     color: ${theme.typography.baseFontColor};
     font-size: ${theme.typography.baseFontSize};
     line-height: ${theme.typography.baseLineHeight};
-    /* stylelint-disable-next-line */
     font-family: ${theme.typography.baseFontFamily};
     font-weight: ${theme.typography.baseFontWeight};
     font-style: ${theme.typography.baseFontStyle};
@@ -30,6 +31,26 @@ export default css`
 
   .app-container {
     overflow: hidden;
+  }
+
+  .page-layout {
+    display: grid;
+    position: relative;
+    grid-template-columns: 100%;
+    grid-template-rows: 5rem 1fr 6rem;
+    grid-template-areas:
+      'header'
+      'main'
+      'footer';
+    height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .inner {
+    margin: 0 auto;
+    width: 100%;
+    max-width: ${theme.layout.rowMaxWidth};
+    padding: 0 ${theme.layout.globalSpacing};
   }
 
   /* Links
@@ -64,7 +85,11 @@ export default css`
   }
 
   ::selection {
-    color: ${theme.colors.secondaryPale};
+    color: ${theme.colors.background};
     background-color: ${theme.colors.primaryColor};
+  }
+
+  .hidden {
+    display: none;
   }
 `

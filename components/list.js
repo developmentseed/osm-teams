@@ -1,13 +1,26 @@
 import React from 'react'
+import theme from '../styles/theme'
 
 const Item = ({ item, children }) => {
   return (
     <a
-      className='flex mb2 no-underline black nl2 ph2 pv3 hover-bg-light-gray pointer'
       href={item.href}
       as={item.as || item.href}
     >
       {children(item)}
+      <style jsx>
+        {`
+          a {
+            display: flex;
+            padding: 1rem 0.5rem;
+            margin-left: -0.5rem;
+            transition: all 0.24s ease !important;
+          }
+          a:hover {
+            background: ${theme.colors.primaryLite};
+          }
+        `}
+      </style>
     </a>
   )
 }

@@ -25,7 +25,7 @@ function Layout (props) {
           body {
             margin: 0;
             padding: 0;
-            background: ${theme.colors.secondaryPale};
+            background: ${theme.colors.backgroundColor};
             color: ${theme.typography.baseFontColor};
             font-size: ${theme.typography.baseFontSize};
             line-height: ${theme.typography.baseLineHeight};
@@ -54,6 +54,7 @@ function Layout (props) {
 
           .inner {
             margin: 0 auto;
+            width: 100%;
             max-width: ${theme.layout.rowMaxWidth};
             padding: 0 ${theme.layout.globalSpacing};
           }
@@ -90,7 +91,7 @@ function Layout (props) {
           }
 
           ::selection {
-            color: ${theme.colors.background};
+            color: ${theme.colors.backgroundColor};
             background-color: ${theme.colors.primaryColor};
           }
 

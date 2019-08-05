@@ -42,7 +42,7 @@ export default class TeamList extends Component {
     if (!teams) return null
 
     if (teams.length === 0) {
-      return <p className='measure-copy'>No teams created</p>
+      return <p>No teams created</p>
     }
 
     return (
@@ -62,7 +62,7 @@ export default class TeamList extends Component {
 
   render () {
     return (
-      <div>
+      <div className='inner'>
         <h2>Teams</h2>
         <Section>
           {this.renderTeams()}

@@ -85,6 +85,7 @@ export default function Table ({ columns, rows, onRowClick }) {
             text-transform: uppercase;
             text-align: left;
             font-family: ${theme.typography.headingFontFamily};
+            font-weight: ${theme.typography.baseFontWeight};
             font-size: 0.875rem;
             letter-spacing: 0.125rem;
             border-bottom: 2px solid ${theme.colors.primaryColor};
@@ -96,7 +97,8 @@ export default function Table ({ columns, rows, onRowClick }) {
           }
 
           tbody tr {
-            cursur: pointer;
+            background: #fff;
+            cursor: pointer;
           }
 
           tbody tr:hover {

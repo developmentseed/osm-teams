@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 import Header from '../components/header'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
+import Card from '../components/card'
 import List from '../components/list'
 import Table from '../components/table'
 import { TeamDetailSmall } from '../components/team'
@@ -71,11 +72,11 @@ function Wrapper ({ title, description, children }) {
 class App extends React.Component {
   render () {
     return (
-      <div className='page'>
+      <div>
         <Layout>
           <Wrapper title='Header' description='Used as header of the app'>
             <Header
-              user='someusername'
+              username='someusername'
               picture='https://caputobrotherscreamery.com/wp-content/uploads/Wood-fired-pizza.jpg'
             />
           </Wrapper>
@@ -84,6 +85,12 @@ class App extends React.Component {
             <Section>
               <p>Example content</p>
             </Section>
+          </Wrapper>
+
+          <Wrapper title='Card' description='Pre-styled section'>
+            <Card>
+              <p>Example card content</p>
+            </Card>
           </Wrapper>
 
           <Wrapper title='SectionHeader' description='Create headers for sections of content'>
@@ -100,9 +107,9 @@ class App extends React.Component {
             ]}>
               {({ title, description }) => {
                 return (
-                  <div className='flex-auto'>
-                    <h2 className='f5'>{title}</h2>
-                    <div className='f6'>{description}</div>
+                  <div>
+                    <h2>{title}</h2>
+                    <div>{description}</div>
                   </div>
                 )
               }}
@@ -134,6 +141,13 @@ class App extends React.Component {
             />
           </Wrapper>
         </Layout>
+        <style jsx>
+          {`
+            .page-layout {
+              grid-template-rows: 1fr;
+            }
+          `}
+        </style>
       </div>
     )
   }
