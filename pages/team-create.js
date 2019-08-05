@@ -12,7 +12,6 @@ export default class TeamCreate extends Component {
       <article>
         <EditTeamForm
           onSubmit={async (values, actions) => {
-            console.log('values', values)
             try {
               const team = await createTeam(values)
               actions.setSubmitting(false)
