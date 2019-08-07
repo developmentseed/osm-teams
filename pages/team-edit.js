@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import dynamic from 'next/dynamic'
 import join from 'url-join'
 import Router from 'next/router'
 import { pick } from 'ramda'
@@ -6,8 +7,11 @@ import { Formik, Field, Form, ErrorMessage } from 'formik'
 import { getTeam, updateTeam } from '../lib/teams-api'
 import getConfig from 'next/config'
 import Button from '../components/button'
-import { FormikMap } from '../components/formikmap'
 const { publicRuntimeConfig } = getConfig()
+
+const FormikMap = dynamic(() => import('../components/formik-map'), {
+  ssr: false
+})
 
 export default class Team extends Component {
   static async getInitialProps ({ query }) {
@@ -99,7 +103,7 @@ export default class Team extends Component {
                 <ErrorMessage name='bio' component='div' />
               </div>
               <div className='mt3'>
-                <FormikMap name='location' value={values.location} onChange={setFieldValue} />
+                <FormikMap style={{ height: '300px' }} name='location' value={values.location} onChange={setFieldValue} />
               </div>
               <div className='mt3'>
                 { status && status.msg && <div>{status.msg}</div> }
