@@ -1,16 +1,17 @@
 import React, { Component } from 'react'
 import { map, prop, contains, reverse } from 'ramda'
 import Popup from 'reactjs-popup'
-import Map from 'pigeon-maps'
+import dynamic from 'next/dynamic'
 
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Button from '../components/button'
 import Table from '../components/table'
-import Marker from '../components/marker'
 import AddMemberForm from '../components/add-member-form'
 
 import { getTeam, addMember, removeMember } from '../lib/teams-api'
+
+const Map = dynamic(() => import('../components/team-map'), { ssr: false })
 
 export default class Team extends Component {
   static async getInitialProps ({ query }) {
@@ -59,9 +60,7 @@ export default class Team extends Component {
     let center = reverse(JSON.parse(centerGeojson).coordinates)
 
     return (
-      <Map center={center} zoom={10} width={300} height={200} >
-        <Marker anchor={center} payload={1} />
-      </Map>
+      <Map marker={{ center }} style={{ height: '200px' }} />
     )
   }
 
