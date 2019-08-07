@@ -35,7 +35,7 @@ class Home extends Component {
                   <li className=''><a href={join(publicRuntimeConfig.APP_URL, '/profile')} className=''>💁‍♀️ Profile</a></li>
                   <li className=''><a href={join(publicRuntimeConfig.APP_URL, '/clients')} className=''>⚙️ Connected Apps</a></li>
                 </ul>
-                <Button onClick={() => {
+                <Button type='primary' onClick={() => {
                   window.sessionStorage.clear()
                   Router.push('/logout')
                 }

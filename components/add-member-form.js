@@ -1,17 +1,6 @@
 import React from 'react'
 import { Formik, Field, Form } from 'formik'
-
-function Button ({ type, disabled, children }) {
-  return (
-    <button
-      type='submit'
-      className='dark-green bw2 ph3 pv2 f6 link dim br1 ba b--dark-green bg-white dib pointer'
-      disabled={disabled}
-    >
-      {children}
-    </button>
-  )
-}
+import Button from './button'
 
 export default function AddMemberForm ({ onSubmit }) {
   return (
@@ -33,11 +22,11 @@ export default function AddMemberForm ({ onSubmit }) {
         const addMemberText = `Add Member ${isSubmitting ? ' 🕙' : ''}`
 
         return (
-          <Form>
+          <Form className='form-control'>
             <Field
               type='text'
               name='osmId'
-              className='f6 ba bw2 ph2 pv2 mr2'
+              id='osmId'
               placeholder='OSM ID'
               value={values.osmId}
             />

@@ -163,8 +163,10 @@ export default class Team extends Component {
 
     return (
       <article className='inner'>
-        <h2>{team.name}</h2>
-        { isUserModerator ? <Button href={`/teams/${team.id}/edit`}>Edit Team</Button> : <div /> }
+        <div className='team__heading'>
+          <h2>{team.name}</h2>
+          { isUserModerator ? <Button type='primary' href={`/teams/${team.id}/edit`}>Edit Team</Button> : <div /> }
+        </div>
         <div className='team__details'>
           <Card>
             <SectionHeader>Team Details</SectionHeader>
@@ -207,22 +209,23 @@ export default class Team extends Component {
               margin-bottom: calc(${theme.layout.globalSpacing} * 2);
             }
 
-            .team__details {
-              grid-column: 1 / span 6;
+            .team__heading {
+              grid-column: 1 / span 12;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
             }
 
-            h2 {
-              font-family: ${theme.typography.headingFontFamily};
-              font-weight: ${theme.typography.baseFontWeight};
-              font-size: 2.25rem;
-              color: ${theme.colors.primaryColor};
-              grid-column: 1 / span 12;
+            .team__details {
+              grid-column: 1 / span 6;
+              margin-bottom: 4rem;
             }
 
             dl {
               line-height: calc(${theme.layout.globalSpacing} * 2);
               display: flex;
               flex-flow: row wrap;
+              margin-bottom: 2rem;
             }
 
             dt {

@@ -109,6 +109,10 @@ export default class Profile extends Component {
           {this.renderTeams()}
         </Section>
         <Button onClick={() => this.createTeam()} >Create team</Button>
+        <style jsx>
+          {`
+          `}
+        </style>
       </div>
     )
   }

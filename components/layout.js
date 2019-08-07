@@ -59,6 +59,28 @@ function Layout (props) {
             padding: 0 ${theme.layout.globalSpacing};
           }
 
+          /* Typography
+           ========================================================================== */
+
+           h1, h2, h3 {
+             font-family: ${theme.typography.headingFontFamily};
+             font-weight: ${theme.typography.baseFontWeight};
+             color: ${theme.colors.primaryColor};
+             margin-top: 0;
+           }
+
+           h1 {
+             font-size: 2.827rem;
+           }
+
+           h2 {
+             font-size: 1.999rem;
+           }
+
+           h3 {
+             font-size: 1.414rem;
+           }
+
           /* Links
            ========================================================================== */
 
@@ -81,7 +103,25 @@ function Layout (props) {
             transform: translate(0, 1px);
           }
 
-          /* Thether element */
+          /* Forms
+           ========================================================================== */
+          .form-control {
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+          }
+
+          .form-control :global(label) {
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+          }
+
+          .form-control :global(input) {
+            min-width: 6rem;
+            padding: 0.5rem 1rem 0.5rem 0.25rem;
+          }
+
+          /* Tether element */
           .tether-element {
             z-index: 1000;
           }

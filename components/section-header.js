@@ -10,7 +10,7 @@ export default function SectionHeader ({ children }) {
             color: ${theme.colors.primaryColor};
             font-family: ${theme.typography.headingFontFamily};
             font-weight: ${theme.typography.baseFontWeight};
-            font-size: 1.25rem;
+            text-transform: uppercase;
             letter-spacing: 0.0125rem;
           }
         `}

@@ -50,13 +50,13 @@ export default class Team extends Component {
     if (error) {
       if (error.status >= 400 && error.status < 500) {
         return (
-          <article>
+          <article className='inner'>
             <h1>Team not found</h1>
           </article>
         )
       } else if (error.status >= 500) {
         return (
-          <article>
+          <article className='inner'>
             <h1>Error fetching team</h1>
           </article>
         )
@@ -66,7 +66,7 @@ export default class Team extends Component {
     if (!team) return null
 
     return (
-      <article>
+      <article className='inner'>
         <Formik
           initialValues={pick(['name', 'bio', 'hashtag', 'location'], team)}
           onSubmit={async (values, actions) => {
@@ -83,31 +83,44 @@ export default class Team extends Component {
           }}
           render={({ status, isSubmitting, submitForm, values, setFieldValue }) => (
             <Form>
-              <div className='mt3'>
-                <label htmlFor='name' className='db fw4 lh-copy f6'>Name:</label>
-                <Field type='text' name='name' />
+              <div className='form-control'>
+                <label htmlFor='name'>Name:</label>
+                <Field type='text' name='name' id='name' />
                 <ErrorMessage name='name' component='div' />
               </div>
-              <div className='mt3'>
-                <label htmlFor='hashtag' className='db fw4 lh-copy f6'>Hashtag:</label>
-                <Field type='text' name='hashtag' />
+              <div className='form-control'>
+                <label htmlFor='hashtag'>Hashtag:</label>
+                <Field type='text' name='hashtag' id='hashtag' />
                 <ErrorMessage name='hashtag' component='div' />
               </div>
-              <div className='mt3'>
-                <label htmlFor='bio' className='db fw4 lh-copy f6'>Description:</label>
-                <Field type='textarea' name='bio' />
+              <div className='form-control'>
+                <label htmlFor='bio'>Description:</label>
+                <Field type='textarea' name='bio' id='bio' />
                 <ErrorMessage name='bio' component='div' />
               </div>
-              <div className='mt3'>
+              <div className='form-control'>
                 <FormikMap name='location' value={values.location} onChange={setFieldValue} />
               </div>
-              <div className='mt3'>
+              <div className='form-control'>
                 { status && status.msg && <div>{status.msg}</div> }
                 <Button disabled={isSubmitting} onClick={() => submitForm()}>Submit</Button>
               </div>
             </Form>
           )}
         />
+        <style jsx>
+          {`
+            .inner {
+              margin-top: 2rem;
+            }
+
+            .form-control {
+              flex-direction: column;
+              align-items: flex-start;
+            }
+
+          `}
+        </style>
       </article>
     )
   }

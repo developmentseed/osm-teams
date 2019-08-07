@@ -9,17 +9,24 @@ const { publicRuntimeConfig } = getConfig()
 const style = css`
   .button {
     display: inline-block;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    line-height: 1.5rem;
+    font-size: 1rem;
+    min-width: 2rem;
     font-family: ${theme.typography.monoFontFamily};
     font-size: ${theme.typography.rootFontSize};
     font-weight: ${theme.typography.baseFontWeight};
     text-transform: uppercase;
     letter-spacing: 0.125rem;
-    padding: 0.75rem ${theme.layout.globalSpacing};
-    color: ${theme.colors.primaryColor};
-    border: 2px solid ${theme.colors.primaryColor};
-    box-shadow: 2px 2px ${theme.colors.primaryColor};
+    padding: 0.75rem calc(${theme.layout.globalSpacing} * 2);
     cursor: pointer;
     transition: box-shadow 0.12s ease;
+    /* Default Colors */
+    color: ${theme.colors.primaryColor};
+    box-shadow: 2px 2px ${theme.colors.primaryColor};
+    border: 2px solid ${theme.colors.primaryColor};
   }
   .button:hover {
     opacity: 0.68;
@@ -28,7 +35,11 @@ const style = css`
   .button.primary {
     color: #FFFFFF;
     background: ${theme.colors.primaryColor};
-    border: 2px solid #FFFFFF;
+    /* box-shadow: 2px 2px ${theme.colors.secondaryColor}; */
+    /* fix box-shadow to be dependant on type*/
+  }
+  .button.submit {
+    background: ${theme.colors.primaryLite};
   }
   .button.disabled {
     backgroundColor: #777777;
@@ -36,38 +47,17 @@ const style = css`
     color: ${theme.colors.baseColor};
   }
   .button.danger {
-    color: 'white';
+    color: #FFFFFF;
     background: ${theme.colors.secondaryColor};
+    box-shadow: 2px 2px ${theme.colors.primaryColor};
     border: 2px solid #FFFFFF;
   }
 `
 
-export default function Button ({ href, onClick, children, danger, small, disabled }) {
-  let color = 'dark-green'
-  let size = 'bw2 ph3 pv2 mb2'
-
-  if (danger) {
-    color = `${theme.colors.secondaryColor}`
-    // box-shadow: `2px 2px ${theme.colors.primaryColor}`;
-  }
-
-  if (disabled) {
-    color = 'near-gray'
-  }
-
-  if (small) {
-    size = 'bw1 ph2 pv1 mb1'
-  }
-
-  const commonStyle = `${color} ${size} f6 link dim br1 ba dib pointer`
-
-  if (disabled) {
-    return <div className='button disabled' >{children}<style jsx>{style}</style></div>
-  }
-
+export default function Button ({ type, disabled, href, onClick, children, small }) {
   if (href) {
     const fullUrl = join(publicRuntimeConfig.APP_URL, href)
-    return <a href={fullUrl} className='button'>{children}<style jsx>{style}</style></a>
+    return <a href={fullUrl} className={`button ${type}`} disabled={disabled}>{children}<style jsx>{style}</style></a>
   }
-  return <div onClick={onClick} className='button'>{children}<style jsx>{style}</style></div>
+  return <div onClick={onClick} className={`button ${type}`} disabled={disabled}>{children}<style jsx>{style}</style></div>
 }

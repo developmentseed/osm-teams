@@ -92,8 +92,9 @@ export default function Table ({ columns, rows, onRowClick }) {
           }
 
           tbody tr td {
-            padding: 1rem;
+            padding: 1.5rem 1rem;
             border-bottom: 1px solid ${theme.colors.baseColorLight};
+            font-size: 0.9rem;
           }
 
           tbody tr {

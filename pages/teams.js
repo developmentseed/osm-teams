@@ -67,6 +67,11 @@ export default class TeamList extends Component {
         <Section>
           {this.renderTeams()}
         </Section>
+        <style jsx>
+          {`
+            margin-top: 2rem;
+          `}
+        </style>
       </div>
     )
   }
