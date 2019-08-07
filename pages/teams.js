@@ -5,7 +5,7 @@ import Router from 'next/router'
 import Section from '../components/section'
 import Table from '../components/table'
 import join from 'url-join'
-import { isNil, pick, reject, map, props, prop } from 'ramda'
+import { pick, map } from 'ramda'
 import { getTeams } from '../lib/teams-api'
 
 const Map = dynamic(import('../components/list-map'), {
@@ -23,16 +23,17 @@ export default class TeamList extends Component {
     this.state = {
       loading: true,
       error: undefined,
-      teams: []
+      teams: [],
+      searchOnMapMove: false,
+      mapBounds: undefined
     }
   }
 
   async getTeams () {
     try {
-      // Filters
-      const bbox = this.state.mapBounds
-
-      const teams = await getTeams({ bbox })
+      const { mapBounds, searchOnMapMove } = this.state
+      const searchParams = searchOnMapMove ? { bbox: mapBounds } : {}
+      const teams = await getTeams(searchParams)
       this.setState({
         teams,
         loading: false
@@ -74,25 +75,46 @@ export default class TeamList extends Component {
     )
   }
 
+  /**
+   * Bounds is a WESN box, refresh teams
+   */
+  onMapBoundsChange (bounds) {
+    if (this.state.searchOnMapMove) {
+      this.setState({
+        mapBounds: bounds
+      }, () => this.getTeams())
+    } else {
+      this.setState({ mapBounds: bounds })
+    }
+  }
+
   renderMap () {
     const { teams } = this.state
     if (!teams) return null
-    if (teams.length === 0) {
-      return <div />
-    }
 
     const teamLocations = map(pick(['location', 'id']), teams)
     const locations = teamLocations.filter(({ location }) => !!location) // reject nulls
     const centers = map(({ location, id }) => ({ id, center: JSON.parse(location).coordinates.reverse() }), locations)
 
-    return <Map markers={centers} style={{height: '300px'}}/>
+    return <Map markers={centers} style={{ height: '300px' }} onBoundsChange={this.onMapBoundsChange.bind(this)} />
+  }
+
+  setSearchOnMapMove (e) {
+    this.setState({
+      searchOnMapMove: e.target.checked
+    }, () => this.getTeams())
   }
 
   render () {
+    const { searchOnMapMove } = this.state
     return (
       <div>
         <h2>Teams</h2>
         { this.renderMap() }
+        <fieldset>
+          <input type='checkbox' checked={searchOnMapMove} onChange={e => this.setSearchOnMapMove(e)} />
+          <span>Filter teams using map bounds</span>
+        </fieldset>
         <Section>
           {this.renderTeams()}
         </Section>

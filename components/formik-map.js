@@ -1,4 +1,4 @@
-import React, { useState, Component, createRef } from 'react'
+import React, { Component } from 'react'
 import { Map, CircleMarker, TileLayer } from 'react-leaflet'
 import { reverse } from 'ramda'
 
