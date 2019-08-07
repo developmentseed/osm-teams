@@ -1,13 +1,16 @@
 import React, { Component } from 'react'
 import getConfig from 'next/config'
-import Map from 'pigeon-maps'
-import Marker from '../components/marker'
+import dynamic from 'next/dynamic'
 import Router from 'next/router'
 import Section from '../components/section'
 import Table from '../components/table'
 import join from 'url-join'
 import { isNil, pick, reject, map, props, prop } from 'ramda'
 import { getTeams } from '../lib/teams-api'
+
+const Map = dynamic(import('../components/list-map'), {
+  ssr: false
+})
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -20,8 +23,7 @@ export default class TeamList extends Component {
     this.state = {
       loading: true,
       error: undefined,
-      teams: [],
-      map: { center: [30, 30], zoom: 1 }
+      teams: []
     }
   }
 
@@ -73,21 +75,7 @@ export default class TeamList extends Component {
   }
 
   renderMap () {
-    const DivMarker = ({ left, top, style, children }) => (
-      <div style={{
-        position: 'absolute',
-        left: left,
-        top: top,
-        style: {
-          width: 30,
-          height: 30,
-          background: 'red',
-          borderBottomLeftRadius: '100%',
-          borderBottomRightRadius: '100%'
-        }
-      }} >{children}</div>
-    )
-    const { teams, map: { center, zoom } } = this.state
+    const { teams } = this.state
     if (!teams) return null
     if (teams.length === 0) {
       return <div />
@@ -97,11 +85,7 @@ export default class TeamList extends Component {
     const locations = teamLocations.filter(({ location }) => !!location) // reject nulls
     const centers = map(({ location, id }) => ({ id, center: JSON.parse(location).coordinates.reverse() }), locations)
 
-    return (
-      <Map center={center} mouseEvents zoom={zoom} width={400} height={300} >
-        {centers.map(c => <Marker key={c.id} anchor={c.center} payload={c.id} />) }
-      </Map>
-    )
+    return <Map markers={centers} style={{height: '300px'}}/>
   }
 
   render () {
