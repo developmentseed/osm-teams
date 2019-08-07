@@ -111,7 +111,8 @@ async function findByOsmId (osmId) {
 * @return {promise}
 **/
 async function create (data, osmId) {
-  if (!osmId) throw new Error('Team must have moderator id')
+  if (!osmId) throw new Error('moderator osm id is required as second argument')
+  if (!data.name) throw new Error('data.name property is required')
   const conn = await db()
   const st = knexPostgis(conn)
 

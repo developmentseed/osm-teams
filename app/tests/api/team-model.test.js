@@ -32,6 +32,22 @@ test('create a team', async (t) => {
   t.true(await team.isModerator(data.id, 1))
 })
 
+test('team requires name column', async (t) => {
+  try {
+    await team.create({}, 1)
+  } catch (e) {
+    t.is(e.message, 'data.name property is required')
+  }
+})
+
+test('moderator id is required to create team', async (t) => {
+  try {
+    await team.create({ name: 'map team 1' })
+  } catch (e) {
+    t.is(e.message, 'moderator osm id is required as second argument')
+  }
+})
+
 test('list teams', async (t) => {
   const list = await team.list()
   t.true(Array.isArray(list) && list.length > 0)
@@ -45,6 +61,12 @@ test('update a team', async (t) => {
   const data = await team.create({ name: 'poi team 1' }, 1)
   const updated = await team.update(data.id, { name: 'road team 1' })
   t.true(updated.name === 'road team 1')
+})
+
+test('update a team bio', async (t) => {
+  const data = await team.create({ name: 'poi team 1' }, 1)
+  const updated = await team.update(data.id, { bio: 'we map roads' })
+  t.true(updated.bio === 'we map roads')
 })
 
 test('destroy a team', async (t) => {
