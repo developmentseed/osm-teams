@@ -3,9 +3,16 @@ const { prop, map } = require('ramda')
 
 async function listTeams (req, reply) {
   const { osmId, bbox } = req.query
+  let bounds = bbox
+  if (bbox) {
+    bounds = bbox.split(',').map(num => parseFloat(num))
+    if (bounds.length !== 4) {
+      reply.boom.badRequest('error in bbox param')
+    }
+  }
 
   try {
-    const data = await team.list({ osmId, bbox })
+    const data = await team.list({ osmId, bbox: bounds })
     reply.send(data)
   } catch (err) {
     console.log(err)

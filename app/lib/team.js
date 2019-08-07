@@ -1,6 +1,6 @@
 const db = require('../db')
 const knexPostgis = require('knex-postgis')
-const { head, reverse } = require('ramda')
+const { head } = require('ramda')
 const join = require('url-join')
 const xml2js = require('xml2js')
 const request = require('request-promise-native')
@@ -83,9 +83,9 @@ async function getModerators (id) {
 * Get all teams
 *
 * @param options
-* @param options.osmId - filter by whether osmId is a member
-* @param options.bbox - filter for teams whose location is in bbox (NESW)
-* @return {promise}
+* @param {int} options.osmId - filter by whether osmId is a member
+* @param {Array[float]} options.bbox - filter for teams whose location is in bbox (xmin, ymin, xmax, ymax)
+* @return {Promise[Array]}
 **/
 async function list (options) {
   options = options || {}
@@ -103,7 +103,7 @@ async function list (options) {
   }
 
   if (bbox) {
-    query = query.where(st.boundingBoxContains('location', st.makeEnvelope(...reverse(bbox))))
+    query = query.where(st.boundingBoxContained('location', st.makeEnvelope(...bbox)))
   }
 
   return query
