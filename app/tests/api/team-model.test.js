@@ -127,11 +127,24 @@ test('update team members', async t => {
 test('list teams a user belongs to', async (t) => {
   const created = await team.create({ name: 'boundary team 6' }, 1)
   await team.addMember(created.id, 1)
-  const list = await team.findByOsmId(1)
+  const list = await team.list({ osmId: 1 })
 
   t.true(Array.isArray(list) && list.length > 0)
   list.forEach((item) => {
     t.truthy(item.name)
     t.truthy(item.id)
   })
+})
+
+test('list teams with bounding box', async (t) => {
+  await team.create({ name: 'bbox team', location: `{
+    "type": "Point",
+    "coordinates": [0, 0]
+  }` }, 1)
+
+  const list1 = await team.list({ bbox: [-1, -1, 1, 1] }) // contains the team
+  const list2 = await team.list({ bbox: [1, 1, 2, 2] }) // does not contain the team
+
+  t.true(Array.isArray(list1) && list1.length === 1)
+  t.true(Array.isArray(list2) && list2.length === 0)
 })
