@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Map, CircleMarker, TileLayer } from 'react-leaflet'
 import { reverse } from 'ramda'
 
-export default class FormikMap extends Component {
+export default class FormMap extends Component {
   constructor (props) {
     super(props)
     this.state = {
