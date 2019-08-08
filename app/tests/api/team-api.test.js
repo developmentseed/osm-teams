@@ -162,3 +162,17 @@ test('get list of teams by osm id', async t => {
 
   t.true(teams.body.length > 0)
 })
+
+test('get list of teams by bbox', async t => {
+  let res = await agent.post('/api/teams')
+    .send({ name: 'team with location', location: `{
+    "type": "Point",
+    "coordinates": [0, 0]
+  }` })
+    .expect(200)
+
+  let teams = await agent.get(`/api/teams?bbox=-1,-1,1,1`)
+    .expect(200)
+
+  t.true(teams.body.length > 0)
+})
