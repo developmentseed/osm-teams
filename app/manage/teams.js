@@ -53,7 +53,7 @@ async function createTeam (req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 

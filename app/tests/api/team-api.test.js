@@ -51,6 +51,14 @@ test('create a team', async t => {
   t.is(res.body.name, 'road team 1')
 })
 
+test('team requires name column', async (t) => {
+  let res = await agent.post('/api/teams')
+    .send({})
+    .expect(400)
+
+  t.is(res.body.message, 'data.name property is required')
+})
+
 test('update a team', async t => {
   let res = await agent.post('/api/teams')
     .send({ name: 'map team 1' })
