@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import dynamic from 'next/dynamic'
 import join from 'url-join'
 import Router from 'next/router'
 import { pick } from 'ramda'
@@ -7,10 +6,6 @@ import { getTeam, updateTeam } from '../lib/teams-api'
 import getConfig from 'next/config'
 import EditTeamForm from '../components/edit-team-form'
 const { publicRuntimeConfig } = getConfig()
-
-const FormikMap = dynamic(() => import('../components/formik-map'), {
-  ssr: false
-})
 
 export default class Team extends Component {
   static async getInitialProps ({ query }) {

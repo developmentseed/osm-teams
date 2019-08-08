@@ -115,7 +115,7 @@ test('list teams a user belongs to', async (t) => {
 })
 
 test('list teams with bounding box', async (t) => {
-  const created = await team.create({ name: 'bbox team', location: `{
+  await team.create({ name: 'bbox team', location: `{
     "type": "Point",
     "coordinates": [0, 0]
   }` }, 1)
