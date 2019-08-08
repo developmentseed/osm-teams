@@ -5,7 +5,6 @@ import { pick } from 'ramda'
 import { getTeam, updateTeam } from '../lib/teams-api'
 import getConfig from 'next/config'
 import EditTeamForm from '../components/edit-team-form'
-
 const { publicRuntimeConfig } = getConfig()
 
 export default class Team extends Component {

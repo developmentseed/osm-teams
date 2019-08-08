@@ -7,6 +7,7 @@ import Chance from 'chance'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Table from '../components/table'
+import { getTeams } from '../lib/teams-api'
 const chance = Chance()
 
 const { publicRuntimeConfig } = getConfig()
@@ -23,18 +24,9 @@ export default class Profile extends Component {
     }
   }
 
-  async getTeams () {
-    let res = await fetch(join(URL, '/api/teams'))
-    if (res.status === 200) {
-      return res.json()
-    } else {
-      throw new Error('Could not retrieve teams')
-    }
-  }
-
   async refreshTeams () {
     try {
-      let teams = await this.getTeams()
+      let teams = await getTeams({ osmId: this.props.user.uid })
       this.setState({
         teams,
         loading: false

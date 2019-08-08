@@ -48,6 +48,9 @@ class OSMHydra extends App {
         <Head>
           <title>OSM Teams</title>
           <link rel='stylesheet' href='https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css' />
+          <link rel='stylesheet' href='https://unpkg.com/leaflet@1.5.1/dist/leaflet.css'
+            integrity='sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=='
+            crossorigin='' />
           <link rel='shortcut icon' href='/static/favicon.ico' />
           <link rel='icon' type='image/png' href='/static/favicon.png' />
           <style>{`body { margin: 0; background: #F4F4F4; color: #111 }`}</style>

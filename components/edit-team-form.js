@@ -1,7 +1,8 @@
 import React from 'react'
 import { Formik, Field, Form, ErrorMessage } from 'formik'
 import Button from '../components/button'
-import { FormikMap } from '../components/formikmap'
+import dynamic from 'next/dynamic'
+const FormMap = dynamic(() => import('../components/form-map'), { ssr: false })
 
 export default function EditTeamForm ({ initialValues, onSubmit }) {
   return (
@@ -26,7 +27,7 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
             <ErrorMessage name='bio' component='div' />
           </div>
           <div className='mt3'>
-            <FormikMap name='location' value={values.location} onChange={setFieldValue} />
+            <FormMap style={{ height: '300px' }} name='location' value={values.location} onChange={setFieldValue} />
           </div>
           <div className='mt3'>
             { status && status.msg && <div>{status.msg}</div> }
