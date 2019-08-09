@@ -30,7 +30,7 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
               <Field type='textarea' name='bio' />
             </div>
             <div className='form-control'>
-              <FormMap style={{ height: '300px' }} name='location' value={values.location} onChange={setFieldValue} />
+              <FormMap style={{ height: '300px', width: '100%' }} name='location' value={values.location} onChange={setFieldValue} />
             </div>
             <div className='form-control'>
               { status && status.msg && <div className='f6 red mt1 mb2 pa2 bg-washed-red'>{status.msg}</div> }
