@@ -130,19 +130,19 @@ export default class Team extends Component {
     if (error) {
       if (error.status === 401 || error.status === 403) {
         return (
-          <article>
+          <article className='inner page'>
             <h1>Unauthorized</h1>
           </article>
         )
       } else if (error.status === 404) {
         return (
-          <article>
+          <article className='inner page'>
             <h1>Team not found</h1>
           </article>
         )
       } else {
         return (
-          <article>
+          <article className='inner page'>
             <h1>Error fetching team</h1>
           </article>
         )
