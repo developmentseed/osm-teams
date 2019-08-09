@@ -58,7 +58,7 @@ const style = css`
   }
 
   .button.danger {
-    color: ${theme.colors.secondaryColor};
+    color: ${theme.colors.baseColor};
     box-shadow: 2px 2px #FFFFFF,
                 4px 4px ${theme.colors.secondaryColor};
     border-color: ${theme.colors.secondaryColor};
