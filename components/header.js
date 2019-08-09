@@ -6,9 +6,11 @@ export default function Header ({ username, picture }) {
     <header className='header'>
       <div className='inner'>
         <i className='fas fa-bars header__men' />
+        { /* global team / user search
         <div className='header__search'>
           <input className='header__input' placeholder='Search...' />
-        </div>
+          </div> */
+        }
         <h1 className='header__page-title hidden'><a href='#'>Teams</a></h1>
         <a href='#' className='user__heading'>
           <img src={picture} className='user__heading-avatar' />
