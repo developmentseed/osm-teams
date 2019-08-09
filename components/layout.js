@@ -42,14 +42,24 @@ function Layout (props) {
           .page-layout {
             display: grid;
             position: relative;
+            grid-template-rows: 5rem 1fr 1fr 6rem;
             grid-template-columns: 100%;
-            grid-template-rows: 5rem 1fr 6rem;
             grid-template-areas:
               'header'
+              'sidebar'
               'main'
               'footer';
             height: 100vh;
             overflow-x: hidden;
+          }
+          @media screen and (min-width: ${theme.mediaRanges.small}) {
+            .page-layout {
+              grid-template-columns: 1fr 12fr;
+              grid-template-areas:
+                'sidebar header'
+                'sidebar main'
+                'sidebar footer';
+            }
           }
 
           .inner {
