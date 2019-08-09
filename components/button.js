@@ -66,6 +66,9 @@ const style = css`
 `
 
 export default function Button ({ variant, type, disabled, href, onClick, children, small }) {
+  if (type === 'submit') {
+    return <button type='submit' className={`button ${variant}`} disabled={disabled}>{children}<style jsx>{style}</style></button>
+  }
   if (href) {
     const fullUrl = join(publicRuntimeConfig.APP_URL, href)
     return <a href={fullUrl} className={`button ${variant}`} disabled={disabled}>{children}<style jsx>{style}</style></a>

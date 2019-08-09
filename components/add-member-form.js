@@ -31,7 +31,7 @@ export default function AddMemberForm ({ onSubmit }) {
               value={values.osmId}
             />
             { status && status.msg && <div>{status.msg}</div> }
-            <Button variant='submit' disabled={isSubmitting}>
+            <Button type='submit' variant='submit' disabled={isSubmitting}>
               {addMemberText}
             </Button>
           </Form>
