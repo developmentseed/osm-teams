@@ -15,7 +15,7 @@ class Login extends Component {
   render () {
     const OSM_NAME = publicRuntimeConfig.OSM_NAME
     return (
-      <section className='inner'>
+      <section className='inner page'>
         <h1>Login Provider</h1>
         <p>Teams uses {OSM_NAME} as your login, connect your {OSM_NAME} account!</p>
         <br />

@@ -62,16 +62,11 @@ export default class TeamList extends Component {
 
   render () {
     return (
-      <div className='inner'>
+      <div className='inner page'>
         <h2>Teams</h2>
         <Section>
           {this.renderTeams()}
         </Section>
-        <style jsx>
-          {`
-            margin-top: 2rem;
-          `}
-        </style>
       </div>
     )
   }

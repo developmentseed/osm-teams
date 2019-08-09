@@ -56,11 +56,20 @@ let layout = {
   rowMaxWidth: '1280px'
 }
 
+let mediaRanges = {
+  xsmall: null,
+  small: '544px',
+  medium: '768px',
+  large: '992px',
+  xlarge: '1200px'
+}
+
 const theme = {
   layout,
   colors,
   typography,
-  shape
+  shape,
+  mediaRanges
 }
 
 export default theme

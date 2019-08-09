@@ -59,6 +59,37 @@ function Layout (props) {
             padding: 0 ${theme.layout.globalSpacing};
           }
 
+          .inner.page {
+            grid-area: main;
+            margin-top: calc(${theme.layout.globalSpacing} * 4);
+            margin-bottom: calc(${theme.layout.globalSpacing} * 4);
+          }
+
+          .page__heading {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: ${theme.layout.globalSpacing};
+          }
+
+          .section-actions {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-bottom: calc(${theme.layout.globalSpacing} * 2);
+          }
+
+          @media (min-width: ${theme.mediaRanges.medium}) {
+            .page__heading {
+              flex-direction: row;
+              align-items: center;
+            }
+            .section-actions {
+              flex-direction: row;
+            }
+          }
+
           /* Typography
            ========================================================================== */
 
@@ -67,6 +98,7 @@ function Layout (props) {
              font-weight: ${theme.typography.baseFontWeight};
              color: ${theme.colors.primaryColor};
              margin-top: 0;
+             margin-bottom: 0;
            }
 
            h1 {
@@ -79,6 +111,15 @@ function Layout (props) {
 
            h3 {
              font-size: 1.414rem;
+           }
+
+           p {
+             margin: 0 0 ${theme.layout.globalSpacing} 0;
+           }
+
+           ::selection {
+             color: ${theme.colors.backgroundColor};
+             background-color: ${theme.colors.primaryColor};
            }
 
           /* Links
@@ -105,6 +146,7 @@ function Layout (props) {
 
           /* Forms
            ========================================================================== */
+
           .form-control {
             margin-bottom: 1rem;
             display: flex;
@@ -119,20 +161,12 @@ function Layout (props) {
           .form-control :global(input) {
             min-width: 6rem;
             padding: 0.5rem 1rem 0.5rem 0.25rem;
+            margin-right: 1rem;
           }
 
           /* Tether element */
           .tether-element {
             z-index: 1000;
-          }
-
-          p {
-            margin: 0 0 ${theme.layout.globalSpacing} 0;
-          }
-
-          ::selection {
-            color: ${theme.colors.backgroundColor};
-            background-color: ${theme.colors.primaryColor};
           }
 
           .hidden {

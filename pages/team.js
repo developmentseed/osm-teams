@@ -61,9 +61,19 @@ export default class Team extends Component {
     let center = reverse(JSON.parse(centerGeojson).coordinates)
 
     return (
-      <Map center={center} zoom={10} width={300} height={200} >
-        <Marker anchor={center} payload={1} />
-      </Map>
+      <div>
+        <Map center={center} zoom={10} >
+          <Marker anchor={center} payload={1} />
+        </Map>
+        <style jsx>
+          {`
+            div {
+              width: 100%;
+              height: 18rem;
+            }
+          `}
+        </style>
+      </div>
     )
   }
 
@@ -91,9 +101,8 @@ export default class Team extends Component {
         closeOnDocumentClick
         contentStyle={{ padding: '10px', border: 'none' }}
       >
-        <ul className='list pa0 ma0'>
+        <ul>
           <li
-            className='pointer pa1 pl2 hover-bg-near-white'
             onClick={async () => {
               // TODO: show message if error
               // TODO: require confirmation
@@ -105,6 +114,23 @@ export default class Team extends Component {
             Remove team member
           </li>
         </ul>
+        <style jsx>
+          {`
+            ul {
+              list-style: none;
+              padding: 0;
+              margin: 0;
+            }
+
+            li {
+              padding-left: 0.5rem;
+            }
+
+            li:hover {
+              color: ${theme.colors.secondaryColor};
+            }
+          `}
+        </style>
       </Popup>
     )
   }
@@ -162,10 +188,10 @@ export default class Team extends Component {
     }
 
     return (
-      <article className='inner'>
-        <div className='team__heading'>
+      <article className='inner page team'>
+        <div className='page__heading'>
           <h2>{team.name}</h2>
-          { isUserModerator ? <Button type='primary' href={`/teams/${team.id}/edit`}>Edit Team</Button> : <div /> }
+          { isUserModerator ? <Button variant='primary' href={`/teams/${team.id}/edit`}>Edit Team</Button> : <div /> }
         </div>
         <div className='team__details'>
           <Card>
@@ -182,43 +208,46 @@ export default class Team extends Component {
         </div>
         <div className='team__table'>
           <Section>
-            <SectionHeader>Team Members</SectionHeader>
+            <div className='section-actions'>
+              <SectionHeader>Team Members</SectionHeader>
+              <div>
+                { isUserModerator && (
+                  <AddMemberForm
+                    onSubmit={async ({ osmId }) => {
+                      await addMember(team.id, osmId)
+                      return this.getTeam()
+                    }}
+                  />
+                )}
+              </div>
+            </div>
             <Table
               rows={members}
               columns={columns}
             />
-            <div>
-              { isUserModerator && (
-                <AddMemberForm
-                  onSubmit={async ({ osmId }) => {
-                    await addMember(team.id, osmId)
-                    return this.getTeam()
-                  }}
-                />
-              )}
-            </div>
           </Section>
         </div>
         <style jsx>
           {`
-            .inner {
+            .inner.team {
               display: grid;
               grid-template-columns: repeat(12, 1fr);
               grid-gap: ${theme.layout.globalSpacing};
-              margin-top: calc(${theme.layout.globalSpacing} * 2);
-              margin-bottom: calc(${theme.layout.globalSpacing} * 2);
             }
 
-            .team__heading {
+            .page__heading {
               grid-column: 1 / span 12;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
             }
 
             .team__details {
-              grid-column: 1 / span 6;
+              grid-column: 1 / span 12;
               margin-bottom: 4rem;
+            }
+
+            @media (min-width: ${theme.mediaRanges.medium}) {
+              .team__details {
+                grid-column: 1 / span 6;
+              }
             }
 
             dl {

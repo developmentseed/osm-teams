@@ -9,6 +9,7 @@ export default function Card ({ children }) {
         {`
           background: #fff;
           padding: calc(${theme.layout.globalSpacing} * 2);
+          border: 1px solid ${theme.colors.primaryLite};
           box-shadow: 4px 4px ${theme.colors.primaryColor};
         `}
       </style>

@@ -20,7 +20,7 @@ class Home extends Component {
 
   render () {
     return (
-      <section className='inner welcome'>
+      <section className='inner page welcome'>
         <h1>Teams!</h1>
         <p>
           Create teams of {publicRuntimeConfig.OSM_NAME} users and import them into your apps.
@@ -35,7 +35,7 @@ class Home extends Component {
                   <li className=''><a href={join(publicRuntimeConfig.APP_URL, '/profile')} className=''>💁‍♀️ Profile</a></li>
                   <li className=''><a href={join(publicRuntimeConfig.APP_URL, '/clients')} className=''>⚙️ Connected Apps</a></li>
                 </ul>
-                <Button type='primary' onClick={() => {
+                <Button variant='danger' onClick={() => {
                   window.sessionStorage.clear()
                   Router.push('/logout')
                 }
@@ -46,11 +46,6 @@ class Home extends Component {
         }
         <style jsx>
           {`
-            .inner.welcome {
-              grid-area: main;
-              width: 100%;
-            }
-
             .welcome__actions {
               list-style: none;
               display: flex;

@@ -66,7 +66,7 @@ export default class Team extends Component {
     if (!team) return null
 
     return (
-      <article className='inner'>
+      <article className='inner page'>
         <Formik
           initialValues={pick(['name', 'bio', 'hashtag', 'location'], team)}
           onSubmit={async (values, actions) => {
@@ -103,17 +103,13 @@ export default class Team extends Component {
               </div>
               <div className='form-control'>
                 { status && status.msg && <div>{status.msg}</div> }
-                <Button disabled={isSubmitting} onClick={() => submitForm()}>Submit</Button>
+                <Button variant='primary' disabled={isSubmitting} onClick={() => submitForm()}>Submit</Button>
               </div>
             </Form>
           )}
         />
         <style jsx>
           {`
-            .inner {
-              margin-top: 2rem;
-            }
-
             .form-control {
               flex-direction: column;
               align-items: flex-start;
