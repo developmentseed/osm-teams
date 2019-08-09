@@ -9,7 +9,7 @@ const { publicRuntimeConfig } = getConfig()
 export default class TeamCreate extends Component {
   render () {
     return (
-      <article>
+      <article className='inner page'>
         <EditTeamForm
           onSubmit={async (values, actions) => {
             try {

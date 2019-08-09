@@ -3,6 +3,8 @@ import App, { Container } from 'next/app'
 import Head from 'next/head'
 import Header from '../components/header'
 
+import Layout from '../components/layout.js'
+
 class OSMHydra extends App {
   static async getInitialProps ({ Component, ctx }) {
     let pageProps = {}
@@ -48,17 +50,17 @@ class OSMHydra extends App {
         <Head>
           <title>OSM Teams</title>
           <link rel='stylesheet' href='https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css' />
+          <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Inconsolata:400,700|Work+Sans:400,700&display=swap' />
           <link rel='stylesheet' href='https://unpkg.com/leaflet@1.5.1/dist/leaflet.css'
             integrity='sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=='
             crossorigin='' />
           <link rel='shortcut icon' href='/static/favicon.ico' />
           <link rel='icon' type='image/png' href='/static/favicon.png' />
-          <style>{`body { margin: 0; background: #F4F4F4; color: #111 }`}</style>
         </Head>
-        <article className='code mw6 pa3 ma5 center bg-white ba bw2'>
+        <Layout>
           {uid ? <Header {...{ uid, picture, username }} /> : <div />}
           <Component {...Object.assign({ user: { uid, username, picture } }, pageProps)} />
-        </article>
+        </Layout>
       </Container>
     )
   }

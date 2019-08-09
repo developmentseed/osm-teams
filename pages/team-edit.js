@@ -48,13 +48,13 @@ export default class Team extends Component {
     if (error) {
       if (error.status >= 400 && error.status < 500) {
         return (
-          <article>
+          <article className='inner'>
             <h1>Team not found</h1>
           </article>
         )
       } else if (error.status >= 500) {
         return (
-          <article>
+          <article className='inner'>
             <h1>Error fetching team</h1>
           </article>
         )
@@ -64,7 +64,7 @@ export default class Team extends Component {
     if (!team) return null
 
     return (
-      <article>
+      <article className='inner page'>
         <EditTeamForm
           initialValues={pick(['name', 'bio', 'hashtag', 'location'], team)}
           onSubmit={async (values, actions) => {
@@ -80,6 +80,15 @@ export default class Team extends Component {
             }
           }}
         />
+        <style jsx>
+          {`
+            .form-control {
+              flex-direction: column;
+              align-items: flex-start;
+            }
+
+          `}
+        </style>
       </article>
     )
   }

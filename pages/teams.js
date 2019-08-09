@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import Router from 'next/router'
 import Section from '../components/section'
 import Table from '../components/table'
+import theme from '../styles/theme'
 import join from 'url-join'
 import { pick, map } from 'ramda'
 import { getTeams } from '../lib/teams-api'
@@ -57,7 +58,7 @@ export default class TeamList extends Component {
     if (!teams) return null
 
     if (teams.length === 0) {
-      return <p className='measure-copy'>No teams created</p>
+      return <p>No teams created</p>
     }
 
     return (
@@ -108,7 +109,7 @@ export default class TeamList extends Component {
   render () {
     const { searchOnMapMove } = this.state
     return (
-      <div>
+      <div className='inner page'>
         <h2>Teams</h2>
         { this.renderMap() }
         <fieldset>
@@ -118,6 +119,21 @@ export default class TeamList extends Component {
         <Section>
           {this.renderTeams()}
         </Section>
+        <style jsx>
+          {`
+            fieldset {
+              display: inline-block;
+              margin: 1rem 0 2rem;
+              padding: 1.5rem;
+              background: white;
+              border-color: ${theme.colors.primaryColor};
+            }
+
+            fieldset input[type='checkbox'] {
+              margin-right: 0.5rem;
+            }
+          `}
+        </style>
       </div>
     )
   }

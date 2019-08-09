@@ -54,7 +54,7 @@ class Consent extends Component {
               }
               return <div key={scope}>
                 <input type='checkbox' readOnly='readonly' checked='checked' id={scope} value={scope} name='grant_scope' />
-                <label className='pl2' htmlFor={scope}>{scopeLabel}</label>
+                <label htmlFor={scope}>{scopeLabel}</label>
                 <br />
               </div>
             })
@@ -68,13 +68,20 @@ class Consent extends Component {
           </ul>
           <p>
             <input type='checkbox' id='remember' name='remember' value='1' />
-            <label className='pl2' htmlFor='remember'>Do not ask me again</label>
+            <label htmlFor='remember'>Do not ask me again</label>
           </p>
           <p>
             <input type='submit' id='accept' name='submit' value='Allow access' />
             <input type='submit' id='reject' name='submit' value='Deny access' />
           </p>
         </form>
+        <style jsx>
+          {`
+            label {
+              padding-left: 1rem;
+            }
+          `}
+        </style>
       </section>
     )
   }

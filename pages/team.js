@@ -3,11 +3,13 @@ import { map, prop, contains, reverse } from 'ramda'
 import Popup from 'reactjs-popup'
 import dynamic from 'next/dynamic'
 
+import Card from '../components/card'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Button from '../components/button'
 import Table from '../components/table'
 import AddMemberForm from '../components/add-member-form'
+import theme from '../styles/theme'
 
 import { getTeam, addMember, removeMember } from '../lib/teams-api'
 
@@ -88,9 +90,8 @@ export default class Team extends Component {
         closeOnDocumentClick
         contentStyle={{ padding: '10px', border: 'none' }}
       >
-        <ul className='list pa0 ma0'>
+        <ul>
           <li
-            className='pointer pa1 pl2 hover-bg-near-white'
             onClick={async () => {
               // TODO: show message if error
               // TODO: require confirmation
@@ -102,6 +103,23 @@ export default class Team extends Component {
             Remove team member
           </li>
         </ul>
+        <style jsx>
+          {`
+            ul {
+              list-style: none;
+              padding: 0;
+              margin: 0;
+            }
+
+            li {
+              padding-left: 0.5rem;
+            }
+
+            li:hover {
+              color: ${theme.colors.secondaryColor};
+            }
+          `}
+        </style>
       </Popup>
     )
   }
@@ -112,19 +130,19 @@ export default class Team extends Component {
     if (error) {
       if (error.status === 401 || error.status === 403) {
         return (
-          <article>
+          <article className='inner page'>
             <h1>Unauthorized</h1>
           </article>
         )
       } else if (error.status === 404) {
         return (
-          <article>
+          <article className='inner page'>
             <h1>Team not found</h1>
           </article>
         )
       } else {
         return (
-          <article>
+          <article className='inner page'>
             <h1>Error fetching team</h1>
           </article>
         )
@@ -159,37 +177,93 @@ export default class Team extends Component {
     }
 
     return (
-      <article>
-        <h2>{team.name}</h2>
-        { isUserModerator ? <Button href={`/teams/${team.id}/edit`}>Edit Team</Button> : <div /> }
-        <Section>
-          <SectionHeader>Team Details</SectionHeader>
-          <dl>
-            <dt>Bio: </dt>
-            <dd>{team.bio}</dd>
-            <dt>Hashtag: </dt>
-            <dd>{team.hashtag}</dd>
-          </dl>
-          <h3>Location</h3>
-          { this.renderMap(team.location) }
-        </Section>
-        <Section>
-          <SectionHeader>Team Members</SectionHeader>
-          <Table
-            rows={members}
-            columns={columns}
-          />
-          <div className='mt4'>
-            { isUserModerator && (
-              <AddMemberForm
-                onSubmit={async ({ osmId }) => {
-                  await addMember(team.id, osmId)
-                  return this.getTeam()
-                }}
-              />
-            )}
-          </div>
-        </Section>
+      <article className='inner page team'>
+        <div className='page__heading'>
+          <h2>{team.name}</h2>
+          { isUserModerator ? <Button variant='primary' href={`/teams/${team.id}/edit`}>Edit Team</Button> : <div /> }
+        </div>
+        <div className='team__details'>
+          <Card>
+            <SectionHeader>Team Details</SectionHeader>
+            <dl>
+              <dt>Bio: </dt>
+              <dd>{team.bio}</dd>
+              <dt>Hashtag: </dt>
+              <dd>{team.hashtag}</dd>
+            </dl>
+            <SectionHeader>Location</SectionHeader>
+            { this.renderMap(team.location) }
+          </Card>
+        </div>
+        <div className='team__table'>
+          <Section>
+            <div className='section-actions'>
+              <SectionHeader>Team Members</SectionHeader>
+              <div>
+                { isUserModerator && (
+                  <AddMemberForm
+                    onSubmit={async ({ osmId }) => {
+                      await addMember(team.id, osmId)
+                      return this.getTeam()
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+            <Table
+              rows={members}
+              columns={columns}
+            />
+          </Section>
+        </div>
+        <style jsx>
+          {`
+            .inner.team {
+              display: grid;
+              grid-template-columns: repeat(12, 1fr);
+              grid-gap: ${theme.layout.globalSpacing};
+            }
+
+            .page__heading {
+              grid-column: 1 / span 12;
+            }
+
+            .team__details {
+              grid-column: 1 / span 12;
+              margin-bottom: 4rem;
+            }
+
+            @media (min-width: ${theme.mediaRanges.medium}) {
+              .team__details {
+                grid-column: 1 / span 6;
+              }
+            }
+
+            dl {
+              line-height: calc(${theme.layout.globalSpacing} * 2);
+              display: flex;
+              flex-flow: row wrap;
+              margin-bottom: 2rem;
+            }
+
+            dt {
+              font-family: ${theme.typography.headingFontFamily};
+              text-transform: uppercase;
+              flex-basis: 20%;
+              margin-right: ${theme.layout.globalSpacing};
+            }
+
+            dd {
+              margin: 0;
+              flex-basis: 70%;
+              flex-grow: 1;
+            }
+
+            .team__table {
+              grid-column: 1 / span 12;
+            }
+          `}
+        </style>
       </article>
     )
   }

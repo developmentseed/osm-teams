@@ -12,30 +12,31 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
       render={({ status, isSubmitting, submitForm, values, errors, setFieldValue, setErrors, setStatus }) => {
         return (
           <Form>
-            <div className='mt3'>
-              <label htmlFor='name' className='db fw4 lh-copy f6'>Name<span className='red'>*</span></label>
+            <div className='form-control'>
+              <label htmlFor='name'>Name<span className='red'>*</span></label>
               <Field type='text' name='name' required requiredStar className={errors.name ? 'ba b--red' : ''} />
               {errors.name && (
-                <div className='f6 red mt1'>
+                <div>
                   {errors.name}
                 </div>
               )}
             </div>
-            <div className='mt3'>
-              <label htmlFor='hashtag' className='db fw4 lh-copy f6'>Hashtag</label>
+            <div className='form-control'>
+              <label htmlFor='hashtag'>Hashtag</label>
               <Field type='text' name='hashtag' />
             </div>
-            <div className='mt3'>
-              <label htmlFor='bio' className='db fw4 lh-copy f6'>Description</label>
+            <div className='form-control'>
+              <label htmlFor='bio'>Description</label>
               <Field type='textarea' name='bio' />
             </div>
-            <div className='mt3'>
-              <FormMap style={{ height: '300px' }} name='location' value={values.location} onChange={setFieldValue} />
+            <div className='form-control'>
+              <FormMap style={{ height: '300px', width: '100%' }} name='location' value={values.location} onChange={setFieldValue} />
             </div>
-            <div className='mt3'>
+            <div className='form-control'>
               { status && status.msg && <div className='f6 red mt1 mb2 pa2 bg-washed-red'>{status.msg}</div> }
               <Button
                 disabled={isSubmitting}
+                variant='primary'
                 onClick={() => {
                   if (!values.name) {
                     setErrors({ name: 'name field is required' })
@@ -47,9 +48,19 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
                 Submit
               </Button>
             </div>
+            <style jsx>
+              {`
+                .form-control {
+                  flex-direction: column;
+                  align-items: flex-start;
+                }
+
+              `}
+            </style>
           </Form>
         )
-      }}
+      }
+      }
     />
   )
 }
