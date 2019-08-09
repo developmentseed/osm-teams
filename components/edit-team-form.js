@@ -58,8 +58,8 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
               `}
             </style>
           </Form>
-          )
-        }
+        )
+      }
       }
     />
   )
