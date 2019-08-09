@@ -58,8 +58,8 @@ class OSMHydra extends App {
           <link rel='icon' type='image/png' href='/static/favicon.png' />
         </Head>
         <Layout>
-          {uid ? <Header {...{ uid, picture, username }} /> : <div />}
-          <Sidebar />
+          <Header {...{ uid, picture, username }} />
+          <Sidebar {...{ uid, picture, username }} />
           <Component {...Object.assign({ user: { uid, username, picture } }, pageProps)} />
         </Layout>
       </Container>
