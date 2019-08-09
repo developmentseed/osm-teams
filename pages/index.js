@@ -31,9 +31,10 @@ class Home extends Component {
               <div>
                 <h2>Welcome, {this.props.user.username}!</h2>
                 <ul className='welcome__actions'>
-                  <li className=''><a href={join(publicRuntimeConfig.APP_URL, '/teams')} className=''>🌏 All Teams</a></li>
-                  <li className=''><a href={join(publicRuntimeConfig.APP_URL, '/profile')} className=''>💁‍♀️ Profile</a></li>
-                  <li className=''><a href={join(publicRuntimeConfig.APP_URL, '/clients')} className=''>⚙️ Connected Apps</a></li>
+                  <li><a href={join(publicRuntimeConfig.APP_URL, '/teams/create')}>➕ Create New Team</a></li>
+                  <li><a href={join(publicRuntimeConfig.APP_URL, '/teams')} className=''>🌏 All Teams</a></li>
+                  <li><a href={join(publicRuntimeConfig.APP_URL, '/profile')} className=''>💁‍♀️ Profile</a></li>
+                  <li><a href={join(publicRuntimeConfig.APP_URL, '/clients')} className=''>⚙️ Connected Apps</a></li>
                 </ul>
                 <Button variant='danger' onClick={() => {
                   window.sessionStorage.clear()

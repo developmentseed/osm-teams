@@ -46,6 +46,7 @@ export default function Header ({ username, picture }) {
           background: transparent;
           border-bottom: 1px inset ${theme.colors.baseColorLight};
           transition: all 0.3s ease;
+          font-size: 1rem;
         }
         .header__input:focus,
         .header__input:active {

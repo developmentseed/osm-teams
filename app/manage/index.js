@@ -67,6 +67,10 @@ function manageRouter (nextApp) {
     return nextApp.render(req, res, '/profile')
   })
 
+  router.get('/teams/create', can('team:create'), (req, res) => {
+    return nextApp.render(req, res, '/team-create', { id: req.params.id })
+  })
+
   router.get('/teams/:id', can('team:view'), (req, res) => {
     return nextApp.render(req, res, '/team', { id: req.params.id })
   })

@@ -2,15 +2,17 @@ const team = require('../lib/team')
 const { prop, map } = require('ramda')
 
 async function listTeams (req, reply) {
-  const { osmId } = req.query
+  const { osmId, bbox } = req.query
+  let bounds = bbox
+  if (bbox) {
+    bounds = bbox.split(',').map(num => parseFloat(num))
+    if (bounds.length !== 4) {
+      reply.boom.badRequest('error in bbox param')
+    }
+  }
 
   try {
-    let data
-    if (osmId) {
-      data = await team.findByOsmId(osmId)
-    } else {
-      data = await team.list()
-    }
+    const data = await team.list({ osmId, bbox: bounds })
     reply.send(data)
   } catch (err) {
     console.log(err)
@@ -51,7 +53,7 @@ async function createTeam (req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 

@@ -51,6 +51,14 @@ test('create a team', async t => {
   t.is(res.body.name, 'road team 1')
 })
 
+test('team requires name column', async (t) => {
+  let res = await agent.post('/api/teams')
+    .send({})
+    .expect(400)
+
+  t.is(res.body.message, 'data.name property is required')
+})
+
 test('update a team', async t => {
   let res = await agent.post('/api/teams')
     .send({ name: 'map team 1' })
@@ -158,6 +166,20 @@ test('updated members in team', async t => {
 
 test('get list of teams by osm id', async t => {
   let teams = await agent.get(`/api/teams?osmId=1`)
+    .expect(200)
+
+  t.true(teams.body.length > 0)
+})
+
+test('get list of teams by bbox', async t => {
+  await agent.post('/api/teams')
+    .send({ name: 'team with location', location: `{
+    "type": "Point",
+    "coordinates": [0, 0]
+  }` })
+    .expect(200)
+
+  let teams = await agent.get(`/api/teams?bbox=-1,-1,1,1`)
     .expect(200)
 
   t.true(teams.body.length > 0)

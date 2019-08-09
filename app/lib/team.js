@@ -81,22 +81,32 @@ async function getModerators (id) {
 
 /**
 * Get all teams
-* @return {promise}
+*
+* @param options
+* @param {int} options.osmId - filter by whether osmId is a member
+* @param {Array[float]} options.bbox - filter for teams whose location is in bbox (xmin, ymin, xmax, ymax)
+* @return {Promise[Array]}
 **/
-async function list () {
-  const conn = await db()
-  return conn('team').select()
-}
+async function list (options) {
+  options = options || {}
+  const { osmId, bbox } = options
 
-/**
-* Find teams by member id
-* @return {promise}
-**/
-async function findByOsmId (osmId) {
   const conn = await db()
-  return conn('team').select().whereIn('id', function () {
-    this.select('team_id').from('member').where('osm_id', osmId)
-  })
+  const st = knexPostgis(conn)
+
+  let query = conn('team').select('*', st.asGeoJSON('location'))
+
+  if (osmId) {
+    query = query.whereIn('id', function () {
+      this.select('team_id').from('member').where('osm_id', osmId)
+    })
+  }
+
+  if (bbox) {
+    query = query.where(st.boundingBoxContained('location', st.makeEnvelope(...bbox)))
+  }
+
+  return query
 }
 
 /**
@@ -111,7 +121,8 @@ async function findByOsmId (osmId) {
 * @return {promise}
 **/
 async function create (data, osmId) {
-  if (!osmId) throw new Error('Team must have moderator id')
+  if (!osmId) throw new Error('moderator osm id is required as second argument')
+  if (!data.name) throw new Error('data.name property is required')
   const conn = await db()
   const st = knexPostgis(conn)
 
@@ -290,6 +301,5 @@ module.exports = {
   isModerator,
   isMember,
   isPublic,
-  findByOsmId,
   resolveMemberNames
 }

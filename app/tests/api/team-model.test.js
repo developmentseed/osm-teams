@@ -32,6 +32,22 @@ test('create a team', async (t) => {
   t.true(await team.isModerator(data.id, 1))
 })
 
+test('team requires name column', async (t) => {
+  try {
+    await team.create({}, 1)
+  } catch (e) {
+    t.is(e.message, 'data.name property is required')
+  }
+})
+
+test('moderator id is required to create team', async (t) => {
+  try {
+    await team.create({ name: 'map team 1' })
+  } catch (e) {
+    t.is(e.message, 'moderator osm id is required as second argument')
+  }
+})
+
 test('list teams', async (t) => {
   const list = await team.list()
   t.true(Array.isArray(list) && list.length > 0)
@@ -45,6 +61,12 @@ test('update a team', async (t) => {
   const data = await team.create({ name: 'poi team 1' }, 1)
   const updated = await team.update(data.id, { name: 'road team 1' })
   t.true(updated.name === 'road team 1')
+})
+
+test('update a team bio', async (t) => {
+  const data = await team.create({ name: 'poi team 1' }, 1)
+  const updated = await team.update(data.id, { bio: 'we map roads' })
+  t.true(updated.bio === 'we map roads')
 })
 
 test('destroy a team', async (t) => {
@@ -105,11 +127,24 @@ test('update team members', async t => {
 test('list teams a user belongs to', async (t) => {
   const created = await team.create({ name: 'boundary team 6' }, 1)
   await team.addMember(created.id, 1)
-  const list = await team.findByOsmId(1)
+  const list = await team.list({ osmId: 1 })
 
   t.true(Array.isArray(list) && list.length > 0)
   list.forEach((item) => {
     t.truthy(item.name)
     t.truthy(item.id)
   })
+})
+
+test('list teams with bounding box', async (t) => {
+  await team.create({ name: 'bbox team', location: `{
+    "type": "Point",
+    "coordinates": [0, 0]
+  }` }, 1)
+
+  const list1 = await team.list({ bbox: [-1, -1, 1, 1] }) // contains the team
+  const list2 = await team.list({ bbox: [1, 1, 2, 2] }) // does not contain the team
+
+  t.true(Array.isArray(list1) && list1.length === 1)
+  t.true(Array.isArray(list2) && list2.length === 0)
 })
