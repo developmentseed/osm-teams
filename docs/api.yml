@@ -1,0 +1,136 @@
+openapi: 3.0.0
+
+info:
+  title: OSM Teams
+  description: Teams for OpenStreetMap!
+  version: 0.0.0
+
+servers:
+  - url: https://dev.mapping.team/api
+    description: Beta version of the API
+
+consumes:
+  - application/json
+
+produces:
+  - application/json
+
+tags:
+  - name: teams
+    description: Teams
+  - name: clients
+    description: Clients
+
+components:
+  schemas:
+    Team:
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        hashtag:
+          type: string
+        bio:
+          type: string
+        privacy:
+          type: string
+          enum: [private, public]
+        require_join_request:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          description: geojson point
+    Client:
+      properties:
+        client_id:
+          type: string
+        client_name:
+          type: string
+        redirect_uris:
+          type: array
+          items:
+            type: string
+            format: uri
+        grant_types:
+          type: array
+          items:
+            type: string
+        response_types:
+          type: array
+          items:
+            type: string
+        scope:
+          type: string
+          description: space-separated list of scopes
+        audience:
+          type: array
+        owner:
+          type: string
+          description: id of the user that created the client
+        policy_uri:
+          type: string
+          format: uri
+        allowed_cors_origins:
+          type: array
+        tos_uri:
+          type: string
+          format: uri
+        client_uri:
+          type: string
+          format: uri
+        logo_uri:
+          type: string
+          format: uri
+        contacts:
+          type: array
+        client_secret_expires_at:
+          type: integer
+        subject_type:
+          type: string
+        token_endpoint_auth_method:
+          type: string
+        userinfo_signed_response_alg:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+paths:
+  /teams:
+    get:
+      summary: list of teams
+      tags:
+        - teams
+      responses:
+        '200':
+          description: A JSON array of team objects
+          content:
+            application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Team'
+  /clients:
+    get:
+      summary: list of clients
+      tags:
+        - clients
+      responses:
+        '200':
+          description: A JSON array of client objects
+          application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Client'
