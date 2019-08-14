@@ -61,7 +61,7 @@ let mediaRanges = {
   small: '544px',
   medium: '768px',
   large: '992px',
-  xlarge: '1200px'
+  xlarge: '1480px'
 }
 
 const theme = {

@@ -11,40 +11,141 @@ class Sidebar extends Component {
 
     const additionalMenuItems = (
       <Fragment>
-        <li><a href={join(publicRuntimeConfig.APP_URL, '/teams/create')}>➕ Create New Team</a></li>
-        <li><a href={join(publicRuntimeConfig.APP_URL, '/profile')} className=''>💁‍♀️ Profile</a></li>
-        <li><a href={join(publicRuntimeConfig.APP_URL, '/clients')} className=''>⚙️ Connect a new app</a></li>
+        <li>
+          <a href={join(publicRuntimeConfig.APP_URL, '/teams/create')} className='global-menu__link global-menu__link--make' title='Create New Team'>
+            <img src='../static/icon-trophy.png' />
+            <span>markers New Team</span>
+          </a>
+        </li>
+        <li>
+          <a href={join(publicRuntimeConfig.APP_URL, '/profile')} className='global-menu__link global-menu__link--profile' title='Visit Your Profile'>
+            <img src='../static/icon-home.png' />
+            <span>Profile</span>
+          </a>
+        </li>
+        <li>
+          <a href={join(publicRuntimeConfig.APP_URL, '/clients')} className='global-menu__link global-menu__link--app' title='Connect new app'>
+            <img src='../static/icon-gear.png' />
+            <span>Connect a new app</span>
+          </a>
+        </li>
       </Fragment>
     )
     return (
-      <div className='sidebar'>
-        <h1><a href='#'>Teams</a></h1>
-        <ul className='welcome__actions'>
-          <li><a href={join(publicRuntimeConfig.APP_URL, '/teams')} className=''>🌏 Explore Teams</a></li>
-          {
-            uid ? additionalMenuItems : <Fragment />
-          }
-          <li><a href={join(publicRuntimeConfig.APP_URL, '/developers')} className=''>👾For Developers</a></li>
-          <li><a href={join(publicRuntimeConfig.APP_URL, '/about')} className=''>📚About</a></li>
-
-        </ul>
-        <style jsx>
-          {`
-            .sidebar {
-              grid-area: sidebar;
+      <div className='page__sidebar'>
+        <div className='page__headline'>
+          <h1 className='page__title'><a href='/' title='Visit the home page'>Teams</a></h1>
+        </div>
+        <nav>
+          <ul className='global-menu' role='navigation'>
+            <li>
+              <a href={join(publicRuntimeConfig.APP_URL, '/teams')} className='global-menu__link global-menu__link--explore' title='Explore all Teams'>
+                <img src='../static/icon-world.png' />
+                <span>Explore Teams</span>
+              </a>
+            </li>
+            {
+              uid ? additionalMenuItems : <Fragment />
             }
+            <li>
+              <a href={join(publicRuntimeConfig.APP_URL, '/developers')} className='global-menu__link global-menu__link--developers' title='Visit Developers Page'>
+                <img src='../static/icon-invader.png' />
+                <span>For Developers</span>
+              </a>
+            </li>
+            <li>
+              <a href={join(publicRuntimeConfig.APP_URL, '/about')} className='global-menu__link global-menu__link--about' title='Visit About Page'>
+                <img src='../static/icon-info.png' />
+                <span>About</span>
+              </a>
+            </li>
 
-            .sidebar h1 a{
+          </ul>
+        </nav>
+        <style jsx global>
+          {`
+            .page__sidebar {
+              grid-area: sidebar;
+              background-color: ${theme.colors.primaryColor};
+              color: white;
+              display: flex;
+              flex-flow: row nowrap;
+              flex: 1;
+              margin: 0;
+              align-items: baseline;
+              justify-content: space-between;
+            }
+            .page__title {
+              margin: 0 1rem;
+            }
+            .page__title a {
               font-size: 1rem;
               text-transform: uppercase;
               color: ${theme.colors.secondaryColor};
             }
 
-            .sidebar ul {
-              list-style: none;
+            .global-menu {
+              flex-flow: row nowrap;
               margin-block-start: 0;
               margin-block-end: 0;
               padding-inline-start: 0;
+              flex: 1;
+              display: flex;
+              list-style: none;
+              margin: 0;
+              padding: 0;
+              align-items: center;
+            }
+
+            .global-menu > li{
+              margin-left: 1rem;
+            }
+
+            .global-menu__link,
+            .global-menu__link:visited {
+              color: white !important;
+              padding: 1rem;
+              display: inline-block;
+              line-height: 1rem;
+              text-align: center;
+            }
+
+            .global-menu__link:active {
+              background-color: rgba(244,244,244,0.1);
+            }
+
+            .global-menu__link img {
+              width: 24px;
+            }
+
+            .global-menu__link span {
+              opacity: 0.5;
+              display: none;
+              font-size: 0.75rem;
+              text-align: center;
+              font-family: ${theme.typography.headingFontFamily};
+              transition: opacity 0.2s ease;
+            }
+
+            .global-menu__link:hover span {
+              opacity: 1;
+            }
+
+            @media screen and (min-width: ${theme.mediaRanges.small}) {
+              .page__sidebar {
+                flex-flow: column nowrap;
+                align-items: center;
+                justify-content: flex-start;
+              }
+
+              .global-menu {
+                flex-flow: column nowrap;
+              }
+
+              .global-menu > li {
+                margin-bottom: 1rem;
+                margin-left: 0
+              }
             }
           `}
         </style>
