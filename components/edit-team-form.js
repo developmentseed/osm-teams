@@ -12,6 +12,7 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
       render={({ status, isSubmitting, submitForm, values, errors, setFieldValue, setErrors, setStatus }) => {
         return (
           <Form>
+            <h2>Details</h2>
             <div className='form-control'>
               <label htmlFor='name'>Name<span className='red'>*</span></label>
               <Field type='text' name='name' required requiredStar className={errors.name ? 'ba b--red' : ''} />
@@ -29,6 +30,7 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
               <label htmlFor='bio'>Description</label>
               <Field type='textarea' name='bio' />
             </div>
+            <h2>Location</h2>
             <div className='form-control'>
               <FormMap style={{ height: '300px', width: '100%' }} name='location' value={values.location} onChange={setFieldValue} />
             </div>
