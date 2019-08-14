@@ -78,7 +78,8 @@ class Sidebar extends Component {
             .page__title {
               margin: 0 1rem;
             }
-            .page__title a {
+            .page__title a,
+            .page__title a:visited {
               font-size: 1rem;
               text-transform: uppercase;
               color: ${theme.colors.secondaryColor};
