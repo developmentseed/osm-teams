@@ -6,6 +6,7 @@ import { getTeam, updateTeam, destroyTeam } from '../lib/teams-api'
 import getConfig from 'next/config'
 import EditTeamForm from '../components/edit-team-form'
 import Button from '../components/button'
+import theme from '../styles/theme'
 const { publicRuntimeConfig } = getConfig()
 
 export default class Team extends Component {
@@ -78,20 +79,7 @@ export default class Team extends Component {
     if (this.state.deleteClickedOnce) {
       section = (
         <Fragment>
-          <span
-            style={{ 'marginRight': '20px' }}
-          >
-            <Button
-              variant='danger'
-              onClick={() => {
-                this.deleteTeam()
-              }}
-            >
-              Really delete this team?
-            </Button>
-          </span>
           <Button
-            variant='danger'
             onClick={() => {
               this.setState({
                 deleteClickedOnce: false
@@ -99,6 +87,14 @@ export default class Team extends Component {
             }}
           >
             Cancel
+          </Button>
+          <Button
+            variant='danger'
+            onClick={() => {
+              this.deleteTeam()
+            }}
+          >
+            Really delete this team?
           </Button>
         </Fragment>
       )
@@ -152,21 +148,22 @@ export default class Team extends Component {
           { this.renderDeleter() }
 
         </section>
-        <style jsx>
+        <style jsx global>
           {`
             .form-control {
               flex-direction: column;
               align-items: flex-start;
             }
 
-            section {
-              margin-bottom: 30px;
-            }
-
             .danger-zone {
-              border: 1px red solid;
+              border: 1px solid ${theme.colors.secondaryColor};
               background: white;
-              padding: 20px;
+              margin: 4rem 0;
+              padding: 2rem;
+            }
+            
+            .danger-zone .button {
+              margin-right: 2rem;
             }
           `}
         </style>
