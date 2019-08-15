@@ -155,6 +155,9 @@ function Layout (props) {
             transform: translate(0, 1px);
           }
 
+          a.danger {
+            color: ${theme.colors.secondaryColor};
+          }
           /* Forms
            ========================================================================== */
 

@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import join from 'url-join'
 import getConfig from 'next/config'
+import Router from 'next/router'
 import theme from '../styles/theme'
 
 const { publicRuntimeConfig } = getConfig()
@@ -55,6 +56,15 @@ class Sidebar extends Component {
             </li>
 
           </ul>
+          {
+            uid
+              ? <a className='global-menu__link danger' onClick={() => {
+                window.sessionStorage.clear()
+                Router.push('/logout')
+              }
+              }>Log Out</a>
+              : <a className='global-menu__link' href='/login'>Sign in</a>
+          }
         </nav>
         <style jsx global>
           {`
@@ -68,6 +78,7 @@ class Sidebar extends Component {
               margin: 0;
               align-items: center;
               justify-content: space-between;
+              overflow: hidden;
             }
             .page__title {
               margin: 0 1rem;
@@ -101,11 +112,19 @@ class Sidebar extends Component {
 
             .global-menu__link,
             .global-menu__link:visited {
-              color: white !important;
+              color: ${theme.colors.primaryColor};
               padding: 1rem;
               display: inline-block;
               line-height: 1rem;
               text-align: center;
+              white-space: nowrap;
+              font-family: ${theme.typography.headingFontFamily};
+              font-size: 0.8rem;
+              text-transform: uppercase;
+            }
+
+            .global-menu__link {
+              background: white;
             }
 
             .global-menu__link:active {
@@ -138,6 +157,7 @@ class Sidebar extends Component {
 
             .global-menu__link span {
               display: none;
+              color: white;
               font-size: 0.75rem;
               text-align: center;
               font-family: ${theme.typography.headingFontFamily};
@@ -147,7 +167,6 @@ class Sidebar extends Component {
             .global-menu__link:hover span {
               opacity: 1;
             }
-
             @media screen and (min-width: ${theme.mediaRanges.small}) {
               .page__sidebar {
                 flex-flow: column nowrap;

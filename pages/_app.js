@@ -1,7 +1,6 @@
 import React from 'react'
 import App, { Container } from 'next/app'
 import Head from 'next/head'
-import Header from '../components/header'
 import Sidebar from '../components/sidebar'
 import Layout from '../components/layout.js'
 
@@ -58,7 +57,6 @@ class OSMHydra extends App {
           <link rel='icon' type='image/png' href='/static/favicon.png' />
         </Head>
         <Layout>
-          <Header {...{ uid, picture, username }} />
           <Sidebar {...{ uid, picture, username }} />
           <Component {...Object.assign({ user: { uid, username, picture } }, pageProps)} />
         </Layout>
