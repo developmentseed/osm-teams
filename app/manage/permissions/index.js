@@ -33,7 +33,7 @@ async function acceptToken (token, res, next) {
     return next()
   } else {
     // Delete this accessToken ?
-    return res.status(401).send('Access denied, expired token')
+    return res.boom.unauthorized('Expired token', 'Bearer')
   }
 }
 
@@ -52,7 +52,8 @@ async function authenticate (req, res, next) {
       const token = userTokens.manageToken.access_token
       return acceptToken(token, res, next)
     } catch (err) {
-      return res.status(500).send('Could not authorize user')
+      console.error(err)
+      return res.boom.unauthorized('Could not authorize user') // More helpful error message ?
     }
   } else {
     // We don't have a session, probably an API route, check for an access token
@@ -60,7 +61,7 @@ async function authenticate (req, res, next) {
       const token = req.headers.authorization.split(' ')[1]
       return acceptToken(token, res, next)
     } else {
-      return res.status(401).send('Access denied')
+      return res.boom.unauthorized('No token', 'Bearer')
     }
   }
 }
@@ -83,12 +84,18 @@ function check (ability) {
      * @param {Object} params request parameters
      * @returns {boolean} can the request go through?
      */
-    let allowed = await isAllowed[ability](res.locals.user_id, req.params)
+    try {
+      let allowed = await isAllowed[ability](res.locals.user_id, req.params)
 
-    if (allowed) {
-      next()
-    } else {
-      res.status(403).send('Forbidden')
+      if (allowed) {
+        next()
+      } else {
+        res.boom.forbidden('Forbidden')
+      }
+    } catch (e) {
+      // An error occurred checking the permissions
+      // It could be the resource not existing, we send 404
+      res.boom.notFound('Could not find resource')
     }
   }
 }
