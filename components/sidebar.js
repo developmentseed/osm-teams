@@ -13,19 +13,19 @@ class Sidebar extends Component {
       <Fragment>
         <li>
           <a href={join(publicRuntimeConfig.APP_URL, '/teams/create')} className='global-menu__link global-menu__link--make' title='Create New Team'>
-            <img src='../static/icon-trophy.png' />
+            <img src='../static/icon-trophy.svg' />
             <span>markers New Team</span>
           </a>
         </li>
         <li>
           <a href={join(publicRuntimeConfig.APP_URL, '/profile')} className='global-menu__link global-menu__link--profile' title='Visit Your Profile'>
-            <img src='../static/icon-home.png' />
+            <img src='../static/icon-home.svg' />
             <span>Profile</span>
           </a>
         </li>
         <li>
           <a href={join(publicRuntimeConfig.APP_URL, '/clients')} className='global-menu__link global-menu__link--app' title='Connect new app'>
-            <img src='../static/icon-gear.png' />
+            <img src='../static/icon-gear.svg' />
             <span>Connect a new app</span>
           </a>
         </li>
@@ -40,7 +40,7 @@ class Sidebar extends Component {
           <ul className='global-menu' role='navigation'>
             <li>
               <a href={join(publicRuntimeConfig.APP_URL, '/teams')} className='global-menu__link global-menu__link--explore' title='Explore all Teams'>
-                <img src='../static/icon-world.png' />
+                <img src='../static/icon-world.svg' />
                 <span>Explore Teams</span>
               </a>
             </li>
@@ -49,13 +49,13 @@ class Sidebar extends Component {
             }
             <li>
               <a href={join(publicRuntimeConfig.APP_URL, '/developers')} className='global-menu__link global-menu__link--developers' title='Visit Developers Page'>
-                <img src='../static/icon-invader.png' />
+                <img src='../static/icon-invader.svg' />
                 <span>For Developers</span>
               </a>
             </li>
             <li>
               <a href={join(publicRuntimeConfig.APP_URL, '/about')} className='global-menu__link global-menu__link--about' title='Visit About Page'>
-                <img src='../static/icon-info.png' />
+                <img src='../static/icon-info.svg' />
                 <span>About</span>
               </a>
             </li>
@@ -72,17 +72,20 @@ class Sidebar extends Component {
               flex-flow: row nowrap;
               flex: 1;
               margin: 0;
-              align-items: baseline;
+              align-items: center;
               justify-content: space-between;
             }
             .page__title {
               margin: 0 1rem;
+              font-size: ${theme.typography.baseFontSize};
             }
             .page__title a,
             .page__title a:visited {
-              font-size: 1rem;
+              font-size: ${theme.typography.baseFontSize};
               text-transform: uppercase;
               color: ${theme.colors.secondaryColor};
+              font-weight: bold;
+              letter-spacing: 0.1rem;
             }
 
             .global-menu {
@@ -137,6 +140,10 @@ class Sidebar extends Component {
                 flex-flow: column nowrap;
                 align-items: center;
                 justify-content: flex-start;
+              }
+
+              .page__headline {
+                margin: 2rem 0;
               }
 
               .global-menu {
