@@ -6,8 +6,7 @@ info:
   version: 0.0.0
 
 servers:
-  - url: https://dev.mapping.team/api
-    description: Beta version of the API
+  - url: /api
 
 consumes:
   - application/json
@@ -22,6 +21,11 @@ tags:
     description: Clients
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Team:
       properties:
