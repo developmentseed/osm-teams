@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: OSM Teams
-  description: Teams for OpenStreetMap!
+  description: Teams for OpenStreetMap! [Log in to try out requests other than GET](/)
   version: 0.0.0
 
 servers:
@@ -21,11 +21,6 @@ tags:
     description: Clients
 
 components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
   schemas:
     Team:
       properties:
