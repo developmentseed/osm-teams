@@ -42,7 +42,7 @@ function Layout (props) {
           .page-layout {
             display: grid;
             position: relative;
-            grid-template-rows: 5rem 1fr  4fr 6rem ;
+            grid-template-rows: 5rem 5rem 4fr 1rem ;
             grid-template-columns: 100%;
             grid-template-areas:
               'sidebar'
@@ -54,7 +54,7 @@ function Layout (props) {
           }
           @media screen and (min-width: ${theme.mediaRanges.small}) {
             .page-layout {
-              grid-template-columns: 4rem 12fr;
+              grid-template-columns: 4rem 1fr;
               grid-template-rows: 0fr;
               grid-template-areas:
                 'sidebar header'
