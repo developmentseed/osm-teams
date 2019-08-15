@@ -34,9 +34,13 @@ async function init () {
   /**
    * Sub apps init
    */
-  app.use(['/api', '/api/docs'], swaggerUi.serve, swaggerUi.setup(swaggerDocument))
   app.use('/', manageRouter(nextApp))
   app.use('/oauth', oauthRouter(nextApp))
+
+  /**
+   * Docs endpoints
+   */
+  app.use(['/api', '/api/docs'], swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
   /**
    * Handle all other route GET with nextjs
