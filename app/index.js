@@ -46,7 +46,7 @@ async function init () {
   app.use(function (err, req, res, next) {
     res.status(err.status || 500)
     console.error('error', err)
-    res.send(err)
+    res.boom.internal('An internal error occurred.')
   })
 
   return app
