@@ -1,6 +1,6 @@
 const db = require('../db')
 const knexPostgis = require('knex-postgis')
-const { head } = require('ramda')
+const { head, objOf } = require('ramda')
 const join = require('url-join')
 const xml2js = require('xml2js')
 const request = require('request-promise-native')
@@ -68,6 +68,23 @@ async function getMembers (id) {
 }
 
 /**
+ * Get tags. If an id is supplied, filter by the team
+ *
+ * @param {int} id - team id
+ **/
+async function getTags (id) {
+  const conn = await db()
+
+  // TODO This changes for public/private
+  let query = conn('tags').select('tag')
+
+  if (id) {
+    query = query.where('team_id', id)
+  }
+  return query
+}
+
+/**
  * getModerators
  * Get the moderators of a team
  *
@@ -94,6 +111,7 @@ async function list (options) {
   const conn = await db()
   const st = knexPostgis(conn)
 
+  // TODO: this changes for public / private
   let query = conn('team').select('*', st.asGeoJSON('location'))
 
   if (osmId) {
@@ -172,6 +190,24 @@ async function destroy (id) {
   return conn.transaction(async trx => {
     await trx('team').where('id', id).del()
     await trx('member').where('team_id', id).del()
+  })
+}
+
+/**
+ * Update tags for a team
+ * @param {int} teamId - team id
+ * @param {array[string]} tags - the tags that this team should have
+ * @return {promise}
+ */
+async function updateTags (teamId, tags) {
+  const conn = await db()
+
+  // easiest is to delete existing and create new tags
+  // in a transaction
+  return conn.transaction(async trx => {
+    await trx('tags').where('team_id', teamId).del()
+    await trx('tags').where('team_id', teamId)
+      .insert(tags.map(tag => ({ tag, 'team_id': teamId })))
   })
 }
 
@@ -294,6 +330,8 @@ module.exports = {
   destroy,
   getMembers,
   getModerators,
+  getTags,
+  updateTags,
   addMember,
   updateMembers,
   removeMember,

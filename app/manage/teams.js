@@ -32,12 +32,40 @@ async function getTeam (req, reply) {
     const memberIds = map(prop('osm_id'), (await team.getMembers(id)))
     const members = await team.resolveMemberNames(memberIds)
     const moderators = await team.getModerators(id)
+    const tags = await team.getTags(id)
 
     if (!teamData && !members) {
       return reply.boom.notFound()
     }
 
-    return reply.send(Object.assign({}, teamData, { members, moderators }))
+    return reply.send(Object.assign({}, teamData, { members, moderators, tags }))
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest()
+  }
+}
+
+async function getTags (req, reply) {
+  try {
+    const tags = await team.getTags()
+    return reply.send(tags)
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest()
+  }
+}
+
+async function updateTags (req, reply) {
+  const { id } = req.params
+  const { body } = req
+
+  if (!id) {
+    return reply.boom.badRequest('team id is required')
+  }
+
+  try {
+    await team.updateTags(id, body)
+    reply.sendStatus(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest()
@@ -159,5 +187,7 @@ module.exports = {
   destroyTeam,
   addMember,
   updateMembers,
-  removeMember
+  removeMember,
+  getTags,
+  updateTags
 }
