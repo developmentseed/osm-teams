@@ -5497,6 +5497,13 @@ launch-editor@2.2.1:
     chalk "^2.3.0"
     shell-quote "^1.6.1"
 
+leaflet-control-geocoder@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/leaflet-control-geocoder/-/leaflet-control-geocoder-1.9.0.tgz#d837569de7762953cd4f9543850602bab9f82230"
+  integrity sha512-yY6v8wly5Z+S4avTedgEGlDiW1HNPUS+1Eggus0k8UFxoSg7doZZv23T/1wQjix5hJZBEnlEgyHv4HAW1D8W+A==
+  optionalDependencies:
+    open-location-code "^1.0.0"
+
 leaflet@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.5.1.tgz#9afb9d963d66c870066b1342e7a06f92840f46bf"
@@ -6525,6 +6532,11 @@ onetime@^2.0.0:
   integrity sha1-BnQoIw/WdEOyeUsiu6UotoZ5YtQ=
   dependencies:
     mimic-fn "^1.0.0"
+
+open-location-code@^1.0.0:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/open-location-code/-/open-location-code-1.0.3.tgz#5ea1a34ee5221c6cafa04392e1bd906fd7488f7e"
+  integrity sha1-XqGjTuUiHGyvoEOS4b2Qb9dIj34=
 
 opn@^3.0.2:
   version "3.0.3"
