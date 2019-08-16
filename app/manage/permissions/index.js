@@ -17,6 +17,40 @@ const clientPermissions = {
   'clients:view': require('./view-clients')
 }
 
+const permissions = mergeAll([
+  metaPermissions,
+  teamPermissions,
+  clientPermissions
+])
+
+async function getToken (req) {
+  let token
+  if (req.session && req.session.user_id) {
+    token = await getSessionToken(req)
+  } else if (req.headers.authorization) {
+    token = getAuthHeaderToken(req)
+  }
+  return token
+}
+
+async function getSessionToken (req) {
+  if (!req.session || !req.session.user_id) return
+  try {
+    let conn = await db()
+    let [userTokens] = await conn('users').where('id', req.session.user_id)
+    return userTokens.manageToken.access_token
+  } catch (err) {
+    throw err
+  }
+}
+
+function getAuthHeaderToken (req) {
+  if (!req.headers.authorization) return
+  const [type, token] = req.headers.authorization.split(' ')
+  if (type !== 'Bearer') throw new Error('Authorization scheme not supported. Only Bearer scheme is supported')
+  return token
+}
+
 /**
  * Takes an access token
  * If it's valid, set the user id in the response object res.locals and forward to the next
@@ -33,7 +67,7 @@ async function acceptToken (token, res, next) {
     return next()
   } else {
     // Delete this accessToken ?
-    return res.boom.unauthorized('Expired token', 'Bearer')
+    return res.boom.unauthorized('Expired token')
   }
 }
 
@@ -43,25 +77,27 @@ async function acceptToken (token, res, next) {
  * the accessToken validity with hydra. If there isn't a session,
  * it checks for an Authorization header with a valid access token
  */
-async function authenticate (req, res, next) {
-  if (req.session && req.session.user_id) {
-    // We have a session, we can use the user id to get the access token
+function authenticate (ability) {
+  return async function authenticate (req, res, next) {
+    console.log(req.method, req.url)
+    console.log('authorization header', req.headers.authorization)
+    console.log('session id', req.session && req.session.user_id)
     try {
-      let conn = await db()
-      let [userTokens] = await conn('users').where('id', req.session.user_id)
-      const token = userTokens.manageToken.access_token
-      return acceptToken(token, res, next)
-    } catch (err) {
-      console.error(err)
-      return res.boom.unauthorized('Could not authorize user') // More helpful error message ?
-    }
-  } else {
-    // We don't have a session, probably an API route, check for an access token
-    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-      const token = req.headers.authorization.split(' ')[1]
-      return acceptToken(token, res, next)
-    } else {
-      return res.boom.unauthorized('No token', 'Bearer')
+      const token = await getToken(req)
+
+      // if token exists, move to next middleware to check permissions
+      if (token) return acceptToken(token, res, next)
+
+      // if no token, check ability to see if user has access anyway
+      const allowed = await checkPermission(req, res, ability)
+
+      // if allowed, continue to next middleware
+      if (allowed) return next()
+      // if they don't have access, tell them
+      return res.boom.forbidden('Forbidden')
+    } catch (e) {
+      console.log('error getting token', e)
+      return res.boom.forbidden('Forbidden')
     }
   }
 }
@@ -72,12 +108,6 @@ async function authenticate (req, res, next) {
  */
 function check (ability) {
   return async function (req, res, next) {
-    const isAllowed = mergeAll([
-      metaPermissions,
-      teamPermissions,
-      clientPermissions
-    ])
-
     /**
      * Permissions decision function
      * @param {string} uid user id
@@ -85,7 +115,7 @@ function check (ability) {
      * @returns {boolean} can the request go through?
      */
     try {
-      let allowed = await isAllowed[ability](res.locals.user_id, req.params)
+      let allowed = await checkPermission(req, res, ability)
 
       if (allowed) {
         next()
@@ -100,9 +130,14 @@ function check (ability) {
   }
 }
 
+async function checkPermission (req, res, ability) {
+  const locals = res.locals || {}
+  return permissions[ability](locals.user_id, req.params)
+}
+
 module.exports = {
   can: (ability) => {
-    return [authenticate, check(ability)]
+    return [authenticate(ability), check(ability)]
   },
   authenticate,
   check
