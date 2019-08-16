@@ -126,6 +126,8 @@ class Sidebar extends Component {
               font-size: 0.8rem;
               line-height: 1rem;
               text-transform: uppercase;
+              background-repeat: no-repeat;
+              background-position: center;
             }
 
             .global-menu__link.login {
@@ -138,27 +140,27 @@ class Sidebar extends Component {
             }
 
             .global-menu__link--make {
-              background: url('../static/icon-teams.svg') no-repeat center center;;
+              background-image: url('../static/icon-teams.svg');
             }
 
             .global-menu__link--profile {
-              background: url('../static/icon-profile.svg') no-repeat center center;
+              background-image: url('../static/icon-profile.svg');
             }
 
             .global-menu__link--app {
-              background: url('../static/icon-gear.svg') no-repeat center center;
+              background-image: url('../static/icon-gear.svg');
             }
 
             .global-menu__link--explore {
-              background: url('../static/icon-globe.svg') no-repeat center center;;
+              background-image: url('../static/icon-globe.svg');
             }
 
             .global-menu__link--developers {
-              background: url('../static/icon-code.svg') no-repeat center center;;
+              background-image: url('../static/icon-code.svg');
             }
 
             .global-menu__link--about {
-              background: url('../static/icon-info.svg') no-repeat center center;;
+              background-image: url('../static/icon-info.svg');
             }
 
             .global-menu__link span {
@@ -183,8 +185,13 @@ class Sidebar extends Component {
               .page__headline {
                 margin: 2rem 0;
               }
+
               .page__sidebar nav {
                 flex-flow: column nowrap;
+              }
+
+              .global-menu__link {
+                padding: 1.25rem 1rem;
               }
 
               .global-menu__link.login {
@@ -199,6 +206,30 @@ class Sidebar extends Component {
               .global-menu > li {
                 margin-bottom: 1.5rem;
                 margin-right: 0
+              }
+            }
+            @media screen and (min-width: ${theme.mediaRanges.large}) {
+              .page__sidebar {
+                align-items: baseline;
+              }
+
+              .page__sidebar nav {
+                width: 100%;
+              }
+
+              .global-menu {
+                align-items: baseline;
+                margin-left: 1.25rem;
+              }
+
+              .global-menu__link span {
+                display: inline-block;
+                margin-left: 2rem;
+              }
+
+              .global-menu__link {
+                background-position: left;
+                padding: 1rem;
               }
             }
           `}

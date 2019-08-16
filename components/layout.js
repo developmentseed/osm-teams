@@ -62,6 +62,11 @@ function Layout (props) {
                 'sidebar footer';
             }
           }
+          @media screen and (min-width: ${theme.mediaRanges.large}) {
+            .page-layout {
+              grid-template-columns: 12rem 1fr;
+            }
+          }
 
           .inner {
             margin: 0 auto;
