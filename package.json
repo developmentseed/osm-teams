@@ -27,6 +27,7 @@
     "body-parser": "^1.18.3",
     "chance": "^1.0.18",
     "compression": "^1.7.3",
+    "connect-session-knex": "^1.4.0",
     "csurf": "^1.9.0",
     "dotenv": "^6.2.0",
     "dotenv-webpack": "^1.7.0",
