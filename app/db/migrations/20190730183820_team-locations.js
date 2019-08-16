@@ -11,7 +11,7 @@ exports.up = async function (knex) {
 exports.down = async function (knex) {
   try {
     await knex.raw('ALTER TABLE team DROP COLUMN location')
-    await knex.schema.raw('DROP EXTENSION "postgis"')
+    await knex.schema.raw('DROP EXTENSION "postgis" CASCADE')
   } catch (e) {
     console.error(e)
   }

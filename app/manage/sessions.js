@@ -1,18 +1,22 @@
 const jwt = require('jsonwebtoken')
 const session = require('express-session')
+const SessionStore = require('connect-session-knex')(session)
+const knex = require('knex')
+const connections = require('../db/knexfile')
 
 const { serverRuntimeConfig } = require('../../next.config')
+const knexConfig = connections[process.env.NODE_ENV]
 
 /**
  * Configure the session
  */
 const SESSION_SECRET = serverRuntimeConfig.SESSION_SECRET || 'super-secret-sessions'
 let sessionConfig = {
-  name: 'osm-hydra-sid',
+  name: 'osm-teams.sid',
   secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
-  expires: new Date(Date.now() + (30 * 86400 * 1000))
+  store: new SessionStore({ knex: knex(knexConfig), tableName: 'app_sessions' })
 }
 
 /**

@@ -1,3 +1,6 @@
+const pg = require('pg')
+pg.defaults.ssl = true
+
 let DATABASE_URL
 
 if (!process.env.NODE_ENV) {
@@ -10,6 +13,7 @@ if (process.env.DSN) {
   if (process.env.NODE_ENV === 'development') {
     DATABASE_URL = 'postgres://postgres@localhost/osm-teams'
   } else if (process.env.NODE_ENV === 'test') {
+    pg.defaults.ssl = false
     DATABASE_URL = 'postgres://postgres@localhost/osm-teams-test'
   }
 }

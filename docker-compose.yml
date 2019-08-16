@@ -14,7 +14,7 @@ services:
       - URLS_CONSENT=http://localhost:8989/oauth/consent
       - URLS_LOGIN=http://localhost:8989/oauth/login
     env_file:
-      docker.env
+      .env
     
   teams:
     build: .
@@ -27,4 +27,4 @@ services:
     ports:
     - 8989:8989
     env_file:
-      docker.env
+      .env
