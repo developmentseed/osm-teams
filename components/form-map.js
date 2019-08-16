@@ -24,7 +24,6 @@ export default class FormMap extends Component {
 
       this.geocoder.on('markgeocode', (e) => {
         const bbox = e.geocode.bbox
-        console.log('this.map', this.map)
         this.map.current.leafletElement.fitBounds(bbox)
       })
 
