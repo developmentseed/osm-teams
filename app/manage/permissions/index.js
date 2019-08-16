@@ -34,7 +34,6 @@ async function getToken (req) {
 }
 
 async function getSessionToken (req) {
-  if (!req.session || !req.session.user_id) return
   try {
     let conn = await db()
     let [userTokens] = await conn('users').where('id', req.session.user_id)
@@ -45,7 +44,6 @@ async function getSessionToken (req) {
 }
 
 function getAuthHeaderToken (req) {
-  if (!req.headers.authorization) return
   const [type, token] = req.headers.authorization.split(' ')
   if (type !== 'Bearer') throw new Error('Authorization scheme not supported. Only Bearer scheme is supported')
   return token
