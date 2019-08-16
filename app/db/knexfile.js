@@ -10,10 +10,10 @@ if (!process.env.NODE_ENV) {
 if (process.env.DSN) {
   DATABASE_URL = process.env.DSN
 } else {
+  pg.defaults.ssl = false
   if (process.env.NODE_ENV === 'development') {
     DATABASE_URL = 'postgres://postgres@localhost/osm-teams'
   } else if (process.env.NODE_ENV === 'test') {
-    pg.defaults.ssl = false
     DATABASE_URL = 'postgres://postgres@localhost/osm-teams-test'
   }
 }

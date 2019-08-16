@@ -1,5 +1,10 @@
 {
+  "name": "osm-teams",
+  "version": "0.0.0",
+  "description": "Teams for OpenStreetMap!",
   "scripts": {
+    "docs:api": "swagger-markdown -i docs/api.yml -o docs/api.md",
+    "docs": "npm run docs:api",
     "dev": "NODE_ENV=development nodemon --watch app app/index.js",
     "migrate": "knex --knexfile app/db/knexfile.js migrate:latest",
     "test": "NODE_ENV=test ava app/tests/**/*.test.js -c 1 --serial --verbose",
@@ -41,6 +46,7 @@
     "knex": "^0.16.3",
     "knex-postgis": "^0.8.1",
     "leaflet": "^1.5.1",
+    "leaflet-control-geocoder": "^1.9.0",
     "next": "^8.0.1",
     "node-fetch": "^2.3.0",
     "passport-light": "^1.0.1",
@@ -63,8 +69,10 @@
     "sinon": "^7.3.2",
     "sqlite3": "^4.0.6",
     "supertest": "^4.0.2",
+    "swagger-ui-express": "^4.0.7",
     "url-join": "^4.0.0",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.19",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
@@ -73,6 +81,7 @@
     "babelify": "^10.0.0",
     "budo": "^11.6.3",
     "devseed-standard": "^1.1.0",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "swagger-markdown": "^1.2.0"
   }
 }

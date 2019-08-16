@@ -15,7 +15,7 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
             <h2>Details</h2>
             <div className='form-control'>
               <label htmlFor='name'>Name<span className='red'>*</span></label>
-              <Field type='text' name='name' required requiredStar className={errors.name ? 'ba b--red' : ''} />
+              <Field type='text' name='name' required className={errors.name ? 'ba b--red' : ''} />
               {errors.name && (
                 <div>
                   {errors.name}

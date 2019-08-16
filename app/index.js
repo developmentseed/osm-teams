@@ -1,14 +1,19 @@
+const path = require('path')
 const express = require('express')
 const bodyParser = require('body-parser')
 const compression = require('compression')
 const boom = require('express-boom')
 const next = require('next')
+const YAML = require('yamljs')
+const swaggerUi = require('swagger-ui-express')
 
 const manageRouter = require('./manage')
 const oauthRouter = require('./oauth')
 
 const dev = process.env.NODE_ENV !== 'production'
 const PORT = process.env.PORT || 8989
+
+const swaggerDocument = YAML.load(path.join(__dirname, '..', '/docs/api.yml'))
 
 const nextApp = next({ dev })
 const app = express()
@@ -31,6 +36,11 @@ async function init () {
    */
   app.use('/', manageRouter(nextApp))
   app.use('/oauth', oauthRouter(nextApp))
+
+  /**
+   * Docs endpoints
+   */
+  app.use(['/api', '/api/docs'], swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
   /**
    * Handle all other route GET with nextjs
