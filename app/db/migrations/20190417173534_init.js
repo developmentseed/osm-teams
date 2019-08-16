@@ -8,7 +8,7 @@ exports.up = async (knex) => {
   })
 
   await knex.schema.createTable('team', (table) => {
-    table.increments('id')
+    table.increments('id').primary()
     table.string('name').unique()
     table.string('hashtag').unique()
     table.string('bio')
@@ -18,19 +18,19 @@ exports.up = async (knex) => {
   })
 
   await knex.schema.createTable('moderator', (table) => {
-    table.increments('id')
+    table.increments('id').primary()
     table.integer('team_id').references('id').inTable('team').onDelete('CASCADE')
     table.integer('osm_id')
   })
 
   await knex.schema.createTable('member', (table) => {
-    table.increments('id')
+    table.increments('id').primary()
     table.integer('team_id').references('id').inTable('team').onDelete('CASCADE')
     table.integer('osm_id')
   })
 
   await knex.schema.createTable('join_request', (table) => {
-    table.increments('id')
+    table.increments('id').primary()
     table.integer('team_id').references('id').inTable('team').onDelete('CASCADE')
     table.integer('osm_id')
   })
