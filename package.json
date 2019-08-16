@@ -61,6 +61,7 @@
     "react": "^16.8.2",
     "react-dom": "^16.8.6",
     "react-leaflet": "^2.4.0",
+    "react-tag-autocomplete": "^5.11.1",
     "reactjs-popup": "^1.4.1",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",

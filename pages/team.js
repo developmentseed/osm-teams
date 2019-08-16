@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { map, prop, contains, reverse } from 'ramda'
 import Popup from 'reactjs-popup'
 import dynamic from 'next/dynamic'
@@ -11,7 +11,7 @@ import Table from '../components/table'
 import AddMemberForm from '../components/add-member-form'
 import theme from '../styles/theme'
 
-import { getTeam, addMember, removeMember } from '../lib/teams-api'
+import { getTeam, addMember, removeMember, updateTags } from '../lib/teams-api'
 
 const Map = dynamic(() => import('../components/team-map'), { ssr: false })
 
@@ -124,6 +124,22 @@ export default class Team extends Component {
     )
   }
 
+  renderTags (tags) {
+    if (!tags || tags.length === 0) {
+      return <div />
+    }
+    let teamTags = tags.map(tag => <div style={
+      { background: 'blue', maxWidth: '25%', color: 'white', padding: '5px'}
+    }>{tag.tag}</div>)
+    return (
+      <Fragment>
+        <SectionHeader>Tags</SectionHeader>
+        { teamTags }
+        <hr />
+      </Fragment>
+    )
+  }
+
   render () {
     const { team, error } = this.state
 
@@ -191,6 +207,7 @@ export default class Team extends Component {
               <dt>Hashtag: </dt>
               <dd>{team.hashtag}</dd>
             </dl>
+            { this.renderTags(team.tags) }
             <SectionHeader>Location</SectionHeader>
             { this.renderMap(team.location) }
           </Card>

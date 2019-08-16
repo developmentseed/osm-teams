@@ -1,10 +1,11 @@
 import React, { Component, Fragment } from 'react'
 import join from 'url-join'
 import Router from 'next/router'
-import { pick } from 'ramda'
-import { getTeam, updateTeam, destroyTeam } from '../lib/teams-api'
+import { pick, map, prop } from 'ramda'
+import { getTeam, updateTeam, destroyTeam, getTags, updateTags } from '../lib/teams-api'
 import getConfig from 'next/config'
 import EditTeamForm from '../components/edit-team-form'
+import TagForm from '../components/tag-form'
 import Button from '../components/button'
 import theme from '../styles/theme'
 const { publicRuntimeConfig } = getConfig()
@@ -31,8 +32,11 @@ export default class Team extends Component {
     const { id } = this.props
     try {
       let team = await getTeam(id)
+      let suggestions = map(prop('tag'), await getTags())
+      console.log(suggestions)
       this.setState({
         team,
+        suggestions,
         loading: false
       })
     } catch (e) {
@@ -140,6 +144,14 @@ export default class Team extends Component {
                 actions.setStatus(e.message)
               }
             }}
+          />
+        </section>
+        <section>
+          <h2>Tags</h2>
+          <TagForm
+            tags={map(prop('tag'), team.tags || [])}
+            suggestions={this.state.suggestions}
+            updateTags={(tags) => updateTags(team.id, tags)}
           />
         </section>
         <section className='danger-zone'>
