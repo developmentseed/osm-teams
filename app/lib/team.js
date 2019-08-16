@@ -178,7 +178,8 @@ async function destroy (id) {
 /**
 * Add multiple osm users as team members
 * @param {int} teamId - team id
-* @param {int} osmIds - osm ids
+* @param {array} osmIdsToAdd - array of integer osm ids to add
+* @param {array} osmIdsToRemove - array of integer osm ids to remove
 * @return {promise}
 **/
 async function updateMembers (teamId, osmIdsToAdd, osmIdstoRemove) {
