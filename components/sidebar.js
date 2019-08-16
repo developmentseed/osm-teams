@@ -58,12 +58,12 @@ class Sidebar extends Component {
           </ul>
           {
             uid
-              ? <a className='global-menu__link danger' onClick={() => {
+              ? <a className='global-menu__link login danger' onClick={() => {
                 window.sessionStorage.clear()
                 Router.push('/logout')
               }
               }>Log Out</a>
-              : <a className='global-menu__link' href='/login'>Sign in</a>
+              : <a className='global-menu__link login' href='/login'>Sign in</a>
           }
         </nav>
         <style jsx global>
@@ -93,6 +93,10 @@ class Sidebar extends Component {
               letter-spacing: 0.1rem;
             }
 
+            .page__sidebar nav {
+              display: flex;
+            }
+
             .global-menu {
               flex-flow: row nowrap;
               margin-block-start: 0;
@@ -107,7 +111,7 @@ class Sidebar extends Component {
             }
 
             .global-menu > li{
-              margin-right: 1.5rem;
+              margin-right: 0.75rem;
             }
 
             .global-menu__link,
@@ -120,23 +124,25 @@ class Sidebar extends Component {
               white-space: nowrap;
               font-family: ${theme.typography.headingFontFamily};
               font-size: 0.8rem;
+              line-height: 1rem;
               text-transform: uppercase;
             }
 
-            .global-menu__link {
+            .global-menu__link.login {
               background: white;
+              height: 5rem;
+              line-height: 3rem;
             }
-
             .global-menu__link:active {
               background-color: rgba(244,244,244,0.1);
             }
 
             .global-menu__link--make {
-              background: url('../static/icon-trophy.svg') no-repeat center center;;
+              background: url('../static/icon-teams.svg') no-repeat center center;;
             }
 
             .global-menu__link--profile {
-              background: url('../static/icon-home.svg') no-repeat center center;
+              background: url('../static/icon-profile.svg') no-repeat center center;
             }
 
             .global-menu__link--app {
@@ -144,11 +150,11 @@ class Sidebar extends Component {
             }
 
             .global-menu__link--explore {
-              background: url('../static/icon-world.svg') no-repeat center center;;
+              background: url('../static/icon-globe.svg') no-repeat center center;;
             }
 
             .global-menu__link--developers {
-              background: url('../static/icon-invader.svg') no-repeat center center;;
+              background: url('../static/icon-code.svg') no-repeat center center;;
             }
 
             .global-menu__link--about {
@@ -176,6 +182,14 @@ class Sidebar extends Component {
 
               .page__headline {
                 margin: 2rem 0;
+              }
+              .page__sidebar nav {
+                flex-flow: column nowrap;
+              }
+
+              .global-menu__link.login {
+                line-height: 1rem;
+                height: initial;
               }
 
               .global-menu {
