@@ -6,6 +6,7 @@ import Geocoder from 'leaflet-control-geocoder'
 export default class FormMap extends Component {
   constructor (props) {
     super(props)
+    this.map = React.createRef()
     this.state = {
       zoom: 15
     }
@@ -24,10 +25,10 @@ export default class FormMap extends Component {
       this.geocoder.on('markgeocode', (e) => {
         const bbox = e.geocode.bbox
         console.log('this.map', this.map)
-        this.map.leafletElement.fitBounds(bbox)
+        this.map.current.leafletElement.fitBounds(bbox)
       })
 
-      this.map.leafletElement.addControl(this.geocoder)
+      this.map.current.leafletElement.addControl(this.geocoder)
     }
   }
 
@@ -40,7 +41,7 @@ export default class FormMap extends Component {
         center={center}
         zoom={this.state.zoom}
         style={this.props.style}
-        ref={(map) => { this.map = map }}
+        ref={this.map}
         onViewportChange={({ center, zoom }) => {
           let toGeojson = `{
           "type": "Point",
