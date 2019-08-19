@@ -46,8 +46,8 @@ class Sidebar extends Component {
         <div className='page__headline'>
           <h1 className='page__title'><a href='/' title='Visit the home page'>Teams</a></h1>
         </div>
-        <nav>
-          <ul className='global-menu' role='navigation'>
+        <nav role='navigation'>
+          <ul className='global-menu'>
             <li>
               <NavLink href='/teams'>
                 <a className='global-menu__link global-menu__link--explore' title='Explore all Teams'>
@@ -98,10 +98,12 @@ class Sidebar extends Component {
               justify-content: space-between;
               overflow: hidden;
             }
+
             .page__title {
               margin: 0 1rem;
               font-size: ${theme.typography.baseFontSize};
             }
+
             .page__title a,
             .page__title a:visited {
               font-size: ${theme.typography.baseFontSize};
@@ -128,16 +130,11 @@ class Sidebar extends Component {
               align-items: center;
             }
 
-            .global-menu > li{
-              margin-right: 0.75rem;
-            }
-
             .global-menu__link,
             .global-menu__link:visited {
               color: ${theme.colors.primaryColor};
-              padding: 1rem;
+              padding: 1.25rem;
               display: inline-block;
-              line-height: 1rem;
               text-align: center;
               white-space: nowrap;
               font-family: ${theme.typography.headingFontFamily};
@@ -146,6 +143,11 @@ class Sidebar extends Component {
               text-transform: uppercase;
               background-repeat: no-repeat;
               background-position: center;
+              background-size: 40%;
+            }
+
+            .global-menu li {
+              line-height: 1;
             }
 
             .global-menu__link.active {
@@ -155,8 +157,9 @@ class Sidebar extends Component {
             .global-menu__link.login {
               background: white;
               height: 5rem;
-              line-height: 3rem;
+              line-height: 2.5rem;
             }
+
             .global-menu__link:active {
               background-color: rgba(244,244,244,0.1);
             }
@@ -197,6 +200,7 @@ class Sidebar extends Component {
             .global-menu__link:hover span {
               opacity: 1;
             }
+
             @media screen and (min-width: ${theme.mediaRanges.small}) {
               .page__sidebar {
                 flex-flow: column nowrap;
@@ -208,17 +212,27 @@ class Sidebar extends Component {
                 margin: 2rem 0;
               }
 
+              .page__title {
+                margin: 0 0.5rem;
+              }
+
               .page__sidebar nav {
                 flex-flow: column nowrap;
               }
 
+              .global-menu li {
+                max-height: 4rem;
+              }
+
               .global-menu__link {
-                padding: 1.25rem 1rem;
+                padding: 2rem;
+                background-size: initial;
               }
 
               .global-menu__link.login {
                 line-height: 1rem;
                 height: initial;
+                padding: 1.25rem 1rem;
               }
 
               .global-menu {
@@ -241,17 +255,25 @@ class Sidebar extends Component {
 
               .global-menu {
                 align-items: baseline;
-                margin-left: 1.25rem;
+              }
+
+              .global-menu > li {
+                width: 100%;
+              }
+
+              .global-menu__link {
+                display: block;
+                text-align: left;
+                background-position: 12% 50%;
+                padding: 1.5rem 1rem;
               }
 
               .global-menu__link span {
                 display: inline-block;
-                margin-left: 2rem;
+                margin-left: 3rem;
               }
-
-              .global-menu__link {
-                background-position: left;
-                padding: 1rem;
+              .global-menu__link.login {
+                padding-left: 4rem;
               }
             }
           `}
