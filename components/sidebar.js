@@ -1,10 +1,16 @@
 import React, { Component, Fragment } from 'react'
 import join from 'url-join'
 import getConfig from 'next/config'
-import Router from 'next/router'
+import { Router, withRouter } from 'next/router'
 import theme from '../styles/theme'
+import Link from '../components/Link'
 
 const { publicRuntimeConfig } = getConfig()
+const URL = publicRuntimeConfig.APP_URL
+
+const NavLink = withRouter(({ children, router, href }) => {
+  return <Link href={href} activeClassName='active'>{children}</Link>
+})
 
 class Sidebar extends Component {
   render () {
@@ -13,19 +19,25 @@ class Sidebar extends Component {
     const additionalMenuItems = (
       <Fragment>
         <li>
-          <a href={join(publicRuntimeConfig.APP_URL, '/teams/create')} className='global-menu__link global-menu__link--make' title='Make New Team'>
-            <span>Make New Team</span>
-          </a>
+          <NavLink href='/teams/create'>
+            <a className='global-menu__link global-menu__link--make' title='Make New Team'>
+              <span>Make New Team</span>
+            </a>
+          </NavLink>
         </li>
         <li>
-          <a href={join(publicRuntimeConfig.APP_URL, '/profile')} className='global-menu__link global-menu__link--profile' title='Visit Your Profile'>
-            <span>Profile</span>
-          </a>
+          <NavLink href='/profile'>
+            <a className='global-menu__link global-menu__link--profile' title='Visit Your Profile'>
+              <span>Profile</span>
+            </a>
+          </NavLink>
         </li>
         <li>
-          <a href={join(publicRuntimeConfig.APP_URL, '/clients')} className='global-menu__link global-menu__link--app' title='Connect new app'>
-            <span>Connect a new app</span>
-          </a>
+          <NavLink href='/clients'>
+            <a className='global-menu__link global-menu__link--app' title='Connect new app'>
+              <span>Connect a new app</span>
+            </a>
+          </NavLink>
         </li>
       </Fragment>
     )
@@ -37,22 +49,28 @@ class Sidebar extends Component {
         <nav>
           <ul className='global-menu' role='navigation'>
             <li>
-              <a href={join(publicRuntimeConfig.APP_URL, '/teams')} className='global-menu__link global-menu__link--explore' title='Explore all Teams'>
-                <span>Explore Teams</span>
-              </a>
+              <NavLink href='/teams'>
+                <a className='global-menu__link global-menu__link--explore' title='Explore all Teams'>
+                  <span>Explore Teams</span>
+                </a>
+              </NavLink>
             </li>
             {
               uid ? additionalMenuItems : <Fragment />
             }
             <li>
-              <a href={join(publicRuntimeConfig.APP_URL, '/developers')} className='global-menu__link global-menu__link--developers' title='Visit Developers Page'>
-                <span>For Developers</span>
-              </a>
+              <NavLink href='/developers'>
+                <a className='global-menu__link global-menu__link--developers' title='Visit Developers Page'>
+                  <span>For Developers</span>
+                </a>
+              </NavLink>
             </li>
             <li>
-              <a href={join(publicRuntimeConfig.APP_URL, '/about')} className='global-menu__link global-menu__link--about' title='Visit About Page'>
-                <span>About</span>
-              </a>
+              <NavLink href='/about'>
+                <a className='global-menu__link global-menu__link--about' title='Visit About Page'>
+                  <span>About</span>
+                </a>
+              </NavLink>
             </li>
 
           </ul>
@@ -63,7 +81,7 @@ class Sidebar extends Component {
                 Router.push('/logout')
               }
               }>Log Out</a>
-              : <a className='global-menu__link login' href='/login'>Sign in</a>
+              : <NavLink href='/login'><a className='global-menu__link login'>Sign in</a></NavLink>
           }
         </nav>
         <style jsx global>
@@ -130,6 +148,10 @@ class Sidebar extends Component {
               background-position: center;
             }
 
+            .global-menu__link.active {
+              background-color: ${theme.colors.primaryDark};
+            }
+
             .global-menu__link.login {
               background: white;
               height: 5rem;
@@ -140,27 +162,27 @@ class Sidebar extends Component {
             }
 
             .global-menu__link--make {
-              background-image: url('../static/icon-teams.svg');
+              background-image: url(${join(URL, '/static/icon-teams.svg')});
             }
 
             .global-menu__link--profile {
-              background-image: url('../static/icon-profile.svg');
+              background-image: url(${join(URL, '/static/icon-profile.svg')});
             }
 
             .global-menu__link--app {
-              background-image: url('../static/icon-gear.svg');
+              background-image: url(${join(URL, '/static/icon-gear.svg')});
             }
 
             .global-menu__link--explore {
-              background-image: url('../static/icon-globe.svg');
+              background-image: url(${join(URL, '/static/icon-globe.svg')});
             }
 
             .global-menu__link--developers {
-              background-image: url('../static/icon-code.svg');
+              background-image: url(${join(URL, '/static/icon-code.svg')});
             }
 
             .global-menu__link--about {
-              background-image: url('../static/icon-info.svg');
+              background-image: url(${join(URL, '/static/icon-info.svg')});
             }
 
             .global-menu__link span {

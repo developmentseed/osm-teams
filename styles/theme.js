@@ -2,6 +2,7 @@ let colors = {
   baseColor: '#3D3D3D',
   primaryColor: '#384A9E',
   primaryLite: '#E8ECFF',
+  primaryDark: '#1E2D72',
   secondaryColor: '#FF6341',
   backgroundColor: '#F6F6F6',
 
