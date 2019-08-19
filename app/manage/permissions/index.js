@@ -23,6 +23,11 @@ const permissions = mergeAll([
   clientPermissions
 ])
 
+async function checkPermission (req, res, ability) {
+  const locals = res.locals || {}
+  return permissions[ability](locals.user_id, req.params)
+}
+
 async function getToken (req) {
   let token
   if (req.session && req.session.user_id) {
@@ -75,28 +80,18 @@ async function acceptToken (token, res, next) {
  * the accessToken validity with hydra. If there isn't a session,
  * it checks for an Authorization header with a valid access token
  */
-function authenticate (ability) {
-  return async function authenticate (req, res, next) {
-    console.log(req.method, req.url)
-    console.log('authorization header', req.headers.authorization)
-    console.log('session id', req.session && req.session.user_id)
-    try {
-      const token = await getToken(req)
+async function authenticate (req, res, next) {
+  try {
+    const token = await getToken(req)
 
-      // if token exists, move to next middleware to check permissions
-      if (token) return acceptToken(token, res, next)
+    // if token exists, move to next middleware to check permissions
+    if (token) return acceptToken(token, res, next)
 
-      // if no token, check ability to see if user has access anyway
-      const allowed = await checkPermission(req, res, ability)
-
-      // if allowed, continue to next middleware
-      if (allowed) return next()
-      // if they don't have access, tell them
-      return res.boom.forbidden('Forbidden')
-    } catch (e) {
-      console.log('error getting token', e)
-      return res.boom.forbidden('Forbidden')
-    }
+    // if no token, check ability in next middleware to see if user has access anyway in the case of public resources
+    return next()
+  } catch (e) {
+    console.log('error getting token', e)
+    return res.boom.forbidden('Forbidden')
   }
 }
 
@@ -128,14 +123,9 @@ function check (ability) {
   }
 }
 
-async function checkPermission (req, res, ability) {
-  const locals = res.locals || {}
-  return permissions[ability](locals.user_id, req.params)
-}
-
 module.exports = {
   can: (ability) => {
-    return [authenticate(ability), check(ability)]
+    return [authenticate, check(ability)]
   },
   authenticate,
   check
