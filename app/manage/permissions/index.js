@@ -23,11 +23,25 @@ const permissions = mergeAll([
   clientPermissions
 ])
 
+/**
+ * Check if a user has a specific permission
+ *
+ * @param {Object} req Request object
+ * @param {Object} res Response object
+ * @param {String} ability String representing a specific permission, for example: `team:create`
+ */
 async function checkPermission (req, res, ability) {
   const locals = res.locals || {}
   return permissions[ability](locals.user_id, req.params)
 }
 
+/**
+ * Get token from authorization header or session
+ * depending on the request
+ *
+ * @param {Object} req Request object
+ * @return {String} token
+ */
 async function getToken (req) {
   let token
   if (req.session && req.session.user_id) {
@@ -38,6 +52,12 @@ async function getToken (req) {
   return token
 }
 
+/**
+ * Get token from the session
+ *
+ * @param {Object} req Request object
+ * @return {String} token
+ */
 async function getSessionToken (req) {
   try {
     let conn = await db()
@@ -48,6 +68,12 @@ async function getSessionToken (req) {
   }
 }
 
+/**
+ * Get token from the authorization header
+ *
+ * @param {Object} req Request object
+ * @return {String} token
+ */
 function getAuthHeaderToken (req) {
   const [type, token] = req.headers.authorization.split(' ')
   if (type !== 'Bearer') throw new Error('Authorization scheme not supported. Only Bearer scheme is supported')
@@ -91,7 +117,7 @@ async function authenticate (req, res, next) {
     return next()
   } catch (e) {
     console.log('error getting token', e)
-    return res.boom.forbidden('Forbidden')
+    return res.boom.unauthorized('Forbidden')
   }
 }
 
@@ -113,11 +139,17 @@ function check (ability) {
       if (allowed) {
         next()
       } else {
-        res.boom.forbidden('Forbidden')
+        res.boom.unauthorized('Forbidden')
       }
     } catch (e) {
+      console.error('error checking permission', e)
       // An error occurred checking the permissions
-      // It could be the resource not existing, we send 404
+      // if user id is missing it's an authentication problem
+      if (e.message.includes('osm id is required')) {
+        return res.boom.unauthorized('Forbidden')
+      }
+
+      // otherwise it could be the resource not existing, we send 404
       res.boom.notFound('Could not find resource')
     }
   }

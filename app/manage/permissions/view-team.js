@@ -11,7 +11,14 @@ const { isPublic, isMember } = require('../../lib/team')
  * @returns {boolean} can the request go through?
  */
 async function viewTeam (uid, { id }) {
-  return isPublic(id) || isMember(id, uid)
+  const publicTeam = await isPublic(id)
+  if (publicTeam) return publicTeam
+
+  try {
+    return await isMember(id, uid)
+  } catch (e) {
+    return false
+  }
 }
 
 module.exports = viewTeam
