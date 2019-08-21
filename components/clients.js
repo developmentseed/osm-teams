@@ -104,8 +104,8 @@ class Clients extends Component {
   }
 
   render () {
-    if (this.state.loading) return <div>Loading...</div>
-    if (this.state.error) return <div> {this.state.error.message} </div>
+    if (this.state.loading) return <div className='inner page'>Loading...</div>
+    if (this.state.error) return <div className='inner page'> {this.state.error.message} </div>
 
     let clients = this.state.clients
     let clientSection = <p>No clients created</p>
