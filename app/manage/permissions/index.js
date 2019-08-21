@@ -14,7 +14,8 @@ const teamPermissions = {
 }
 
 const clientPermissions = {
-  'clients': require('./clients')
+  'clients': require('./clients'),
+  'client:delete': require('./delete-client')
 }
 
 const permissions = mergeAll([
