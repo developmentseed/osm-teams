@@ -80,7 +80,6 @@ function Layout (props) {
 
           .page__heading {
             display: flex;
-            flex-direction: column;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: ${theme.layout.globalSpacing};

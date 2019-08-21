@@ -79,13 +79,29 @@ class Home extends Component {
           {`
             main {
               background: ${theme.colors.primaryDark};
-              background-image: url(${join(URL, '/static/grid-map.svg')}),
-                                radial-gradient(white 5%, transparent 0);
-              background-size: contain, 30px 30px;
-              background-repeat: no-repeat, repeat;
-              background-position: center 75%;
+              background-image: radial-gradient(white 5%, transparent 0);
+              background-repeat: repeat;
+              background-size: 30px 30px;
               font-family: ${theme.typography.headingFontFamily};
               text-transform: uppercase;
+              position: relative;
+              z-index: 1;
+            }
+            main:after {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              height: 100%;
+              width: 100%;
+              opacity: 0.8;
+              z-index: -1;
+              background: url(${join(URL, '/static/grid-map.svg')});
+              background-size: contain;
+              background-repeat: no-repeat;
+              background-position: center 75%;
             }
 
             .card,
@@ -175,7 +191,7 @@ class Home extends Component {
             }
 
             @media screen and (min-width: ${theme.mediaRanges.large}) {
-              main {
+              main:after {
                 background-position: center bottom;
               }
               .inner.page.welcome{
