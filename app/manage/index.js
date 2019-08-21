@@ -59,11 +59,11 @@ function manageRouter (nextApp) {
   /**
    * Page renders
    */
-  router.get('/clients', can('clients:view'), (req, res) => {
+  router.get('/clients', can('clients'), (req, res) => {
     return nextApp.render(req, res, '/clients')
   })
 
-  router.get('/profile', can('clients:view'), (req, res) => {
+  router.get('/profile', can('clients'), (req, res) => {
     return nextApp.render(req, res, '/profile')
   })
 
