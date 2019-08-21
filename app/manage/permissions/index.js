@@ -14,7 +14,7 @@ const teamPermissions = {
 }
 
 const clientPermissions = {
-  'clients:view': require('./view-clients')
+  'clients': require('./clients')
 }
 
 const permissions = mergeAll([

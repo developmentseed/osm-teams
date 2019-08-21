@@ -40,9 +40,9 @@ function manageRouter (nextApp) {
   /**
    * List / Create / Delete clients
    */
-  router.get('/api/clients', can('clients:view'), getClients)
-  router.post('/api/clients', can('clients:create'), createClient)
-  router.delete('/api/clients/:id', can('clients:delete'), deleteClient)
+  router.get('/api/clients', can('clients'), getClients)
+  router.post('/api/clients', can('clients'), createClient)
+  router.delete('/api/clients/:id', can('clients'), deleteClient)
 
   /**
    * List / Create / Delete teams
