@@ -106,6 +106,13 @@ function Layout (props) {
             }
           }
 
+          .alert {
+            background: white;
+            padding: 2em;
+            margin-bottom: 1rem;
+            box-shadow: 2px 2px 0 ${theme.colors.warningColor};
+          }
+
           /* Typography
            ========================================================================== */
 
@@ -163,6 +170,7 @@ function Layout (props) {
           a.danger {
             color: ${theme.colors.secondaryColor};
           }
+    
           /* Forms
            ========================================================================== */
 

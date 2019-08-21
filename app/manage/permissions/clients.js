@@ -1,7 +1,7 @@
 const db = require('../../db')
 
 /**
- * clients:view
+ * clients
  *
  * To access the clients API, requests need to be authenticated
  * with a signed up user
@@ -10,7 +10,7 @@ const db = require('../../db')
  * @param {Object} params request parameters
  * @returns {boolean} can the request go through?
  */
-async function viewClients (uid) {
+async function clients (uid) {
   let conn = await db()
   const [user] = await conn('users').where('id', uid)
   if (user) {
@@ -18,4 +18,4 @@ async function viewClients (uid) {
   }
 }
 
-module.exports = viewClients
+module.exports = clients
