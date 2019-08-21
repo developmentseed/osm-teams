@@ -88,6 +88,9 @@ class Sidebar extends Component {
           {`
             .page__sidebar {
               grid-area: sidebar;
+              top: 0;
+              position: sticky;
+              z-index: 100;
               background-color: ${theme.colors.primaryColor};
               color: white;
               display: flex;
