@@ -256,6 +256,8 @@ async function removeModerator (teamId, osmId) {
  * @returns boolean
  */
 async function isModerator (teamId, osmId) {
+  if (!teamId) throw new Error('team id is required as first argument')
+  if (!osmId) throw new Error('osm id is required as second argument')
   const conn = await db()
   const [{ count }] = await conn('moderator').where({ team_id: teamId, osm_id: osmId }).count()
   return count > 0
@@ -268,6 +270,8 @@ async function isModerator (teamId, osmId) {
  * @returns boolean
  */
 async function isMember (teamId, osmId) {
+  if (!teamId) throw new Error('team id is required as first argument')
+  if (!osmId) throw new Error('osm id is required as second argument')
   const conn = await db()
   const [{ count }] = await conn('member').where({ team_id: teamId, osm_id: osmId }).count()
   return count > 0
@@ -281,6 +285,7 @@ async function isMember (teamId, osmId) {
  * @returns {Boolean} is the team public?
  */
 async function isPublic (teamId) {
+  if (!teamId) throw new Error('team id is required as first argument')
   const conn = await db()
   const { privacy } = await unpack(conn('team').where({ id: teamId }))
   return (privacy === 'public')

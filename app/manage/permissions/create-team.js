@@ -11,6 +11,7 @@ const db = require('../../db')
  * @returns {boolean} can the request go through?
  */
 async function createTeam (uid) {
+  if (!uid) return Promise.reject(new Error('osm id is required as first argument'))
   let conn = await db()
   const [user] = await conn('users').where('id', uid)
   if (user) {
