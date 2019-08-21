@@ -59,5 +59,5 @@ test('a non-team moderator cannot update a team', async t => {
     .set('Authorization', `Bearer differentUser`)
     .send({ name: 'building team 2' })
 
-  t.is(res2.status, 403)
+  t.is(res2.status, 401)
 })

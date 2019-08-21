@@ -4,16 +4,21 @@ const path = require('path')
 const hydra = require('../../lib/hydra')
 const sinon = require('sinon')
 
+const team = require('../../lib/team')
+
 const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
 
 let agent
-test.before(async () => {
+test.before(async (t) => {
   const conn = await db()
   await conn.migrate.latest({ directory: migrationsDirectory })
 
   // seed
   await conn('users').insert({ id: 100 })
   await conn('users').insert({ id: 101 })
+
+  t.context.publicTeam = await team.create({ name: 'public team' }, 100)
+  t.context.privateTeam = await team.create({ name: 'private team', privacy: 'private' }, 100)
 
   // stub hydra introspect
   let introspectStub = sinon.stub(hydra, 'introspect')
@@ -36,26 +41,21 @@ test.after.always(async () => {
   conn.destroy()
 })
 
-test('a team moderator can delete a team', async t => {
-  let res = await agent.post('/api/teams')
-    .send({ name: 'road team 1' })
-    .set('Authorization', `Bearer validToken`)
-    .expect(200)
-
-  let res2 = await agent.delete(`/api/teams/${res.body.id}`)
-    .set('Authorization', `Bearer validToken`)
-
-  t.is(res2.status, 200)
+test('public teams are visible to unauthenticated users', async t => {
+  const team = t.context.publicTeam
+  let res = await agent.get(`/api/teams/${team.id}`)
+  t.is(res.status, 200)
 })
 
-test('a non-team moderator cannot delete a team', async t => {
-  let res = await agent.post('/api/teams')
-    .send({ name: 'road team 2' })
+test('private teams are not visible to unauthenticated users', async t => {
+  const team = t.context.privateTeam
+  let res = await agent.get(`/api/teams/${team.id}`)
+  t.is(res.status, 401)
+})
+
+test('private teams are visible to team moderators', async t => {
+  const team = t.context.privateTeam
+  let res = await agent.get(`/api/teams/${team.id}`)
     .set('Authorization', `Bearer validToken`)
-    .expect(200)
-
-  let res2 = await agent.delete(`/api/teams/${res.body.id}`)
-    .set('Authorization', `Bearer differentUser`)
-
-  t.is(res2.status, 401)
+  t.is(res.status, 200)
 })
