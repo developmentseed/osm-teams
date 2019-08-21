@@ -32,6 +32,10 @@ test.before(async () => {
   })
   introspectStub.withArgs('invalidToken').returns({ active: false })
 
+  // stub hydra delete client
+  let deleteClientStub = sinon.stub(hydra, 'deleteClient')
+  deleteClientStub.returns(Promise.resolve(true))
+
   agent = require('supertest').agent(await require('../../index')())
 })
 
