@@ -71,6 +71,7 @@
     "supertest": "^4.0.2",
     "swagger-ui-express": "^4.0.7",
     "url-join": "^4.0.0",
+    "url-parse": "^1.4.7",
     "xml2js": "^0.4.19",
     "yamljs": "^0.3.0"
   },

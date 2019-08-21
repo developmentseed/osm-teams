@@ -42,14 +42,30 @@ function Layout (props) {
           .page-layout {
             display: grid;
             position: relative;
+            grid-template-rows: 5rem 5rem 4fr 1rem ;
             grid-template-columns: 100%;
-            grid-template-rows: 5rem 1fr 6rem;
             grid-template-areas:
+              'sidebar'
               'header'
               'main'
               'footer';
             height: 100vh;
             overflow-x: hidden;
+          }
+          @media screen and (min-width: ${theme.mediaRanges.small}) {
+            .page-layout {
+              grid-template-columns: 4rem 1fr;
+              grid-template-rows: 0fr;
+              grid-template-areas:
+                'sidebar header'
+                'sidebar main'
+                'sidebar footer';
+            }
+          }
+          @media screen and (min-width: ${theme.mediaRanges.large}) {
+            .page-layout {
+              grid-template-columns: 12rem 1fr;
+            }
           }
 
           .inner {
@@ -144,6 +160,9 @@ function Layout (props) {
             transform: translate(0, 1px);
           }
 
+          a.danger {
+            color: ${theme.colors.secondaryColor};
+          }
           /* Forms
            ========================================================================== */
 

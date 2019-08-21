@@ -1,21 +1,27 @@
 import React from 'react'
+import join from 'url-join'
+import getConfig from 'next/config'
 import theme from '../styles/theme'
+const { publicRuntimeConfig } = getConfig()
 
-export default function Header ({ username, picture }) {
+export default function Header ({ uid, username, picture }) {
   return (
     <header className='header'>
       <div className='inner'>
         <i className='fas fa-bars header__men' />
-        <h1 className='header__page-title hidden'><a href='#'>Teams</a></h1>
-        <a href='#' className='user__heading'>
-          <img src={picture} className='user__heading-avatar' />
-          <h2 className='user__heading-username'>{username}</h2>
-        </a>
+        <h1 className='header__page-title hidden'><a href='/'>Teams</a></h1>
+        {
+          uid
+            ? <a href='#' className='user__heading'>
+              <img src={picture} className='user__heading-avatar' />
+              <h2 className='user__heading-username'>{username}</h2>
+            </a>
+            : <a className='user__heading' href={join(publicRuntimeConfig.APP_URL, 'login')}>Login</a>
+        }
       </div>
       <style jsx global>{`
         .header {
           grid-area: header;
-          border-bottom: 4px solid ${theme.colors.primaryColor};
         }
 
         .header .inner {
@@ -24,6 +30,7 @@ export default function Header ({ username, picture }) {
           justify-content: space-between;
           align-items: center;
           padding: ${theme.layout.globalSpacing} 0;
+          min-height: 5rem;
         }
 
         .header__page-title a {
@@ -85,6 +92,12 @@ export default function Header ({ username, picture }) {
           border-radius: 50%;
           width: 3rem;
           height: 3rem;
+        }
+
+        @media screen and (min-width: ${theme.mediaRanges.small}) {
+          .header {
+            border-bottom: 4px solid ${theme.colors.primaryColor};
+          }
         }
       `}
       </style>
