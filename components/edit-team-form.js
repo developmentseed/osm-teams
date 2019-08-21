@@ -28,7 +28,7 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
             </div>
             <div className='form-control'>
               <label htmlFor='bio'>Description</label>
-              <Field type='textarea' name='bio' />
+              <Field component='textarea' name='bio' />
             </div>
             <h2>Location</h2>
             <div className='form-control'>

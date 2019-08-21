@@ -173,10 +173,12 @@ function Layout (props) {
             margin-bottom: 0.5rem;
           }
 
-          .form-control :global(input) {
+          .form-control :global(input),
+          .form-control :global(textarea) {
             min-width: 6rem;
             padding: 0.5rem 1rem 0.5rem 0.25rem;
             margin-right: 1rem;
+            border: 2px solid ${theme.colors.primaryColor};
           }
 
           /* Tether element */
