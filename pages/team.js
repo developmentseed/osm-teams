@@ -197,7 +197,7 @@ export default class Team extends Component {
         <div className='page__heading'>
           <h2>{team.name}</h2>
           { isUserModerator ? <Button variant='primary' href={`/teams/${team.id}/edit`}>Edit Team</Button> : ''}
-          { userId && !isMember ? <Button variant='primary' onClick={() => this.joinTeam()}>Join Team</Button> : <div /> }
+          { userId && !isMember ? <Button variant='primary' onClick={() => this.joinTeam()}>Join Team</Button> : '' }
           { !userId ? <Button variant='primary' href={`/login`}>Sign in to join team</Button> : '' }
         </div>
         <div className='team__details'>
