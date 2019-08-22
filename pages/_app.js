@@ -56,6 +56,8 @@ class OSMHydra extends App {
           <link rel='stylesheet' href='https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css' />
           <link rel='shortcut icon' href='/static/favicon.ico' />
           <link rel='icon' type='image/png' href='/static/favicon.png' />
+          <meta name='viewport' content='width=device-width, initial-scale=1' />
+          <meta charset='utf-8f-8' />
         </Head>
         <Layout>
           <Sidebar {...{ uid, picture, username }} />
