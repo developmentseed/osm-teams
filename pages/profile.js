@@ -3,12 +3,10 @@ import Router from 'next/router'
 import join from 'url-join'
 import getConfig from 'next/config'
 import Button from '../components/button'
-import Chance from 'chance'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Table from '../components/table'
 import { getTeams } from '../lib/teams-api'
-const chance = Chance()
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
