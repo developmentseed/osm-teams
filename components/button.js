@@ -26,7 +26,7 @@ const style = css`
     /* Default Colors */
     background: #FFFFFF;
     color: ${theme.colors.primaryColor};
-    box-shadow: 2px 2px ${theme.colors.primaryColor};
+    box-shadow: 2px 2px #FFFFFF, 4px 4px ${theme.colors.primaryColor};
     border: 2px solid ${theme.colors.primaryColor};
   }
 

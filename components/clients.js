@@ -104,8 +104,8 @@ class Clients extends Component {
   }
 
   render () {
-    if (this.state.loading) return <div>Loading...</div>
-    if (this.state.error) return <div> {this.state.error.message} </div>
+    if (this.state.loading) return <div className='inner page'>Loading...</div>
+    if (this.state.error) return <div className='inner page'> {this.state.error.message} </div>
 
     let clients = this.state.clients
     let clientSection = <p>No clients created</p>
@@ -182,16 +182,24 @@ class Clients extends Component {
             }
 
             .clients__new {
-              grid-column: 1 / span 4;
+              grid-column: 1 / span 12;
             }
 
             .clients__list {
-              grid-column: 5 / span 8;
+              grid-column: 1 / span 12;
             }
 
             form {
               flex-direction: column;
               align-items: flex-start;
+            }
+            @media screen and (min-width: ${theme.mediaRanges.medium}) {
+              .clients__new {
+                grid-column: 1 / span 4;
+              }
+              .clients__list {
+                grid-column: 5 / span 8;
+              }
             }
           `}
         </style>
