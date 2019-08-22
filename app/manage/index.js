@@ -3,10 +3,20 @@ const expressPino = require('express-pino-logger')
 
 const { getClients, createClient, deleteClient } = require('./client')
 const { login, loginAccept, logout } = require('./login')
-const { listTeams, createTeam, getTeam, updateTeam, destroyTeam, addMember, removeMember, updateMembers } = require('./teams')
 const { can } = require('./permissions')
 const sessionMiddleware = require('./sessions')
 const logger = require('../lib/logger')
+const {
+  listTeams,
+  createTeam,
+  getTeam,
+  updateTeam,
+  destroyTeam,
+  addMember,
+  removeMember,
+  updateMembers,
+  joinTeam
+} = require('./teams')
 
 /**
  * The manageRouter handles all routes related to the first party
@@ -55,6 +65,7 @@ function manageRouter (nextApp) {
   router.put('/api/teams/add/:id/:osmId', can('team:update'), addMember)
   router.put('/api/teams/remove/:id/:osmId', can('team:update'), removeMember)
   router.patch('/api/teams/:id/members', can('team:update'), updateMembers)
+  router.put('/api/teams/:id/join', can('team:join'), joinTeam)
 
   /**
    * Page renders
