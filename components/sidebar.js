@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import join from 'url-join'
 import getConfig from 'next/config'
-import { Router, withRouter } from 'next/router'
+import Router, { withRouter } from 'next/router'
 import theme from '../styles/theme'
 import Link from '../components/Link'
 
@@ -88,6 +88,9 @@ class Sidebar extends Component {
           {`
             .page__sidebar {
               grid-area: sidebar;
+              top: 0;
+              position: sticky;
+              z-index: 100;
               background-color: ${theme.colors.primaryColor};
               color: white;
               display: flex;

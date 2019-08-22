@@ -50,9 +50,9 @@ function manageRouter (nextApp) {
   /**
    * List / Create / Delete clients
    */
-  router.get('/api/clients', can('clients:view'), getClients)
-  router.post('/api/clients', can('clients:create'), createClient)
-  router.delete('/api/clients/:id', can('clients:delete'), deleteClient)
+  router.get('/api/clients', can('clients'), getClients)
+  router.post('/api/clients', can('clients'), createClient)
+  router.delete('/api/clients/:id', can('client:delete'), deleteClient)
 
   /**
    * List / Create / Delete teams
@@ -70,11 +70,11 @@ function manageRouter (nextApp) {
   /**
    * Page renders
    */
-  router.get('/clients', can('clients:view'), (req, res) => {
+  router.get('/clients', can('clients'), (req, res) => {
     return nextApp.render(req, res, '/clients')
   })
 
-  router.get('/profile', can('clients:view'), (req, res) => {
+  router.get('/profile', can('clients'), (req, res) => {
     return nextApp.render(req, res, '/profile')
   })
 

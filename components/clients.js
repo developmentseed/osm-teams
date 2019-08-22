@@ -104,8 +104,8 @@ class Clients extends Component {
   }
 
   render () {
-    if (this.state.loading) return <div>Loading...</div>
-    if (this.state.error) return <div> {this.state.error.message} </div>
+    if (this.state.loading) return <div className='inner page'>Loading...</div>
+    if (this.state.error) return <div className='inner page'> {this.state.error.message} </div>
 
     let clients = this.state.clients
     let clientSection = <p>No clients created</p>
@@ -131,7 +131,7 @@ class Clients extends Component {
       <div className='inner page clients'>
         <div className='page__heading'>
           <h2> ⚙️ OAuth2 settings</h2>
-          <p>Add an OAuth app to integrate with OSM/Hydra.</p>
+          <p>Add an OAuth app to integrate with the OSM Teams API</p>
         </div>
         <section className='clients__new'>
           <h3>Add a new app</h3>
@@ -148,10 +148,19 @@ class Clients extends Component {
             />
             <br />
             <br />
-            <Button variant='submit' value='Add new app'>Add New App </Button>
+            <Button variant='submit' type='submit' value='Add new app'>Add New App </Button>
           </form>
         </section>
         <section className='clients__list'>
+          {
+            this.state.newClient
+              ? <section className='alert'>
+                <h3>Newly created client</h3>
+                <p>⚠️ Save this information, we won't show it again.</p>
+                {newClient(this.state.newClient)}
+              </section>
+              : <div />
+          }
           <Card>
             <h3>Your apps</h3>
             {
@@ -159,15 +168,6 @@ class Clients extends Component {
             }
           </Card>
         </section>
-        {
-          this.state.newClient
-            ? <section className='alert'>
-              <h3>Newly created client</h3>
-              <p>⚠️ Save this information, we won't show it again.</p>
-              {newClient(this.state.newClient)}
-            </section>
-            : <div />
-        }
         <style jsx>
           {`
             .inner.clients {
@@ -182,16 +182,24 @@ class Clients extends Component {
             }
 
             .clients__new {
-              grid-column: 1 / span 4;
+              grid-column: 1 / span 12;
             }
 
             .clients__list {
-              grid-column: 5 / span 8;
+              grid-column: 1 / span 12;
             }
 
             form {
               flex-direction: column;
               align-items: flex-start;
+            }
+            @media screen and (min-width: ${theme.mediaRanges.medium}) {
+              .clients__new {
+                grid-column: 1 / span 4;
+              }
+              .clients__list {
+                grid-column: 5 / span 8;
+              }
             }
           `}
         </style>

@@ -42,11 +42,10 @@ function Layout (props) {
           .page-layout {
             display: grid;
             position: relative;
-            grid-template-rows: 5rem 5rem 4fr 1rem ;
+            grid-template-rows: 5rem 1fr ;
             grid-template-columns: 100%;
             grid-template-areas:
               'sidebar'
-              'header'
               'main'
               'footer';
             height: 100vh;
@@ -55,11 +54,9 @@ function Layout (props) {
           @media screen and (min-width: ${theme.mediaRanges.small}) {
             .page-layout {
               grid-template-columns: 4rem 1fr;
-              grid-template-rows: 0fr;
+              grid-template-rows: 100%;
               grid-template-areas:
-                'sidebar header'
                 'sidebar main'
-                'sidebar footer';
             }
           }
           @media screen and (min-width: ${theme.mediaRanges.large}) {
@@ -83,7 +80,6 @@ function Layout (props) {
 
           .page__heading {
             display: flex;
-            flex-direction: column;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: ${theme.layout.globalSpacing};
@@ -104,6 +100,13 @@ function Layout (props) {
             .section-actions {
               flex-direction: row;
             }
+          }
+
+          .alert {
+            background: white;
+            padding: 2em;
+            margin-bottom: 1rem;
+            box-shadow: 2px 2px 0 ${theme.colors.warningColor};
           }
 
           /* Typography
@@ -163,6 +166,7 @@ function Layout (props) {
           a.danger {
             color: ${theme.colors.secondaryColor};
           }
+    
           /* Forms
            ========================================================================== */
 
@@ -177,10 +181,12 @@ function Layout (props) {
             margin-bottom: 0.5rem;
           }
 
-          .form-control :global(input) {
+          .form-control :global(input),
+          .form-control :global(textarea) {
             min-width: 6rem;
             padding: 0.5rem 1rem 0.5rem 0.25rem;
             margin-right: 1rem;
+            border: 2px solid ${theme.colors.primaryColor};
           }
 
           /* Tether element */

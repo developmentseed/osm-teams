@@ -88,7 +88,7 @@ export default function Table ({ columns, rows, onRowClick }) {
             font-weight: ${theme.typography.baseFontWeight};
             font-size: 0.875rem;
             letter-spacing: 0.125rem;
-            border-bottom: 2px solid ${theme.colors.primaryColor};
+            border-bottom: 4px solid ${theme.colors.primaryColor};
           }
 
           tbody tr td {
