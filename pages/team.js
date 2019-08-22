@@ -191,6 +191,11 @@ export default class Team extends Component {
               <dt>Hashtag: </dt>
               <dd>{team.hashtag}</dd>
             </dl>
+            {
+              team.editing_policy && (
+                <a href={team.editing_policy} className='team__editing_policy'>Organized editing policy</a>
+              )
+            }
             <SectionHeader>Location</SectionHeader>
             { this.renderMap(team.location) }
           </Card>
@@ -231,6 +236,11 @@ export default class Team extends Component {
             .team__details {
               grid-column: 1 / span 12;
               margin-bottom: 4rem;
+            }
+
+            .team__editing_policy {
+              margin-bottom: 2rem;
+              display: block;
             }
 
             @media (min-width: ${theme.mediaRanges.medium}) {
