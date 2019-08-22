@@ -41,27 +41,6 @@ export default class Profile extends Component {
     }
   }
 
-  async createTeam () {
-    let res = await fetch(join(URL, '/api/teams'), {
-      method: 'POST',
-      body: JSON.stringify({
-        name: `${chance.country({ full: true })} ${chance.animal()} ${chance.pickone([
-          'Group', 'Inc.', 'Ltd.', 'Team', 'Associates', 'Party', 'LLC', 'Corp.'
-        ]
-        )}`,
-        hashtag: chance.hashtag()
-      }),
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      }
-    })
-    if (res.status === 200) {
-      await this.refreshTeams()
-    } else {
-      throw new Error('Could not create new team')
-    }
-  }
-
   componentDidMount () {
     this.refreshTeams()
   }
@@ -97,7 +76,7 @@ export default class Profile extends Component {
       <div className='inner page'>
         <div className='page__heading'>
           <h2>Profile</h2>
-          <Button variant='primary' onClick={() => this.createTeam()} >Create team</Button>
+          <Button variant='primary' href='/teams/create' >Create team</Button>
         </div>
         <Section>
           <SectionHeader>Your Teams</SectionHeader>
