@@ -11,7 +11,7 @@ exports.up = async (knex) => {
 exports.down = async (knex) => {
   try {
     await knex.schema.alterTable('team', function (t) {
-      t.string('editing_policy')
+      t.dropColumn('editing_policy')
     })
   } catch (e) {
     console.error(e)

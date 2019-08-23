@@ -1,5 +1,8 @@
 const team = require('../lib/team')
 const { prop, map } = require('ramda')
+const urlRegex = require('url-regex')
+
+const isUrl = urlRegex({ exact: true })
 
 async function listTeams (req, reply) {
   const { osmId, bbox } = req.query
@@ -48,6 +51,10 @@ async function createTeam (req, reply) {
   const { body } = req
   const { user_id } = reply.locals
 
+  if (body.editing_policy && !isUrl.test(body.editing_policy)) {
+    return reply.boom.badRequest('editing_policy must be a valid url')
+  }
+
   try {
     const data = await team.create(body, user_id)
     reply.send(data)
@@ -63,6 +70,10 @@ async function updateTeam (req, reply) {
 
   if (!id) {
     return reply.boom.badRequest('team id is required')
+  }
+
+  if (body.editing_policy && !isUrl.test(body.editing_policy)) {
+    return reply.boom.badRequest('editing_policy must be a valid url')
   }
 
   try {
