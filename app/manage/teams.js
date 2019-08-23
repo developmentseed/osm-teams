@@ -151,6 +151,27 @@ async function removeMember (req, reply) {
   }
 }
 
+async function joinTeam (req, reply) {
+  const { id } = req.params
+  const osmId = reply.locals.user_id
+
+  if (!id) {
+    return reply.boom.badRequest('team id is required')
+  }
+
+  if (!osmId) {
+    return reply.boom.badRequest('osm id is required')
+  }
+
+  try {
+    await team.addMember(id, osmId)
+    return reply.sendStatus(200)
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest()
+  }
+}
+
 module.exports = {
   listTeams,
   getTeam,
@@ -159,5 +180,6 @@ module.exports = {
   destroyTeam,
   addMember,
   updateMembers,
-  removeMember
+  removeMember,
+  joinTeam
 }
