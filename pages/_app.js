@@ -3,6 +3,7 @@ import App, { Container } from 'next/app'
 import Head from 'next/head'
 import Sidebar from '../components/sidebar'
 import Layout from '../components/layout.js'
+import PageBanner from '../components/banner'
 
 class OSMHydra extends App {
   static async getInitialProps ({ Component, ctx }) {
@@ -24,7 +25,7 @@ class OSMHydra extends App {
 
   render () {
     const { Component, pageProps, userData } = this.props
-
+    let bannerContent = 'OSM Teams is currently in beta - please do not rely on the current API or site for production applications. All data will be deleted at the end of the beta'
     let { uid, username, picture } = userData
 
     // store the userdata in localstorage if in browser
@@ -57,6 +58,7 @@ class OSMHydra extends App {
           <link rel='shortcut icon' href='/static/favicon.ico' />
           <link rel='icon' type='image/png' href='/static/favicon.png' />
         </Head>
+        { (bannerContent) ? <PageBanner content={bannerContent} variant='warning' /> : '' }
         <Layout>
           <Sidebar {...{ uid, picture, username }} />
           <Component {...Object.assign({ user: { uid, username, picture } }, pageProps)} />
