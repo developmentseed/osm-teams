@@ -129,6 +129,7 @@ class Home extends Component {
 
             .welcome__intro {
               font-size: .8rem;
+              font-size: 2.75vw;
               margin-bottom: 2rem;
               width: 100%;
             }
@@ -217,6 +218,9 @@ class Home extends Component {
                 margin-left: 2rem;
                 font-size: 1.125rem;
               }
+              .welcome__intro {
+                font-size: 1rem;
+              }
             }
 
             @media screen and (min-width: ${theme.mediaRanges.large}) {
@@ -226,11 +230,9 @@ class Home extends Component {
               .inner.page.welcome{
                 margin-left: 0;
               }
-
               .welcome__intro {
                 font-size: 1.25rem;
               }
-
               .welcome .card {
                 margin-left: 4rem;
               }
