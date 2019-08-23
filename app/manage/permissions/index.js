@@ -10,7 +10,8 @@ const teamPermissions = {
   'team:create': require('./create-team'),
   'team:update': require('./update-team'),
   'team:view': require('./view-team'),
-  'team:delete': require('./delete-team')
+  'team:delete': require('./delete-team'),
+  'team:join': require('./join-team')
 }
 
 const clientPermissions = {
