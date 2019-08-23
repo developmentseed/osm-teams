@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="221px" height="67px" viewBox="0 0 221 67" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 57.1 (83088) - https://sketch.com -->
+    <title>TeamsLogo@1x</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M201.170909,41.2701267 C201.170909,45.6028163 199.745469,48.9742616 196.894545,51.3845642 C194.043622,53.7948668 190.067904,55 184.967273,55 C182.833929,55 180.816979,54.760925 178.916364,54.2827678 C177.015748,53.8046106 175.376977,53.1069019 174,52.1896208 L174,42.9426925 C175.629099,43.9770734 177.495747,43.8463039 179.6,44.5489022 C181.704253,45.2515005 183.609688,45.6027944 185.316364,45.6027944 C186.751522,45.6027944 187.837572,45.3002913 188.574545,44.6952761 C189.311519,44.0902609 189.68,43.2315425 189.68,42.1190951 C189.68,41.5921464 189.563638,41.0993591 189.330909,40.6407186 C189.098181,40.182078 188.768487,39.7234443 188.341818,39.2648037 C187.915149,38.8061632 186.770918,37.7961932 184.909091,36.2348636 C182.639989,34.4003013 180.99152,32.5267339 179.963636,30.6141051 C178.935752,28.7014764 178.421818,26.6034712 178.421818,24.3200266 C178.421818,21.7633494 179.056963,19.4653018 180.327273,17.425815 C181.597582,15.3863282 183.391504,13.8055057 185.709091,12.6833001 C188.026678,11.5610944 190.620592,11 193.490909,11 C198.126084,11 202.295739,12.0441235 206,14.1324019 L202.072727,22.8270126 C198.756347,21.1095501 195.934557,20.2508317 193.607273,20.2508317 C192.366054,20.2508317 191.410912,20.5240603 190.741818,21.0705256 C190.072724,21.616991 189.738182,22.4171604 189.738182,23.4710579 C189.738182,24.4273723 190.063027,25.3202442 190.712727,26.1497006 C191.362427,26.979157 192.598779,28.0867085 194.421818,29.4723886 C196.710314,31.1703345 198.407267,32.9560785 199.512727,34.829674 C200.618187,36.7032695 201.170909,38.8500658 201.170909,41.2701267 Z" id="path-1"></path>
+        <filter x="-4.7%" y="-1.1%" width="109.4%" height="102.3%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="1" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 1  0 0 0 1 0" type="matrix" in="shadowOffsetOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="-1" dy="0" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feColorMatrix values="0 0 0 0 1   0 0 0 0 0   0 0 0 0 0  0 0 0 1 0" type="matrix" in="shadowOffsetOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+        <polygon id="path-3" points="174 12 165.043675 55 155 55 164.409388 12.0047843"></polygon>
+        <filter x="-7.9%" y="-1.2%" width="115.8%" height="102.3%" filterUnits="objectBoundingBox" id="filter-4">
+            <feOffset dx="1" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 1  0 0 0 1 0" type="matrix" in="shadowOffsetOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="-1" dy="0" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feColorMatrix values="0 0 0 0 1   0 0 0 0 0   0 0 0 0 0  0 0 0 1 0" type="matrix" in="shadowOffsetOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+        <path d="M135.23749,55 L135.23749,24.1470588 L135.003437,24.1470588 C133.696629,32.3235703 132.857944,37.3431279 132.487357,39.2058824 L129.181345,55 L119,55 L128.040333,12 L143.195324,12 L143.195324,42.5294118 L143.429377,42.5294118 L157.414099,12 L161,12.0047843 L156.169712,33.1823529 L146.062484,55 L135.23749,55 Z" id="path-5"></path>
+        <filter x="-3.6%" y="-1.2%" width="107.1%" height="102.3%" filterUnits="objectBoundingBox" id="filter-6">
+            <feOffset dx="1" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 1  0 0 0 1 0" type="matrix" in="shadowOffsetOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="-1" dy="0" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feColorMatrix values="0 0 0 0 1   0 0 0 0 0   0 0 0 0 0  0 0 0 1 0" type="matrix" in="shadowOffsetOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+        <polygon id="path-7" points="89.5036496 46.9411765 85.8540146 55 74 55 95.7226277 12 110.408759 12 114 55 102.875912 55 102.583942 46.9411765 93.0510949 46.9411765 97.0374696 37.4843137 102.020438 37.4843137 101.72146 19.4137255"></polygon>
+        <filter x="-3.8%" y="-1.2%" width="107.5%" height="102.3%" filterUnits="objectBoundingBox" id="filter-8">
+            <feOffset dx="1" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 1  0 0 0 1 0" type="matrix" in="shadowOffsetOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="-1" dy="0" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feColorMatrix values="0 0 0 0 1   0 0 0 0 0   0 0 0 0 0  0 0 0 1 0" type="matrix" in="shadowOffsetOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+        <polygon id="path-9" points="70.0739167 55 45 55 53.9260833 12 79 12 77.1223449 21.3235294 63.3432455 21.3235294 61.9855565 28.0882353 74.8113849 28.0882353 72.7315208 37.4117647 59.9056924 37.4117647 58.2591334 45.5294118 72.0382328 45.5294118"></polygon>
+        <filter x="-4.4%" y="-1.2%" width="108.8%" height="102.3%" filterUnits="objectBoundingBox" id="filter-10">
+            <feOffset dx="1" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 1  0 0 0 1 0" type="matrix" in="shadowOffsetOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="-1" dy="0" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feColorMatrix values="0 0 0 0 1   0 0 0 0 0   0 0 0 0 0  0 0 0 1 0" type="matrix" in="shadowOffsetOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+        <polygon id="path-11" points="28.739289 55 17.3336372 55 24.2470374 21.5 15 21.5 17.0127621 12 47 12 44.928897 21.5 35.6526892 21.5"></polygon>
+        <filter x="-4.7%" y="-1.2%" width="109.4%" height="102.3%" filterUnits="objectBoundingBox" id="filter-12">
+            <feOffset dx="1" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 1  0 0 0 1 0" type="matrix" in="shadowOffsetOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="-1" dy="0" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feColorMatrix values="0 0 0 0 1   0 0 0 0 0   0 0 0 0 0  0 0 0 1 0" type="matrix" in="shadowOffsetOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="TeamsLogo" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Path" fill-rule="nonzero">
+            <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+            <use fill="#1E2D72" xlink:href="#path-1"></use>
+        </g>
+        <g id="Path" fill-rule="nonzero">
+            <use fill="black" fill-opacity="1" filter="url(#filter-4)" xlink:href="#path-3"></use>
+            <use fill="#1E2D72" xlink:href="#path-3"></use>
+        </g>
+        <g id="Path" fill-rule="nonzero">
+            <use fill="black" fill-opacity="1" filter="url(#filter-6)" xlink:href="#path-5"></use>
+            <use fill="#1E2D72" xlink:href="#path-5"></use>
+        </g>
+        <g id="Path" fill-rule="nonzero">
+            <use fill="black" fill-opacity="1" filter="url(#filter-8)" xlink:href="#path-7"></use>
+            <use fill="#1E2D72" xlink:href="#path-7"></use>
+        </g>
+        <g id="Path" fill-rule="nonzero">
+            <use fill="black" fill-opacity="1" filter="url(#filter-10)" xlink:href="#path-9"></use>
+            <use fill="#1E2D72" xlink:href="#path-9"></use>
+        </g>
+        <g id="Path" fill-rule="nonzero">
+            <use fill="black" fill-opacity="1" filter="url(#filter-12)" xlink:href="#path-11"></use>
+            <use fill="#1E2D72" xlink:href="#path-11"></use>
+        </g>
+        <path d="M13,52.5 L207,52.5" id="Line-10" stroke="#FFFFFF" stroke-width="3" stroke-linecap="square"></path>
+        <path d="M13.46875,47.5 L207.53125,47.5" id="Line-10" stroke="#FFFFFF" stroke-width="3" stroke-linecap="square"></path>
+        <path d="M13.46875,43 L207.53125,43" id="Line-10" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square"></path>
+        <path d="M13.46875,38.5 L207.53125,38.5" id="Line-10" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="square"></path>
+        <path d="M13.46875,35 L207.53125,35" id="Line-10" stroke="#FFFFFF" stroke-linecap="square"></path>
+        <path d="M13.46875,32 L207.53125,32" id="Line-10" stroke="#FFFFFF" stroke-linecap="square"></path>
+        <path d="M13.46875,28 L207.53125,28" id="Line-10" stroke="#FFFFFF" stroke-linecap="square"></path>
+        <path d="M13.46875,24.5 L207.53125,24.5" id="Line-10" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="square"></path>
+        <path d="M13.46875,20.5 L207.53125,20.5" id="Line-10" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="square"></path>
+        <path d="M13.46875,16.5 L207.53125,16.5" id="Line-10" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="square"></path>
+        <path d="M13.46875,13.5 L207.53125,13.5" id="Line-10" stroke="#FFFFFF" stroke-width="0.25" stroke-linecap="square"></path>
+    </g>
+</svg>

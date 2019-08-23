@@ -44,7 +44,7 @@ class Sidebar extends Component {
     return (
       <div className='page__sidebar'>
         <div className='page__headline'>
-          <h1 className='page__title'><a href='/' title='Visit the home page'>Teams</a></h1>
+          <h1 className='page__title'><a href='/' title='Visit the home page'><img src={join(URL, '/static/TeamsLogo_reverse.svg')} /></a></h1>
         </div>
         <nav role='navigation'>
           <ul className='global-menu'>
@@ -61,18 +61,10 @@ class Sidebar extends Component {
             <li>
               <NavLink href='/developers'>
                 <a className='global-menu__link global-menu__link--developers' title='Visit Developers Page'>
-                  <span>For Developers</span>
+                  <span>Developer guide</span>
                 </a>
               </NavLink>
             </li>
-            <li>
-              <NavLink href='/about'>
-                <a className='global-menu__link global-menu__link--about' title='Visit About Page'>
-                  <span>About</span>
-                </a>
-              </NavLink>
-            </li>
-
           </ul>
           {
             uid
@@ -162,7 +154,6 @@ class Sidebar extends Component {
               height: 5rem;
               line-height: 2.5rem;
             }
-
             .global-menu__link:active {
               background-color: rgba(244,244,244,0.1);
             }
