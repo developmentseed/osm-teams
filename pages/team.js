@@ -11,7 +11,7 @@ import Table from '../components/table'
 import AddMemberForm from '../components/add-member-form'
 import theme from '../styles/theme'
 
-import { getTeam, addMember, removeMember } from '../lib/teams-api'
+import { getTeam, addMember, removeMember, joinTeam } from '../lib/teams-api'
 
 const Map = dynamic(() => import('../components/team-map'), { ssr: false })
 
@@ -50,6 +50,21 @@ export default class Team extends Component {
         error: e,
         team: null,
         loading: false
+      })
+    }
+  }
+
+  async joinTeam () {
+    const { id, user } = this.props
+    const osmId = user.uid
+
+    try {
+      await joinTeam(id, osmId)
+      await this.getTeam(id)
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e
       })
     }
   }
@@ -151,25 +166,26 @@ export default class Team extends Component {
 
     if (!team) return null
 
-    // Check if the user is a moderator for this team
+    const userId = this.props.user.uid
+    const members = map(prop('id'), team.members)
     const moderators = map(prop('osm_id'), team.moderators)
-    const isUserModerator = contains(parseInt(this.props.user.uid), moderators)
 
-    let members = team.members
+    // TODO: moderators is an array of ints while members are an array of strings. fix this.
+    const isUserModerator = contains(parseInt(userId), moderators)
+    const isMember = contains(userId, members)
 
     const columns = [
       { key: 'id' },
       { key: 'name' }
     ]
 
+    let memberRows = team.members
     if (isUserModerator) {
       columns.push({ key: 'actions' })
 
-      members = members.map((member) => {
-        if (isUserModerator) {
-          member.actions = (row, index, columns) => {
-            return this.renderActions(row, index, columns, isUserModerator)
-          }
+      memberRows = memberRows.map((member) => {
+        member.actions = (row, index, columns) => {
+          return this.renderActions(row, index, columns, isUserModerator)
         }
 
         return member
@@ -180,7 +196,9 @@ export default class Team extends Component {
       <article className='inner page team'>
         <div className='page__heading'>
           <h2>{team.name}</h2>
-          { isUserModerator ? <Button variant='primary' href={`/teams/${team.id}/edit`}>Edit Team</Button> : <div /> }
+          { isUserModerator ? <Button variant='primary' href={`/teams/${team.id}/edit`}>Edit Team</Button> : ''}
+          { userId && !isMember ? <Button variant='primary' onClick={() => this.joinTeam()}>Join Team</Button> : '' }
+          { !userId ? <Button variant='primary' href={`/login`}>Sign in to join team</Button> : '' }
         </div>
         <div className='team__details'>
           <Card>
@@ -211,7 +229,7 @@ export default class Team extends Component {
               </div>
             </div>
             <Table
-              rows={members}
+              rows={memberRows}
               columns={columns}
             />
           </Section>

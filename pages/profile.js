@@ -3,12 +3,10 @@ import Router from 'next/router'
 import join from 'url-join'
 import getConfig from 'next/config'
 import Button from '../components/button'
-import Chance from 'chance'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Table from '../components/table'
 import { getTeams } from '../lib/teams-api'
-const chance = Chance()
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -38,27 +36,6 @@ export default class Profile extends Component {
         teamsk: [],
         loading: false
       })
-    }
-  }
-
-  async createTeam () {
-    let res = await fetch(join(URL, '/api/teams'), {
-      method: 'POST',
-      body: JSON.stringify({
-        name: `${chance.country({ full: true })} ${chance.animal()} ${chance.pickone([
-          'Group', 'Inc.', 'Ltd.', 'Team', 'Associates', 'Party', 'LLC', 'Corp.'
-        ]
-        )}`,
-        hashtag: chance.hashtag()
-      }),
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      }
-    })
-    if (res.status === 200) {
-      await this.refreshTeams()
-    } else {
-      throw new Error('Could not create new team')
     }
   }
 
@@ -97,7 +74,7 @@ export default class Profile extends Component {
       <div className='inner page'>
         <div className='page__heading'>
           <h2>Profile</h2>
-          <Button variant='primary' onClick={() => this.createTeam()} >Create team</Button>
+          <Button variant='primary' href='/teams/create' >Create team</Button>
         </div>
         <Section>
           <SectionHeader>Your Teams</SectionHeader>

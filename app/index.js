@@ -6,6 +6,7 @@ const boom = require('express-boom')
 const next = require('next')
 const YAML = require('yamljs')
 const swaggerUi = require('swagger-ui-express')
+const cors = require('cors')
 
 const manageRouter = require('./manage')
 const oauthRouter = require('./oauth')
@@ -34,7 +35,7 @@ async function init () {
   /**
    * Sub apps init
    */
-  app.use('/', manageRouter(nextApp))
+  app.use('/', cors(), manageRouter(nextApp))
   app.use('/oauth', oauthRouter(nextApp))
 
   /**
