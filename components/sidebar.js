@@ -65,14 +65,6 @@ class Sidebar extends Component {
                 </a>
               </NavLink>
             </li>
-            <li>
-              <NavLink href='/about'>
-                <a className='global-menu__link global-menu__link--about' title='Visit About Page'>
-                  <span>About</span>
-                </a>
-              </NavLink>
-            </li>
-
           </ul>
           {
             uid
