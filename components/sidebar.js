@@ -61,7 +61,7 @@ class Sidebar extends Component {
             <li>
               <NavLink href='/developers'>
                 <a className='global-menu__link global-menu__link--developers' title='Visit Developers Page'>
-                  <span>For Developers</span>
+                  <span>Developer guide</span>
                 </a>
               </NavLink>
             </li>
