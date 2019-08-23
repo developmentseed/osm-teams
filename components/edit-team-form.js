@@ -8,7 +8,7 @@ const FormMap = dynamic(() => import('../components/form-map'), { ssr: false })
 const isUrl = urlRegex({ exact: true })
 
 function validateUrl (value) {
-  if (!isUrl.test(value)) return 'Please enter a valid url'
+  if (value && !isUrl.test(value)) return 'Please enter a valid url'
 }
 
 function validateName (value) {
