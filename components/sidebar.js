@@ -44,7 +44,7 @@ class Sidebar extends Component {
     return (
       <div className='page__sidebar'>
         <div className='page__headline'>
-          <h1 className='page__title'><a href='/' title='Visit the home page'>Teams</a></h1>
+          <h1 className='page__title'><a href='/' title='Visit the home page'><img src={join(URL, '/static/TeamsLogo_reverse.svg')} /></a></h1>
         </div>
         <nav role='navigation'>
           <ul className='global-menu'>
@@ -162,7 +162,6 @@ class Sidebar extends Component {
               height: 5rem;
               line-height: 2.5rem;
             }
-
             .global-menu__link:active {
               background-color: rgba(244,244,244,0.1);
             }
