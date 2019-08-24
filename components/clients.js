@@ -136,18 +136,20 @@ class Clients extends Component {
         <section className='clients__new'>
           <h3>Add a new app</h3>
           <form className='form-control' onSubmit={this.createClient}>
-            <label>Name: </label>
-            <input type='text'
-              placeholder='My app'
-              onChange={this.handleClientNameChange}
-            />
-            <label>Callback URL: </label>
-            <input type='text'
-              placeholder='https://myapp/callback'
-              onChange={this.handleClientCallbackChange}
-            />
-            <br />
-            <br />
+            <div className='form-control form-control__vertical'>
+              <label>Name: </label>
+              <input type='text'
+                placeholder='My app'
+                onChange={this.handleClientNameChange}
+              />
+            </div>
+            <div className='form-control form-control__vertical'>
+              <label>Callback URL: </label>
+              <input type='text'
+                placeholder='https://myapp/callback'
+                onChange={this.handleClientCallbackChange}
+              />
+            </div>
             <Button variant='submit' type='submit' value='Add new app'>Add New App </Button>
           </form>
         </section>
@@ -173,18 +175,17 @@ class Clients extends Component {
             .inner.clients {
               display: grid;
               grid-template-columns: repeat(12, 1fr);
+              grid-template-rows: 6rem 1fr;
               grid-gap: ${theme.layout.globalSpacing};
             }
 
             .page__heading {
               grid-column: 1 / span 12;
               display: block;
+
             }
 
-            .clients__new {
-              grid-column: 1 / span 12;
-            }
-
+            .clients__new,
             .clients__list {
               grid-column: 1 / span 12;
             }

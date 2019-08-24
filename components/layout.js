@@ -171,11 +171,24 @@ function Layout (props) {
 
           /* Forms
            ========================================================================== */
+           input,
+           label,
+           select,
+           button,
+           textarea{
+             font-size: 1rem;
+             font-family: ${theme.typography.baseFontFamily};
+           }
 
           .form-control {
             margin-bottom: 1rem;
             display: flex;
             justify-content: space-between;
+          }
+
+          .form-control__vertical {
+            flex-direction: column;
+            align-items: flex-start;
           }
 
           .form-control :global(label) {
