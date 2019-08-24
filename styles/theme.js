@@ -56,7 +56,7 @@ let shape = {
 let layout = {
   globalSpacing: '1rem',
   rowMinWidth: '320px',
-  rowMaxWidth: '1280px'
+  rowMaxWidth: '1180px'
 }
 
 let mediaRanges = {

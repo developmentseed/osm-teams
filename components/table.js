@@ -75,7 +75,7 @@ export default function Table ({ columns, rows, onRowClick }) {
             width: 100%;
             border-spacing: 0;
             max-width: 100%;
-            margin-bottom: ${theme.layout.globalSpacing};
+            margin-bottom: calc(${theme.layout.globalSpacing} * 4);
           }
 
           thead th {
