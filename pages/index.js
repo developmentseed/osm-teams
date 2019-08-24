@@ -136,21 +136,26 @@ class Home extends Component {
             }
 
             pre,
-            .welcome__intro + p {
-              animation: VHS 2s cubic-bezier(0,1.21,.84,1.04) 3 alternate;
+            .welcome__intro + p,
+            .welcome__user h2,
+            .welcome__user--actions {
+              animation: VHS 3s cubic-bezier(0,1.21,.84,1.04) 5 alternate;
+              text-shadow: -1px 0 blue,
+                            1px 0 red;
             }
 
             @keyframes VHS {
               0%{
-                text-shadow: -6px -2px blue,
-                              6px 2px red;
+                text-shadow: -4px -1px 1px blue,
+                              4px 1px 1px red;
               }
               10%{
-                text-shadow: -3px 0 blue,
-                              3px 0 red;
+                text-shadow: -2px 0 blue,
+                              2px 0 red;
               }
               100%{
-                text-shadow: none;
+                text-shadow: -1px 0 red,
+                              1px 0 blue;
               }
             }
 
