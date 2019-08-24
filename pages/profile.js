@@ -48,7 +48,7 @@ export default class Profile extends Component {
     if (!teams) return null
 
     if (teams.length === 0) {
-      return <p className='measure-copy'>No teams created</p>
+      return <p className='inner page'>No teams created</p>
     }
 
     return (

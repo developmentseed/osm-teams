@@ -92,10 +92,10 @@ class Sidebar extends Component {
               align-items: center;
               justify-content: space-between;
               overflow: hidden;
+              z-index: 1001;
             }
 
             .page__title {
-              margin: 0 1rem;
               font-size: ${theme.typography.baseFontSize};
             }
 

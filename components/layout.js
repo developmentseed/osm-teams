@@ -51,6 +51,7 @@ function Layout (props) {
             height: 100vh;
             overflow-x: hidden;
           }
+
           @media screen and (min-width: ${theme.mediaRanges.small}) {
             .page-layout {
               grid-template-columns: 4rem 1fr;
@@ -59,6 +60,7 @@ function Layout (props) {
                 'sidebar main'
             }
           }
+
           @media screen and (min-width: ${theme.mediaRanges.large}) {
             .page-layout {
               grid-template-columns: 12rem 1fr;
@@ -215,6 +217,10 @@ function Layout (props) {
 
           .hidden {
             display: none;
+          }
+
+          img {
+            max-width: 100%;
           }
         `}
       </style>

@@ -99,7 +99,7 @@ export default class Team extends Component {
   renderActions (row, index, columns) {
     return (
       <Popup
-        trigger={<span className='pointer'>⚙️</span>}
+        trigger={<span>⚙️</span>}
         position='right top'
         on='click'
         closeOnDocumentClick

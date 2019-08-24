@@ -68,12 +68,6 @@ class Home extends Component {
             }
           </div>
           <div className='map-bg' />
-          {// <div className='box-holder'>
-          //   <div className='box' />
-          //   <div className='box' />
-          //   <div className='box' />
-          // </div>
-          }
         </section>
         <style jsx>
           {`
@@ -184,6 +178,7 @@ class Home extends Component {
             .welcome__user--actions li {
               padding-bottom: calc(${theme.layout.globalSpacing} / 2);
             }
+
             .welcome__user--actions li:before {
               content: '--';
               line-height: 1;
@@ -191,25 +186,8 @@ class Home extends Component {
               color: ${theme.colors.secondaryColor};
             }
 
-            .box-holder {
-              display: flex;
-              margin: 10rem 1rem;
-              justify-content: space-between;
-            }
-
-            .box {
-              height: 1rem;
-              width: 1rem;
-              background: white;
-              animation: blink 3s step-end infinite;
-            }
-
-            .box:first-of-type {
-              transform: rotate(90deg);
-            }
-
-            .box:last-of-type {
-              transform: rotate(-90deg);
+            .welcome__user--actions a:hover {
+              text-decoration: underline;
             }
 
             @media screen and (min-width: ${theme.mediaRanges.small}) {
@@ -224,60 +202,18 @@ class Home extends Component {
             }
 
             @media screen and (min-width: ${theme.mediaRanges.large}) {
-              main:after {
-                background-position: center bottom;
-              }
-              .inner.page.welcome{
-                margin-left: 0;
-              }
-              .welcome__intro {
-                font-size: 1.25rem;
-              }
-              .welcome .card {
-                margin-left: 4rem;
-              }
-            }
-
-            @keyframes blink {
-              5%{
-                box-shadow: 1.25rem 0 0 ${theme.colors.secondaryColor},
-                            -1.25rem 0 0 ${theme.colors.primaryLite},
-                            0 1.25rem 0 transparent,
-                            0 -1.25rem 0 ${theme.colors.secondaryColor},
-                            1.25rem 1.25rem 0 transparent,
-                            1.25rem -1.25rem 0 ${theme.colors.secondaryColor},
-                            -1.25rem 1.25rem 0 ${theme.colors.primaryColor},
-                            -1.25rem -1.25rem 0 ${theme.colors.secondaryColor};
-              }
-              50%{
-                box-shadow: 1.25rem 0 0 ${theme.colors.primaryColor},
-                            -1.25rem 0 0 transparent,
-                            0 1.25rem 0 ${theme.colors.secondaryColor},
-                            0 -1.25rem 0 ${theme.colors.primaryColor},
-                            1.25rem 1.25rem 0 ${theme.colors.primaryColor},
-                            1.25rem -1.25rem 0 ${theme.colors.secondaryColor},
-                            -1.25rem 1.25rem 0 transparent,
-                            -1.25rem -1.25rem 0 ${theme.colors.secondaryColor};
-              }
-              75%{
-                box-shadow: 1.25rem 0 0 ${theme.colors.secondaryColor},
-                            -1.25rem 0 0 ${theme.colors.primaryLite},
-                            0 1.25rem 0 ${theme.colors.primaryColor},
-                            0 -1.25rem 0 transparent,
-                            1.25rem 1.25rem 0 ${theme.colors.secondaryColor},
-                            1.25rem -1.25rem 0 ${theme.colors.primaryColor},
-                            -1.25rem 1.25rem 0 ${theme.colors.primaryLite},
-                            -1.25rem -1.25rem 0 transparent;
-              }
-              80%{
-                box-shadow: 1.25rem 0 0 ${theme.colors.primaryColor},
-                            -1.25rem 0 0 transparent,
-                            0 1.25rem 0 ${theme.colors.secondaryColor},
-                            0 -1.25rem 0 ${theme.colors.primaryColor},
-                            1.25rem 1.25rem 0 ${theme.colors.primaryColor},
-                            1.25rem -1.25rem 0 ${theme.colors.secondaryColor},
-                            -1.25rem 1.25rem 0 transparent,
-                            -1.25rem -1.25rem 0 ${theme.colors.secondaryColor};
+                main:after {
+                  background-position: center bottom;
+                }
+                .inner.page.welcome{
+                  margin-left: 0;
+                }
+                .welcome__intro {
+                  font-size: 1.25rem;
+                }
+                .welcome .card {
+                  margin-left: 4rem;
+                }
               }
             }
           `}
