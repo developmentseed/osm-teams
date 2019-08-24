@@ -13,7 +13,7 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
         return (
           <Form>
             <h2>Details</h2>
-            <div className='form-control'>
+            <div className='form-control form-control__vertical'>
               <label htmlFor='name'>Name<span className='form--required'>*</span></label>
               <Field type='text' name='name' required className={errors.name ? 'form--error' : ''} />
               {errors.name && (
@@ -22,19 +22,19 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
                 </div>
               )}
             </div>
-            <div className='form-control'>
+            <div className='form-control form-control__vertical'>
               <label htmlFor='hashtag'>Hashtag</label>
               <Field type='text' name='hashtag' />
             </div>
-            <div className='form-control'>
+            <div className='form-control form-control__vertical'>
               <label htmlFor='bio'>Description</label>
               <Field component='textarea' name='bio' />
             </div>
             <h2>Location</h2>
-            <div className='form-control'>
+            <div className='form-control form-control__vertical'>
               <FormMap style={{ height: '300px', width: '100%' }} name='location' value={values.location} onChange={setFieldValue} />
             </div>
-            <div className='form-control'>
+            <div className='form-control form-control__vertical'>
               { status && status.msg && <div className='status--alert'>{status.msg}</div> }
               <Button
                 disabled={isSubmitting}
@@ -50,14 +50,6 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
                 Submit
               </Button>
             </div>
-            <style jsx>
-              {`
-                .form-control {
-                  flex-direction: column;
-                  align-items: flex-start;
-                }
-              `}
-            </style>
           </Form>
         )
       }
