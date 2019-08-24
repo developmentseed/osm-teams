@@ -44,7 +44,7 @@ class Home extends Component {
             <h1 className='welcome__intro'><pre>{title}</pre></h1>
             <p>
               Create teams of {publicRuntimeConfig.OSM_NAME} users and import them into your apps.
-              Making maps better, together. Enable teams in OpenStreetMap applications, or build your team here. It’s not safe to go alone.
+              Making maps better, together. Enable teams in OpenStreetMap applications, or build your team here. It’s not safe to map alone.
             </p>
             {
               this.props.user.username
@@ -86,6 +86,9 @@ class Home extends Component {
               text-transform: uppercase;
               position: relative;
               z-index: 1;
+              grid-area: main;
+              overflow: inherit;
+              padding-bottom: 2rem;
             }
             main:after {
               content: '';
@@ -126,6 +129,7 @@ class Home extends Component {
 
             .welcome__intro {
               font-size: .8rem;
+              font-size: 2.75vw;
               margin-bottom: 2rem;
               width: 100%;
             }
@@ -133,7 +137,27 @@ class Home extends Component {
             pre {
               max-width: 100%;
               line-height: 1;
+              margin: 0;
               font-family: ${theme.typography.headingFontFamily};
+            }
+
+            pre,
+            .welcome__intro + p {
+              animation: VHS 2s cubic-bezier(0,1.21,.84,1.04) 3 alternate;
+            }
+
+            @keyframes VHS {
+              0%{
+                text-shadow: -6px -2px blue,
+                              6px 2px red;
+              }
+              10%{
+                text-shadow: -3px 0 blue,
+                              3px 0 red;
+              }
+              100%{
+                text-shadow: none;
+              }
             }
 
             .welcome__intro + p {
@@ -158,7 +182,13 @@ class Home extends Component {
             }
 
             .welcome__user--actions li {
-              padding-bottom: ${theme.layout.globalSpacing};
+              padding-bottom: calc(${theme.layout.globalSpacing} / 2);
+            }
+            .welcome__user--actions li:before {
+              content: '--';
+              line-height: 1;
+              margin-right: 10px;
+              color: ${theme.colors.secondaryColor};
             }
 
             .box-holder {
@@ -186,7 +216,10 @@ class Home extends Component {
               .welcome .card {
                 margin-top: 4rem;
                 margin-left: 2rem;
-                font-size: 1.25rem;
+                font-size: 1.125rem;
+              }
+              .welcome__intro {
+                font-size: 1rem;
               }
             }
 
@@ -197,13 +230,10 @@ class Home extends Component {
               .inner.page.welcome{
                 margin-left: 0;
               }
-
               .welcome__intro {
                 font-size: 1.25rem;
               }
-
               .welcome .card {
-                margin-top: 8rem;
                 margin-left: 4rem;
               }
             }
