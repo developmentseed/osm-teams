@@ -97,6 +97,7 @@ class Sidebar extends Component {
 
             .page__title {
               font-size: ${theme.typography.baseFontSize};
+              max-width: 12rem;
             }
 
             .page__title a,
@@ -106,6 +107,10 @@ class Sidebar extends Component {
               color: ${theme.colors.secondaryColor};
               font-weight: bold;
               letter-spacing: 0.1rem;
+            }
+
+            .page__title img {
+              vertical-align: middle;
             }
 
             .page__sidebar nav {
@@ -204,10 +209,6 @@ class Sidebar extends Component {
 
               .page__headline {
                 margin: 2rem 0;
-              }
-
-              .page__title {
-                margin: 0 0.5rem;
               }
 
               .page__sidebar nav {
