@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import getConfig from 'next/config'
+import Button from '../components/button'
 const { publicRuntimeConfig } = getConfig()
 
 class Consent extends Component {
@@ -18,14 +19,14 @@ class Consent extends Component {
     const { user, client, requested_scope, challenge } = this.props
 
     if (!client) {
-      return <div>
+      return <div className='page inner'>
       Invalid parameters, go back <a href={publicRuntimeConfig.APP_URL}>home</a>?
       </div>
     }
 
     const clientDisplayName = client.client_name || client.client_id
     return (
-      <section>
+      <section className='page inner'>
         <form method='post'>
           <input type='hidden' value={challenge} name='challenge' />
           <p>
@@ -71,8 +72,8 @@ class Consent extends Component {
             <label htmlFor='remember'>Do not ask me again</label>
           </p>
           <p>
-            <input type='submit' id='accept' name='submit' value='Allow access' />
-            <input type='submit' id='reject' name='submit' value='Deny access' />
+            <Button type='submit' id='accept' name='submit' value='Allow access' />
+            <Button type='submit' id='reject' name='submit' value='Deny access' />
           </p>
         </form>
         <style jsx>
