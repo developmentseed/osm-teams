@@ -33,7 +33,7 @@ export default class Profile extends Component {
       console.error(e)
       this.setState({
         error: e,
-        teamsk: [],
+        teams: [],
         loading: false
       })
     }
