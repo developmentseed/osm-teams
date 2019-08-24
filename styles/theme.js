@@ -4,6 +4,8 @@ let colors = {
   primaryLite: '#E8ECFF',
   primaryDark: '#1E2D72',
   secondaryColor: '#FF6341',
+  secondaryLite: '#FFE4DE',
+  secondaryDark: '#732C1D',
   backgroundColor: '#F6F6F6',
 
   dangerColor: '#d85d3f',

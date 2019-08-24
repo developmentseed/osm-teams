@@ -166,7 +166,7 @@ function Layout (props) {
           a.danger {
             color: ${theme.colors.secondaryColor};
           }
-    
+
           /* Forms
            ========================================================================== */
 
@@ -187,6 +187,25 @@ function Layout (props) {
             padding: 0.5rem 1rem 0.5rem 0.25rem;
             margin-right: 1rem;
             border: 2px solid ${theme.colors.primaryColor};
+          }
+
+          .status--alert {
+            font-size: 0.875rem;
+            color: ${theme.colors.secondaryColor};
+            background-color: ${theme.colors.secondaryLite};
+            font-family: ${theme.typography.headingFontFamily};
+            padding: 1rem;
+            margin: 1rem 0 2rem;
+          }
+
+          .form--required {
+            color: ${theme.colors.secondaryColor};
+            font-size: 0.875rem;
+            font-family: ${theme.typography.headingFontFamily};
+          }
+
+          .form--error {
+            border: 1px solid ${theme.colors.secondaryColor} !important;
           }
 
           /* Tether element */

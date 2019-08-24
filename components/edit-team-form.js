@@ -14,10 +14,10 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
           <Form>
             <h2>Details</h2>
             <div className='form-control'>
-              <label htmlFor='name'>Name<span className='red'>*</span></label>
-              <Field type='text' name='name' required className={errors.name ? 'ba b--red' : ''} />
+              <label htmlFor='name'>Name<span className='form--required'>*</span></label>
+              <Field type='text' name='name' required className={errors.name ? 'form--error' : ''} />
               {errors.name && (
-                <div>
+                <div className='form--required'>
                   {errors.name}
                 </div>
               )}
@@ -35,14 +35,14 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
               <FormMap style={{ height: '300px', width: '100%' }} name='location' value={values.location} onChange={setFieldValue} />
             </div>
             <div className='form-control'>
-              { status && status.msg && <div className='f6 red mt1 mb2 pa2 bg-washed-red'>{status.msg}</div> }
+              { status && status.msg && <div className='status--alert'>{status.msg}</div> }
               <Button
                 disabled={isSubmitting}
                 variant='primary'
                 onClick={() => {
                   if (!values.name) {
-                    setErrors({ name: 'name field is required' })
-                    return setStatus({ msg: 'name field is required' })
+                    setErrors({ name: 'Name field is required' })
+                    return setStatus({ msg: 'Name field is required' })
                   }
                   return submitForm()
                 }}
@@ -56,7 +56,6 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
                   flex-direction: column;
                   align-items: flex-start;
                 }
-
               `}
             </style>
           </Form>

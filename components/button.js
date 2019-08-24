@@ -22,7 +22,7 @@ const style = css`
     letter-spacing: 0.125rem;
     padding: 0.75rem calc(${theme.layout.globalSpacing} * 2);
     cursor: pointer;
-    transition: box-shadow 0.2s ease;
+    transition: all 0.2s ease;
     /* Default Colors */
     background: #FFFFFF;
     color: ${theme.colors.primaryColor};
