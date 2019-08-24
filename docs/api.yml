@@ -55,6 +55,10 @@ components:
         location:
           type: string
           description: geojson point
+        editing_policy:
+          type: string
+          format: uri
+          description: link to organized editing policy of the team
     TeamList:
       type: array
       items:
