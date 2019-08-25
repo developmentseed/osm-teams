@@ -1,5 +1,5 @@
 # OSM Teams
-Teams for OpenStreetMap!
+Teams for OpenStreetMap! [Log in to try out requests other than GET](/)
 
 ## Version: 0.0.0
 

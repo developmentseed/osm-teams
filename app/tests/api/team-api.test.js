@@ -84,6 +84,17 @@ test('destroy a team', async t => {
     .expect(200)
 })
 
+test('team.editing_policy must be a valid url', async t => {
+  let validUrlRes = await agent.post('/api/teams')
+    .send({ name: 'road team 200', editing_policy: 'https://roadteam.com/policy' })
+  t.is(validUrlRes.status, 200)
+
+  let errorRes = await agent.post('/api/teams')
+    .send({ name: 'road team 400', editing_policy: 'nope' })
+  t.is(errorRes.body.message, 'editing_policy must be a valid url')
+  t.is(errorRes.status, 400)
+})
+
 test('get a team', async t => {
   let res = await agent.post('/api/teams')
     .send({ name: 'map team 3' })

@@ -127,7 +127,7 @@ export default class Team extends Component {
       <article className='inner page'>
         <section>
           <EditTeamForm
-            initialValues={pick(['name', 'bio', 'hashtag', 'location'], team)}
+            initialValues={pick(['name', 'bio', 'hashtag', 'editing_policy', 'location'], team)}
             onSubmit={async (values, actions) => {
               try {
                 await updateTeam(team.id, values)
@@ -161,7 +161,7 @@ export default class Team extends Component {
               margin: 4rem 0;
               padding: 2rem;
             }
-            
+
             .danger-zone .button {
               margin-right: 2rem;
             }
