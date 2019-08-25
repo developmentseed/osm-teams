@@ -139,7 +139,14 @@ class Home extends Component {
             .welcome__intro + p,
             .welcome__user h2,
             .welcome__user--actions {
-              animation: VHS 3s cubic-bezier(0,1.21,.84,1.04) 5 alternate;
+              animation: VHS 2s cubic-bezier(0,1.21,.84,1.04) 5 alternate;
+              transition: text-shadow 0.5s ease;
+            }
+
+            pre:hover,
+            .welcome__intro + p:hover,
+            .welcome__user h2:hover,
+            .welcome__user--actions:hover {
               text-shadow: -1px 0 blue,
                             1px 0 red;
             }
