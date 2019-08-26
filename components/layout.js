@@ -51,6 +51,7 @@ function Layout (props) {
             height: 100vh;
             overflow-x: hidden;
           }
+
           @media screen and (min-width: ${theme.mediaRanges.small}) {
             .page-layout {
               grid-template-columns: 4rem 1fr;
@@ -59,6 +60,7 @@ function Layout (props) {
                 'sidebar main'
             }
           }
+
           @media screen and (min-width: ${theme.mediaRanges.large}) {
             .page-layout {
               grid-template-columns: 12rem 1fr;
@@ -166,14 +168,27 @@ function Layout (props) {
           a.danger {
             color: ${theme.colors.secondaryColor};
           }
-    
+
           /* Forms
            ========================================================================== */
+           input,
+           label,
+           select,
+           button,
+           textarea{
+             font-size: 1rem;
+             font-family: ${theme.typography.baseFontFamily};
+           }
 
           .form-control {
             margin-bottom: 1rem;
             display: flex;
             justify-content: space-between;
+          }
+
+          .form-control__vertical {
+            flex-direction: column;
+            align-items: flex-start;
           }
 
           .form-control :global(label) {
@@ -189,6 +204,25 @@ function Layout (props) {
             border: 2px solid ${theme.colors.primaryColor};
           }
 
+          .status--alert {
+            font-size: 0.875rem;
+            color: ${theme.colors.secondaryColor};
+            background-color: ${theme.colors.secondaryLite};
+            font-family: ${theme.typography.headingFontFamily};
+            padding: 1rem;
+            margin: 1rem 0 2rem;
+          }
+
+          .form--required {
+            color: ${theme.colors.secondaryColor};
+            font-size: 0.875rem;
+            font-family: ${theme.typography.headingFontFamily};
+          }
+
+          .form--error {
+            border: 1px solid ${theme.colors.secondaryColor} !important;
+          }
+
           /* Tether element */
           .tether-element {
             z-index: 1000;
@@ -196,6 +230,10 @@ function Layout (props) {
 
           .hidden {
             display: none;
+          }
+
+          img {
+            max-width: 100%;
           }
         `}
       </style>

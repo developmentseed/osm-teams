@@ -16,7 +16,7 @@ function validateName (value) {
 }
 
 function renderError (text) {
-  return <div className='f6 red mt1 mb2 pa2 bg-washed-red'>{text}</div>
+  return <div className='form--error'>{text}</div>
 }
 
 function renderErrors (errors) {
@@ -35,32 +35,31 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
         return (
           <Form>
             <h2>Details</h2>
-            <div className='form-control'>
-              <label htmlFor='name'>Name<span className='red'>*</span></label>
-              <Field type='text' name='name' required className={errors.name ? 'ba b--red' : ''} validate={validateName} />
+            <div className='form-control form-control__vertical'>
+              <label htmlFor='name'>Name<span className='form--required'>*</span></label>
+              <Field type='text' name='name' required className={errors.name ? 'form--error' : ''} validate={validateName} />
               {errors.name && renderError(errors.name)}
             </div>
-            <div className='form-control'>
+            <div className='form-control form-control__vertical'>
               <label htmlFor='hashtag'>Hashtag</label>
               <Field type='text' name='hashtag' />
             </div>
-            <div className='form-control'>
+            <div className='form-control form-control__vertical'>
               <label htmlFor='bio'>Description</label>
               <Field component='textarea' name='bio' />
             </div>
-            <div className='form-control'>
+            <div className='form-control form-control__vertical'>
               <label htmlFor='editing_policy'>Organized Editing Policy</label>
               <Field type='url' name='editing_policy' placeholder='https://' validate={validateUrl} />
               <small className='pt1'>URL to your team's editing policy if you have one (include http/https)</small>
               {errors.editing_policy && renderError(errors.editing_policy)}
             </div>
             <h2>Location</h2>
-            <div className='form-control'>
+            <div className='form-control form-control__vertical'>
               <FormMap style={{ height: '300px', width: '100%' }} name='location' value={values.location} onChange={setFieldValue} />
             </div>
-            <div className='form-control'>
+            <div className='form-control form-control__vertical'>
               { (status && status.errors) && (renderErrors(status.errors)) }
-
               <Button
                 disabled={isSubmitting}
                 variant='primary'
@@ -71,22 +70,12 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
                       errors
                     })
                   }
-
                   return submitForm()
                 }}
               >
                 Submit
               </Button>
             </div>
-            <style jsx>
-              {`
-                .form-control {
-                  flex-direction: column;
-                  align-items: flex-start;
-                }
-
-              `}
-            </style>
           </Form>
         )
       }
