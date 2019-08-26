@@ -48,7 +48,7 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
               <label htmlFor='bio'>Description</label>
               <Field component='textarea' name='bio' />
             </div>
-            <div className='form-control'>
+            <div className='form-control form-control__vertical'>
               <label htmlFor='editing_policy'>Organized Editing Policy</label>
               <Field type='url' name='editing_policy' placeholder='https://' validate={validateUrl} />
               <small className='pt1'>URL to your team's editing policy if you have one (include http/https)</small>
