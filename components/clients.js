@@ -11,6 +11,23 @@ function newClient ({ client_id, client_name, client_secret }) {
     <li><label>client_id: </label>{client_id}</li>
     <li><label>client_name: </label>{client_name}</li>
     <li><label>client_secret: </label>{client_secret}</li>
+    <style jsx>
+      {`
+        ul {
+          padding: 0;
+        }
+
+        li {
+          list-style: none;
+          font-family: ${theme.typography.headingFontFamily};
+        }
+
+        label {
+          font-family: ${theme.typography.headingFontFamily};
+          font-weight: bold;
+        }
+      `}
+    </style>
   </ul>
 }
 
@@ -114,7 +131,7 @@ class Clients extends Component {
         {
           clients.map(client => {
             return (
-              <li key={client.client_id}>
+              <li className='client-item' key={client.client_id}>
                 <div>
                   <span>{client.client_name}</span>
                   <div>({client.client_id})</div>
@@ -124,6 +141,34 @@ class Clients extends Component {
             )
           })
         }
+        <style jsx>
+          {`
+            ul {
+              padding: 0;
+            }
+
+            .client-item {
+              list-style: none;
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              margin-bottom: ${theme.layout.globalSpacing};
+              font-family: ${theme.typography.headingFontFamily};
+              padding-bottom: ${theme.layout.globalSpacing};
+              border-bottom: 1px solid ${theme.colors.baseColorLight};
+            }
+
+            @media screen and (min-width: ${theme.mediaRanges.medium}) {
+              .client-item {
+                align-items: center;
+              }
+            }
+
+            .client-item span {
+              font-weight: bold;
+            }
+          `}
+        </style>
       </ul>)
     }
 
@@ -188,6 +233,7 @@ class Clients extends Component {
             .clients__new,
             .clients__list {
               grid-column: 1 / span 12;
+              margin-bottom: 4rem;
             }
 
             form {

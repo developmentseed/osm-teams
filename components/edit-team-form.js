@@ -72,9 +72,9 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
                   }
                   return submitForm()
                 }}
-              >
-                Submit
-              </Button>
+                type='submit'
+                value='submit'
+              />
             </div>
           </Form>
         )
