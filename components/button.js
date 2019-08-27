@@ -16,7 +16,6 @@ const style = css`
     font-size: 1rem;
     min-width: 2rem;
     font-family: ${theme.typography.monoFontFamily};
-    font-size: ${theme.typography.rootFontSize};
     font-weight: ${theme.typography.baseFontWeight};
     text-transform: uppercase;
     letter-spacing: 0.125rem;

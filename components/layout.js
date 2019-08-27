@@ -184,6 +184,7 @@ function Layout (props) {
             margin-bottom: 1rem;
             display: flex;
             justify-content: space-between;
+            align-items: center;
           }
 
           .form-control__vertical {

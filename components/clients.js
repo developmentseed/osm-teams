@@ -11,6 +11,13 @@ function newClient ({ client_id, client_name, client_secret }) {
     <li><label>client_id: </label>{client_id}</li>
     <li><label>client_name: </label>{client_name}</li>
     <li><label>client_secret: </label>{client_secret}</li>
+    <style jsx>
+      {`
+        label {
+          font-weight: bold;
+        }
+      `}
+    </style>
   </ul>
 }
 
@@ -114,7 +121,7 @@ class Clients extends Component {
         {
           clients.map(client => {
             return (
-              <li key={client.client_id}>
+              <li className='client-item' key={client.client_id}>
                 <div>
                   <span>{client.client_name}</span>
                   <div>({client.client_id})</div>
@@ -124,6 +131,31 @@ class Clients extends Component {
             )
           })
         }
+        <style jsx>
+          {`
+            ul {
+              padding: 0;
+            }
+
+            .client-item {
+              list-style: none;
+              display: flex;
+              flex-flow: column wrap;
+              justify-content: space-between;
+            }
+            
+            @media screen and (min-width: ${theme.mediaRanges.medium}) {
+              .client-item {
+                flex-flow: row nowrap;
+                align-items: center;
+              }
+            }
+
+            .client-item span {
+              font-weight: bold;
+            }
+          `}
+        </style>
       </ul>)
     }
 
