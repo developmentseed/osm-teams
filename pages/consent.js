@@ -72,8 +72,8 @@ class Consent extends Component {
             <label htmlFor='remember'>Do not ask me again</label>
           </p>
           <p>
-            <Button type='submit' id='accept' name='submit' value='Allow access' />
-            <Button type='submit' id='reject' name='submit' value='Deny access' />
+            <Button type='submit' variant='primary' id='accept' name='submit' value='Allow access' />
+            <Button type='submit' variant='danger' id='reject' name='submit' value='Deny access' />
           </p>
         </form>
         <style jsx>
