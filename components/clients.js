@@ -13,7 +13,17 @@ function newClient ({ client_id, client_name, client_secret }) {
     <li><label>client_secret: </label>{client_secret}</li>
     <style jsx>
       {`
+        ul {
+          padding: 0;
+        }
+
+        li {
+          list-style: none;
+          font-family: ${theme.typography.headingFontFamily};
+        }
+
         label {
+          font-family: ${theme.typography.headingFontFamily};
           font-weight: bold;
         }
       `}
@@ -140,13 +150,16 @@ class Clients extends Component {
             .client-item {
               list-style: none;
               display: flex;
-              flex-flow: column wrap;
               justify-content: space-between;
+              align-items: flex-start;
+              margin-bottom: ${theme.layout.globalSpacing};
+              font-family: ${theme.typography.headingFontFamily};
+              padding-bottom: ${theme.layout.globalSpacing};
+              border-bottom: 1px solid ${theme.colors.baseColorLight};
             }
-            
+
             @media screen and (min-width: ${theme.mediaRanges.medium}) {
               .client-item {
-                flex-flow: row nowrap;
                 align-items: center;
               }
             }
@@ -220,6 +233,7 @@ class Clients extends Component {
             .clients__new,
             .clients__list {
               grid-column: 1 / span 12;
+              margin-bottom: 4rem;
             }
 
             form {

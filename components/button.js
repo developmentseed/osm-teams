@@ -43,7 +43,10 @@ const style = css`
     border: none;
     box-shadow: 2px 2px #FFFFFF,
                 4px 4px ${theme.colors.primaryColor};
-    /* fix box-shadow to be dependant on type*/
+  }
+  .button.small {
+    padding: 0.5rem ${theme.layout.globalSpacing};
+    font-size: 0.875rem;
   }
 
   .button.submit {
@@ -64,13 +67,13 @@ const style = css`
   }
 `
 
-export default function Button ({ name, id, value, variant, type, disabled, href, onClick, children, small }) {
+export default function Button ({ name, id, value, variant, type, disabled, href, onClick, children, size }) {
   if (type === 'submit') {
-    return <button type='submit' className={`button ${variant}`} disabled={disabled} name={name} id={id} onClick={onClick}>{children || value}<style jsx>{style}</style></button>
+    return <button type='submit' className={`button ${variant} ${size}`} disabled={disabled} name={name} id={id} onClick={onClick}>{children || value}<style jsx>{style}</style></button>
   }
   if (href) {
     const fullUrl = join(publicRuntimeConfig.APP_URL, href)
-    return <a href={fullUrl} className={`button ${variant}`} disabled={disabled}>{children}<style jsx>{style}</style></a>
+    return <a href={fullUrl} className={`button ${variant} ${size}`} disabled={disabled}>{children}<style jsx>{style}</style></a>
   }
-  return <div onClick={onClick} className={`button ${variant}`} disabled={disabled}>{children}<style jsx>{style}</style></div>
+  return <div onClick={onClick} className={`button ${variant} ${size}`} disabled={disabled}>{children}<style jsx>{style}</style></div>
 }

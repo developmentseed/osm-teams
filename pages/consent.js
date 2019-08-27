@@ -81,6 +81,15 @@ class Consent extends Component {
             label {
               padding-left: 1rem;
             }
+
+            ul {
+              list-style: none;
+              padding: none;
+            }
+
+            li {
+              margin-bottom: 1rem;
+            }
           `}
         </style>
       </section>

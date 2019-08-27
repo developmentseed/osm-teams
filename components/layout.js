@@ -108,7 +108,7 @@ function Layout (props) {
             background: white;
             padding: 2em;
             margin-bottom: 1rem;
-            box-shadow: 2px 2px 0 ${theme.colors.warningColor};
+            box-shadow: 4px 4px 0 ${theme.colors.warningColor};
           }
 
           /* Typography
@@ -221,7 +221,7 @@ function Layout (props) {
           }
 
           .form--error {
-            border: 1px solid ${theme.colors.secondaryColor} !important;
+            color: ${theme.colors.secondaryColor};
           }
 
           /* Tether element */
