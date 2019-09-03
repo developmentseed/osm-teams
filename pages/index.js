@@ -16,15 +16,6 @@ const title = String.raw`
 \____//____/_/  /_/    /_/ /_____/_/  |_/_/  /_//____/
 `
 
-// const shadowVariations = [
-//   `${theme.colors.primaryColor}`,
-//   `${theme.colors.secondaryColor}`,
-//   `${theme.colors.primaryLite}`,
-//   'transparent',
-//   'white'
-// ]
-// const ShadowColor = shadowVariations[Math.floor(Math.random() * (shadowVariations.length))]
-
 class Home extends Component {
   static async getInitialProps ({ query }) {
     if (query.user) {
