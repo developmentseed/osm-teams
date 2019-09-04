@@ -236,6 +236,21 @@ function Layout (props) {
           img {
             max-width: 100%;
           }
+
+          #feedback {
+            position: absolute;
+            right: -3.5rem;
+            bottom: 12rem;
+            z-index: 1200;
+            transform: rotate(-90deg);
+            background: ${theme.colors.secondaryColor};
+            color: white;
+          }
+          #feedback:hover {
+            right: -3rem;
+            opacity: 1;
+            background: #e04d2d;
+          }
         `}
       </style>
     </div>

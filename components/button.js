@@ -69,11 +69,11 @@ const style = css`
 
 export default function Button ({ name, id, value, variant, type, disabled, href, onClick, children, size }) {
   if (type === 'submit') {
-    return <button type='submit' className={`button ${variant} ${size}`} disabled={disabled} name={name} id={id} onClick={onClick}>{children || value}<style jsx>{style}</style></button>
+    return <button type='submit' className={[`button`, variant, size].join(' ')} disabled={disabled} name={name} id={id} onClick={onClick} value='value'>{children || value}<style jsx>{style}</style></button>
   }
   if (href) {
     const fullUrl = join(publicRuntimeConfig.APP_URL, href)
-    return <a href={fullUrl} className={`button ${variant} ${size}`} disabled={disabled}>{children}<style jsx>{style}</style></a>
+    return <a href={fullUrl} className={[`button`, variant, size].join(' ')} disabled={disabled} name={name} id={id}>{children}<style jsx>{style}</style></a>
   }
-  return <div onClick={onClick} className={`button ${variant} ${size}`} disabled={disabled}>{children}<style jsx>{style}</style></div>
+  return <div onClick={onClick} className={[`button`, variant, size].join(' ')} disabled={disabled}>{children}<style jsx>{style}</style></div>
 }

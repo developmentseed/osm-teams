@@ -4,6 +4,7 @@ import Head from 'next/head'
 import Sidebar from '../components/sidebar'
 import Layout from '../components/layout.js'
 import PageBanner from '../components/banner'
+import Button from '../components/button'
 
 class OSMHydra extends App {
   static async getInitialProps ({ Component, ctx }) {
@@ -64,6 +65,7 @@ class OSMHydra extends App {
           <Sidebar {...{ uid, picture, username }} />
           <Component {...Object.assign({ user: { uid, username, picture } }, pageProps)} />
         </Layout>
+        <Button href='https://forms.gle/mQQX37FcvfVMoiCW7' variant='danger' id='feedback'>Feedback</Button>
       </Container>
     )
   }
