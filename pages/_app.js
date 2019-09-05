@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import App, { Container } from 'next/app'
 import Head from 'next/head'
 import Sidebar from '../components/sidebar'
 import Layout from '../components/layout.js'
 import PageBanner from '../components/banner'
+import Button from '../components/button'
 
 class OSMHydra extends App {
   static async getInitialProps ({ Component, ctx }) {
@@ -25,7 +26,7 @@ class OSMHydra extends App {
 
   render () {
     const { Component, pageProps, userData } = this.props
-    let bannerContent = 'OSM Teams is currently in beta - please do not rely on the current API or site for production applications. All data will be deleted at the end of the beta'
+    let bannerContent = <Fragment><span style={{ backgroundColor: '#FF6341', color: 'white', padding: '0.2rem' }}>beta</span> - please do not rely on the current API or site for production applications. Provide your <a href='https://forms.gle/mQQX37FcvfVMoiCW7' style={{ borderBottom: 'solid 1px #384A9E' }}>feedback</a> here.</Fragment>
     let { uid, username, picture } = userData
 
     // store the userdata in localstorage if in browser
@@ -64,6 +65,7 @@ class OSMHydra extends App {
           <Sidebar {...{ uid, picture, username }} />
           <Component {...Object.assign({ user: { uid, username, picture } }, pageProps)} />
         </Layout>
+        <Button href='https://forms.gle/mQQX37FcvfVMoiCW7' variant='danger' id='feedback'>Feedback</Button>
       </Container>
     )
   }
