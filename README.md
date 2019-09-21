@@ -1,4 +1,6 @@
-# osm-teams 🐉
+# osm-teams 🤝
+
+Check the beta 👉 https://mapping.team
 
 ## Installation
 ### Requirements
