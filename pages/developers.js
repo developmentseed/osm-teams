@@ -15,6 +15,7 @@ class Developers extends Component {
           <li><a href={`${URL}/api/docs`}>API Docs</a></li>
           <li><a href={`${URL}/clients`}>Connect a new application</a></li>
           <li><a href='https://github.com/developmentseed/osm-teams-node-example'>Example Node Integration</a></li>
+          <li><a href='https://github.com/thadk/osm-teams-python-example'>Example Python Integration</a></li>
         </ul>
       </section>
     )
