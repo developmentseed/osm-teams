@@ -44,7 +44,7 @@
     "express-session": "^1.15.6",
     "formik": "^1.5.8",
     "jsonwebtoken": "^8.5.0",
-    "knex": "^0.16.3",
+    "knex": "^0.19.5",
     "knex-postgis": "^0.8.1",
     "leaflet": "^1.5.1",
     "leaflet-control-geocoder": "^1.9.0",
