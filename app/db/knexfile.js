@@ -8,9 +8,9 @@ if (process.env.DSN) {
   DATABASE_URL = process.env.DSN
 } else {
   if (process.env.NODE_ENV === 'development') {
-    DATABASE_URL = 'postgres://postgres@localhost/osm-teams?ssl=false'
+    DATABASE_URL = 'postgres://postgres@localhost/osm-teams?sslmode=disable'
   } else if (process.env.NODE_ENV === 'test') {
-    DATABASE_URL = 'postgres://postgres@localhost/osm-teams-test?ssl=false'
+    DATABASE_URL = 'postgres://postgres@localhost/osm-teams-test?sslmode=disable'
   }
 }
 
