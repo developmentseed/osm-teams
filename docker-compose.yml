@@ -2,7 +2,7 @@ version: '2'
 
 services:
   hydra:
-    image: oryd/hydra:v1.0.0-rc.11
+    image: oryd/hydra:v1
     ports:
     - 4444:4444
     - 4445:4445
