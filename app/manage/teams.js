@@ -85,6 +85,46 @@ async function updateTeam (req, reply) {
   }
 }
 
+async function assignModerator (req, reply) {
+  const { id: teamId, osmId } = req.params
+
+  if (!teamId) {
+    return reply.boom.badRequest('team id is required')
+  }
+
+  if (!osmId) {
+    return reply.boom.badRequest('osm id of member to promote to moderator is required')
+  }
+
+  try {
+    const data = await team.assignModerator(teamId, osmId)
+    reply.send(data)
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest()
+  }
+}
+
+async function removeModerator (req, reply) {
+  const { id: teamId, osmId } = req.params
+
+  if (!teamId) {
+    return reply.boom.badRequest('team id is required')
+  }
+
+  if (!osmId) {
+    return reply.boom.badRequest('osm id of member to demote from moderator is required')
+  }
+
+  try {
+    const data = await team.removeModerator(teamId, osmId)
+    reply.send(data)
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest()
+  }
+}
+
 async function destroyTeam (req, reply) {
   const { id } = req.params
 
@@ -184,13 +224,15 @@ async function joinTeam (req, reply) {
 }
 
 module.exports = {
-  listTeams,
-  getTeam,
-  createTeam,
-  updateTeam,
-  destroyTeam,
   addMember,
-  updateMembers,
+  assignModerator,
+  createTeam,
+  destroyTeam,
+  getTeam,
+  joinTeam,
+  listTeams,
   removeMember,
-  joinTeam
+  removeModerator,
+  updateMembers,
+  updateTeam
 }
