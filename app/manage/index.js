@@ -68,8 +68,8 @@ function manageRouter (nextApp) {
   router.put('/api/teams/remove/:id/:osmId', can('team:update'), removeMember)
   router.patch('/api/teams/:id/members', can('team:update'), updateMembers)
   router.put('/api/teams/:id/join', can('team:join'), joinTeam)
-  router.patch('/api/teams/:id/assignModerator/:osmId', can('team:update'), assignModerator)
-  router.patch('/api/teams/:id/removeModerator/:osmId', can('team:update'), removeModerator)
+  router.put('/api/teams/:id/assignModerator/:osmId', can('team:update'), assignModerator)
+  router.put('/api/teams/:id/removeModerator/:osmId', can('team:update'), removeModerator)
 
   /**
    * Page renders
