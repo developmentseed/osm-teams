@@ -114,6 +114,10 @@ test('remove team member', async t => {
   t.true(newMembers.length === 0)
 })
 
+test('remove team member also removes moderator', async t => {
+  // could this be done with sql cascade on delete?
+})
+
 test('update team members', async t => {
   const created = await team.create({ name: 'boundary team 5' }, 1)
   await team.addMember(created.id, 1)
@@ -147,4 +151,16 @@ test('list teams with bounding box', async (t) => {
 
   t.true(Array.isArray(list1) && list1.length === 1)
   t.true(Array.isArray(list2) && list2.length === 0)
+})
+
+test('assign moderator to team', async t => {
+})
+
+test('remove moderator from team', async t => {
+})
+
+test('moderator cannot be removed if it leaves team moderator-less', async t => {
+})
+
+test('moderator cannot be assigned if osm id is not already a member', async t => {
 })

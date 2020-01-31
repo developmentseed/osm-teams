@@ -195,3 +195,9 @@ test('get list of teams by bbox', async t => {
 
   t.true(teams.body.length > 0)
 })
+
+test('assign moderator to team', async t => {
+})
+
+test('remove moderator from team', async t => {
+})
