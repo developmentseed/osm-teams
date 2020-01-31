@@ -220,12 +220,16 @@ async function addMember (teamId, osmId) {
 }
 
 /**
-* Remove an osm user as a team member
+* Remove an osm user as a team member. Removes moderator as side-effect when necessary.
 * @param {int} teamId - team id
 * @param {int} osmId - osm id
 * @return {promise}
 **/
 async function removeMember (teamId, osmId) {
+  const isMod = await isModerator(teamId, osmId)
+  if (isMod) {
+    await removeModerator(teamId, osmId)
+  }
   return updateMembers(teamId, [], [osmId])
 }
 
@@ -237,7 +241,7 @@ async function removeMember (teamId, osmId) {
 async function assignModerator (teamId, osmId) {
   const conn = await db()
   if (!await isMember(teamId, osmId)) {
-    throw new Error('cannot assign osmId to be moderator because they are not a team member yet.')
+    throw new Error('cannot assign osmId to be moderator because they are not a team member yet')
   }
   return unpack(conn('moderator').insert({ team_id: teamId, osm_id: osmId }))
 }
@@ -261,7 +265,7 @@ async function removeModerator (teamId, osmId) {
   }
   const modCount = parseInt((await unpack(conn(table).where({ team_id: teamId }).count())).count)
   if (modCount === 1) {
-    throw new Error('cannot remove osmId because there is only one moderator remaining')
+    throw new Error('cannot remove osmId because there must be at least one moderator')
   }
   await moderatorRecord.del()
 }

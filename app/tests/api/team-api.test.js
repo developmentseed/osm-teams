@@ -1,6 +1,7 @@
 const path = require('path')
 const test = require('ava')
 const sinon = require('sinon')
+const { any } = require('ramda')
 
 const db = require('../../db')
 const team = require('../../lib/team')
@@ -145,18 +146,21 @@ test('remove member from team', async t => {
   let team = await agent.post('/api/teams')
     .send({ name: 'map team 7' })
     .expect(200)
-
-  await agent.put(`/api/teams/add/${team.body.id}/1`)
+  const { id: teamId } = team.body
+  await agent.put(`/api/teams/add/${teamId}/1`)
     .expect(200)
-
-  await agent.put(`/api/teams/remove/${team.body.id}/1`)
+  // add a second member, because osm_id 1 is the moderator by default
+  const osmIdToCheck = 2
+  await agent.put(`/api/teams/add/${teamId}/${osmIdToCheck}`)
     .expect(200)
-
-  let updated = await agent.get(`/api/teams/${team.body.id}`)
+  await agent.put(`/api/teams/remove/${teamId}/${osmIdToCheck}`)
     .expect(200)
-
-  t.is(updated.body.id, team.body.id)
-  t.is(updated.body.members.length, 0)
+  let updated = await agent.get(`/api/teams/${teamId}`)
+    .expect(200)
+  t.is(updated.body.id, teamId)
+  const { members } = updated.body
+  t.is(members.length, 1)
+  t.false(members[0].osm_id === osmIdToCheck)
 })
 
 test('updated members in team', async t => {
@@ -197,7 +201,43 @@ test('get list of teams by bbox', async t => {
 })
 
 test('assign moderator to team', async t => {
+  const teamName = 'map team ♾♾'
+  let team = await agent.post('/api/teams')
+    .send({ name: teamName })
+    .expect(200)
+  const osmIdToAdd = 2
+  await agent.put(`/api/teams/add/${team.body.id}/${osmIdToAdd}`)
+    .expect(200)
+  const { id: teamId } = team.body
+  await agent.put(`/api/teams/${teamId}/assignModerator/${osmIdToAdd}`)
+    .expect(200)
+  team = await agent.get(`/api/teams/${teamId}`)
+    .expect(200)
+  const { id, name, moderators } = team.body
+  t.is(id, teamId)
+  t.is(name, teamName)
+  const matchOsmIdAssigned = data => data.osm_id === osmIdToAdd
+  t.true(any(matchOsmIdAssigned, moderators))
 })
 
 test('remove moderator from team', async t => {
+  const teamName = 'map team ♾+1'
+  const osmId = 2
+  let team = await agent.post('/api/teams')
+    .send({ name: teamName })
+    .expect(200)
+  const { id: teamId } = team.body
+  await agent.put(`/api/teams/add/${teamId}/${osmId}`)
+    .expect(200)
+  await agent.put(`/api/teams/${teamId}/assignModerator/${osmId}`)
+    .expect(200)
+  await agent.put(`/api/teams/${teamId}/removeModerator/${osmId}`)
+    .expect(200)
+  team = await agent.get(`/api/teams/${teamId}`)
+    .expect(200)
+  const { id, name, moderators } = team.body
+  t.is(id, teamId)
+  t.is(name, teamName)
+  const matchOsmIdAssigned = data => data.osm_id === osmId
+  t.false(any(matchOsmIdAssigned, moderators))
 })
