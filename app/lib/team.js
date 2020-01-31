@@ -240,13 +240,27 @@ async function assignModerator (teamId, osmId) {
 }
 
 /**
- * Remove a moderator from a team
+ * Remove a moderator from a team.
  * @param {int} teamId - team id
  * @param {int} osmId - osm id
+ * @throws {Error} if the osmId is the only remaining moderator for this team, or if osmId was not a moderator.
  */
 async function removeModerator (teamId, osmId) {
+  const table = 'moderator'
   const conn = await db()
-  return unpack(conn('moderator').where({ team_id: teamId, osm_id: osmId }).del())
+  const moderatorRecord = conn(table).where({ team_id: teamId, osm_id: osmId })
+  const isModerator = parseInt((await unpack(moderatorRecord.count())).count) > 0
+  /* the isModerator() function could have been used here ^, but since we are
+   * going to del() the record at the end of this function, calling isModerator()
+   * would add a db query. */
+  if (!isModerator) {
+    throw new Error('cannot remove osmId because osmId is not a moderator')
+  }
+  const modCount = parseInt((await unpack(conn(table).where({ team_id: teamId }).count())).count)
+  if (modCount === 1) {
+    throw new Error('cannot remove osmId because there is only one moderator remaining')
+  }
+  await moderatorRecord.del()
 }
 
 /**
