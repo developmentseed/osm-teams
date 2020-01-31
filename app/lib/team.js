@@ -236,6 +236,9 @@ async function removeMember (teamId, osmId) {
  */
 async function assignModerator (teamId, osmId) {
   const conn = await db()
+  if (!await isMember(teamId, osmId)) {
+    throw new Error('cannot assign osmId to be moderator because they are not a team member yet.')
+  }
   return unpack(conn('moderator').insert({ team_id: teamId, osm_id: osmId }))
 }
 
