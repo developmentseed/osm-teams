@@ -277,7 +277,7 @@ async function isModerator (teamId, osmId) {
   if (!osmId) throw new Error('osm id is required as second argument')
   const conn = await db()
   const [{ count }] = await conn('moderator').where({ team_id: teamId, osm_id: osmId }).count()
-  return count > 0
+  return parseInt(count) > 0
 }
 
 /**
@@ -291,7 +291,7 @@ async function isMember (teamId, osmId) {
   if (!osmId) throw new Error('osm id is required as second argument')
   const conn = await db()
   const [{ count }] = await conn('member').where({ team_id: teamId, osm_id: osmId }).count()
-  return count > 0
+  return parseInt(count) > 0
 }
 
 /**
