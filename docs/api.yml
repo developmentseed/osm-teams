@@ -415,3 +415,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseError'
+  /teams/{id}/assignModerator/{osmId}:
+    parameters:
+      - $ref: '#/components/parameters/TeamId'
+      - $ref: '#/components/parameters/OsmId'
+    put:
+      summary: >
+        Assign/Promote a member to be moderator of a team. More than one
+        moderator may exist concurrently. Moderators are listed in the
+        TeamModeratorList schema.
+      tags:
+        - teams      
+      responses:
+        '200':
+          description: member was promoted to moderator
+        '400':
+          description: error updating moderator relation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+  /teams/{id}/removeModerator/{osmId}:
+    parameters:
+      - $ref: '#/components/parameters/TeamId'
+      - $ref: '#/components/parameters/OsmId'
+    put:
+      summary: >
+        Remove/Demote a moderator of a team. At least one moderator must exist
+        for a team. Moderators are listed in the TeamModeratorList schema.
+      tags:
+        - teams      
+      responses:
+        '200':
+          description: member was demoted from moderator
+        '400':
+          description: error updating moderator relation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
