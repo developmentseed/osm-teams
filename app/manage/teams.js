@@ -19,7 +19,7 @@ async function listTeams (req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -43,7 +43,7 @@ async function getTeam (req, reply) {
     return reply.send(Object.assign({}, teamData, { members, moderators }))
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -81,7 +81,7 @@ async function updateTeam (req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -101,7 +101,7 @@ async function assignModerator (req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err)
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -121,7 +121,7 @@ async function removeModerator (req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err)
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -137,7 +137,7 @@ async function destroyTeam (req, reply) {
     reply.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -157,7 +157,7 @@ async function addMember (req, reply) {
     return reply.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -178,7 +178,7 @@ async function updateMembers (req, reply) {
     return reply.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -198,7 +198,7 @@ async function removeMember (req, reply) {
     return reply.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -219,7 +219,7 @@ async function joinTeam (req, reply) {
     return reply.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
