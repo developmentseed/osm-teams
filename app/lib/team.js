@@ -256,14 +256,14 @@ async function removeModerator (teamId, osmId) {
   const table = 'moderator'
   const conn = await db()
   const moderatorRecord = conn(table).where({ team_id: teamId, osm_id: osmId })
-  const isModerator = parseInt((await unpack(moderatorRecord.count())).count) > 0
+  const isModerator = (await moderatorRecord).length > 0
   /* the isModerator() function could have been used here ^, but since we are
    * going to del() the record at the end of this function, calling isModerator()
    * would add a db query. */
   if (!isModerator) {
     throw new Error('cannot remove osmId because osmId is not a moderator')
   }
-  const modCount = parseInt((await unpack(conn(table).where({ team_id: teamId }).count())).count)
+  const modCount = (await conn(table).where({ team_id: teamId })).length
   if (modCount === 1) {
     throw new Error('cannot remove osmId because there must be at least one moderator')
   }
@@ -280,8 +280,8 @@ async function isModerator (teamId, osmId) {
   if (!teamId) throw new Error('team id is required as first argument')
   if (!osmId) throw new Error('osm id is required as second argument')
   const conn = await db()
-  const [{ count }] = await conn('moderator').where({ team_id: teamId, osm_id: osmId }).count()
-  return parseInt(count) > 0
+  const result = await conn('moderator').where({ team_id: teamId, osm_id: osmId })
+  return result.length > 0
 }
 
 /**
@@ -294,8 +294,8 @@ async function isMember (teamId, osmId) {
   if (!teamId) throw new Error('team id is required as first argument')
   if (!osmId) throw new Error('osm id is required as second argument')
   const conn = await db()
-  const [{ count }] = await conn('member').where({ team_id: teamId, osm_id: osmId }).count()
-  return parseInt(count) > 0
+  const result = await conn('member').where({ team_id: teamId, osm_id: osmId })
+  return result.length > 0
 }
 
 /**
