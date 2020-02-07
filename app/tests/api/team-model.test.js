@@ -104,14 +104,16 @@ test('add team member', async t => {
 })
 
 test('remove team member', async t => {
-  const created = await team.create({ name: 'boundary team 4' }, 1)
-  await team.addMember(created.id, 1)
+  const moderatorId = 1
+  // add a different osm id as member
+  const memberId = 2
+  const created = await team.create({ name: 'boundary team 4' }, moderatorId)
+  await team.addMember(created.id, memberId)
   const members = await team.getMembers(created.id)
-  t.true(members.length === 1)
-
-  await team.removeMember(created.id, 1)
+  t.true(members.length === 2)
+  await team.removeMember(created.id, memberId)
   const newMembers = await team.getMembers(created.id)
-  t.true(newMembers.length === 0)
+  t.true(newMembers.length === 1)
 })
 
 test('update team members', async t => {
@@ -147,4 +149,54 @@ test('list teams with bounding box', async (t) => {
 
   t.true(Array.isArray(list1) && list1.length === 1)
   t.true(Array.isArray(list2) && list2.length === 0)
+})
+
+test('assign moderator to team', async t => {
+  const created = await team.create({ name: 'map team ♾' }, 1)
+  const { id: teamId } = created
+  await team.addMember(teamId, 2)
+  await team.assignModerator(teamId, 2)
+  const isMod = await team.isModerator(teamId, 2)
+  t.true(isMod)
+})
+
+test('remove moderator from team', async t => {
+  const created = await team.create({ name: 'map team ♾+1' }, 1)
+  const { id: teamId } = created
+  await team.addMember(teamId, 2)
+  await team.assignModerator(teamId, 2)
+  await team.removeModerator(teamId, 2)
+  const isMod = await team.isModerator(teamId, 2)
+  t.false(isMod)
+})
+
+test('moderator cannot be removed if it leaves team moderator-less', async t => {
+  const created = await team.create({ name: 'map team ♾+2' }, 1)
+  const { id: teamId } = created
+  try {
+    await team.removeModerator(teamId, 1)
+  } catch (e) {
+    t.is(e.message, 'cannot remove osmId because there must be at least one moderator')
+  }
+})
+
+test('moderator cannot be assigned if osm id is not already a member', async t => {
+  const created = await team.create({ name: 'map team ♾+3' }, 1)
+  const { id: teamId } = created
+  try {
+    await team.assignModerator(teamId, 2)
+  } catch (e) {
+    t.is(e.message, 'cannot assign osmId to be moderator because they are not a team member yet')
+  }
+})
+
+test('remove team member also removes moderator', async t => {
+  const osmId = 2
+  const created = await team.create({ name: 'map team ♾+4' }, 1)
+  const { id: teamId } = created
+  await team.addMember(teamId, osmId)
+  await team.assignModerator(teamId, osmId)
+  await team.removeMember(teamId, osmId)
+  const isMod = await team.isModerator(teamId, osmId)
+  t.false(isMod)
 })

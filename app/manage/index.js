@@ -7,15 +7,17 @@ const { can } = require('./permissions')
 const sessionMiddleware = require('./sessions')
 const logger = require('../lib/logger')
 const {
-  listTeams,
-  createTeam,
-  getTeam,
-  updateTeam,
-  destroyTeam,
   addMember,
+  assignModerator,
+  createTeam,
+  destroyTeam,
+  getTeam,
+  joinTeam,
+  listTeams,
   removeMember,
+  removeModerator,
   updateMembers,
-  joinTeam
+  updateTeam
 } = require('./teams')
 
 /**
@@ -55,7 +57,7 @@ function manageRouter (nextApp) {
   router.delete('/api/clients/:id', can('client:delete'), deleteClient)
 
   /**
-   * List / Create / Delete teams
+   * List, Create, Read, Update, Delete operations on teams.
    */
   router.get('/api/teams', listTeams)
   router.post('/api/teams', can('team:create'), createTeam)
@@ -66,6 +68,8 @@ function manageRouter (nextApp) {
   router.put('/api/teams/remove/:id/:osmId', can('team:update'), removeMember)
   router.patch('/api/teams/:id/members', can('team:update'), updateMembers)
   router.put('/api/teams/:id/join', can('team:join'), joinTeam)
+  router.put('/api/teams/:id/assignModerator/:osmId', can('team:update'), assignModerator)
+  router.put('/api/teams/:id/removeModerator/:osmId', can('team:update'), removeModerator)
 
   /**
    * Page renders

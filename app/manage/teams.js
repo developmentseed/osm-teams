@@ -19,7 +19,7 @@ async function listTeams (req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -43,7 +43,7 @@ async function getTeam (req, reply) {
     return reply.send(Object.assign({}, teamData, { members, moderators }))
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -81,7 +81,47 @@ async function updateTeam (req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
+  }
+}
+
+async function assignModerator (req, reply) {
+  const { id: teamId, osmId } = req.params
+
+  if (!teamId) {
+    return reply.boom.badRequest('team id is required')
+  }
+
+  if (!osmId) {
+    return reply.boom.badRequest('osm id of member to promote to moderator is required')
+  }
+
+  try {
+    const data = await team.assignModerator(teamId, osmId)
+    reply.send(data)
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest(err.message)
+  }
+}
+
+async function removeModerator (req, reply) {
+  const { id: teamId, osmId } = req.params
+
+  if (!teamId) {
+    return reply.boom.badRequest('team id is required')
+  }
+
+  if (!osmId) {
+    return reply.boom.badRequest('osm id of member to demote from moderator is required')
+  }
+
+  try {
+    const data = await team.removeModerator(teamId, osmId)
+    reply.send(data)
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -97,7 +137,7 @@ async function destroyTeam (req, reply) {
     reply.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -117,7 +157,7 @@ async function addMember (req, reply) {
     return reply.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -138,7 +178,7 @@ async function updateMembers (req, reply) {
     return reply.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -158,7 +198,7 @@ async function removeMember (req, reply) {
     return reply.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
@@ -179,18 +219,20 @@ async function joinTeam (req, reply) {
     return reply.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest()
+    return reply.boom.badRequest(err.message)
   }
 }
 
 module.exports = {
-  listTeams,
-  getTeam,
-  createTeam,
-  updateTeam,
-  destroyTeam,
   addMember,
-  updateMembers,
+  assignModerator,
+  createTeam,
+  destroyTeam,
+  getTeam,
+  joinTeam,
+  listTeams,
   removeMember,
-  joinTeam
+  removeModerator,
+  updateMembers,
+  updateTeam
 }

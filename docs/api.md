@@ -188,3 +188,47 @@ add and remove team members from a team
 | ---- | ----------- |
 | 200 | team members are added/removed |
 | 400 | error updating team members |
+
+### /teams/{id}/assignModerator/{osmId}
+
+#### PUT
+##### Summary:
+
+Assign/Promote a member to be moderator of a team. More than one moderator may exist concurrently. Moderators are listed in the TeamModeratorList schema.
+
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+|  |  |  | No | [TeamId](#teamid) |
+|  |  |  | No | [OsmId](#osmid) |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | member was promoted to moderator |
+| 400 | error updating moderator relation |
+
+### /teams/{id}/removeModerator/{osmId}
+
+#### PUT
+##### Summary:
+
+Remove/Demote a moderator of a team. At least one moderator must exist for a team. Moderators are listed in the TeamModeratorList schema.
+
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+|  |  |  | No | [TeamId](#teamid) |
+|  |  |  | No | [OsmId](#osmid) |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | member was demoted from moderator |
+| 400 | error updating moderator relation |

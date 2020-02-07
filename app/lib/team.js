@@ -220,12 +220,16 @@ async function addMember (teamId, osmId) {
 }
 
 /**
-* Remove an osm user as a team member
+* Remove an osm user as a team member. Removes moderator as side-effect when necessary.
 * @param {int} teamId - team id
 * @param {int} osmId - osm id
 * @return {promise}
 **/
 async function removeMember (teamId, osmId) {
+  const isMod = await isModerator(teamId, osmId)
+  if (isMod) {
+    await removeModerator(teamId, osmId)
+  }
   return updateMembers(teamId, [], [osmId])
 }
 
@@ -236,17 +240,34 @@ async function removeMember (teamId, osmId) {
  */
 async function assignModerator (teamId, osmId) {
   const conn = await db()
+  if (!await isMember(teamId, osmId)) {
+    throw new Error('cannot assign osmId to be moderator because they are not a team member yet')
+  }
   return unpack(conn('moderator').insert({ team_id: teamId, osm_id: osmId }))
 }
 
 /**
- * Remove a moderator from a team
+ * Remove a moderator from a team.
  * @param {int} teamId - team id
  * @param {int} osmId - osm id
+ * @throws {Error} if the osmId is the only remaining moderator for this team, or if osmId was not a moderator.
  */
 async function removeModerator (teamId, osmId) {
+  const table = 'moderator'
   const conn = await db()
-  return unpack(conn('moderator').where({ team_id: teamId, osm_id: osmId }).del())
+  const moderatorRecord = conn(table).where({ team_id: teamId, osm_id: osmId })
+  const isModerator = (await moderatorRecord).length > 0
+  /* the isModerator() function could have been used here ^, but since we are
+   * going to del() the record at the end of this function, calling isModerator()
+   * would add a db query. */
+  if (!isModerator) {
+    throw new Error('cannot remove osmId because osmId is not a moderator')
+  }
+  const modCount = (await conn(table).where({ team_id: teamId })).length
+  if (modCount === 1) {
+    throw new Error('cannot remove osmId because there must be at least one moderator')
+  }
+  await moderatorRecord.del()
 }
 
 /**
@@ -259,8 +280,8 @@ async function isModerator (teamId, osmId) {
   if (!teamId) throw new Error('team id is required as first argument')
   if (!osmId) throw new Error('osm id is required as second argument')
   const conn = await db()
-  const [{ count }] = await conn('moderator').where({ team_id: teamId, osm_id: osmId }).count()
-  return count > 0
+  const result = await conn('moderator').where({ team_id: teamId, osm_id: osmId })
+  return result.length > 0
 }
 
 /**
@@ -273,8 +294,8 @@ async function isMember (teamId, osmId) {
   if (!teamId) throw new Error('team id is required as first argument')
   if (!osmId) throw new Error('osm id is required as second argument')
   const conn = await db()
-  const [{ count }] = await conn('member').where({ team_id: teamId, osm_id: osmId }).count()
-  return count > 0
+  const result = await conn('member').where({ team_id: teamId, osm_id: osmId })
+  return result.length > 0
 }
 
 /**
