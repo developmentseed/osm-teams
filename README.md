@@ -21,7 +21,7 @@ Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
 
     For the rest of this documentation, we will assume that the database location is `postgres://postgres@localhost/osm-teams?sslmode=disable` on your local machine. Inside docker, that location is `postgres://postgres@host.docker.internal/osm-teams?sslmode=disable`
 
-1. Create a a `.env` file by copying `.env.sample` and replacing the values as needed. `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` are values obtained by creating a new OAuth app on openstreetmap.org. The .env file can contain:
+1. Create an `.env` file by copying `.env.sample` and replacing the values as needed. `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` are values obtained by creating a new OAuth app on openstreetmap.org. The .env file can contain:
 
     ```bash
     OSM_CONSUMER_KEY=<osm-teams-app>
@@ -30,17 +30,11 @@ Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
     SECRETS_SYSTEM=<random-guid>
     ```
 
-1. Install Javascript dependencies
+1. Install Javascript dependencies and migrate the osm-teams database
 
     ```bash
     yarn install
     yarn run migrate
-    ```
-
-1. Migrate the database
-
-    ```bash
-    docker-compose run --rm hydra migrate sql --yes postgres://postgres@host.docker.internal/osm-teams?sslmode=disable
     ```
 
 1. Build the images:
@@ -53,6 +47,12 @@ Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
 
     ```bash
     docker-compose -f docker-compose.dev.yml up
+    ```
+
+1. Migrate the Hydra database
+
+    ```bash
+    docker-compose run --rm hydra migrate sql --yes postgres://postgres@host.docker.internal/osm-teams?sslmode=disable
     ```
 
 ⚠️ In development, `docker-compose -f docker-compose.dev.yml up` enables hot module reloading while you make modifications to the code. `docker-compose up` should be used for production/staging deployments.
