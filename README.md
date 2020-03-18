@@ -7,9 +7,9 @@ Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
 
 ### Requirements
 
-- Postgresql. On macOS, the easiest is to install [Postgres.app](https://postgresapp.com/).
-- NodeJS v12.16+
-- Docker & Docker Compose
+- [PostgreSQL](https://www.postgresql.org). On OS X, the easiest is to install [Postgres.app](https://postgresapp.com/).
+- [Node.js](https://nodejs.org) v12.16+
+- [Docker](https://www.docker.com/) & Docker Compose
 
 ### Setting up Hydra
 
@@ -17,6 +17,7 @@ Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
 
     ```bash
     createdb osm-teams
+    createdb osm-teams-test
     ```
 
     For the rest of this documentation, we will assume that the database location is `postgres://postgres@localhost/osm-teams?sslmode=disable` on your local machine. Inside docker, that location is `postgres://postgres@host.docker.internal/osm-teams?sslmode=disable`
@@ -33,11 +34,18 @@ Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
 1. Install Javascript dependencies and migrate the osm-teams database
 
     ```bash
+    nvm use
     yarn install
     yarn run migrate
     ```
 
-1. Build the images:
+1. Migrate the Hydra database
+
+    ```bash
+    docker-compose run --rm hydra migrate sql --yes postgres://postgres@host.docker.internal/osm-teams?sslmode=disable
+    ```
+
+1. Build the docker images:
 
     ```bash
     docker-compose build
@@ -49,19 +57,13 @@ Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
     docker-compose -f docker-compose.dev.yml up
     ```
 
-1. Migrate the Hydra database
-
-    ```bash
-    docker-compose run --rm hydra migrate sql --yes postgres://postgres@host.docker.internal/osm-teams?sslmode=disable
-    ```
-
 ⚠️ In development, `docker-compose -f docker-compose.dev.yml up` enables hot module reloading while you make modifications to the code. `docker-compose up` should be used for production/staging deployments.
 
 This will start hydra where the token issuer is at `http://localhost:4444` and the admin interface is at `http://localhost:4445`. This also sets up the consent and login interface at `http://localhost:8989` (where we will create a first-party oauth app)
 
-### Setting up the first party app
+### Setting up the OSM-teams app
 
-Create the first party "manage" app
+Create the [first-party](https://auth0.com/docs/applications/concepts/app-types-first-third-party) "manage" app
 
 ```bash
 docker-compose exec hydra hydra clients create --endpoint http://localhost:4445 \
