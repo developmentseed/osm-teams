@@ -110,6 +110,21 @@ async function list (options) {
 }
 
 /**
+ * List all the teams which osm id is a moderator of.
+ *
+ * @param {*} osmId osm user id to filter by
+ * @returns {Promise[Array]}
+ */
+async function listModeratedBy (osmId) {
+  const conn = await db()
+  const st = knexPostgis(conn)
+  const query = conn('team')
+    .select('*', st.asGeoJSON('location'))
+    .whereIn('id', subQuery => subQuery.select('team_id').from('moderator').where('osm_id', osmId))
+  return query
+}
+
+/**
 * Create a team
 * Teams have to have moderators, so we give an osm id
 * as the second param
@@ -315,6 +330,7 @@ async function isPublic (teamId) {
 module.exports = {
   get,
   list,
+  listModeratedBy,
   create,
   update,
   destroy,
