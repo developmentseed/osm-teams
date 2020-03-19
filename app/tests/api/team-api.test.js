@@ -263,7 +263,6 @@ test('get my teams list', async t => {
   // check myTeams listing
   const myTeams = await agent.get(`/api/my/teams`)  // eslint-disable-line
     .expect(200)
-    .expect(400)
   t.truthy(myTeams)
   const { osmId, member, moderator } = myTeams
   t.is(osmId, 1)
