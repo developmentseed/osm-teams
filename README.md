@@ -1,7 +1,7 @@
 # osm-teams 🤝
 
 <div>
-  <a href="https://circleci.com/gh/osm-teams/scoreboard">
+  <a href="https://circleci.com/gh/developmentseed/osm-teams">
     <img src="https://circleci.com/gh/developmentseed/osm-teams.png" />
   </a>
   <a href="https://standardjs.com">
