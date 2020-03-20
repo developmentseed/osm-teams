@@ -3,7 +3,7 @@ const expressPino = require('express-pino-logger')
 
 const { getClients, createClient, deleteClient } = require('./client')
 const { login, loginAccept, logout } = require('./login')
-const { authenticate, can } = require('./permissions')
+const { can } = require('./permissions')
 const sessionMiddleware = require('./sessions')
 const logger = require('../lib/logger')
 const {
@@ -61,7 +61,7 @@ function manageRouter (nextApp) {
    * List, Create, Read, Update, Delete operations on teams.
    */
   router.get('/api/teams', listTeams)
-  router.get('/api/my/teams', authenticate, listMyTeams)
+  router.get('/api/my/teams', can('public:authenticated'), listMyTeams)
   router.post('/api/teams', can('team:create'), createTeam)
   router.get('/api/teams/:id', can('team:view'), getTeam)
   router.put('/api/teams/:id', can('team:update'), updateTeam)
