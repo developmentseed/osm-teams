@@ -1,7 +1,18 @@
 # osm-teams 🤝
 
+<div>
+  <a href="https://circleci.com/gh/osm-teams/scoreboard">
+    <img src="https://circleci.com/gh/developmentseed/osm-teams.png" />
+  </a>
+  <a href="https://standardjs.com">
+    <img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square"
+      alt="Standard" />
+  </a>
+</div>
+
 Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
 <!-- markdownlint-enable MD034 -->
+
 
 ## Installation
 
