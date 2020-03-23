@@ -23,6 +23,22 @@ async function listTeams (req, reply) {
   }
 }
 
+async function listMyTeams (req, reply) {
+  const { user_id: osmId } = reply.locals
+  try {
+    const memberOfTeams = await team.list({ osmId })
+    const moderatorOfTeams = await team.listModeratedBy(osmId)
+    const result = {
+      osmId,
+      member: memberOfTeams,
+      moderator: moderatorOfTeams
+    }
+    reply.send(result)
+  } catch (err) {
+    return reply.boom.badRequest(err.message)
+  }
+}
+
 async function getTeam (req, reply) {
   const { id } = req.params
 
@@ -50,7 +66,6 @@ async function getTeam (req, reply) {
 async function createTeam (req, reply) {
   const { body } = req
   const { user_id } = reply.locals
-
   if (body.editing_policy && !isUrl.test(body.editing_policy)) {
     return reply.boom.badRequest('editing_policy must be a valid url')
   }
@@ -231,6 +246,7 @@ module.exports = {
   getTeam,
   joinTeam,
   listTeams,
+  listMyTeams,
   removeMember,
   removeModerator,
   updateMembers,

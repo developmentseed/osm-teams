@@ -8,3 +8,4 @@ tmp
 *.db
 # ignore node_modules symlink
 node_modules.nosync
+.idea

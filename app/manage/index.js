@@ -14,6 +14,7 @@ const {
   getTeam,
   joinTeam,
   listTeams,
+  listMyTeams,
   removeMember,
   removeModerator,
   updateMembers,
@@ -60,6 +61,7 @@ function manageRouter (nextApp) {
    * List, Create, Read, Update, Delete operations on teams.
    */
   router.get('/api/teams', listTeams)
+  router.get('/api/my/teams', can('public:authenticated'), listMyTeams)
   router.post('/api/teams', can('team:create'), createTeam)
   router.get('/api/teams/:id', can('team:view'), getTeam)
   router.put('/api/teams/:id', can('team:update'), updateTeam)

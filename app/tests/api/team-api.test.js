@@ -20,15 +20,16 @@ test.before(async () => {
   await conn('users').insert({ id: 3 })
   await conn('users').insert({ id: 4 })
 
-  // Ensure authenticate middleware always goes through
-  sinon.stub(permissions, 'can').callsFake(
-    function () {
-      return function (req, res, next) {
-        res.locals.user_id = 1
-        return next()
-      }
+  // Ensure authenticate middleware always goes through with user_id 1
+  const middleware = function () {
+    return function (req, res, next) {
+      res.locals.user_id = 1
+      return next()
     }
-  )
+  }
+  sinon.stub(permissions, 'can').callsFake(middleware)
+  sinon.stub(permissions, 'authenticate').callsFake(middleware)
+  sinon.stub(permissions, 'check').callsFake(middleware)
 
   // Ensure that resolveMemberNames never calls osm
   sinon.stub(team, 'resolveMemberNames').callsFake((ids) => {
@@ -240,4 +241,42 @@ test('remove moderator from team', async t => {
   t.is(name, teamName)
   const matchOsmIdAssigned = data => data.osm_id === osmId
   t.false(any(matchOsmIdAssigned, moderators))
+})
+
+test('get my teams list', async t => {
+  // get previous teams list for checking relative counts within this test.
+  let response = await agent.get(`/api/my/teams`)
+    .expect(200)
+  const { member: prevMember, moderator: prevModerator } = response.body
+  // create two more teams (osmId = 1)
+  await agent.post('/api/teams')
+    .send({ name: 'map team ♾+2' })
+    .expect(200)
+  const team = await agent.post('/api/teams')
+    .send({ name: 'map team ♾+3' })
+    .expect(200)
+  const { id: teamId } = team.body
+  // add osmId 2 to one team, and make them moderator
+  await agent.put(`/api/teams/add/${teamId}/2`)
+    .expect(200)
+  await agent.put(`/api/teams/${teamId}/assignModerator/2`)
+    .expect(200)
+  // remove osmId 1 from moderator
+  await agent.put(`/api/teams/${teamId}/removeModerator/1`)
+    .expect(200)
+  // check that osmId 1 is now +1 moderator and +2 member
+  response = await agent.get(`/api/my/teams`)
+    .expect(200)
+  const { osmId, member, moderator } = response.body
+  t.is(osmId, 1)
+  t.is(moderator.length, prevModerator.length + 1)
+  t.is(member.length, prevMember.length + 2)
+  member.forEach(item => {
+    t.truthy(item.name)
+    t.truthy(item.id)
+  })
+  moderator.forEach(item => {
+    t.truthy(item.name)
+    t.truthy(item.id)
+  })
 })

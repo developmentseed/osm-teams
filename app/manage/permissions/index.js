@@ -3,7 +3,7 @@ const hydra = require('../../lib/hydra')
 const { mergeAll } = require('ramda')
 
 const metaPermissions = {
-  'public': () => true
+  'public:authenticated': () => true
 }
 
 const teamPermissions = {
