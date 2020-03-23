@@ -244,7 +244,11 @@ test('remove moderator from team', async t => {
 })
 
 test('get my teams list', async t => {
-  // create two teams (osmId = 1)
+  // get previous teams list for checking relative counts within this test.
+  let response = await agent.get(`/api/my/teams`)
+    .expect(200)
+  const { member: prevMember, moderator: prevModerator } = response.body
+  // create two more teams (osmId = 1)
   await agent.post('/api/teams')
     .send({ name: 'map team ♾+2' })
     .expect(200)
@@ -260,14 +264,13 @@ test('get my teams list', async t => {
   // remove osmId 1 from moderator
   await agent.put(`/api/teams/${teamId}/removeModerator/1`)
     .expect(200)
-  // check myTeams listing
-  const response = await agent.get(`/api/my/teams`)
+  // check that osmId 1 is now +1 moderator and +2 member
+  response = await agent.get(`/api/my/teams`)
     .expect(200)
   const { osmId, member, moderator } = response.body
   t.is(osmId, 1)
-  t.assert(moderator.length > 0)
-  t.assert(member.length > 0)
-  t.not(member.length, moderator.length)
+  t.is(moderator.length, prevModerator.length + 1)
+  t.is(member.length, prevMember.length + 2)
   member.forEach(item => {
     t.truthy(item.name)
     t.truthy(item.id)
