@@ -1,15 +1,11 @@
 const db = require('../db')
 const knexPostgis = require('knex-postgis')
-const { head } = require('ramda')
 const join = require('url-join')
 const xml2js = require('xml2js')
+const { unpack } = require('./utils')
 const request = require('request-promise-native')
 
 const { serverRuntimeConfig } = require('../../next.config')
-
-async function unpack (promise) {
-  return promise.then(head)
-}
 
 /**
  * resolveMemberNames
