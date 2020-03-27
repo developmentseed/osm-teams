@@ -63,3 +63,20 @@ test('get an organization', async t => {
   t.truthy(data)
   t.is(data.name, name)
 })
+
+/**
+ * Test organization delete
+ */
+test('destroy an organization', async t => {
+  // setup
+  const name = 'organization 3'
+  const user = 1
+  const created = await organization.create({ name }, user)
+  await organization.destroy(created.id)
+
+  // tests
+  const data = await organization.get(created.id)
+  t.falsy(data)
+  t.false(await organization.isOwner(created.id, user))
+})
+

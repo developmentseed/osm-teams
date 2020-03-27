@@ -35,6 +35,17 @@ async function create (data, osmId) {
 }
 
 /**
+ * Destroy an organization
+ *
+ * @param {int} id - organization id
+ * @return {promise}
+ */
+async function destroy (id) {
+  const conn = await db()
+  return conn('organization').where('id', id).del()
+}
+
+/**
  * Checks if the osm user is an owner of a team
  * @param {int} organizationId - organization id
  * @param {int} osmId - osm id
@@ -65,6 +76,7 @@ async function isManager (organizationId, osmId) {
 module.exports = {
   get,
   create,
+  destroy,
   isOwner,
   isManager
 }
