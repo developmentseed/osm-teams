@@ -39,6 +39,7 @@ async function getManagers (id) {
  *
  * @param {object} data - params for an organization
  * @param {string} data.name - name of the organization
+ * @param {int} osmId - osm id of the owner
  * @return {promise}
  */
 async function create (data, osmId) {
@@ -70,6 +71,7 @@ async function destroy (id) {
  * Update an organization
  *
  * @param {int} id - organization id
+ * @param {object} data - params for an organization
  * @return {promise}
  */
 async function update (id, data) {
@@ -82,7 +84,9 @@ async function update (id, data) {
 /**
  * Add organization owner
  *
- * @param {int} id - organization owner
+ * @param {int} id - organization id
+ * @param {int} osmId - osm id of the owner
+ * @return {promise}
  */
 async function addOwner (id, osmId) {
   const conn = await db()
@@ -91,8 +95,11 @@ async function addOwner (id, osmId) {
 
 /**
  * Remove organization owner
+ * There has to be at least one owner for an organization
  *
- * @param {int} id - organization owner
+ * @param {int} id - organization id
+ * @param {int} osmId - osm id of the owner
+ * @return {promise}
  */
 async function removeOwner (id, osmId) {
   const conn = await db()
@@ -107,6 +114,37 @@ async function removeOwner (id, osmId) {
   }
 
   return unpack(conn('organization_owner').where({ organization_id: id, osm_id: osmId }).del())
+}
+
+/**
+ * Add organization manager
+ *
+ * @param {int} id - organization id
+ * @param {int} osmId - osm id of the manager
+ * @return {promise}
+ */
+async function addManager (id, osmId) {
+  const conn = await db()
+  return unpack(conn('organization_manager').insert({ organization_id: id, osm_id: osmId }))
+}
+
+/**
+ * Remove organization manager
+ * There can be 0 managers in an organization
+ *
+ * @param {int} id - organization id
+ * @param {int} osmId - osm id of the manager
+ * @return {promise}
+ */
+async function removeManager (id, osmId) {
+  const conn = await db()
+  const managers = map(prop('osm_id'), await getManagers(id))
+
+  if (!contains(osmId, managers)) {
+    throw new Error('osmId is not a manager')
+  }
+
+  return unpack(conn('organization_manager').where({ organization_id: id, osm_id: osmId }).del())
 }
 
 /**
@@ -144,6 +182,8 @@ module.exports = {
   update,
   addOwner,
   removeOwner,
+  addManager,
+  removeManager,
   getOwners,
   getManagers,
   isOwner,

@@ -147,3 +147,47 @@ test('remove owners', async t => {
   const error2 = await t.throwsAsync(organization.removeOwner(created.id, user))
   t.is(error2.message, 'cannot remove owner because there must be at least one owner')
 })
+
+/**
+ * Test add a manager
+ * There should be 2 managers because a creator of a team is automatically
+ * assigned to be a manager
+ */
+test('add managers', async t => {
+  // setup
+  const name = 'add managers'
+  const user = 1
+  const user2 = 2
+  const created = await organization.create({ name }, user)
+  await organization.addManager(created.id, user2)
+
+  // tests
+  const managers = map(prop('osm_id'), await organization.getManagers(created.id))
+  t.is(managers.length, 2)
+  t.true(contains(user, managers))
+  t.true(contains(user2, managers))
+
+  // adding the same manager throws an error
+  await t.throwsAsync(organization.addManager(created.id, user2))
+})
+
+test('remove managers', async t => {
+  // setup
+  const name = 'remove managers'
+  const user = 1
+  const user2 = 2
+  const user3 = 3
+  const created = await organization.create({ name }, user)
+  await organization.addManager(created.id, user2)
+  await organization.removeManager(created.id, user2)
+
+  // tests
+  const managers = map(prop('osm_id'), await organization.getManagers(created.id))
+  t.is(managers.length, 1)
+  t.true(contains(user, managers))
+  t.false(contains(user2, managers))
+
+  // removing a non manager throws an error
+  const error = await t.throwsAsync(organization.removeManager(created.id, user3))
+  t.is(error.message, 'osmId is not a manager')
+})
