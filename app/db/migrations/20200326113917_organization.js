@@ -10,12 +10,14 @@ exports.up = async (knex) => {
     table.increments('id')
     table.integer('organization_id').references('id').inTable('organization').onDelete('CASCADE')
     table.integer('osm_id')
+    table.unique(['organization_id', 'osm_id'])
   })
 
   await knex.schema.createTable('organization_manager', (table) => {
     table.increments('id')
     table.integer('organization_id').references('id').inTable('organization').onDelete('CASCADE')
     table.integer('osm_id')
+    table.unique(['organization_id', 'osm_id'])
   })
 }
 

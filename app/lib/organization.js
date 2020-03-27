@@ -1,4 +1,5 @@
 const db = require('../db')
+const { map, prop, contains } = require('ramda')
 const { unpack } = require('./utils')
 
 /**
@@ -10,6 +11,26 @@ const { unpack } = require('./utils')
 async function get (id) {
   const conn = await db()
   return unpack(conn('organization').where('id', id))
+}
+
+/**
+ * Get an organization's owners
+ * @param {int} id - organization id
+ * @return {promise}
+ */
+async function getOwners (id) {
+  const conn = await db()
+  return conn('organization_owner').where('organization_id', id)
+}
+
+/**
+ * Get an organization's managers
+ * @param {int} id - organization id
+ * @return {promise}
+ */
+async function getManagers (id) {
+  const conn = await db()
+  return conn('organization_manager').where('organization_id', id)
 }
 
 /**
@@ -59,6 +80,36 @@ async function update (id, data) {
 }
 
 /**
+ * Add organization owner
+ *
+ * @param {int} id - organization owner
+ */
+async function addOwner (id, osmId) {
+  const conn = await db()
+  return unpack(conn('organization_owner').insert({ organization_id: id, osm_id: osmId }))
+}
+
+/**
+ * Remove organization owner
+ *
+ * @param {int} id - organization owner
+ */
+async function removeOwner (id, osmId) {
+  const conn = await db()
+  const owners = map(prop('osm_id'), await getOwners(id))
+
+  if (!contains(osmId, owners)) {
+    throw new Error('osmId is not an owner')
+  }
+
+  if (owners.length === 1) {
+    throw new Error('cannot remove owner because there must be at least one owner')
+  }
+
+  return unpack(conn('organization_owner').where({ organization_id: id, osm_id: osmId }).del())
+}
+
+/**
  * Checks if the osm user is an owner of a team
  * @param {int} organizationId - organization id
  * @param {int} osmId - osm id
@@ -91,6 +142,10 @@ module.exports = {
   create,
   destroy,
   update,
+  addOwner,
+  removeOwner,
+  getOwners,
+  getManagers,
   isOwner,
   isManager
 }

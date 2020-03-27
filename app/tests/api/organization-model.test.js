@@ -1,5 +1,6 @@
 const path = require('path')
 const test = require('ava')
+const { prop, map, contains } = require('ramda')
 const db = require('../../db')
 const organization = require('../../lib/organization')
 
@@ -100,5 +101,49 @@ test('update an organization', async t => {
   t.is(error.message, 'data.name property is required')
 })
 
+/**
+ * Test add an owner
+ */
+test('add owners', async t => {
+  // setup
+  const name = 'add owners'
+  const user = 1
+  const user2 = 2
+  const created = await organization.create({ name }, user)
+  await organization.addOwner(created.id, user2)
 
 
+  // tests
+  const owners = map(prop('osm_id'), await organization.getOwners(created.id))
+  t.is(owners.length, 2)
+  t.true(contains(user, owners))
+  t.true(contains(user2, owners))
+
+  // adding the same owner throws an error
+  await t.throwsAsync(organization.addOwner(created.id, user2))
+})
+
+test('remove owners', async t => {
+  // setup
+  const name = 'remove owners'
+  const user = 1
+  const user2 = 2
+  const user3 = 3
+  const created = await organization.create({ name }, user)
+  await organization.addOwner(created.id, user2)
+  await organization.removeOwner(created.id, user2)
+
+  // tests
+  const owners = map(prop('osm_id'), await organization.getOwners(created.id))
+  t.is(owners.length, 1)
+  t.true(contains(user, owners))
+  t.false(contains(user2, owners))
+
+  // removing a non owner throws an error
+  const error = await t.throwsAsync(organization.removeOwner(created.id, user3))
+  t.is(error.message, 'osmId is not an owner')
+
+  // removing all owners throws an error
+  const error2 = await t.throwsAsync(organization.removeOwner(created.id, user))
+  t.is(error2.message, 'cannot remove owner because there must be at least one owner')
+})
