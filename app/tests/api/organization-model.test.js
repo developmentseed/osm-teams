@@ -39,3 +39,27 @@ test('create an organization', async (t) => {
   t.true(await organization.isOwner(data.id, user))
   t.true(await organization.isManager(data.id, user))
 })
+
+/**
+ * Test name requirement for organization creation
+ */
+test('organization requires name', async t => {
+  const user = 1
+  const error = await t.throwsAsync(organization.create({}, user))
+  t.is(error.message, 'data.name property is required')
+})
+
+/**
+ * Test organization retrieval
+ */
+test('get an organization', async t => {
+  // setup
+  const name = 'organization 2'
+  const user = 1
+  const created = await organization.create({ name }, user)
+  const data = await organization.get(created.id)
+
+  // tests
+  t.truthy(data)
+  t.is(data.name, name)
+})
