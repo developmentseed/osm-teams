@@ -29,12 +29,12 @@ test.after.always(async () => {
  */
 test('create an organization', async (t) => {
   // setup
-  const name = 'organization 1'
+  const name = 'create test'
   const user = 1
   const data = await organization.create({ name }, user)
 
   // tests
-  t.is(data.name, 'organization 1')
+  t.is(data.name, name)
   t.truthy(data.name, name)
   t.true(await organization.isOwner(data.id, user))
   t.true(await organization.isManager(data.id, user))
@@ -54,7 +54,7 @@ test('organization requires name', async t => {
  */
 test('get an organization', async t => {
   // setup
-  const name = 'organization 2'
+  const name = 'get test'
   const user = 1
   const created = await organization.create({ name }, user)
   const data = await organization.get(created.id)
@@ -69,7 +69,7 @@ test('get an organization', async t => {
  */
 test('destroy an organization', async t => {
   // setup
-  const name = 'organization 3'
+  const name = 'destroy test'
   const user = 1
   const created = await organization.create({ name }, user)
   await organization.destroy(created.id)
@@ -79,4 +79,26 @@ test('destroy an organization', async t => {
   t.falsy(data)
   t.false(await organization.isOwner(created.id, user))
 })
+
+/**
+ * Test organization update
+ * An organization can update its name and description
+ */
+test('update an organization', async t => {
+  // setup
+  const name = 'update test'
+  const newName = 'update test - new name'
+  const user = 1
+  const created = await organization.create({ name }, user)
+  const updated = await organization.update(created.id, { name: newName },)
+  
+  // tests
+  t.is(updated.name, newName)
+
+  // Make sure a name can't be nullable
+  const error = await t.throwsAsync(organization.update(created.id, { name: null }))
+  t.is(error.message, 'data.name property is required')
+})
+
+
 

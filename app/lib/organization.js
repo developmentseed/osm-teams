@@ -46,6 +46,19 @@ async function destroy (id) {
 }
 
 /**
+ * Update an organization
+ *
+ * @param {int} id - organization id
+ * @return {promise}
+ */
+async function update (id, data) {
+  if (!data.name) throw new Error('data.name property is required')
+
+  const conn = await db()
+  return unpack(conn('organization').where('id', id).update(data).returning('*'))
+}
+
+/**
  * Checks if the osm user is an owner of a team
  * @param {int} organizationId - organization id
  * @param {int} osmId - osm id
@@ -77,6 +90,7 @@ module.exports = {
   get,
   create,
   destroy,
+  update,
   isOwner,
   isManager
 }
