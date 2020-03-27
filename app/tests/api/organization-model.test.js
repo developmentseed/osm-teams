@@ -3,6 +3,7 @@ const test = require('ava')
 const { prop, map, contains } = require('ramda')
 const db = require('../../db')
 const organization = require('../../lib/organization')
+const team = require('../../lib/team')
 
 const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
 
@@ -91,8 +92,8 @@ test('update an organization', async t => {
   const newName = 'update test - new name'
   const user = 1
   const created = await organization.create({ name }, user)
-  const updated = await organization.update(created.id, { name: newName },)
-  
+  const updated = await organization.update(created.id, { name: newName })
+
   // tests
   t.is(updated.name, newName)
 
@@ -102,7 +103,8 @@ test('update an organization', async t => {
 })
 
 /**
- * Test add an owner
+ * Test adding an owner
+ * - After adding an owner the number of owners increases by 1
  */
 test('add owners', async t => {
   // setup
@@ -111,7 +113,6 @@ test('add owners', async t => {
   const user2 = 2
   const created = await organization.create({ name }, user)
   await organization.addOwner(created.id, user2)
-
 
   // tests
   const owners = map(prop('osm_id'), await organization.getOwners(created.id))
@@ -123,6 +124,12 @@ test('add owners', async t => {
   await t.throwsAsync(organization.addOwner(created.id, user2))
 })
 
+/**
+ * Test removing owners
+ * - After adding and removing an owner the number of owners should remain the same
+ * - Removing a user that is not an owner throws an error
+ * - Trying to remove the last owner throws an error
+ */
 test('remove owners', async t => {
   // setup
   const name = 'remove owners'
@@ -171,6 +178,11 @@ test('add managers', async t => {
   await t.throwsAsync(organization.addManager(created.id, user2))
 })
 
+/**
+ * Test removing managers
+ * - After adding and removing a manager the number of owners should remain the same
+ * - Removing a user that is not a manager throws an error
+ */
 test('remove managers', async t => {
   // setup
   const name = 'remove managers'
@@ -190,4 +202,21 @@ test('remove managers', async t => {
   // removing a non manager throws an error
   const error = await t.throwsAsync(organization.removeManager(created.id, user3))
   t.is(error.message, 'osmId is not a manager')
+})
+
+/**
+ * Test creating a team as part of an organization
+ */
+test('create an organization team', async t => {
+  // setup
+  const orgName = 'organization team'
+  const teamName = 'org team 1'
+  const user = 1
+  const org = await organization.create({ name: orgName }, user)
+  await organization.createOrgTeam(org.id, { name: teamName }, user)
+
+  // tests
+  const teams = await team.list({ organizationId: org.id })
+  t.is(teams.length, 1)
+  t.is(teams[0].name, teamName)
 })

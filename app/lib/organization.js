@@ -1,4 +1,5 @@
 const db = require('../db')
+const team = require('./team')
 const { map, prop, contains } = require('ramda')
 const { unpack } = require('./utils')
 
@@ -148,6 +149,26 @@ async function removeManager (id, osmId) {
 }
 
 /**
+ * Create organization team
+ *
+ * An organization team is a team that is assigned to the organization
+ * at creation time. Only organization managers can create teams
+ *
+ * @param {int} organizationId - organization id
+ * @param {object} data - params for team (see team.create function)
+ * @param {int} osmId - id of the organization manager
+ * @return {promise}
+ */
+async function createOrgTeam (organizationId, data, osmId) {
+  const conn = await db()
+
+  return conn.transaction(async trx => {
+    const record = await team.create(data, osmId, trx)
+    await trx('organization_team').insert({ team_id: record.id, organization_id: organizationId })
+  })
+}
+
+/**
  * Checks if the osm user is an owner of a team
  * @param {int} organizationId - organization id
  * @param {int} osmId - osm id
@@ -187,5 +208,6 @@ module.exports = {
   getOwners,
   getManagers,
   isOwner,
-  isManager
+  isManager,
+  createOrgTeam
 }

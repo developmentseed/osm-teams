@@ -19,9 +19,17 @@ exports.up = async (knex) => {
     table.integer('osm_id')
     table.unique(['organization_id', 'osm_id'])
   })
+
+  await knex.schema.createTable('organization_team', table => {
+    table.increments('id')
+    table.integer('team_id').references('id').inTable('team').onDelete('CASCADE')
+    table.integer('organization_id').references('id').inTable('organization').onDelete('CASCADE')
+    table.unique(['organization_id', 'team_id'])
+  })
 }
 
 exports.down = async (knex) => {
+  await knex.schema.dropTable('organization_team')
   await knex.schema.dropTable('organization_manager')
   await knex.schema.dropTable('organization_owner')
   await knex.schema.dropTable('organization')
