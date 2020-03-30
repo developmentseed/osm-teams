@@ -21,6 +21,13 @@ const {
   updateTeam
 } = require('./teams')
 
+const {
+  createOrg,
+  getOrg,
+  updateOrg,
+  destroyOrg
+} = require('./organizations')
+
 /**
  * The manageRouter handles all routes related to the first party
  * management client
@@ -72,6 +79,14 @@ function manageRouter (nextApp) {
   router.put('/api/teams/:id/join', can('team:join'), joinTeam)
   router.put('/api/teams/:id/assignModerator/:osmId', can('team:update'), assignModerator)
   router.put('/api/teams/:id/removeModerator/:osmId', can('team:update'), removeModerator)
+
+  /**
+   * List, Create, Read, Update, Delete operations on orgs
+   */
+  router.post('/api/organizations', can('public:authenticated'), createOrg)
+  router.get('/api/organizations/:id', getOrg)
+  router.put('/api/organizations/:id', updateOrg)
+  router.delete('/api/organizations/:id', destroyOrg)
 
   /**
    * Page renders
