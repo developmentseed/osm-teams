@@ -1,15 +1,11 @@
 const db = require('../db')
 const knexPostgis = require('knex-postgis')
-const { head } = require('ramda')
 const join = require('url-join')
 const xml2js = require('xml2js')
+const { unpack } = require('./utils')
 const request = require('request-promise-native')
 
 const { serverRuntimeConfig } = require('../../next.config')
-
-async function unpack (promise) {
-  return promise.then(head)
-}
 
 /**
  * resolveMemberNames
@@ -84,12 +80,13 @@ async function getModerators (id) {
 *
 * @param options
 * @param {int} options.osmId - filter by whether osmId is a member
+* @param {int} options.organizationId - filter by whether team belongs to organization
 * @param {Array[float]} options.bbox - filter for teams whose location is in bbox (xmin, ymin, xmax, ymax)
 * @return {Promise[Array]}
 **/
 async function list (options) {
   options = options || {}
-  const { osmId, bbox } = options
+  const { osmId, bbox, organizationId } = options
 
   const conn = await db()
   const st = knexPostgis(conn)
@@ -99,6 +96,12 @@ async function list (options) {
   if (osmId) {
     query = query.whereIn('id', function () {
       this.select('team_id').from('member').where('osm_id', osmId)
+    })
+  }
+
+  if (organizationId) {
+    query = query.whereIn('id', function () {
+      this.select('team_id').from('organization_team').where('organization_id', organizationId)
     })
   }
 
@@ -133,12 +136,14 @@ async function listModeratedBy (osmId) {
 * @param {string} data.name - name of the team
 * @param {geojson} data.location - lat/lon of team
 * @param {int} osmId - id of first moderator
+* @param {object=} trx - optional parameter for database connection to re-use connection in case of nested
+*   transactions. This is used when a team is created as part of an organization
 * @return {promise}
 **/
-async function create (data, osmId) {
+async function create (data, osmId, trx) {
   if (!osmId) throw new Error('moderator osm id is required as second argument')
   if (!data.name) throw new Error('data.name property is required')
-  const conn = await db()
+  const conn = trx || await db()
   const st = knexPostgis(conn)
 
   // convert location to postgis geom
