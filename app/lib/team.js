@@ -136,14 +136,14 @@ async function listModeratedBy (osmId) {
 * @param {string} data.name - name of the team
 * @param {geojson} data.location - lat/lon of team
 * @param {int} osmId - id of first moderator
-* @param {object} conn - optional parameter for database connection to re-use connection in case of nested
+* @param {object=} trx - optional parameter for database connection to re-use connection in case of nested
 *   transactions. This is used when a team is created as part of an organization
 * @return {promise}
 **/
-async function create (data, osmId, conn) {
+async function create (data, osmId, trx) {
   if (!osmId) throw new Error('moderator osm id is required as second argument')
   if (!data.name) throw new Error('data.name property is required')
-  conn = conn || await db()
+  const conn = trx || await db()
   const st = knexPostgis(conn)
 
   // convert location to postgis geom

@@ -37,7 +37,6 @@ test('create an organization', async (t) => {
 
   // tests
   t.is(data.name, name)
-  t.truthy(data.name, name)
   t.true(await organization.isOwner(data.id, user))
   t.true(await organization.isManager(data.id, user))
 })
@@ -180,7 +179,7 @@ test('add managers', async t => {
 
 /**
  * Test removing managers
- * - After adding and removing a manager the number of owners should remain the same
+ * - After adding and removing a manager the number of managers should remain the same
  * - Removing a user that is not a manager throws an error
  */
 test('remove managers', async t => {
