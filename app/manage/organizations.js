@@ -1,4 +1,5 @@
 const organization = require('../lib/organization')
+const team = require('../lib/team')
 
 /**
  * Create an organization
@@ -32,7 +33,10 @@ async function getOrg (req, reply) {
 
   try {
     const data = await organization.get(id)
-    reply.send(data)
+    const owners = await organization.getOwners(id)
+    const managers = await organization.getManagers(id)
+
+    reply.send({ ...data, owners, managers })
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -171,6 +175,38 @@ async function removeManager (req, reply) {
   }
 }
 
+/**
+ * Create org team
+ */
+async function createOrgTeam (req, reply) {
+  const { id } = req.params
+  const { body } = req
+  const { user_id } = reply.locals
+  console.log('user_id', user_id)
+
+  try {
+    const data = await organization.createOrgTeam(id, body, user_id)
+    reply.send(data)
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest(err.message)
+  }
+}
+
+/**
+ * List org teams
+ */
+async function getOrgTeams (req, reply) {
+  const { id } = req.params
+  try {
+    const data = await team.list({ organizationId: id })
+    reply.send(data)
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest(err.message)
+  }
+}
+
 module.exports = {
   createOrg,
   getOrg,
@@ -179,5 +215,7 @@ module.exports = {
   addOwner,
   removeOwner,
   addManager,
-  removeManager
+  removeManager,
+  createOrgTeam,
+  getOrgTeams
 }

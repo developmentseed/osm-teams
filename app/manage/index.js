@@ -29,7 +29,9 @@ const {
   addOwner,
   removeOwner,
   addManager,
-  removeManager
+  removeManager,
+  createOrgTeam,
+  getOrgTeams
 } = require('./organizations')
 
 /**
@@ -97,6 +99,9 @@ function manageRouter (nextApp) {
 
   router.put('/api/organizations/:id/addManager/:osmId', addManager)
   router.put('/api/organizations/:id/removeManager/:osmId', removeManager)
+
+  router.post('/api/organizations/:id/teams', can('public:authenticated'), createOrgTeam)
+  router.get('/api/organizations/:id/teams', getOrgTeams)
 
   /**
    * Page renders

@@ -3,6 +3,7 @@ const test = require('ava')
 const sinon = require('sinon')
 
 const db = require('../../db')
+const team = require('../../lib/team')
 const organization = require('../../lib/organization')
 const permissions = require('../../manage/permissions')
 
@@ -74,6 +75,8 @@ test('get organization', async t => {
   const org = await agent.get(`/api/organizations/${res.body.id}`)
 
   t.is(org.body.name, 'get organization')
+  t.is(org.body.owners.length, 1)
+  t.is(org.body.managers.length, 1)
 })
 
 /**
@@ -129,7 +132,7 @@ test('remove owner', async t => {
   const res = await agent.post('/api/organizations')
     .send({ name: 'remove owner' })
     .expect(200)
-  
+
   await organization.addOwner(res.body.id, 2)
 
   await agent.put(`/api/organizations/${res.body.id}/removeOwner/2`)
@@ -163,7 +166,7 @@ test('remove manager', async t => {
   const res = await agent.post('/api/organizations')
     .send({ name: 'remove manager' })
     .expect(200)
-  
+
   await organization.addManager(res.body.id, 2)
 
   await agent.put(`/api/organizations/${res.body.id}/removeManager/2`)
@@ -174,3 +177,37 @@ test('remove manager', async t => {
   t.is(owners.length, 1)
 })
 
+/**
+ * Create org team
+ */
+test('create an on org team', async t => {
+  const teamName = 'create org team - team 1'
+  const res = await agent.post('/api/organizations')
+    .send({ name: 'create org team' })
+    .expect(200)
+
+  await agent.post(`/api/organizations/${res.body.id}/teams`)
+    .send({ name: teamName })
+    .expect(200)
+
+  const orgTeams = await team.list({ organizationId: res.body.id })
+  t.is(orgTeams.length, 1)
+  t.is(orgTeams.length, 1)
+})
+
+/**
+ * Get org teams
+ */
+test('get org teams', async t => {
+  const teamName1 = 'get org team - team 1'
+  const teamName2 = 'get org team - team 2'
+  const res = await agent.post('/api/organizations')
+    .send({ name: 'get org team' })
+    .expect(200)
+
+  await organization.createOrgTeam(res.body.id, { name: teamName1 }, 1)
+  await organization.createOrgTeam(res.body.id, { name: teamName2 }, 1)
+
+  const orgTeams = await agent.get(`/api/organizations/${res.body.id}/teams`)
+  t.is(orgTeams.body.length, 2)
+})
