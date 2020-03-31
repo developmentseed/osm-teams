@@ -32,7 +32,6 @@ async function getOrg (req, reply) {
 
   try {
     const data = await organization.get(id)
-    console.log(data)
     reply.send(data)
   } catch (err) {
     console.log(err)
@@ -80,9 +79,105 @@ async function destroyOrg (req, reply) {
   }
 }
 
+/**
+ * Add owner
+ */
+async function addOwner (req, reply) {
+  const { id, osmId } = req.params
+
+  if (!id) {
+    return reply.boom.badRequest('organization id is required')
+  }
+
+  if (!osmId) {
+    return reply.boom.badRequest('osmId to add is required')
+  }
+
+  try {
+    await organization.addOwner(id, Number(osmId))
+    reply.sendStatus(200)
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest(err.message)
+  }
+}
+
+/**
+ * Remove owner
+ */
+async function removeOwner (req, reply) {
+  const { id, osmId } = req.params
+
+  if (!id) {
+    return reply.boom.badRequest('organization id is required')
+  }
+
+  if (!osmId) {
+    return reply.boom.badRequest('osmId to add is required')
+  }
+
+  try {
+    await organization.removeOwner(id, Number(osmId))
+    reply.sendStatus(200)
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest(err.message)
+  }
+}
+
+/**
+ * Add manager
+ */
+async function addManager (req, reply) {
+  const { id, osmId } = req.params
+
+  if (!id) {
+    return reply.boom.badRequest('organization id is required')
+  }
+
+  if (!osmId) {
+    return reply.boom.badRequest('osmId to add is required')
+  }
+
+  try {
+    await organization.addManager(id, Number(osmId))
+    reply.sendStatus(200)
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest(err.message)
+  }
+}
+
+/**
+ * Remove manager
+ */
+async function removeManager (req, reply) {
+  const { id, osmId } = req.params
+
+  if (!id) {
+    return reply.boom.badRequest('organization id is required')
+  }
+
+  if (!osmId) {
+    return reply.boom.badRequest('osmId to add is required')
+  }
+
+  try {
+    await organization.removeManager(id, Number(osmId))
+    reply.sendStatus(200)
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest(err.message)
+  }
+}
+
 module.exports = {
   createOrg,
   getOrg,
   updateOrg,
-  destroyOrg
+  destroyOrg,
+  addOwner,
+  removeOwner,
+  addManager,
+  removeManager
 }

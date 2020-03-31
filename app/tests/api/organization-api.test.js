@@ -1,7 +1,6 @@
 const path = require('path')
 const test = require('ava')
 const sinon = require('sinon')
-const { any } = require('ramda')
 
 const db = require('../../db')
 const organization = require('../../lib/organization')
@@ -105,5 +104,73 @@ test('destroy organization', async t => {
 
   const org = await organization.get(res.body.id)
   t.falsy(org)
+})
+
+/**
+ * Add owner
+ */
+test('add owner', async t => {
+  const res = await agent.post('/api/organizations')
+    .send({ name: 'add owner' })
+    .expect(200)
+
+  await agent.put(`/api/organizations/${res.body.id}/addOwner/2`)
+    .expect(200)
+
+  const owners = await organization.getOwners(res.body.id)
+
+  t.is(owners.length, 2)
+})
+
+/**
+ * Remove owner
+ */
+test('remove owner', async t => {
+  const res = await agent.post('/api/organizations')
+    .send({ name: 'remove owner' })
+    .expect(200)
+  
+  await organization.addOwner(res.body.id, 2)
+
+  await agent.put(`/api/organizations/${res.body.id}/removeOwner/2`)
+    .expect(200)
+
+  const owners = await organization.getOwners(res.body.id)
+
+  t.is(owners.length, 1)
+})
+
+/**
+ * Add manager
+ */
+test('add manager', async t => {
+  const res = await agent.post('/api/organizations')
+    .send({ name: 'add manager' })
+    .expect(200)
+
+  await agent.put(`/api/organizations/${res.body.id}/addManager/2`)
+    .expect(200)
+
+  const owners = await organization.getManagers(res.body.id)
+
+  t.is(owners.length, 2)
+})
+
+/**
+ * Remove manager
+ */
+test('remove manager', async t => {
+  const res = await agent.post('/api/organizations')
+    .send({ name: 'remove manager' })
+    .expect(200)
+  
+  await organization.addManager(res.body.id, 2)
+
+  await agent.put(`/api/organizations/${res.body.id}/removeManager/2`)
+    .expect(200)
+
+  const owners = await organization.getOwners(res.body.id)
+
+  t.is(owners.length, 1)
 })
 
