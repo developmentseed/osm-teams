@@ -90,15 +90,15 @@ function manageRouter (nextApp) {
    * List, Create, Read, Update, Delete operations on orgs
    */
   router.post('/api/organizations', can('public:authenticated'), createOrg)
-  router.get('/api/organizations/:id', getOrg)
-  router.put('/api/organizations/:id', updateOrg)
-  router.delete('/api/organizations/:id', destroyOrg)
+  router.get('/api/organizations/:id', can('public:authenticated'), getOrg) // TODO handle private organizations
+  router.put('/api/organizations/:id', can('organization:edit'), updateOrg)
+  router.delete('/api/organizations/:id', can('organization:edit'), destroyOrg)
 
-  router.put('/api/organizations/:id/addOwner/:osmId', addOwner)
-  router.put('/api/organizations/:id/removeOwner/:osmId', removeOwner)
+  router.put('/api/organizations/:id/addOwner/:osmId', can('organization:edit'), addOwner)
+  router.put('/api/organizations/:id/removeOwner/:osmId', can('organization:edit'), removeOwner)
 
-  router.put('/api/organizations/:id/addManager/:osmId', addManager)
-  router.put('/api/organizations/:id/removeManager/:osmId', removeManager)
+  router.put('/api/organizations/:id/addManager/:osmId', can('organization:edit'), addManager)
+  router.put('/api/organizations/:id/removeManager/:osmId', can('organization:edit'), removeManager)
 
   router.post('/api/organizations/:id/teams', can('public:authenticated'), createOrgTeam)
   router.get('/api/organizations/:id/teams', getOrgTeams)

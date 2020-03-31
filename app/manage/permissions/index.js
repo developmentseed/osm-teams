@@ -14,6 +14,10 @@ const teamPermissions = {
   'team:join': require('./join-team')
 }
 
+const organizationPermissions = {
+  'organization:edit': require('./edit-org')
+}
+
 const clientPermissions = {
   'clients': require('./clients'),
   'client:delete': require('./delete-client')
@@ -22,7 +26,8 @@ const clientPermissions = {
 const permissions = mergeAll([
   metaPermissions,
   teamPermissions,
-  clientPermissions
+  clientPermissions,
+  organizationPermissions
 ])
 
 /**
