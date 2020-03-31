@@ -23,7 +23,6 @@ async function createOrg (req, reply) {
  * Get an organization
  * Requires id of organization
  */
-
 async function getOrg (req, reply) {
   const { id } = req.params
 
@@ -32,9 +31,11 @@ async function getOrg (req, reply) {
   }
 
   try {
-    const data = await organization.get(id)
-    const owners = await organization.getOwners(id)
-    const managers = await organization.getManagers(id)
+    const [data, owners, managers] = await Promise.all([
+      organization.get(id),
+      organization.getOwners(id),
+      organization.getManagers(id)
+    ])
 
     reply.send({ ...data, owners, managers })
   } catch (err) {
@@ -182,7 +183,6 @@ async function createOrgTeam (req, reply) {
   const { id } = req.params
   const { body } = req
   const { user_id } = reply.locals
-  console.log('user_id', user_id)
 
   try {
     const data = await organization.createOrgTeam(id, body, user_id)

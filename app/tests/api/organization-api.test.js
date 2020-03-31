@@ -172,7 +172,7 @@ test('remove manager', async t => {
   await agent.put(`/api/organizations/${res.body.id}/removeManager/2`)
     .expect(200)
 
-  const owners = await organization.getOwners(res.body.id)
+  const owners = await organization.getManagers(res.body.id)
 
   t.is(owners.length, 1)
 })
@@ -191,7 +191,6 @@ test('create an on org team', async t => {
     .expect(200)
 
   const orgTeams = await team.list({ organizationId: res.body.id })
-  t.is(orgTeams.length, 1)
   t.is(orgTeams.length, 1)
 })
 
