@@ -332,6 +332,20 @@ async function isPublic (teamId) {
   return (privacy === 'public')
 }
 
+/**
+ * associatedOrg
+ *
+ * If the team is part of an org, return its associated org
+ * @param teamId - team id
+ * @returns {int} organization id or null
+ */
+async function associatedOrg (teamId) {
+  if (!teamId) throw new Error('team id is required as first argument')
+
+  const conn = await db()
+  return unpack(conn('organization_team').where('team_id', teamId).returning('organization_id'))
+}
+
 module.exports = {
   get,
   list,
@@ -349,5 +363,6 @@ module.exports = {
   isModerator,
   isMember,
   isPublic,
-  resolveMemberNames
+  resolveMemberNames,
+  associatedOrg
 }

@@ -165,6 +165,7 @@ async function createOrgTeam (organizationId, data, osmId) {
   return conn.transaction(async trx => {
     const record = await team.create(data, osmId, trx)
     await trx('organization_team').insert({ team_id: record.id, organization_id: organizationId })
+    return record
   })
 }
 
