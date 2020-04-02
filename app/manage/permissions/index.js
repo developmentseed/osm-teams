@@ -15,7 +15,8 @@ const teamPermissions = {
 }
 
 const organizationPermissions = {
-  'organization:edit': require('./edit-org')
+  'organization:edit': require('./edit-org'),
+  'organization:create-team': require('./create-org-team')
 }
 
 const clientPermissions = {

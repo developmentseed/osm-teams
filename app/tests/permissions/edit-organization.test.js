@@ -75,6 +75,8 @@ test('org manager cannot update an org', async t => {
 
   // We create a manager role for user 101
   await agent.post(`/api/organizations/${res.body.id}/addManager/101`)
+    .set('Authorization', `Bearer user100`)
+    .expect(200)
 
   const res3 = await agent.put(`/api/organizations/${res.body.id}`)
     .set('Authorization', `Bearer user101`)

@@ -100,7 +100,7 @@ function manageRouter (nextApp) {
   router.put('/api/organizations/:id/addManager/:osmId', can('organization:edit'), addManager)
   router.put('/api/organizations/:id/removeManager/:osmId', can('organization:edit'), removeManager)
 
-  router.post('/api/organizations/:id/teams', can('public:authenticated'), createOrgTeam)
+  router.post('/api/organizations/:id/teams', can('organization:create-team'), createOrgTeam)
   router.get('/api/organizations/:id/teams', getOrgTeams)
 
   /**
