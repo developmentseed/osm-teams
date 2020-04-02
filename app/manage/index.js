@@ -75,16 +75,16 @@ function manageRouter (nextApp) {
    */
   router.get('/api/teams', listTeams)
   router.get('/api/my/teams', can('public:authenticated'), listMyTeams)
-  router.post('/api/teams', can('team:create'), createTeam)
+  router.post('/api/teams', can('public:authenticated'), createTeam)
   router.get('/api/teams/:id', can('team:view'), getTeam)
-  router.put('/api/teams/:id', can('team:update'), updateTeam)
-  router.delete('/api/teams/:id', can('team:delete'), destroyTeam)
-  router.put('/api/teams/add/:id/:osmId', can('team:update'), addMember)
-  router.put('/api/teams/remove/:id/:osmId', can('team:update'), removeMember)
-  router.patch('/api/teams/:id/members', can('team:update'), updateMembers)
+  router.put('/api/teams/:id', can('team:edit'), updateTeam)
+  router.delete('/api/teams/:id', can('team:edit'), destroyTeam)
+  router.put('/api/teams/add/:id/:osmId', can('team:edit'), addMember)
+  router.put('/api/teams/remove/:id/:osmId', can('team:edit'), removeMember)
+  router.patch('/api/teams/:id/members', can('team:edit'), updateMembers)
   router.put('/api/teams/:id/join', can('team:join'), joinTeam)
-  router.put('/api/teams/:id/assignModerator/:osmId', can('team:update'), assignModerator)
-  router.put('/api/teams/:id/removeModerator/:osmId', can('team:update'), removeModerator)
+  router.put('/api/teams/:id/assignModerator/:osmId', can('team:edit'), assignModerator)
+  router.put('/api/teams/:id/removeModerator/:osmId', can('team:edit'), removeModerator)
 
   /**
    * List, Create, Read, Update, Delete operations on orgs

@@ -22,11 +22,11 @@ test.before(async (t) => {
 
   // stub hydra introspect
   let introspectStub = sinon.stub(hydra, 'introspect')
-  introspectStub.withArgs('validToken').returns({
+  introspectStub.withArgs('user100').returns({
     active: true,
     sub: '100'
   })
-  introspectStub.withArgs('differentUser').returns({
+  introspectStub.withArgs('user101').returns({
     active: true,
     sub: '101'
   })
@@ -44,21 +44,21 @@ test.after.always(async () => {
 test('a user can join a public team', async t => {
   const team = t.context.publicTeam
   let res = await agent.put(`/api/teams/${team.id}/join`)
-    .set('Authorization', `Bearer differentUser`)
+    .set('Authorization', `Bearer user101`)
   t.is(res.status, 200)
 })
 
 test('a user cannot join a private team', async t => {
   const team = t.context.privateTeam
   let res = await agent.put(`/api/teams/${team.id}/join`)
-    .set('Authorization', `Bearer differentUser`)
+    .set('Authorization', `Bearer user101`)
   t.is(res.status, 401)
 })
 
 test('a user cannot join a team they are already in', async t => {
   const team = t.context.publicTeam
   let res = await agent.put(`/api/teams/${team.id}/join`)
-    .set('Authorization', `Bearer validToken`)
+    .set('Authorization', `Bearer user100`)
   t.is(res.status, 401)
 })
 

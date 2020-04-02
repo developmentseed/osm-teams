@@ -10,6 +10,11 @@ const { isPublic, isMember } = require('../../lib/team')
  * @returns {boolean} can the request go through?
  */
 async function joinTeam (uid, { id }) {
+  // User has to be authenticated
+  if (!uid) {
+    return false
+  }
+
   const publicTeam = await isPublic(id)
   const member = await isMember(id, uid)
   return publicTeam && !member

@@ -1,16 +1,14 @@
 const db = require('../../db')
 const hydra = require('../../lib/hydra')
-const { mergeAll } = require('ramda')
+const { mergeAll, isNil } = require('ramda')
 
 const metaPermissions = {
-  'public:authenticated': () => true
+  'public:authenticated': (uid) => (!isNil(uid)) // User needs to be authenticated
 }
 
 const teamPermissions = {
-  'team:create': require('./create-team'),
-  'team:update': require('./update-team'),
+  'team:edit': require('./edit-team'),
   'team:view': require('./view-team'),
-  'team:delete': require('./delete-team'),
   'team:join': require('./join-team')
 }
 
