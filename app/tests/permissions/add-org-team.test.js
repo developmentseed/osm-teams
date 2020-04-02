@@ -38,6 +38,28 @@ test.after.always(async () => {
 })
 
 /**
+ * An org owner can create a team
+ * We create an org with the user100 user
+ * We check that user100 can create a team in the org
+ *
+ */
+test('org owner can create a team', async t => {
+  const orgName = 'org owner can create a team'
+  const teamName = 'org owner can create a team - team'
+
+  let res = await agent.post('/api/organizations')
+    .send({ name: orgName })
+    .set('Authorization', `Bearer user100`)
+    .expect(200)
+
+  let res2 = await agent.post(`/api/organizations/${res.body.id}/teams`)
+    .set('Authorization', `Bearer user100`)
+    .send({ name: teamName })
+
+  t.is(res2.status, 200)
+})
+
+/**
  * An org manager can create a team
  * We create an org with the user100 user and assign user101
  * as a manager. We check that user101 can create a team in the org

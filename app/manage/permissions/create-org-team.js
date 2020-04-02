@@ -1,4 +1,4 @@
-const { isManager } = require('../../lib/organization')
+const { isOwner, isManager } = require('../../lib/organization')
 
 /**
  * organization:create-team
@@ -12,7 +12,7 @@ const { isManager } = require('../../lib/organization')
  * @returns {boolean}
  */
 async function createOrgTeam (uid, { id }) {
-  return isManager(id, uid)
+  return (await isOwner(id, uid)) || isManager(id, uid)
 }
 
 module.exports = createOrgTeam
