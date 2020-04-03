@@ -44,28 +44,28 @@ test.after.always(async () => {
 test('a user can join a public team', async t => {
   const team = t.context.publicTeam
   let res = await agent.put(`/api/teams/${team.id}/join`)
-    .set('Authorization', `Bearer user101`)
+    .set('Authorization', 'Bearer user101')
   t.is(res.status, 200)
 })
 
 test('a user cannot join a private team', async t => {
   const team = t.context.privateTeam
   let res = await agent.put(`/api/teams/${team.id}/join`)
-    .set('Authorization', `Bearer user101`)
+    .set('Authorization', 'Bearer user101')
   t.is(res.status, 401)
 })
 
 test('a user cannot join a team they are already in', async t => {
   const team = t.context.publicTeam
   let res = await agent.put(`/api/teams/${team.id}/join`)
-    .set('Authorization', `Bearer user100`)
+    .set('Authorization', 'Bearer user100')
   t.is(res.status, 401)
 })
 
 test('a user must be authenticated to join a team', async t => {
   const team = t.context.publicTeam
   let invalidToken = await agent.put(`/api/teams/${team.id}/join`)
-    .set('Authorization', `Bearer invalidToken`)
+    .set('Authorization', 'Bearer invalidToken')
   t.is(invalidToken.status, 401)
   let unauthenticated = await agent.put(`/api/teams/${team.id}/join`)
   t.is(unauthenticated.status, 401)

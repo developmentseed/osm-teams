@@ -49,11 +49,11 @@ test('org owner can create a team', async t => {
 
   let res = await agent.post('/api/organizations')
     .send({ name: orgName })
-    .set('Authorization', `Bearer user100`)
+    .set('Authorization', 'Bearer user100')
     .expect(200)
 
   let res2 = await agent.post(`/api/organizations/${res.body.id}/teams`)
-    .set('Authorization', `Bearer user100`)
+    .set('Authorization', 'Bearer user100')
     .send({ name: teamName })
 
   t.is(res2.status, 200)
@@ -71,16 +71,16 @@ test('org manager can create a team', async t => {
 
   let res = await agent.post('/api/organizations')
     .send({ name: orgName })
-    .set('Authorization', `Bearer user100`)
+    .set('Authorization', 'Bearer user100')
     .expect(200)
 
   // We create a manager role for user 101
   await agent.put(`/api/organizations/${res.body.id}/addManager/101`)
-    .set('Authorization', `Bearer user100`)
+    .set('Authorization', 'Bearer user100')
     .expect(200)
 
   let res2 = await agent.post(`/api/organizations/${res.body.id}/teams`)
-    .set('Authorization', `Bearer user101`)
+    .set('Authorization', 'Bearer user101')
     .send({ name: teamName })
 
   t.is(res2.status, 200)
@@ -98,11 +98,11 @@ test('non-org manager cannot create a team', async t => {
 
   let res = await agent.post('/api/organizations')
     .send({ name: orgName })
-    .set('Authorization', `Bearer user100`)
+    .set('Authorization', 'Bearer user100')
     .expect(200)
 
   let res2 = await agent.post(`/api/organizations/${res.body.id}/teams`)
-    .set('Authorization', `Bearer user101`)
+    .set('Authorization', 'Bearer user101')
     .send({ name: teamName })
 
   t.is(res2.status, 401)

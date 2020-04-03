@@ -10,7 +10,7 @@ const { isOwner } = require('../../lib/organization')
  *
  * @param {string} uid user id
  * @param {Object} params request parameters
- * @returns {boolean} can the request go through?
+ * @returns {Promise<boolean>} can the request go through?
  */
 async function updateTeam (uid, { id }) {
   // user has to be authenticated
