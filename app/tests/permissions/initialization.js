@@ -52,6 +52,11 @@ async function initializeContext (t) {
     sub: '101'
   })
 
+  introspectStub.withArgs('user102').returns({
+    active: true,
+    sub: '102'
+  })
+
   introspectStub.withArgs('invalidToken').returns({ active: false })
 
   // Initialize context objects
