@@ -21,6 +21,19 @@ const {
   updateTeam
 } = require('./teams')
 
+const {
+  createOrg,
+  getOrg,
+  updateOrg,
+  destroyOrg,
+  addOwner,
+  removeOwner,
+  addManager,
+  removeManager,
+  createOrgTeam,
+  getOrgTeams
+} = require('./organizations')
+
 /**
  * The manageRouter handles all routes related to the first party
  * management client
@@ -62,16 +75,33 @@ function manageRouter (nextApp) {
    */
   router.get('/api/teams', listTeams)
   router.get('/api/my/teams', can('public:authenticated'), listMyTeams)
-  router.post('/api/teams', can('team:create'), createTeam)
+  router.post('/api/teams', can('public:authenticated'), createTeam)
   router.get('/api/teams/:id', can('team:view'), getTeam)
-  router.put('/api/teams/:id', can('team:update'), updateTeam)
-  router.delete('/api/teams/:id', can('team:delete'), destroyTeam)
-  router.put('/api/teams/add/:id/:osmId', can('team:update'), addMember)
-  router.put('/api/teams/remove/:id/:osmId', can('team:update'), removeMember)
-  router.patch('/api/teams/:id/members', can('team:update'), updateMembers)
+  router.put('/api/teams/:id', can('team:edit'), updateTeam)
+  router.delete('/api/teams/:id', can('team:edit'), destroyTeam)
+  router.put('/api/teams/add/:id/:osmId', can('team:edit'), addMember)
+  router.put('/api/teams/remove/:id/:osmId', can('team:edit'), removeMember)
+  router.patch('/api/teams/:id/members', can('team:edit'), updateMembers)
   router.put('/api/teams/:id/join', can('team:join'), joinTeam)
-  router.put('/api/teams/:id/assignModerator/:osmId', can('team:update'), assignModerator)
-  router.put('/api/teams/:id/removeModerator/:osmId', can('team:update'), removeModerator)
+  router.put('/api/teams/:id/assignModerator/:osmId', can('team:edit'), assignModerator)
+  router.put('/api/teams/:id/removeModerator/:osmId', can('team:edit'), removeModerator)
+
+  /**
+   * List, Create, Read, Update, Delete operations on orgs
+   */
+  router.post('/api/organizations', can('public:authenticated'), createOrg)
+  router.get('/api/organizations/:id', can('public:authenticated'), getOrg) // TODO handle private organizations
+  router.put('/api/organizations/:id', can('organization:edit'), updateOrg)
+  router.delete('/api/organizations/:id', can('organization:edit'), destroyOrg)
+
+  router.put('/api/organizations/:id/addOwner/:osmId', can('organization:edit'), addOwner)
+  router.put('/api/organizations/:id/removeOwner/:osmId', can('organization:edit'), removeOwner)
+
+  router.put('/api/organizations/:id/addManager/:osmId', can('organization:edit'), addManager)
+  router.put('/api/organizations/:id/removeManager/:osmId', can('organization:edit'), removeManager)
+
+  router.post('/api/organizations/:id/teams', can('organization:create-team'), createOrgTeam)
+  router.get('/api/organizations/:id/teams', getOrgTeams)
 
   /**
    * Page renders
