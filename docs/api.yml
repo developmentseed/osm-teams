@@ -17,6 +17,8 @@ produces:
 tags:
   - name: teams
     description: Teams
+  - name: organizations
+    description: Organizations
   - name: clients
     description: Clients
 
@@ -99,6 +101,76 @@ components:
               $ref: '#/components/schemas/TeamModeratorList'
             moderators:
               $ref: '#/components/schemas/TeamModeratorList'
+    Organization:
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: unique id of the organization
+        name:
+          type: string
+          description: name of the organization
+        description:
+          type: string
+          description: description of the organization
+        created_at:
+          type: string
+          format: date-time
+          description: the timestamp of the time and date the organization was created
+        updated_at:
+          type: string
+          format: date-time
+          description: the timestamp of the time and date the organization was last updated
+    OrganizationOwner:
+      properties:
+        id:
+          type: integer
+          description: unique id representing the organization owner relation
+        osm_id:
+          type: integer
+          description: OSM id of user
+        organization_id:
+          type: integer
+          description: unique id of the organization
+    OrganizationManager:
+      properties:
+        id:
+          type: integer
+          description: unique id representing the organization manager relation
+        osm_id:
+          type: integer
+          description: OSM id of user
+        organization_id:
+          type: integer
+          description: unique id of the organization
+    OrganizationTeam:
+      properties:
+        id:
+          type: integer
+          description: unique id representing the organization team relation
+        team_id:
+          type: integer
+          description: id of team
+        organization_id:
+          type: integer
+          description: unique id of the organization
+    OrganizationOwnerList:
+      type: array
+      items:
+        $ref: '#/components/schemas/OrganizationOwner'
+    OrganizationManagerList:
+      type: array
+      items:
+        $ref: '#/components/schemas/OrganizationManager'
+    OrganizationFullDetail:
+      allOf:
+        - $ref: '#/components/schemas/Organization'
+        - type: object
+          properties:
+            members:
+              $ref: '#/components/schemas/OrganizationOwnerList'
+            moderators:
+              $ref: '#/components/schemas/OrganizationManagerList'
     Client:
       properties:
         client_id:
@@ -202,6 +274,14 @@ components:
       name: id
       in: path
       description: team id
+      required: true
+      schema:
+        type: integer
+        format: int64
+    OrgId:
+      name: id
+      in: path
+      description: organization id
       required: true
       schema:
         type: integer
@@ -330,7 +410,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/TeamFullDetail'
         '400':
-          description: error getting list of teams
+          description: error updating team
           content:
             application/json:
               schema:
@@ -450,6 +530,198 @@ paths:
           description: member was demoted from moderator
         '400':
           description: error updating moderator relation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+  /organizations:
+    post:
+      summary: create an organization
+      tags:
+        - organizations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+      responses:
+        '200':
+          description: team
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+  /organizations/{id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      summary: get an organization
+      tags:
+        - organizations
+      responses:
+        '200':
+          description: organization retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationFullDetail'
+        '400':
+          description: error getting list of organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+    put:
+      summary: update an organization
+      tags:
+        - organizations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+      responses:
+        '200':
+          description: team updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '400':
+          description: error updating organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+    delete:
+      summary: delete an organization
+      tags:
+        - organizations
+      responses:
+        '200':
+          description: organization is deleted
+        '400':
+          description: error deleting organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+  /organizations/{id}/addOwner/{osmId}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - $ref: '#/components/parameters/OsmId'
+    put:
+      summary: >
+        Assign/Promote a user to be an owner of an organization. More than one
+        owner may exist concurrently. Owners can manage organizations of an organization.
+      tags:
+        - organizations      
+      responses:
+        '200':
+          description: user is promoted to owner of organization
+        '400':
+          description: error updating owner relation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+  /organizations/{id}/removeOwner/{osmId}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - $ref: '#/components/parameters/OsmId'
+    put:
+      summary: >
+        Remove/Demote an owner of an organization. At least one owner
+        must remain in the organization.
+      tags:
+        - organizations      
+      responses:
+        '200':
+          description: user is demoted from owner
+        '400':
+          description: error updating owner relation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+  /organizations/{id}/addManager/{osmId}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - $ref: '#/components/parameters/OsmId'
+    put:
+      summary: >
+        Assign/Promote a user to be a manager of an organization. More than one
+        manager may exist concurrently. Managers can create organizations for an organization
+        but cannot update the organization.
+      tags:
+        - organizations      
+      responses:
+        '200':
+          description: user is promoted to manager of organization
+        '400':
+          description: error updating owner relation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+  /organizations/{id}/removeManager/{osmId}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - $ref: '#/components/parameters/OsmId'
+    put:
+      summary: >
+        Remove/Demote manager of an organization. An org can have no managers.
+      tags:
+        - organizations      
+      responses:
+        '200':
+          description: user is demoted from manager of organization
+        '400':
+          description: error updating owner relation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+  /organizations/{id}/teams:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      summary: >
+        Add a team to this organization. Only owners and managers can add
+        new teams.
+      tags:
+        - organizations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses:
+        '200':
+          description: team was added successfully
+        '400':
+          description: error creating team for organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+    get:
+      summary: >
+        Get a list of teams for the specified organization
+      tags:
+        - organizations
+      responses:
+        '200':
+          description: A JSON array of team objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamList'
+        '400':
+          description: error getting list of teams
           content:
             application/json:
               schema:
