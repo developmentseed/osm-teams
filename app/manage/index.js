@@ -114,7 +114,7 @@ function manageRouter (nextApp) {
     return nextApp.render(req, res, '/profile')
   })
 
-  router.get('/teams/create', can('team:create'), (req, res) => {
+  router.get('/teams/create', can('public:authenticated'), (req, res) => {
     return nextApp.render(req, res, '/team-create', { id: req.params.id })
   })
 
@@ -122,7 +122,7 @@ function manageRouter (nextApp) {
     return nextApp.render(req, res, '/team', { id: req.params.id })
   })
 
-  router.get('/teams/:id/edit', can('team:update'), (req, res) => {
+  router.get('/teams/:id/edit', can('team:edit'), (req, res) => {
     return nextApp.render(req, res, '/team-edit', { id: req.params.id })
   })
 
