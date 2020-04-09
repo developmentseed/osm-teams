@@ -23,9 +23,9 @@ create a client
 
 ##### Responses
 
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | oath 2.0 client | object |
+| Code | Description |
+| ---- | ----------- |
+| 200 | oath 2.0 client |
 
 ### /clients/{id}
 

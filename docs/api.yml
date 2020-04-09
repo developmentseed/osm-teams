@@ -8,12 +8,6 @@ info:
 servers:
   - url: /api
 
-consumes:
-  - application/json
-
-produces:
-  - application/json
-
 tags:
   - name: teams
     description: Teams
@@ -255,12 +249,13 @@ components:
           description: the timestamp of the time and date the client was last updated
           format: date-time
     ResponseError:
-      statusCode:
-        type: integer
-      error:
-        type: string
-      message:
-        type: string
+      properties:
+        statusCode:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
   parameters:
     ClientId:
       name: id
@@ -304,11 +299,12 @@ paths:
       responses:
         '200':
           description: A JSON array of client objects
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Client'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Client'
     post:
       summary: create a client
       tags:
@@ -322,11 +318,13 @@ paths:
       responses:
         '200':
           description: oath 2.0 client
-          schema:
-            type: object
-            properties:
-              client:
-                $ref: '#/components/schemas/Client'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  client:
+                    $ref: '#/components/schemas/Client'
   /clients/{id}:
     parameters:
       - $ref: '#/components/parameters/ClientId'
