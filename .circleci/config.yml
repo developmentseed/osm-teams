@@ -2,7 +2,8 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:12.16
+
         environment:
             DATABASE_URL: postgres://postgres@localhost/osm-teams-test
       - image: mdillon/postgis:9.6-alpine
@@ -17,7 +18,7 @@ jobs:
             - scoreboard-cache-{{ checksum "package.json" }}
       - run:
           name: Install
-          command: yarn 
+          command: yarn
       - save_cache:
           key: scoreboard-cache-{{ checksum "package.json" }}
           paths:
