@@ -8,7 +8,10 @@
     <img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square"
       alt="Standard" />
   </a>
-</div>
+  <a href="http://validator.swagger.io/validator/debug?url=https://raw.githubusercontent.com/developmentseed/osm-teams/master/docs/api.yml">
+    <img src="http://validator.swagger.io/validator?url=https://raw.githubusercontent.com/developmentseed/osm-teams/master/docs/api.yml">
+  </a>
+  </div>
 
 Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
 <!-- markdownlint-enable MD034 -->
