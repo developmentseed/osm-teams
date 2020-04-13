@@ -162,7 +162,7 @@ async function listModeratedBy (osmId) {
 *
 * @param {object} data - params for a team
 * @param {string} data.name - name of the team
-* @param {geojson} data.location - lat/lon of team
+* @param {geojson?} data.location - lat/lon of team
 * @param {int} osmId - id of first moderator
 * @param {object=} trx - optional parameter for database connection to re-use connection in case of nested
 *   transactions. This is used when a team is created as part of an organization
