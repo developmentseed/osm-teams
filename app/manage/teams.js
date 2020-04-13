@@ -3,6 +3,7 @@ const { prop, map } = require('ramda')
 const urlRegex = require('url-regex')
 
 const isUrl = urlRegex({ exact: true })
+const getOsmId = prop('osm_id')
 
 async function listTeams (req, reply) {
   const { osmId, bbox } = req.query
@@ -21,7 +22,6 @@ async function listTeams (req, reply) {
       team.listMembers(teamIds),
       team.listModerators(teamIds)
     ])
-    const getOsmId = ({ osm_id }) => osm_id
     const enhancedData = data.map(team => {
       const predicate = ({ team_id }) => team_id === team.id
       return {
@@ -62,7 +62,7 @@ async function getTeam (req, reply) {
 
   try {
     const teamData = await team.get(id)
-    const memberIds = map(prop('osm_id'), (await team.getMembers(id)))
+    const memberIds = map(getOsmId, (await team.getMembers(id)))
     const members = await team.resolveMemberNames(memberIds)
     const moderators = await team.getModerators(id)
 
