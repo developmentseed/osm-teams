@@ -124,6 +124,8 @@ test('get team list', async t => {
   teams.body.forEach(item => {
     t.truthy(item.name)
     t.truthy(item.id)
+    t.truthy(item.members.length)
+    t.truthy(item.moderators.length)
   })
 })
 
