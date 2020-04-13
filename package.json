@@ -29,7 +29,6 @@
     ]
   },
   "dependencies": {
-    "ava": "^1.4.1",
     "body-parser": "^1.18.3",
     "chance": "^1.0.18",
     "compression": "^1.7.3",
@@ -83,6 +82,7 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-react": "^7.0.0",
+    "ava": "^3.7.0",
     "babelify": "^10.0.0",
     "budo": "^11.6.3",
     "devseed-standard": "^1.1.0",

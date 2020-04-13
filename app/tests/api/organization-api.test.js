@@ -209,4 +209,10 @@ test('get org teams', async t => {
 
   const orgTeams = await agent.get(`/api/organizations/${res.body.id}/teams`)
   t.is(orgTeams.body.length, 2)
+  orgTeams.body.forEach(item => {
+    t.truthy(item.name)
+    t.truthy(item.id)
+    t.truthy(item.members.length)
+    t.truthy(item.moderators.length)
+  })
 })

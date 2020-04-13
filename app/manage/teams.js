@@ -1,8 +1,10 @@
 const team = require('../lib/team')
 const { prop, map } = require('ramda')
 const urlRegex = require('url-regex')
+const { teamsMembersModeratorsHelper } = require('./utils')
 
 const isUrl = urlRegex({ exact: true })
+const getOsmId = prop('osm_id')
 
 async function listTeams (req, reply) {
   const { osmId, bbox } = req.query
@@ -16,7 +18,8 @@ async function listTeams (req, reply) {
 
   try {
     const data = await team.list({ osmId, bbox: bounds })
-    reply.send(data)
+    const enhancedData = await teamsMembersModeratorsHelper(data)
+    reply.send(enhancedData)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -48,7 +51,7 @@ async function getTeam (req, reply) {
 
   try {
     const teamData = await team.get(id)
-    const memberIds = map(prop('osm_id'), (await team.getMembers(id)))
+    const memberIds = map(getOsmId, (await team.getMembers(id)))
     const members = await team.resolveMemberNames(memberIds)
     const moderators = await team.getModerators(id)
 

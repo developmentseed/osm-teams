@@ -2,6 +2,7 @@ const path = require('path')
 const test = require('ava')
 const db = require('../../db')
 const team = require('../../lib/team')
+const { prop } = require('ramda')
 
 const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
 
@@ -55,6 +56,32 @@ test('list teams', async (t) => {
     t.truthy(item.name)
     t.truthy(item.id)
   })
+})
+
+const getOsmId = prop('osm_id')
+
+test('list team(s) members', async (t) => {
+  const team1 = await team.create({ name: 'list team members test' }, 1)
+  const team2 = await team.create({ name: 'list team members test2' }, 1)
+  await team.addMember(team2.id, 2)
+  const list = await team.listMembers([team1.id, team2.id])
+  const team1Members = list.filter(({ team_id }) => team_id === team1.id).map(getOsmId)
+  const team2Members = list.filter(({ team_id }) => team_id === team2.id).map(getOsmId)
+  t.deepEqual(team1Members, [1])
+  t.deepEqual(team2Members, [1, 2])
+})
+
+test('list team(s) moderators', async (t) => {
+  const team1 = await team.create({ name: 'list team mods test' }, 1)
+  const team2 = await team.create({ name: 'list team mods test2' }, 1)
+  await team.addMember(team2.id, 2)
+  await team.assignModerator(team2.id, 2)
+  await team.removeModerator(team2.id, 1)
+  const list = await team.listModerators([team1.id, team2.id])
+  const team1Mods = list.filter(({ team_id }) => team_id === team1.id).map(getOsmId)
+  const team2Mods = list.filter(({ team_id }) => team_id === team2.id).map(getOsmId)
+  t.deepEqual(team1Mods, [1])
+  t.deepEqual(team2Mods, [2])
 })
 
 test('update a team', async (t) => {

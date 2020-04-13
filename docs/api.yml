@@ -55,6 +55,16 @@ components:
           type: string
           format: uri
           description: link to organized editing policy of the team
+        members:
+          type: array
+          description: list of team member's osm id
+          items:
+            type: number
+        moderators:
+          type: array
+          description: list of team member's osm id
+          items:
+            type: number
     TeamList:
       type: array
       items:
@@ -503,7 +513,7 @@ paths:
         moderator may exist concurrently. Moderators are listed in the
         TeamModeratorList schema.
       tags:
-        - teams      
+        - teams
       responses:
         '200':
           description: member was promoted to moderator
@@ -522,7 +532,7 @@ paths:
         Remove/Demote a moderator of a team. At least one moderator must exist
         for a team. Moderators are listed in the TeamModeratorList schema.
       tags:
-        - teams      
+        - teams
       responses:
         '200':
           description: member was demoted from moderator
@@ -615,7 +625,7 @@ paths:
         Assign/Promote a user to be an owner of an organization. More than one
         owner may exist concurrently. Owners can manage organizations of an organization.
       tags:
-        - organizations      
+        - organizations
       responses:
         '200':
           description: user is promoted to owner of organization
@@ -634,7 +644,7 @@ paths:
         Remove/Demote an owner of an organization. At least one owner
         must remain in the organization.
       tags:
-        - organizations      
+        - organizations
       responses:
         '200':
           description: user is demoted from owner
@@ -654,7 +664,7 @@ paths:
         manager may exist concurrently. Managers can create organizations for an organization
         but cannot update the organization.
       tags:
-        - organizations      
+        - organizations
       responses:
         '200':
           description: user is promoted to manager of organization
@@ -672,7 +682,7 @@ paths:
       summary: >
         Remove/Demote manager of an organization. An org can have no managers.
       tags:
-        - organizations      
+        - organizations
       responses:
         '200':
           description: user is demoted from manager of organization
