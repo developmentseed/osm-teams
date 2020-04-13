@@ -1,5 +1,6 @@
 const organization = require('../lib/organization')
 const team = require('../lib/team')
+const { teamsMembersModeratorsHelper } = require('./utils')
 
 /**
  * Create an organization
@@ -200,7 +201,8 @@ async function getOrgTeams (req, reply) {
   const { id } = req.params
   try {
     const data = await team.list({ organizationId: id })
-    reply.send(data)
+    const enhancedData = await teamsMembersModeratorsHelper(data)
+    reply.send(enhancedData)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)

@@ -1,6 +1,7 @@
 const team = require('../lib/team')
 const { prop, map } = require('ramda')
 const urlRegex = require('url-regex')
+const { teamsMembersModeratorsHelper } = require('./utils')
 
 const isUrl = urlRegex({ exact: true })
 const getOsmId = prop('osm_id')
@@ -17,19 +18,7 @@ async function listTeams (req, reply) {
 
   try {
     const data = await team.list({ osmId, bbox: bounds })
-    const teamIds = data.map(({ id }) => id)
-    const [members, moderators] = await Promise.all([
-      team.listMembers(teamIds),
-      team.listModerators(teamIds)
-    ])
-    const enhancedData = data.map(team => {
-      const predicate = ({ team_id }) => team_id === team.id
-      return {
-        ...team,
-        members: members.filter(predicate).map(getOsmId),
-        moderators: moderators.filter(predicate).map(getOsmId)
-      }
-    })
+    const enhancedData = await teamsMembersModeratorsHelper(data)
     reply.send(enhancedData)
   } catch (err) {
     console.log(err)
