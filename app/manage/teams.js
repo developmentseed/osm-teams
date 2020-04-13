@@ -16,7 +16,21 @@ async function listTeams (req, reply) {
 
   try {
     const data = await team.list({ osmId, bbox: bounds })
-    reply.send(data)
+    const teamIds = data.map(({ id }) => id)
+    const [members, moderators] = await Promise.all([
+      team.listMembers(teamIds),
+      team.listModerators(teamIds)
+    ])
+    const getOsmId = ({ osm_id }) => osm_id
+    const enhancedData = data.map(team => {
+      const predicate = ({ team_id }) => team_id === team.id
+      return {
+        ...team,
+        members: members.filter(predicate).map(getOsmId),
+        moderators: moderators.filter(predicate).map(getOsmId)
+      }
+    })
+    reply.send(enhancedData)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)

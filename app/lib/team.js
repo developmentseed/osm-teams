@@ -113,6 +113,34 @@ async function list (options) {
 }
 
 /**
+ * List the member osm ids for a list of team ids.
+ *
+ * @param {number[]} teamIds
+ * @returns {Promise<*>}
+ * @async
+ */
+async function listMembers (teamIds) {
+  const conn = await db()
+  return conn('member').whereIn('team_id', teamIds)
+    .join('users', 'member.osm_id', 'users.id')
+    .select('team_id', 'osm_id')
+}
+
+/**
+ * List the moderator osm ids for a list of team ids.
+ *
+ * @param {number[]} teamIds
+ * @returns {Promise<*>}
+ * @async
+ */
+async function listModerators (teamIds) {
+  const conn = await db()
+  return conn('moderator').whereIn('team_id', teamIds)
+    .join('users', 'moderator.osm_id', 'users.id')
+    .select('team_id', 'osm_id')
+}
+
+/**
  * List all the teams which osm id is a moderator of.
  *
  * @param {*} osmId osm user id to filter by
@@ -349,6 +377,8 @@ async function associatedOrg (teamId) {
 module.exports = {
   get,
   list,
+  listMembers,
+  listModerators,
   listModeratedBy,
   create,
   update,
