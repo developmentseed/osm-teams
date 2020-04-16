@@ -121,9 +121,9 @@ async function list (options) {
  */
 async function listMembers (teamIds) {
   const conn = await db()
-  return conn('member').whereIn('team_id', teamIds)
-    .join('users', 'member.osm_id', 'users.id')
+  return conn('member')
     .select('team_id', 'osm_id')
+    .whereIn('team_id', teamIds)
 }
 
 /**
@@ -135,9 +135,9 @@ async function listMembers (teamIds) {
  */
 async function listModerators (teamIds) {
   const conn = await db()
-  return conn('moderator').whereIn('team_id', teamIds)
-    .join('users', 'moderator.osm_id', 'users.id')
+  return conn('moderator')
     .select('team_id', 'osm_id')
+    .whereIn('team_id', teamIds)
 }
 
 /**
