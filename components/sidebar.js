@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react'
 import join from 'url-join'
 import getConfig from 'next/config'
 import Router, { withRouter } from 'next/router'
+import Button from '../components/button'
 import theme from '../styles/theme'
 import Link from '../components/Link'
 
@@ -73,7 +74,7 @@ class Sidebar extends Component {
                 Router.push('/logout')
               }
               }>Log Out</a>
-              : <NavLink href='/login'><a className='global-menu__link login'>Sign in</a></NavLink>
+              : <a className='global-menu__link login danger' href={join(URL, '/login')}>Sign in </a>
           }
         </nav>
         <style jsx global>
