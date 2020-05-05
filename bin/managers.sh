@@ -7,7 +7,7 @@ set -e
 
 show_help() {
   cat << __HELP__
-  owners.sh
+  managers.sh
 
   add or remove managers from osm-teams
 
