@@ -81,7 +81,9 @@ if [ -z "$name" ]; then
 fi
 
 if [ -z "$remove" ]; then
-  psql $DSN --command "insert into organization (name, description) values ('$name', '$description')"
+  org_id=`psql $DSN -t --command "insert into organization (name, description) values ('$name', '$description') returning id"`
+  echo "created organization id: ${org_id}"
+  echo
 else
   psql $DSN --command "delete from organization where name = '$name'"
 fi
