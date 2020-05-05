@@ -2,7 +2,6 @@ import React, { Component, Fragment } from 'react'
 import join from 'url-join'
 import getConfig from 'next/config'
 import Router, { withRouter } from 'next/router'
-import Button from '../components/button'
 import theme from '../styles/theme'
 import Link from '../components/Link'
 
