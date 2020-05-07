@@ -1,6 +1,6 @@
 {
   "name": "osm-teams",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Teams for OpenStreetMap!",
   "scripts": {
     "docs:validate": "swagger-cli validate docs/api.yml",
