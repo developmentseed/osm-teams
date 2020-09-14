@@ -91,7 +91,12 @@ async function update (id, data) {
  */
 async function addOwner (id, osmId) {
   const conn = await db()
-  return unpack(conn('organization_owner').insert({ organization_id: id, osm_id: osmId }))
+  const isAlreadyOwner = await isOwner(id, osmId)
+
+  // Only ids that are not already in owner list should be added. Duplicate requests should fail silently
+  if (!isAlreadyOwner) {
+    return unpack(conn('organization_owner').insert({ organization_id: id, osm_id: osmId }))
+  }
 }
 
 /**
@@ -106,15 +111,14 @@ async function removeOwner (id, osmId) {
   const conn = await db()
   const owners = map(prop('osm_id'), await getOwners(id))
 
-  if (!contains(osmId, owners)) {
-    throw new Error('osmId is not an owner')
-  }
-
   if (owners.length === 1) {
     throw new Error('cannot remove owner because there must be at least one owner')
   }
 
-  return unpack(conn('organization_owner').where({ organization_id: id, osm_id: osmId }).del())
+  // Only ids that are already in owner list can be removed. Requests for nonexistant ids should fail silently
+  if (contains(osmId, owners)) {
+    return unpack(conn('organization_owner').where({ organization_id: id, osm_id: osmId }).del())
+  }
 }
 
 /**
@@ -126,7 +130,12 @@ async function removeOwner (id, osmId) {
  */
 async function addManager (id, osmId) {
   const conn = await db()
-  return unpack(conn('organization_manager').insert({ organization_id: id, osm_id: osmId }))
+  const isAlreadyManager = await isManager(id, osmId)
+
+  // Only ids that are not already in manager list should be added. Duplicate requests should fail silently
+  if (!isAlreadyManager) {
+    return unpack(conn('organization_manager').insert({ organization_id: id, osm_id: osmId }))
+  }
 }
 
 /**
@@ -141,11 +150,10 @@ async function removeManager (id, osmId) {
   const conn = await db()
   const managers = map(prop('osm_id'), await getManagers(id))
 
-  if (!contains(osmId, managers)) {
-    throw new Error('osmId is not a manager')
+  // Only ids that are already in manager list can be removed. Requests for nonexistant ids should fail silently
+  if (contains(osmId, managers)) {
+    return unpack(conn('organization_manager').where({ organization_id: id, osm_id: osmId }).del())
   }
-
-  return unpack(conn('organization_manager').where({ organization_id: id, osm_id: osmId }).del())
 }
 
 /**

@@ -119,14 +119,17 @@ test('add owners', async t => {
   t.true(contains(user, owners))
   t.true(contains(user2, owners))
 
-  // adding the same owner throws an error
-  await t.throwsAsync(organization.addOwner(created.id, user2))
+  // adding the same owner ignores duplicate request
+  await organization.addOwner(created.id, user2)
+  t.is(owners.length, 2)
+  t.true(contains(user, owners))
+  t.true(contains(user2, owners))
 })
 
 /**
  * Test removing owners
  * - After adding and removing an owner the number of owners should remain the same
- * - Removing a user that is not an owner throws an error
+ * - Removing a user that is not an owner ignores request
  * - Trying to remove the last owner throws an error
  */
 test('remove owners', async t => {
@@ -145,11 +148,16 @@ test('remove owners', async t => {
   t.true(contains(user, owners))
   t.false(contains(user2, owners))
 
-  // removing a non owner throws an error
-  const error = await t.throwsAsync(organization.removeOwner(created.id, user3))
-  t.is(error.message, 'osmId is not an owner')
+  // removing a non owner ignores request
+  await organization.addOwner(created.id, user2)
+  t.false(contains(user3, owners))
+  await organization.removeOwner(created.id, user3)
+  t.is(owners.length, 1)
+  t.true(contains(user, owners))
+  t.false(contains(user3, owners))
 
   // removing all owners throws an error
+  await organization.removeOwner(created.id, user2)
   const error2 = await t.throwsAsync(organization.removeOwner(created.id, user))
   t.is(error2.message, 'cannot remove owner because there must be at least one owner')
 })
@@ -173,14 +181,17 @@ test('add managers', async t => {
   t.true(contains(user, managers))
   t.true(contains(user2, managers))
 
-  // adding the same manager throws an error
-  await t.throwsAsync(organization.addManager(created.id, user2))
+  // adding the same manager ignores duplicate request
+  await organization.addManager(created.id, user2)
+  t.is(managers.length, 2)
+  t.true(contains(user, managers))
+  t.true(contains(user2, managers))
 })
 
 /**
  * Test removing managers
  * - After adding and removing a manager the number of managers should remain the same
- * - Removing a user that is not a manager throws an error
+ * - Removing a user that is not a manager ignores request
  */
 test('remove managers', async t => {
   // setup
@@ -198,9 +209,12 @@ test('remove managers', async t => {
   t.true(contains(user, managers))
   t.false(contains(user2, managers))
 
-  // removing a non manager throws an error
-  const error = await t.throwsAsync(organization.removeManager(created.id, user3))
-  t.is(error.message, 'osmId is not a manager')
+  // removing a non manager ignores request
+  await organization.removeManager(created.id, user3)
+  t.is(managers.length, 1)
+  t.true(contains(user, managers))
+  t.false(contains(user2, managers))
+  t.false(contains(user3, managers))
 })
 
 /**
