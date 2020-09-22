@@ -58,6 +58,11 @@ Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
     ```bash
     docker-compose run --rm hydra migrate sql --yes postgres://postgres@host.docker.internal/osm-teams?sslmode=disable
     ```
+    
+    Note: if you are using `zsh`, the command will be:
+    ```bash
+    docker-compose run --rm hydra migrate sql --yes "postgres://postgres@host.docker.internal/osm-teams?sslmode=disable"
+    ```
 
 1. Build the docker images:
 
