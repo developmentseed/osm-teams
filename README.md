@@ -56,7 +56,7 @@ Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
 1. Migrate the Hydra database
 
     ```bash
-    docker-compose run --rm hydra migrate sql --yes postgres://postgres@host.docker.internal/osm-teams?sslmode=disable
+    docker-compose run --rm hydra migrate sql --yes "postgres://postgres@host.docker.internal/osm-teams?sslmode=disable"
     ```
 
 1. Build the docker images:
