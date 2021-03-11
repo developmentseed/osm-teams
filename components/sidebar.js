@@ -73,7 +73,7 @@ class Sidebar extends Component {
                 Router.push('/logout')
               }
               }>Log Out</a>
-              : <NavLink href='/login'><a className='global-menu__link login'>Sign in</a></NavLink>
+              : <a className='global-menu__link login' href={join(URL, '/login')}>Sign in</a>
           }
         </nav>
         <style jsx global>
