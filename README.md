@@ -47,7 +47,7 @@ Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
 1. Build the docker images:
 
     ```bash
-    docker-compose build
+    docker-compose -f compose.yml build
     ```
 
 1. Start Hydra and the server
