@@ -1,0 +1,30 @@
+serve:
+  cookies:
+    same_site_mode: Lax
+
+urls:
+  self:
+    issuer: http://localhost:4444
+  consent: http://localhost:8989/oauth/consent
+  login: http://localhost:8989/oauth/login
+  logout: http://localhost:8989/oauth/logout
+
+secrets:
+  system:
+    - youReallyNeedToChangeThis
+
+oidc:
+  subject_identifiers:
+    supported_types:
+      - pairwise
+      - public
+    pairwise:
+      salt: youReallyNeedToChangeThis
+
+ttl:
+  access_token: 876600h
+  refresh_token: 876600h
+
+log:
+  format: json
+  level: trace

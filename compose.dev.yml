@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  teams:
+    build: .
+    ports:
+    - 8989:8989
+    - 3007:3007
+    volumes:
+      - .:/usr/src/app
+      - ./node_modules:/usr/src/app/node_modules
+    command:
+      npm run dev

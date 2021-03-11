@@ -9,3 +9,4 @@ tmp
 # ignore node_modules symlink
 node_modules.nosync
 .idea
+hydra-config/prod/prod.yml
