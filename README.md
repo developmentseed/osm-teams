@@ -42,21 +42,6 @@ Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
     OSM_CONSUMER_KEY=<osm-teams-app>
     OSM_CONSUMER_SECRET=<osm-teams-app-secret>
     DSN=postgres://postgres@host.docker.internal/osm-teams?sslmode=disable
-    SECRETS_SYSTEM=<random-guid>
-    ```
-
-1. Install Javascript dependencies and migrate the osm-teams database
-
-    ```bash
-    nvm use
-    yarn install
-    yarn run migrate
-    ```
-
-1. Migrate the Hydra database
-
-    ```bash
-    docker-compose run --rm hydra migrate sql --yes "postgres://postgres@host.docker.internal/osm-teams?sslmode=disable"
     ```
 
 1. Build the docker images:
@@ -68,10 +53,10 @@ Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
 1. Start Hydra and the server
 
     ```bash
-    docker-compose -f docker-compose.dev.yml up
+    docker-compose -f compose.yml -f compose.dev.yml up
     ```
 
-⚠️ In development, `docker-compose -f docker-compose.dev.yml up` enables hot module reloading while you make modifications to the code. `docker-compose up` should be used for production/staging deployments.
+⚠️ In development, `docker-compose -f compose.yml -f compose.dev.yml up` enables hot module reloading while you make modifications to the code. `docker-compose up` should be used for production/staging deployments.
 
 This will start hydra where the token issuer is at `http://localhost:4444` and the admin interface is at `http://localhost:4445`. This also sets up the consent and login interface at `http://localhost:8989` (where we will create a first-party oauth app)
 
