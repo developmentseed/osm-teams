@@ -12,9 +12,9 @@ exports.up = async (knex) => {
     table.integer('owner_org').references('id').inTable('organization').nullable().onDelete('CASCADE')
     table.text('description')
     table.boolean('required').defaultTo('false')
-    table.enum('visibility', ['public', 'team', 'org']).defaultTo('public'),
-    table.unique(['name', 'owner_user']),
-    table.unique(['name', 'owner_team']),
+    table.enum('visibility', ['public', 'team', 'org']).defaultTo('public')
+    table.unique(['name', 'owner_user'])
+    table.unique(['name', 'owner_team'])
     table.unique(['name', 'owner_org'])
   })
 
