@@ -34,6 +34,10 @@ const {
   getOrgTeams
 } = require('./organizations')
 
+const {
+  getUserTeamProfile
+} = require('./profiles')
+
 /**
  * The manageRouter handles all routes related to the first party
  * management client
@@ -102,6 +106,11 @@ function manageRouter (nextApp) {
 
   router.post('/api/organizations/:id/teams', can('organization:create-team'), createOrgTeam)
   router.get('/api/organizations/:id/teams', getOrgTeams)
+
+  /**
+   * List, Create, Read, Update, Delete operations on profiles
+   */
+  router.get('/api/profiles/teams/:id/:osmId', can('public:authenticated'), getUserTeamProfile)
 
   /**
    * Page renders
