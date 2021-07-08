@@ -10,3 +10,5 @@ tmp
 node_modules.nosync
 .idea
 hydra-config/prod/prod.yml
+.nyc_output
+coverage
