@@ -187,8 +187,8 @@ async function getMembers (organizationId) {
 
   const conn = await db()
 
-  const subquery = conn('organization_team').select(conn.raw('array_agg(team_id), osm_id')).where('organization_id', organizationId)
-  return conn('member').where('team_id', 'in', subquery).groupBy('osm_id')
+  const subquery = conn('organization_team').select('team_id').where('organization_id', organizationId)
+  return conn('member').select(conn.raw('array_agg(team_id) as teams, osm_id')).where('team_id', 'in', subquery).groupBy('osm_id')
 }
 
 /**
@@ -198,7 +198,7 @@ async function getMembers (organizationId) {
  */
 async function isMember (organizationId, osmId) {
   if (!osmId) throw new PropertyRequiredError('osm id')
-  const members = await getMembers(organizationId).map(prop('osm_id'))
+  const members = (await getMembers(organizationId)).map(prop('osm_id'))
   return includes(osmId, members)
 }
 

@@ -1,12 +1,13 @@
 const profile = require('../lib/profile')
 const team = require('../lib/team')
 const org = require('../lib/organization')
+const { concat } = require('ramda')
 
 /**
  * Gets a user profile
  */
 async function getUserTeamProfile (req, reply) {
-  const { osmId, id: teamId } = req.query
+  const { osmId, id: teamId } = req.params
   const { user_id: requesterId } = reply.locals
 
   if (!osmId) {
@@ -32,22 +33,22 @@ async function getUserTeamProfile (req, reply) {
     }
 
     // Get visibile keys
-    const allKeys = teamKeys.concatenate(orgKeys)
-    allKeys.forEach(({ key_id, visibility }) => {
+    const allKeys = concat(teamKeys, orgKeys)
+    allKeys.forEach(({ id, visibility }) => {
       switch (visibility) {
         case 'public': {
-          visibleKeys.push(key_id)
+          visibleKeys.push(id)
           break
         }
         case 'team': {
           if (requesterIsMemberOfTeam) {
-            visibleKeys.push(key_id)
+            visibleKeys.push(id)
           }
           break
         }
         case 'org': {
           if (requesterIsMemberOfOrg) {
-            visibleKeys.push(key_id)
+            visibleKeys.push(id)
           }
           break
         }

@@ -3,6 +3,7 @@ const knexPostgis = require('knex-postgis')
 const join = require('url-join')
 const xml2js = require('xml2js')
 const { unpack } = require('./utils')
+const { prop } = require('ramda')
 const request = require('request-promise-native')
 
 const { serverRuntimeConfig } = require('../../next.config')
@@ -371,7 +372,11 @@ async function associatedOrg (teamId) {
   if (!teamId) throw new Error('team id is required as first argument')
 
   const conn = await db()
-  return unpack(conn('organization_team').where('team_id', teamId).returning('organization_id'))
+  return unpack(
+    conn('organization_team')
+      .where('team_id', teamId)
+      .select('organization_id')
+  ).then(prop('organization_id'))
 }
 
 module.exports = {
