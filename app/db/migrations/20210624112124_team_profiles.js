@@ -1,6 +1,5 @@
 /**
- * The purpose of this migration file is to create team and organization profiles
- * These profiles contain metadata for each user part of a team or part of an organization
+ * The purpose of this migration file is to create user, team and organization profiles
  */
 
 exports.up = async (knex) => {
@@ -10,6 +9,7 @@ exports.up = async (knex) => {
     table.integer('owner_user').references('id').inTable('users').nullable().onDelete('CASCADE')
     table.integer('owner_team').references('id').inTable('team').nullable().onDelete('CASCADE')
     table.integer('owner_org').references('id').inTable('organization').nullable().onDelete('CASCADE')
+    table.enum('profile_type', ['org', 'team', 'user'])
     table.text('description')
     table.boolean('required').defaultTo('false')
     table.enum('visibility', ['public', 'team', 'org']).defaultTo('public')
@@ -18,17 +18,25 @@ exports.up = async (knex) => {
     table.unique(['name', 'owner_org'])
   })
 
-  await knex.schema.createTable('profile_values', table => {
-    table.increments('id')
-    table.integer('user_id').references('id').inTable('users').onDelete('CASCADE')
-    table.integer('key_id').references('id').inTable('profile_keys').onDelete('CASCADE')
-    table.text('value')
+  await knex.schema.alterTable('users', table => {
     table.timestamps(false, true)
-    table.unique(['user_id', 'key_id'])
+  })
+
+  await knex.schema.alterTable('team', table => {
+    table.json('profile')
+  })
+
+  await knex.schema.alterTable('organization', table => {
+    table.json('profile')
   })
 }
 
 exports.down = async (knex) => {
-  await knex.schema.dropTable('profile_values')
+  await knex.schema.alterTable('organization', table => {
+    table.dropColumn('profile')
+  })
+  await knex.schema.alterTable('team', table => {
+    table.dropColumn('profile')
+  })
   await knex.schema.dropTable('profile_keys')
 }

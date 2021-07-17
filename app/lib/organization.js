@@ -3,6 +3,15 @@ const team = require('./team')
 const { map, prop, contains, includes } = require('ramda')
 const { unpack, PropertyRequiredError } = require('./utils')
 
+// Organization attributes (without profile)
+const orgAttributes = [
+  'id',
+  'name',
+  'description',
+  'created_at',
+  'updated_at'
+]
+
 /**
  * Get an organization
  *
@@ -11,7 +20,7 @@ const { unpack, PropertyRequiredError } = require('./utils')
  */
 async function get (id) {
   const conn = await db()
-  return unpack(conn('organization').where('id', id))
+  return unpack(conn('organization').select(orgAttributes).where('id', id))
 }
 
 /**
@@ -50,7 +59,7 @@ async function create (data, osmId) {
   const conn = await db()
 
   return conn.transaction(async trx => {
-    const [row] = await trx('organization').insert(data).returning('*')
+    const [row] = await trx('organization').insert(data).returning(orgAttributes)
     await trx('organization_owner').insert({ organization_id: row.id, osm_id: osmId })
     await trx('organization_manager').insert({ organization_id: row.id, osm_id: osmId })
     return row
@@ -79,7 +88,7 @@ async function update (id, data) {
   if (!data.name) throw new Error('data.name property is required')
 
   const conn = await db()
-  return unpack(conn('organization').where('id', id).update(data).returning('*'))
+  return unpack(conn('organization').where('id', id).update(data).returning(orgAttributes))
 }
 
 /**

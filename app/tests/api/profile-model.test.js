@@ -40,6 +40,7 @@ test('add attributes for a public user profile', async (t) => {
     name,
     ownerId: 1,
     ownerType: 'user',
+    profileType: 'user',
     visibility
   })
 
@@ -57,6 +58,7 @@ test('adding attribute with same name should fail', async t => {
     name,
     ownerId: 1,
     ownerType: 'user',
+    profileType: 'user',
     visibility
   })
 
@@ -64,6 +66,7 @@ test('adding attribute with same name should fail', async t => {
     name,
     ownerId: 1,
     ownerType: 'user',
+    profileType: 'user',
     visibility
   }), { instanceOf: DatabaseError, code: '23505' })
 })
@@ -75,6 +78,7 @@ test('modify attribute', async t => {
     name,
     ownerId: 1,
     ownerType: 'user',
+    profileType: 'user',
     visibility
   })
 
@@ -91,17 +95,23 @@ test('modify attribute', async t => {
 
 test('attribute requires name', async (t) => {
   await t.throwsAsync(
-    profile.addProfileKeys({ ownerId: 1, ownerType: 'user' }),
+    profile.addProfileKeys({ ownerId: 1, ownerType: 'user', profileType: 'user' }),
     { instanceOf: PropertyRequiredError })
 })
 
 test('attribute requires ownerType', async (t) => {
   await t.throwsAsync(
-    profile.addProfileKeys({ name: 'Age', ownerId: 1 }),
+    profile.addProfileKeys({ name: 'Age', ownerId: 1, profileType: 'user' }),
     { instanceOf: PropertyRequiredError })
 })
 
 test('attribute requires ownerId', async (t) => {
+  await t.throwsAsync(
+    profile.addProfileKeys({ name: 'Age', ownerType: 'user', profileType: 'user' }),
+    { instanceOf: PropertyRequiredError })
+})
+
+test('attribute requires profileType', async (t) => {
   await t.throwsAsync(
     profile.addProfileKeys({ name: 'Age', ownerType: 'user' }),
     { instanceOf: PropertyRequiredError })
@@ -109,13 +119,19 @@ test('attribute requires ownerId', async (t) => {
 
 test('ownerType must be valid', async (t) => {
   await t.throwsAsync(
-    profile.addProfileKeys({ name: 'Age', ownerId: 1, ownerType: 'notValid' }),
+    profile.addProfileKeys({ name: 'Age', ownerId: 1, ownerType: 'notValid', profileType: 'user' }),
+    { instanceOf: ValidationError })
+})
+
+test('profileType must be valid', async (t) => {
+  await t.throwsAsync(
+    profile.addProfileKeys({ name: 'Age', ownerId: 1, ownerType: 'user', profileType: 'notValid' }),
     { instanceOf: ValidationError })
 })
 
 test('visibility must be valid', async (t) => {
   await t.throwsAsync(
-    profile.addProfileKeys({ name: 'Age', ownerId: 1, ownerType: 'user', visibility: 'notValid' }),
+    profile.addProfileKeys({ name: 'Age', ownerId: 1, ownerType: 'user', profileType: 'user', visibility: 'notValid' }),
     { instanceOf: ValidationError })
 })
 
@@ -127,7 +143,8 @@ test('add attributes for a team user profile', async (t) => {
   const [data] = await profile.addProfileKeys({
     name,
     ownerId: team1.id,
-    ownerType: 'team'
+    ownerType: 'team',
+    profileType: 'user'
   })
 
   t.truthy(data)
@@ -137,13 +154,13 @@ test('add attributes for a team user profile', async (t) => {
 
 test('add attributes for an org user profile', async (t) => {
   const org1 = await organization.create({ name: 'attribute organization test' }, 1)
-  await team.addMember(org1.id, 1)
 
   const name = 'Age'
   const [data] = await profile.addProfileKeys({
     name,
     ownerId: org1.id,
-    ownerType: 'org'
+    ownerType: 'org',
+    profileType: 'user'
   })
 
   t.truthy(data)
@@ -156,7 +173,8 @@ test('delete attribute', async t => {
   const [data] = await profile.addProfileKeys({
     name,
     ownerId: 1,
-    ownerType: 'user'
+    ownerType: 'user',
+    profileType: 'user'
   })
 
   await profile.deleteProfileKey(data.id)
@@ -169,7 +187,8 @@ test('get attribute', async t => {
   const [data] = await profile.addProfileKeys({
     name,
     ownerId: 1,
-    ownerType: 'user'
+    ownerType: 'user',
+    profileType: 'user'
   })
 
   const key = await profile.getProfileKey(data.id)
@@ -184,13 +203,15 @@ test('get attributes for owner', async t => {
   const [data1] = await profile.addProfileKeys({
     name: name1,
     ownerId: org2.id,
-    ownerType: 'org'
+    ownerType: 'org',
+    profileType: 'user'
   })
 
   const [data2] = await profile.addProfileKeys({
     name: name2,
     ownerId: org2.id,
-    ownerType: 'org'
+    ownerType: 'org',
+    profileType: 'user'
   })
 
   const keys = await profile.getProfileKeysForOwner('org', org2.id)
@@ -209,8 +230,8 @@ test('set attribute for profile', async t => {
   const value2 = 'openstreetmap.org'
 
   await profile.addProfileKeys([
-    { name: name1, ownerType: 'user', ownerId: 4 },
-    { name: name2, ownerType: 'user', ownerId: 4 }
+    { name: name1, ownerType: 'user', ownerId: 4, profileType: 'user' },
+    { name: name2, ownerType: 'user', ownerId: 4, profileType: 'user' }
   ])
 
   const conn = await db()
@@ -223,19 +244,18 @@ test('set attribute for profile', async t => {
   const toInsertId2 = find(propEq('name', name2))(keys).id
 
   const timeNow = new Date()
-  await profile.setProfileValues([
+  await profile.setProfile([
     { key_id: toInsertId1, value: value1 },
     { key_id: toInsertId2, value: value2 }
-  ], 4)
+  ], 'user', 4)
 
-  const values = await conn('profile_values').where({ 'user_id': 4 })
+  const user = (await conn('users').where('id', 4))[0]
 
-  t.is(values.length, 2)
-  const setValue1 = find(propEq('key_id', toInsertId1))(values)
-  const setValue2 = find(propEq('key_id', toInsertId2))(values)
-  t.is(setValue1.value, value1)
-  t.is(setValue2.value, value2)
-  t.is(Math.floor(setValue1.created_at.getTime() / 1000), Math.floor(timeNow.getTime() / 1000)) // compare seconds
+  const userTags = user.profile.tags
+  t.is(Object.keys(userTags).length, 2)
+  t.is(userTags[toInsertId1], value1)
+  t.is(userTags[toInsertId2], value2)
+  t.is(Math.floor(user.updated_at.getTime() / 1000), Math.floor(timeNow.getTime() / 1000)) // compare seconds
 })
 
 test('set attribute for profile - upsert', async t => {
@@ -244,7 +264,7 @@ test('set attribute for profile - upsert', async t => {
   const value2 = 'Orange'
 
   await profile.addProfileKeys([
-    { name: name1, ownerType: 'user', ownerId: 3 }
+    { name: name1, ownerType: 'user', ownerId: 3, profileType: 'user' }
   ])
 
   // Get the keys
@@ -253,88 +273,93 @@ test('set attribute for profile - upsert', async t => {
   // Map keys to ids
   const toInsertId1 = find(propEq('name', name1))(keys).id
 
-  await profile.setProfileValues([
+  await profile.setProfile([
     { key_id: toInsertId1, value: value1, user_id: 3 }
-  ], 3)
+  ], 'user', 3)
 
-  await profile.setProfileValues([
+  await profile.setProfile([
     { key_id: toInsertId1, value: value2, user_id: 3 }
-  ], 3)
+  ], 'user', 3)
 
   const conn = await db()
-  const [data] = await conn('profile_values').where({ 'key_id': toInsertId1, 'user_id': 3 })
+  const [user] = await conn('users').where('id', 3)
 
-  t.is(data.value, value2)
+  t.is(user.profile.tags[toInsertId1], value2)
 })
 
-test('get profile values for keys', async t => {
-  t.plan(11)
+test('set attribute for profile - invalid params', async t => {
+  const name = 'Missing parameter - set attribute'
+
+  const [data] = await profile.addProfileKeys({ name, ownerType: 'user', ownerId: 1, profileType: 'user' })
+
+  await t.throwsAsync(
+    profile.setProfile(
+      { key_id: data.id, value: 'Missing parameter' }),
+    { instanceOf: PropertyRequiredError }
+  )
+
+  await t.throwsAsync(
+    profile.setProfile(
+      { key_id: data.id, value: 'Missing parameter' },
+      'user'),
+    { instanceOf: PropertyRequiredError }
+  )
+
+  await t.throwsAsync(
+    profile.setProfile(
+      { key_id: data.id, value: 'Missing parameter' },
+      'invalid', 7),
+    { instanceOf: ValidationError }
+  )
+})
+
+test('get profile for user', async t => {
+  t.plan(10)
 
   const names = range(1, 11).map(x => `name_${x}`)
 
   const attributesToInsert = names.map(name => ({
     name,
     ownerType: 'user',
-    ownerId: 1
+    ownerId: 1,
+    profileType: 'user'
   }))
 
   const keys = await profile.addProfileKeys(attributesToInsert)
 
   // Let's insert a value for each of the above attributes
-  // We set the value to include the name of the key
+  // We set the value to include the id of the key
   const valuesToInsert = keys.map(key => ({
     key_id: key.id,
-    value: `value_${key.name}`
+    value: `value_${key.id}`
   }))
-  await profile.setProfileValues(valuesToInsert, 5)
-  await profile.setProfileValues(valuesToInsert, 9)
+  await profile.setProfile(valuesToInsert, 'user', 5)
+  await profile.setProfile(valuesToInsert, 'user', 9)
 
   // Get profile values for above keys for user 5
-  const values = await profile.getProfileValues(keys.map(prop('id')), 5)
+  const tags = prop('tags', await profile.getProfile('user', 5))
 
-  const allValues = await profile.getProfileValues(keys.map(prop('id'))) // without filtering
-  t.is(allValues.length, 20)
-
-  // Each value should contain the name of the key
-  values.forEach(attr => {
-    t.true(includes(attr.name, attr.value))
+  // Each value should contain the id of the key
+  Object.keys(tags).forEach(key => {
+    t.true(includes(key, tags[key]))
   })
 })
 
-test('get profile values for user', async t => {
-  const names = range(1, 11).map(x => `profile_${x}`)
-
-  const attributesToInsert = names.map(name => ({
-    name,
-    ownerType: 'user',
-    ownerId: 1
-  }))
-
-  const keys = await profile.addProfileKeys(attributesToInsert)
-
-  // Let's insert a value for each of the above attributes
-  // We set the value to include the name of the key
-  const valuesToInsert = keys.map(key => ({
-    key_id: key.id,
-    value: `value_${key.name}`
-  }))
-  await profile.setProfileValues(valuesToInsert, 6)
-
-  // Get profile values for above keys
-  const values = await profile.getProfile(6)
-
-  // Each value should contain the name of the key
-  t.plan(10)
-  values.forEach(attr => {
-    t.true(includes(attr.name, attr.value))
-  })
-})
-
-test('get profile - missing parameter', async t => {
+test('get profile - invalid parameters', async t => {
   const name = 'Missing parameter'
 
-  const [data] = await profile.addProfileKeys({ name, ownerType: 'user', ownerId: 1 })
-  await profile.setProfileValues({ key_id: data.id, value: 'Missing parameter' }, 7)
+  const [data] = await profile.addProfileKeys({ name, ownerType: 'user', ownerId: 1, profileType: 'user' })
+  await profile.setProfile({ key_id: data.id, value: 'Missing parameter' }, 'user', 7)
+
+  await t.throwsAsync(
+    profile.getProfile('invalid', 1),
+    { instanceOf: ValidationError }
+  )
+
+  await t.throwsAsync(
+    profile.getProfile('user'),
+    { instanceOf: PropertyRequiredError }
+  )
 
   await t.throwsAsync(
     profile.getProfile(),
