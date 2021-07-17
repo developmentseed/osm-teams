@@ -64,20 +64,20 @@ test('get team user profile within an org', async t => {
 
   // Add some profile keys
   const org1Keys = await profile.addProfileKeys([
-    { name: 'test org key 1', ownerType: 'org', ownerId: org1.id, visibility: 'org' },
-    { name: 'test org key 2', ownerType: 'org', ownerId: org1.id, visibility: 'team' },
-    { name: 'test org key 3', ownerType: 'org', ownerId: org1.id, visibility: 'public' }
+    { name: 'test org key 1', ownerType: 'org', ownerId: org1.id, visibility: 'org', profileType: 'user' },
+    { name: 'test org key 2', ownerType: 'org', ownerId: org1.id, visibility: 'team', profileType: 'user' },
+    { name: 'test org key 3', ownerType: 'org', ownerId: org1.id, visibility: 'public', profileType: 'user' }
   ])
 
   const team1Keys = await profile.addProfileKeys([
-    { name: 'test same team key 1', ownerType: 'team', ownerId: team1.id, visibility: 'org' },
-    { name: 'test same team key 2', ownerType: 'team', ownerId: team1.id, visibility: 'team' },
-    { name: 'test same team key 3', ownerType: 'team', ownerId: team1.id, visibility: 'public' }
+    { name: 'test same team key 1', ownerType: 'team', ownerId: team1.id, visibility: 'org', profileType: 'user' },
+    { name: 'test same team key 2', ownerType: 'team', ownerId: team1.id, visibility: 'team', profileType: 'user' },
+    { name: 'test same team key 3', ownerType: 'team', ownerId: team1.id, visibility: 'public', profileType: 'user' }
   ])
   const team2Keys = await profile.addProfileKeys([
-    { name: 'test diff team key 1', ownerType: 'team', ownerId: team2.id, visibility: 'org' },
-    { name: 'test diff team key 2', ownerType: 'team', ownerId: team2.id, visibility: 'team' },
-    { name: 'test diff team key 3', ownerType: 'team', ownerId: team2.id, visibility: 'public' }
+    { name: 'test diff team key 1', ownerType: 'team', ownerId: team2.id, visibility: 'org', profileType: 'user' },
+    { name: 'test diff team key 2', ownerType: 'team', ownerId: team2.id, visibility: 'team', profileType: 'user' },
+    { name: 'test diff team key 3', ownerType: 'team', ownerId: team2.id, visibility: 'public', profileType: 'user' }
   ])
 
   const keys = concat(org1Keys, concat(team1Keys, team2Keys))
@@ -87,7 +87,7 @@ test('get team user profile within an org', async t => {
   }))
 
   // Await profile values for user 2
-  await profile.setProfileValues(values, 2)
+  await profile.setProfile(values, 'user', 2)
 
   /* user 1 gets the profile of user 2 from team1 (they are on the same team)
    We should get:
@@ -99,7 +99,7 @@ test('get team user profile within an org', async t => {
    - the team key that has public visibility
   */
   const res1 = await agent.get(`/api/profiles/teams/${team1.id}/2`).expect(200)
-  t.is(res1.body.length, team1Keys.length + org1Keys.length)
+  t.is(Object.keys(res1.body).length, team1Keys.length + org1Keys.length)
 
   /* user 1 gets the profile of user 2 from team2 (they are on different teams)
    we should only get 4 keys:
@@ -109,5 +109,5 @@ test('get team user profile within an org', async t => {
    - the team key that has public visibility
   */
   const res2 = await agent.get(`/api/profiles/teams/${team2.id}/2`).expect(200)
-  t.is(res2.body.length, 2)
+  t.is(Object.keys(res2.body).length, 4)
 })

@@ -1,7 +1,7 @@
 const profile = require('../lib/profile')
 const team = require('../lib/team')
 const org = require('../lib/organization')
-const { concat } = require('ramda')
+const { concat, pick, prop } = require('ramda')
 
 /**
  * Gets a user profile
@@ -56,9 +56,11 @@ async function getUserTeamProfile (req, reply) {
     })
 
     // Get values for keys
-    const values = await profile.getProfileValues(visibleKeys, osmId)
+    const values = await profile.getProfile('user', osmId)
+    const tags = prop('tags', values)
+    const visibleValues = pick(visibleKeys, tags)
 
-    reply.send(values)
+    reply.send(visibleValues)
   } catch (err) {
     console.error(err)
     return reply.boom.badImplementation()
