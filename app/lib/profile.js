@@ -49,17 +49,12 @@ const visibilityValid = anyPass([
  * @param {Object} attribute
  * @param {string} attribute.name Name of the attribute
  * @param {string} attribute.description Description of the attribute
- * @param {integer} attribute.ownerId iD in owner, user or team tables
- * @param {string} attribute.ownerType enum: 'owner', 'user', 'team'
+ * @param {string} attribute.profileType enum: 'owner', 'user', 'team'
  * @param {boolean} attribute.required whether this attribute is required to be filled
  * @param {enum} attribute.visibility enum: 'owner', 'user', 'team'
  */
 function checkProfileKey (attribute) {
-  checkRequiredProperties(['name', 'ownerId', 'ownerType', 'profileType'], attribute)
-
-  if (!ownerTypeValid(attribute)) {
-    throw new ValidationError('ownerType should be one of "user", "team" or "org"')
-  }
+  checkRequiredProperties(['name', 'profileType'], attribute)
 
   if (!profileTypeValid(attribute)) {
     throw new ValidationError('profileType should be one of "user", "team" or "org"')
@@ -76,21 +71,28 @@ function checkProfileKey (attribute) {
  * @param {Object[]} attributes
  * @param {string} attributes[].name Name of the attribute
  * @param {string} attributes[].description Description of the attribute
- * @param {integer} attributes[].ownerId iD in owner, user or team tables
- * @param {string} attributes[].ownerType enum: 'owner', 'user', 'team'
+ * @param {string} attributes[].profileType enum: 'owner', 'user', 'team'
  * @param {boolean} attributes[].required whether this attribute is required to be filled
  * @param {enum} attributes[].visibility enum: 'owner', 'user', 'team'
+ * @param {string} ownerType enum: 'owner', 'user', 'team'
+ * @param {integer} ownerId iD in owner, user or team tables
  */
-async function addProfileKeys (attributes) {
+async function addProfileKeys (attributes, ownerType, ownerId) {
   attributes = [].concat(attributes)
+
+  if (!ownerId) {
+    throw new PropertyRequiredError('ownerId')
+  }
+
+  if (!ownerTypeValid({ ownerType })) {
+    throw new ValidationError('ownerType should be one of "user", "team" or "org"')
+  }
 
   // Run checks
   forEach(checkProfileKey, attributes)
 
   // Modify the columns for the database
   const toInsert = attributes.map(({
-    ownerId,
-    ownerType,
     profileType,
     ...rest
   }) => ({
@@ -100,7 +102,10 @@ async function addProfileKeys (attributes) {
   }))
 
   const conn = await db()
-  return conn('profile_keys').insert(toInsert).returning('*')
+  return conn('profile_keys').insert(toInsert)
+    .onConflict(['name', `owner_${ownerType}`])
+    .merge()
+    .returning('*')
 }
 
 /**
@@ -236,5 +241,6 @@ module.exports = {
   getProfileKey,
   getProfileKeysForOwner,
   setProfile,
-  getProfile
+  getProfile,
+  getTableForProfileType
 }
