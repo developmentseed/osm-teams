@@ -1,10 +1,10 @@
 exports.up = async (knex) => {
-  await knex.schema.createTable('users', db => {
-    db.integer('id').primary()
-    db.json('profile')
-    db.json('manageToken')
-    db.text('osmToken')
-    db.text('osmTokenSecret')
+  await knex.schema.createTable('users', table => {
+    table.integer('id').primary()
+    table.json('profile')
+    table.json('manageToken')
+    table.text('osmToken')
+    table.text('osmTokenSecret')
   })
 
   await knex.schema.createTable('team', (table) => {

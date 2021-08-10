@@ -8,7 +8,7 @@
     "docs": "npm run docs:validate && npm run docs:api",
     "dev": "NODE_ENV=development nodemon --watch app app/index.js",
     "migrate": "knex --knexfile app/db/knexfile.js migrate:latest",
-    "test": "NODE_ENV=test ava app/tests/**/*.test.js -c 1 --serial --verbose",
+    "test": "NODE_ENV=test nyc ava app/tests/**/*.test.js -c 1 --serial --verbose",
     "lint": "devseed-standard",
     "lintfix": "devseed-standard --fix",
     "build": "next build",
@@ -87,6 +87,7 @@
     "budo": "^11.6.3",
     "devseed-standard": "^1.1.0",
     "nodemon": "^1.19.1",
+    "nyc": "^15.1.0",
     "swagger-markdown": "^1.2.0"
   }
 }

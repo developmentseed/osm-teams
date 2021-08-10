@@ -3,9 +3,25 @@ const knexPostgis = require('knex-postgis')
 const join = require('url-join')
 const xml2js = require('xml2js')
 const { unpack } = require('./utils')
+const { prop } = require('ramda')
 const request = require('request-promise-native')
 
 const { serverRuntimeConfig } = require('../../next.config')
+
+/**
+ * This doesn't include the profile column, which we get separately
+ */
+const teamAttributes = [
+  'id',
+  'name',
+  'hashtag',
+  'bio',
+  'privacy',
+  'require_join_request',
+  'updated_at',
+  'created_at',
+  'location'
+]
 
 /**
  * resolveMemberNames
@@ -49,7 +65,7 @@ async function resolveMemberNames (ids) {
 async function get (id) {
   const conn = await db()
   const st = knexPostgis(conn)
-  return unpack(conn('team').select('*', st.asGeoJSON('location')).where('id', id))
+  return unpack(conn('team').select(teamAttributes, st.asGeoJSON('location')).where('id', id))
 }
 
 /**
@@ -91,7 +107,7 @@ async function list (options) {
   const conn = await db()
   const st = knexPostgis(conn)
 
-  let query = conn('team').select('*', st.asGeoJSON('location'))
+  let query = conn('team').select(teamAttributes, st.asGeoJSON('location'))
 
   if (osmId) {
     query = query.whereIn('id', function () {
@@ -150,7 +166,7 @@ async function listModeratedBy (osmId) {
   const conn = await db()
   const st = knexPostgis(conn)
   const query = conn('team')
-    .select('*', st.asGeoJSON('location'))
+    .select(teamAttributes, st.asGeoJSON('location'))
     .whereIn('id', subQuery => subQuery.select('team_id').from('moderator').where('osm_id', osmId))
   return query
 }
@@ -207,7 +223,7 @@ async function update (id, data) {
     })
   }
 
-  return unpack(conn('team').where('id', id).update(data).returning(['*', st.asGeoJSON('location')]))
+  return unpack(conn('team').where('id', id).update(data).returning([...teamAttributes, st.asGeoJSON('location')]))
 }
 
 /**
@@ -371,7 +387,11 @@ async function associatedOrg (teamId) {
   if (!teamId) throw new Error('team id is required as first argument')
 
   const conn = await db()
-  return unpack(conn('organization_team').where('team_id', teamId).returning('organization_id'))
+  return unpack(
+    conn('organization_team')
+      .where('team_id', teamId)
+      .select('organization_id')
+  ).then(prop('organization_id'))
 }
 
 module.exports = {

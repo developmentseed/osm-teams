@@ -34,6 +34,13 @@ const {
   getOrgTeams
 } = require('./organizations')
 
+const {
+  getUserTeamProfile,
+  createProfileKeys,
+  getProfileKeys,
+  setProfile
+} = require('./profiles')
+
 /**
  * The manageRouter handles all routes related to the first party
  * management client
@@ -102,6 +109,23 @@ function manageRouter (nextApp) {
 
   router.post('/api/organizations/:id/teams', can('organization:create-team'), createOrgTeam)
   router.get('/api/organizations/:id/teams', getOrgTeams)
+
+  /**
+   * List, Create, Read, Update, Delete operations on profiles
+   */
+  router.get('/api/profiles/teams/:id/:osmId', can('public:authenticated'), getUserTeamProfile)
+
+  router.get('/api/profiles/keys/organizations/:id', can('organization:edit'), getProfileKeys('org'))
+  router.post('/api/profiles/keys/organizations/:id', can('organization:edit'), createProfileKeys('org', 'org'))
+  router.post('/api/profiles/keys/organizations/:id/teams', can('organization:edit'), createProfileKeys('org', 'team'))
+  router.post('/api/profiles/keys/organizations/:id/users', can('organization:edit'), createProfileKeys('org', 'user'))
+
+  router.post('/api/profiles/keys/teams/:id', can('team:edit'), createProfileKeys('team', 'team'))
+  router.post('/api/profiles/keys/teams/:id/users', can('team:edit'), createProfileKeys('team', 'user'))
+
+  router.post('/api/profiles/users/:id', can('user:edit'), setProfile('user'))
+  router.post('/api/profiles/teams/:id', can('team:edit'), setProfile('team'))
+  router.post('/api/profiles/organizations/:id', can('organization:edit'), setProfile('org'))
 
   /**
    * Page renders

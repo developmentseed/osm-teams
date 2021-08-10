@@ -1,7 +1,16 @@
 const db = require('../db')
 const team = require('./team')
-const { map, prop, contains } = require('ramda')
-const { unpack } = require('./utils')
+const { map, prop, contains, includes } = require('ramda')
+const { unpack, PropertyRequiredError } = require('./utils')
+
+// Organization attributes (without profile)
+const orgAttributes = [
+  'id',
+  'name',
+  'description',
+  'created_at',
+  'updated_at'
+]
 
 /**
  * Get an organization
@@ -11,7 +20,7 @@ const { unpack } = require('./utils')
  */
 async function get (id) {
   const conn = await db()
-  return unpack(conn('organization').where('id', id))
+  return unpack(conn('organization').select(orgAttributes).where('id', id))
 }
 
 /**
@@ -50,7 +59,7 @@ async function create (data, osmId) {
   const conn = await db()
 
   return conn.transaction(async trx => {
-    const [row] = await trx('organization').insert(data).returning('*')
+    const [row] = await trx('organization').insert(data).returning(orgAttributes)
     await trx('organization_owner').insert({ organization_id: row.id, osm_id: osmId })
     await trx('organization_manager').insert({ organization_id: row.id, osm_id: osmId })
     return row
@@ -79,7 +88,7 @@ async function update (id, data) {
   if (!data.name) throw new Error('data.name property is required')
 
   const conn = await db()
-  return unpack(conn('organization').where('id', id).update(data).returning('*'))
+  return unpack(conn('organization').where('id', id).update(data).returning(orgAttributes))
 }
 
 /**
@@ -178,14 +187,39 @@ async function createOrgTeam (organizationId, data, osmId) {
 }
 
 /**
+ * Get all members and associated teams of an organization
+ * We get all members of all associated teams with this organization
+ * @param {int} organizationId - organization id
+ */
+async function getMembers (organizationId) {
+  if (!organizationId) throw new PropertyRequiredError('organization id')
+
+  const conn = await db()
+
+  const subquery = conn('organization_team').select('team_id').where('organization_id', organizationId)
+  return conn('member').select(conn.raw('array_agg(team_id) as teams, osm_id')).where('team_id', 'in', subquery).groupBy('osm_id')
+}
+
+/**
+ * Checks if an osmId is part of an organization
+ * @param {int} organizationId - organization id
+ * @param {int} osmId - id of member we are testing
+ */
+async function isMember (organizationId, osmId) {
+  if (!osmId) throw new PropertyRequiredError('osm id')
+  const members = (await getMembers(organizationId)).map(prop('osm_id'))
+  return includes(osmId, members)
+}
+
+/**
  * Checks if the osm user is an owner of a team
  * @param {int} organizationId - organization id
  * @param {int} osmId - osm id
  * @returns boolean
  */
 async function isOwner (organizationId, osmId) {
-  if (!organizationId) throw new Error('organization id is required as first argument')
-  if (!osmId) throw new Error('osm id is required as second argument')
+  if (!organizationId) throw new PropertyRequiredError('organization id')
+  if (!osmId) throw new PropertyRequiredError('osm id')
   const conn = await db()
   const result = await conn('organization_owner').where({ organization_id: organizationId, osm_id: osmId })
   return result.length > 0
@@ -198,8 +232,8 @@ async function isOwner (organizationId, osmId) {
  * @returns boolean
  */
 async function isManager (organizationId, osmId) {
-  if (!organizationId) throw new Error('organization id is required as first argument')
-  if (!osmId) throw new Error('osm id is required as second argument')
+  if (!organizationId) throw new PropertyRequiredError('organization id')
+  if (!osmId) throw new PropertyRequiredError('osm id')
   const conn = await db()
   const result = await conn('organization_manager').where({ organization_id: organizationId, osm_id: osmId })
   return result.length > 0
@@ -216,7 +250,9 @@ module.exports = {
   removeManager,
   getOwners,
   getManagers,
+  getMembers,
   isOwner,
   isManager,
+  isMember,
   createOrgTeam
 }
