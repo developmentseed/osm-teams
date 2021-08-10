@@ -151,19 +151,32 @@ async function getProfileKey (id) {
  *
  * @param {string} ownerType 'user' | 'org' | 'team'
  * @param {*} ownerId id of owner
+ * @param {string} profileType  'user' | 'org' | 'team'
  */
-async function getProfileKeysForOwner (ownerType, ownerId) {
+async function getProfileKeysForOwner (ownerType, ownerId, profileType) {
   if (!ownerTypeValid({ ownerType })) {
     throw new ValidationError('ownerType must be one of "user", "org" or "team"')
   }
+
+  if (profileType && !profileTypeValid({ profileType })) {
+    throw new ValidationError('profileType must be one of "user", "org" or "team"')
+  }
+
   const conn = await db()
-  return conn('profile_keys').where({
+  let query = conn('profile_keys').where({
     [`owner_${ownerType}`]: ownerId
   })
+
+  if (profileType) {
+    query = query.andWhere({
+      'profile_type': profileType
+    })
+  }
+  return query
 }
 
 /**
- * Upsert attribute values for user
+ * Upsert attribute values for an entity
  *
  * @param {Object[]} attributeValues values for profile
  * @param {integer} attributeValues[].key_id Key in profile_keys table
@@ -212,7 +225,7 @@ async function setProfile (attributeValues, profileType, id) {
  * Get a user's profile
  *
  * @param {string} profileType Type of profile we are getting from to
- * @param {integer} id ID of profile for which we are getting the attributers
+ * @param {integer} id ID of profile for which we are getting the attributes
  * @returns
  */
 async function getProfile (profileType, id) {
