@@ -2,6 +2,7 @@ const profile = require('../lib/profile')
 const team = require('../lib/team')
 const org = require('../lib/organization')
 const { concat, pick, prop } = require('ramda')
+const { ValidationError, PropertyRequiredError } = require('../lib/utils')
 
 /**
  * Gets a user profile
@@ -22,13 +23,13 @@ async function getUserTeamProfile (req, reply) {
     let requesterIsMemberOfOrg = false
 
     // Get team attributes
-    teamKeys = await profile.getProfileKeysForOwner('team', teamId)
+    teamKeys = await profile.getProfileKeysForOwner('team', teamId, 'user')
     requesterIsMemberOfTeam = await team.isMember(teamId, requesterId) // Is the requester part of this team?
 
     // Get org keys & visibility
     const associatedOrg = await team.associatedOrg(teamId) // Is the team part of an organization?
     if (associatedOrg) {
-      orgKeys = await profile.getProfileKeysForOwner('org', associatedOrg)
+      orgKeys = await profile.getProfileKeysForOwner('org', associatedOrg, 'user')
       requesterIsMemberOfOrg = org.isMember(associatedOrg, requesterId)
     }
 
@@ -67,6 +68,93 @@ async function getUserTeamProfile (req, reply) {
   }
 }
 
+/**
+ * Create keys for profile
+ */
+function createProfileKeys (ownerType, profileType) {
+  return async function (req, reply) {
+    const { id } = req.params
+    const { body } = req
+
+    if (!id) {
+      reply.boom.badRequest('id is required parameter')
+    }
+
+    try {
+      const attributesToAdd = body.map(({ name, description, required, visibility }) => {
+        return {
+          name,
+          description,
+          required,
+          visibility,
+          profileType
+        }
+      })
+
+      const data = await profile.addProfileKeys(attributesToAdd, ownerType, id)
+      reply.send(data)
+    } catch (err) {
+      console.error(err)
+      if (err instanceof ValidationError || err instanceof PropertyRequiredError) {
+        reply.boom.badRequest(err)
+      }
+      return reply.boom.badImplementation()
+    }
+  }
+}
+
+/**
+ * Get the keys set by an owner
+ */
+function getProfileKeys (ownerType) {
+  return async function (req, reply) {
+    const { id } = req.params
+
+    if (!id) {
+      reply.boom.badRequest('id is required parameter')
+    }
+
+    try {
+      const data = await profile.getProfileKeysForOwner(ownerType, id)
+      reply.send(data)
+    } catch (err) {
+      console.error(err)
+      if (err instanceof ValidationError || err instanceof PropertyRequiredError) {
+        reply.boom.badRequest(err)
+      }
+      return reply.boom.badImplementation()
+    }
+  }
+}
+
+/**
+ * Given a profileType, return a req, reply function
+ * for setting a profile
+ *
+ * @param {string} profileType - 'user', 'org', 'team'
+ */
+function setProfile (profileType) {
+  return async function (req, reply) {
+    const { id } = req.params
+    const { body } = req
+
+    if (!id) {
+      reply.boom.badRequest('id is required parameter')
+    }
+
+    try {
+      await profile.setProfile(body, profileType, id)
+      reply.sendStatus(200)
+    } catch (err) {
+      console.error(err)
+      return reply.boom.badImplementation()
+    }
+  }
+}
+
 module.exports = {
-  getUserTeamProfile
+  getUserTeamProfile,
+  createProfileKeys,
+  getProfileKeys,
+  setProfile
 }

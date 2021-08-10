@@ -7,7 +7,6 @@ const organization = require('../../lib/organization')
 const team = require('../../lib/team')
 const profile = require('../../lib/profile')
 const { ValidationError, PropertyRequiredError } = require('../../lib/utils')
-const { DatabaseError } = require('pg-protocol/dist/messages')
 
 const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
 
