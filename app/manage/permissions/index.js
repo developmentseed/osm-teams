@@ -6,6 +6,10 @@ const metaPermissions = {
   'public:authenticated': (uid) => (!isNil(uid)) // User needs to be authenticated
 }
 
+const userPermissions = {
+  'user:edit': require('./edit-user')
+}
+
 const teamPermissions = {
   'team:edit': require('./edit-team'),
   'team:view': require('./view-team'),
@@ -24,6 +28,7 @@ const clientPermissions = {
 
 const permissions = mergeAll([
   metaPermissions,
+  userPermissions,
   teamPermissions,
   clientPermissions,
   organizationPermissions
