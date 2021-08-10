@@ -50,6 +50,7 @@ test('moderator id is required to create team', async (t) => {
 })
 
 test('list teams', async (t) => {
+  await team.create({ name: 'list teams' }, 1)
   const list = await team.list()
   t.true(Array.isArray(list) && list.length > 0)
   list.forEach((item) => {
@@ -91,7 +92,7 @@ test('update a team', async (t) => {
 })
 
 test('update a team bio', async (t) => {
-  const data = await team.create({ name: 'poi team 1' }, 1)
+  const data = await team.create({ name: 'update a team bio' }, 1)
   const updated = await team.update(data.id, { bio: 'we map roads' })
   t.true(updated.bio === 'we map roads')
 })

@@ -223,7 +223,7 @@ async function update (id, data) {
     })
   }
 
-  return unpack(conn('team').where('id', id).update(data).returning([teamAttributes, st.asGeoJSON('location')]))
+  return unpack(conn('team').where('id', id).update(data).returning([...teamAttributes, st.asGeoJSON('location')]))
 }
 
 /**
