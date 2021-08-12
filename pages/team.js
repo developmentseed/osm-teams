@@ -196,7 +196,17 @@ export default class Team extends Component {
       <article className='inner page team'>
         <div className='page__heading'>
           <h2>{team.name}</h2>
-          { isUserModerator ? <Button variant='primary' href={`/teams/${team.id}/edit`}>Edit Team</Button> : ''}
+          { isUserModerator ? 
+            (
+              <div>
+                <span style={{ 'margin-right': '1rem' }}>
+                  <Button variant='primary' href={`/teams/${team.id}/edit`}>Edit Team</Button>
+                </span>
+                <Button variant='primary' href={`/teams/${team.id}/edit-profiles`}>Edit Team Profiles</Button>
+              </div>
+            ) 
+            : ''
+          }
           { userId && !isMember ? <Button variant='primary' onClick={() => this.joinTeam()}>Join Team</Button> : '' }
           { !userId ? <Button variant='primary' href={`/login`}>Sign in to join team</Button> : '' }
         </div>

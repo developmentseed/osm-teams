@@ -106,7 +106,7 @@ function createProfileKeys (ownerType, profileType) {
 /**
  * Get the keys set by an owner
  */
-function getProfileKeys (ownerType) {
+function getProfileKeys (ownerType, profileType) {
   return async function (req, reply) {
     const { id } = req.params
 
@@ -115,7 +115,7 @@ function getProfileKeys (ownerType) {
     }
 
     try {
-      const data = await profile.getProfileKeysForOwner(ownerType, id)
+      const data = await profile.getProfileKeysForOwner(ownerType, id, profileType)
       reply.send(data)
     } catch (err) {
       console.error(err)

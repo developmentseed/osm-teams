@@ -19,8 +19,7 @@ const teamAttributes = [
   'privacy',
   'require_join_request',
   'updated_at',
-  'created_at',
-  'location'
+  'created_at'
 ]
 
 /**
