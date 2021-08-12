@@ -42,7 +42,7 @@
     "express-pino-logger": "^4.0.0",
     "express-promise-router": "^3.0.3",
     "express-session": "^1.15.6",
-    "formik": "^1.5.8",
+    "formik": "^2.2.9",
     "jsonwebtoken": "^8.5.0",
     "knex": "^0.21.19",
     "knex-postgis": "^0.8.1",

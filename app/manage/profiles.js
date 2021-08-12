@@ -104,6 +104,29 @@ function createProfileKeys (ownerType, profileType) {
 }
 
 /**
+ * Modify profile key
+ */
+async function modifyProfileKey (req, reply) {
+  const { id } = req.params
+  const { body } = req
+
+  if (!id) {
+    reply.boom.badRequest('id is required parameter')
+  }
+
+  try {
+    await profile.modifyProfileKey(id, body)
+    reply.sendStatus(200)
+  } catch (err) {
+    console.error(err)
+    if (err instanceof ValidationError || err instanceof PropertyRequiredError) {
+      reply.boom.badRequest(err)
+    }
+    return reply.boom.badImplementation()
+  }
+}
+
+/**
  * Get the keys set by an owner
  */
 function getProfileKeys (ownerType, profileType) {
@@ -155,6 +178,7 @@ function setProfile (profileType) {
 module.exports = {
   getUserTeamProfile,
   createProfileKeys,
+  modifyProfileKey,
   getProfileKeys,
   setProfile
 }

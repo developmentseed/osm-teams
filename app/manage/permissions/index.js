@@ -10,6 +10,10 @@ const userPermissions = {
   'user:edit': require('./edit-user')
 }
 
+const keyPermissions = {
+  'key:edit': require('./edit-key')
+}
+
 const teamPermissions = {
   'team:edit': require('./edit-team'),
   'team:view': require('./view-team'),
@@ -29,6 +33,7 @@ const clientPermissions = {
 const permissions = mergeAll([
   metaPermissions,
   userPermissions,
+  keyPermissions,
   teamPermissions,
   clientPermissions,
   organizationPermissions

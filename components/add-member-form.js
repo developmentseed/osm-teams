@@ -5,6 +5,7 @@ import Button from './button'
 export default function AddMemberForm ({ onSubmit }) {
   return (
     <Formik
+      initialValues={{ osmId: '' }}
       onSubmit={async (data, actions) => {
         actions.setSubmitting(true)
 
