@@ -5,7 +5,7 @@ import Popup from 'reactjs-popup'
 import ProfileAttributeForm from '../components/profile-attribute-form'
 import Button from '../components/button'
 import Table from '../components/table'
-import { addTeamMemberAttributes, getTeamMemberAttributes, modifyMemberAttribute } from '../lib/profiles-api'
+import { addTeamMemberAttributes, getTeamMemberAttributes, modifyMemberAttribute, deleteMemberAttribute } from '../lib/profiles-api'
 import theme from '../styles/theme'
 
 export default class TeamEditProfile extends Component {
@@ -22,7 +22,9 @@ export default class TeamEditProfile extends Component {
     this.state = {
       isAdding: false,
       isModifying: false,
+      isDeleting: false,
       rowToModify: {},
+      rowToDelete: {},
       loading: true,
       error: undefined
     }
@@ -49,6 +51,7 @@ export default class TeamEditProfile extends Component {
               this.setState({
                 isModifying: true,
                 isAdding: false,
+                isDeleting: false,
                 rowToModify: assoc(
                   'required',
                   row.required === 'true' ? ['required'] : [],
@@ -58,6 +61,17 @@ export default class TeamEditProfile extends Component {
             }}
           >
             Modify
+          </li>
+          <li onClick={async () => {
+            this.setState({
+              isModifying: false,
+              isAdding: false,
+              isDeleting: true,
+              rowToDelete: row
+            })
+          }
+          }>
+            Delete
           </li>
         </ul>
         <style jsx>
@@ -123,7 +137,8 @@ export default class TeamEditProfile extends Component {
     const CancelButton = <Button onClick={
       () => this.setState({
         isModifying: false,
-        isAdding: false
+        isAdding: false,
+        isDeleting: false
       })
     }>Cancel</Button>
 
@@ -169,12 +184,30 @@ export default class TeamEditProfile extends Component {
                 />
                 {CancelButton}
               </>
-              : (!this.state.isModifying && <Button onClick={
+              : (!(this.state.isModifying || this.state.isDeleting) && <Button onClick={
                 () => this.setState({
                   isAdding: true,
                   isModifying: false
                 })
               }>Add attribute</Button>)
+          }
+          {
+            this.state.isDeleting
+              ? <>
+                <Button variant='danger' onClick={
+                  async () => {
+                    await deleteMemberAttribute(this.state.rowToDelete.id)
+                    this.setState({ isDeleting: false })
+                    return this.getTeamMemberAttributes()
+                  }
+                }
+                >Confirm Delete
+                </Button>
+                <span style={{ 'marginLeft': '1rem' }}>
+                  {CancelButton}
+                </span>
+              </>
+              : ''
           }
         </section>
       </article>

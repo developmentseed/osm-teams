@@ -127,6 +127,28 @@ async function modifyProfileKey (req, reply) {
 }
 
 /**
+ * Delete profile key
+ */
+async function deleteProfileKey (req, reply) {
+  const { id } = req.params
+
+  if (!id) {
+    reply.boom.badRequest('id is required parameter')
+  }
+
+  try {
+    await profile.deleteProfileKey(id)
+    reply.sendStatus(200)
+  } catch (err) {
+    console.error(err)
+    if (err instanceof ValidationError || err instanceof PropertyRequiredError) {
+      reply.boom.badRequest(err)
+    }
+    return reply.boom.badImplementation()
+  }
+}
+
+/**
  * Get the keys set by an owner
  */
 function getProfileKeys (ownerType, profileType) {
@@ -179,6 +201,7 @@ module.exports = {
   getUserTeamProfile,
   createProfileKeys,
   modifyProfileKey,
+  deleteProfileKey,
   getProfileKeys,
   setProfile
 }
