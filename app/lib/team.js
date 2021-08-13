@@ -64,7 +64,7 @@ async function resolveMemberNames (ids) {
 async function get (id) {
   const conn = await db()
   const st = knexPostgis(conn)
-  return unpack(conn('team').select(teamAttributes, st.asGeoJSON('location')).where('id', id))
+  return unpack(conn('team').select(...teamAttributes, st.asGeoJSON('location')).where('id', id))
 }
 
 /**

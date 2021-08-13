@@ -33,7 +33,7 @@ export default class TeamEditProfile extends Component {
   }
 
   async componentDidMount () {
-    this.getTeamMemberAttributes()
+    this.getAttributes()
   }
 
   renderActions (row, index, columns) {
@@ -95,7 +95,7 @@ export default class TeamEditProfile extends Component {
     )
   }
 
-  async getTeamMemberAttributes () {
+  async getAttributes () {
     const { id } = this.props
     try {
       let memberAttributes = await getTeamMemberAttributes(id)

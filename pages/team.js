@@ -209,6 +209,7 @@ export default class Team extends Component {
           }
           { userId && !isMember ? <Button variant='primary' onClick={() => this.joinTeam()}>Join Team</Button> : '' }
           { !userId ? <Button variant='primary' href={`/login`}>Sign in to join team</Button> : '' }
+          { isMember ? <Button variant='primary' href={`/teams/${team.id}/profile`}>Add Your Profile</Button> : ' '}
         </div>
         <div className='team__details'>
           <Card>

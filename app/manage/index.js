@@ -39,6 +39,8 @@ const {
   createProfileKeys,
   getProfileKeys,
   modifyProfileKey,
+  getMyProfile,
+  setMyProfile,
   setProfile,
   deleteProfileKey
 } = require('./profiles')
@@ -116,6 +118,8 @@ function manageRouter (nextApp) {
    * List, Create, Read, Update, Delete operations on profiles
    */
   router.get('/api/profiles/teams/:id/:osmId', can('public:authenticated'), getUserTeamProfile)
+  router.get('/api/my/profiles', can('public:authenticated'), getMyProfile)
+  router.post('/api/my/profiles', can('public:authenticated'), setMyProfile)
 
   router.put('/api/profiles/keys/:id', can('key:edit'), modifyProfileKey)
   router.delete('/api/profiles/keys/:id', can('key:edit'), deleteProfileKey)
@@ -130,7 +134,6 @@ function manageRouter (nextApp) {
   router.post('/api/profiles/keys/teams/:id', can('team:edit'), createProfileKeys('team', 'team'))
   router.post('/api/profiles/keys/teams/:id/users', can('team:edit'), createProfileKeys('team', 'user'))
 
-  router.post('/api/profiles/users/:id', can('user:edit'), setProfile('user'))
   router.post('/api/profiles/teams/:id', can('team:edit'), setProfile('team'))
   router.post('/api/profiles/organizations/:id', can('organization:edit'), setProfile('org'))
 
@@ -159,6 +162,10 @@ function manageRouter (nextApp) {
 
   router.get('/teams/:id/edit-profiles', can('team:edit'), (req, res) => {
     return nextApp.render(req, res, '/team-edit-profile', { id: req.params.id })
+  })
+
+  router.get('/teams/:id/profile', can('team:view'), (req, res) => {
+    return nextApp.render(req, res, '/team-profile', { id: req.params.id })
   })
 
   return router

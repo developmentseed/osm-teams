@@ -197,11 +197,39 @@ function setProfile (profileType) {
   }
 }
 
+/**
+ * Get a user's profile
+ */
+async function getMyProfile (req, reply) {
+  const { user_id } = reply.locals
+  try {
+    const data = await profile.getProfile('user', user_id)
+    reply.send(data)
+  } catch (err) {
+    console.error(err)
+    return reply.boom.badImplementation()
+  }
+}
+
+async function setMyProfile (req, reply) {
+  const { user_id } = reply.locals
+  const { body } = req
+  try {
+    await profile.setProfile(body, 'user', user_id)
+    reply.sendStatus((200))
+  } catch (err) {
+    console.error(err)
+    return reply.boom.badImplementation()
+  }
+}
+
 module.exports = {
   getUserTeamProfile,
   createProfileKeys,
   modifyProfileKey,
   deleteProfileKey,
   getProfileKeys,
+  getMyProfile,
+  setMyProfile,
   setProfile
 }
