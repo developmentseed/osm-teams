@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { map, prop, contains, reverse } from 'ramda'
 import Popup from 'reactjs-popup'
+import Modal from 'react-modal'
 import dynamic from 'next/dynamic'
 
 import Card from '../components/card'
@@ -9,9 +10,12 @@ import SectionHeader from '../components/section-header'
 import Button from '../components/button'
 import Table from '../components/table'
 import AddMemberForm from '../components/add-member-form'
+import ProfileModal from '../components/profile-modal'
 import theme from '../styles/theme'
 
 import { getTeam, addMember, removeMember, joinTeam } from '../lib/teams-api'
+import { getUserTeamProfile } from '../lib/profiles-api'
+
 
 const Map = dynamic(() => import('../components/team-map'), { ssr: false })
 
@@ -27,6 +31,8 @@ export default class Team extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      profileInfo: [],
+      profileUserId: '',
       loading: true,
       error: undefined
     }
@@ -52,6 +58,32 @@ export default class Team extends Component {
         loading: false
       })
     }
+  }
+
+  async openProfileModal (userId) {
+    const { id } = this.props
+
+    try {
+      const profileInfo = await getUserTeamProfile(id, userId)
+      this.setState({
+        profileUserId: userId,
+        profileInfo,
+        modalIsOpen: true
+      })
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e,
+        team: null,
+        loading: false
+      })
+    }
+  }
+
+  async closeProfileModal () {
+    this.setState({
+      modalIsOpen: false
+    })
   }
 
   async joinTeam () {
@@ -158,7 +190,7 @@ export default class Team extends Component {
       } else {
         return (
           <article className='inner page'>
-            <h1>Error fetching team</h1>
+            <h1>Error: {error.message}</h1>
           </article>
         )
       }
@@ -247,7 +279,26 @@ export default class Team extends Component {
             <Table
               rows={memberRows}
               columns={columns}
+              onRowClick={
+                (row) => {
+                  this.openProfileModal(row.id)
+                }
+              }
             />
+            <Modal style={{ 
+              content: {
+                maxWidth: '400px', 
+                maxHeight: '400px',
+                left: 'calc(50% - 200px)',
+                top: 'calc(50% - 200px)'
+              },
+              overlay: {
+                zIndex: 10000,
+              }
+            }} isOpen={this.state.modalIsOpen}>
+              <ProfileModal userId={this.state.profileUserId} attributes={this.state.profileInfo} />
+              <Button size="small" onClick={() => this.closeProfileModal()}>close</Button>
+            </Modal>
           </Section>
         </div>
         <style jsx>

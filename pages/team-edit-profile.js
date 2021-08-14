@@ -163,7 +163,7 @@ export default class TeamEditProfile extends Component {
                   onSubmit={async (attribute) => {
                     await modifyMemberAttribute(attribute.id, attribute)
                     this.setState({ isModifying: false })
-                    return this.getTeamMemberAttributes()
+                    return this.getAttributes()
                   }}
                 />
                 {CancelButton}
@@ -179,7 +179,7 @@ export default class TeamEditProfile extends Component {
                   onSubmit={async (attributes) => {
                     await addTeamMemberAttributes(teamId, attributes)
                     this.setState({ isAdding: false })
-                    return this.getTeamMemberAttributes()
+                    return this.getAttributes()
                   }}
                 />
                 {CancelButton}
@@ -198,7 +198,7 @@ export default class TeamEditProfile extends Component {
                   async () => {
                     await deleteMemberAttribute(this.state.rowToDelete.id)
                     this.setState({ isDeleting: false })
-                    return this.getTeamMemberAttributes()
+                    return this.getAttributes()
                   }
                 }
                 >Confirm Delete

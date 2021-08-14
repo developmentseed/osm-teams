@@ -1,11 +1,11 @@
 const profile = require('../lib/profile')
 const team = require('../lib/team')
 const org = require('../lib/organization')
-const { concat, pick, prop } = require('ramda')
+const { concat, pick, prop, assoc } = require('ramda')
 const { ValidationError, PropertyRequiredError } = require('../lib/utils')
 
 /**
- * Gets a user profile
+ * Gets a user profile in a team
  */
 async function getUserTeamProfile (req, reply) {
   const { osmId, id: teamId } = req.params
@@ -35,21 +35,22 @@ async function getUserTeamProfile (req, reply) {
 
     // Get visibile keys
     const allKeys = concat(teamKeys, orgKeys)
-    allKeys.forEach(({ id, visibility }) => {
+    allKeys.forEach((key) => {
+      const { visibility } = key
       switch (visibility) {
         case 'public': {
-          visibleKeys.push(id)
+          visibleKeys.push(key)
           break
         }
         case 'team': {
           if (requesterIsMemberOfTeam) {
-            visibleKeys.push(id)
+            visibleKeys.push(key)
           }
           break
         }
         case 'org': {
           if (requesterIsMemberOfOrg) {
-            visibleKeys.push(id)
+            visibleKeys.push(key)
           }
           break
         }
@@ -58,10 +59,18 @@ async function getUserTeamProfile (req, reply) {
 
     // Get values for keys
     const values = await profile.getProfile('user', osmId)
+    if (!values) {
+      reply.sendStatus(404)
+    }
     const tags = prop('tags', values)
-    const visibleValues = pick(visibleKeys, tags)
+    const visibleKeyIds = visibleKeys.map(prop('id'))
+    const visibleValues = pick(visibleKeyIds, tags)
 
-    reply.send(visibleValues)
+    const keysToSend = visibleKeys.map(key => {
+      return assoc('value', visibleValues[key.id], key)
+    })
+
+    reply.send(keysToSend)
   } catch (err) {
     console.error(err)
     return reply.boom.badImplementation()

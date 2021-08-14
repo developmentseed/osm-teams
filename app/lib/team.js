@@ -51,6 +51,7 @@ async function resolveMemberNames (ids) {
       })
     })
   } catch (e) {
+    console.error(e)
     throw new Error('Could not resolve usernames')
   }
 }
