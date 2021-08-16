@@ -42,10 +42,17 @@ async function resolveMemberNames (ids) {
       parser.parseString(resp, (err, xml) => {
         if (err) { reject(err) }
 
-        let users = xml.osm.user.map(user => ({
-          id: user['$'].id,
-          name: user['$'].display_name
-        }))
+        let users = xml.osm.user.map(user => {
+          let img = prop('img', user)
+          if (img) {
+            img = img[0]['$'].href
+          }
+          return {
+            id: user['$'].id,
+            name: user['$'].display_name,
+            img
+          }
+        })
 
         resolve(users)
       })

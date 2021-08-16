@@ -59,14 +59,14 @@ export default class Team extends Component {
     }
   }
 
-  async openProfileModal (userId) {
+  async openProfileModal (user) {
     const { id } = this.props
 
     try {
-      const profileInfo = await getUserTeamProfile(id, userId)
+      const profileInfo = await getUserTeamProfile(id, user.id)
       this.setState({
-        profileUserId: userId,
         profileInfo,
+        profileMeta: user,
         modalIsOpen: true
       })
     } catch (e) {
@@ -280,7 +280,7 @@ export default class Team extends Component {
               columns={columns}
               onRowClick={
                 (row) => {
-                  this.openProfileModal(row.id)
+                  this.openProfileModal(row)
                 }
               }
             />
@@ -295,7 +295,7 @@ export default class Team extends Component {
                 zIndex: 10000
               }
             }} isOpen={this.state.modalIsOpen}>
-              <ProfileModal userId={this.state.profileUserId} attributes={this.state.profileInfo} />
+              <ProfileModal user={this.state.profileMeta} attributes={this.state.profileInfo} />
               <Button size='small' onClick={() => this.closeProfileModal()}>close</Button>
             </Modal>
           </Section>

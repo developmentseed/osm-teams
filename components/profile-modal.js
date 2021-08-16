@@ -2,7 +2,7 @@ import React from 'react'
 import { isEmpty } from 'ramda'
 import theme from '../styles/theme'
 
-export default function ProfileModal ({ userId, attributes }) {
+export default function ProfileModal ({ user, attributes }) {
   let profileContent = <dl>User does not have a profile</dl>
   if (!isEmpty(attributes)) {
     profileContent = <>
@@ -46,7 +46,8 @@ export default function ProfileModal ({ userId, attributes }) {
     </>
   }
   return <article className='modal__details'>
-    <h2>User {userId} </h2>
+    { user.img ? <img src={user.img}></img> : '' }
+    <h2>{user.name} </h2>
     {profileContent}
   </article>
 }
