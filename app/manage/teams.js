@@ -1,11 +1,7 @@
 const team = require('../lib/team')
-const join = require('url-join')
 const { prop, map } = require('ramda')
 const urlRegex = require('url-regex')
 const { teamsMembersModeratorsHelper } = require('./utils')
-const fetch = require('node-fetch')
-
-const { serverRuntimeConfig } = require('../../next.config')
 
 const isUrl = urlRegex({ exact: true })
 const getOsmId = prop('osm_id')
@@ -196,14 +192,20 @@ async function updateMembers (req, reply) {
   }
 
   try {
-    const res = await fetch(join(serverRuntimeConfig.OSM_API, `/api/0.6/users?users=${add.join(',')}`))
-    if (!res.ok) {
-      throw new Error('Could not get member info from OSM')
+    let members = []
+    if (add) {
+      members = members.concat(add)
     }
+    if (remove) {
+      members = members.concat(remove)
+    }
+    // Check if these are OSM users
+    await team.resolveMemberNames(members)
+
     await team.updateMembers(id, add, remove)
     return reply.sendStatus(200)
   } catch (err) {
-    console.log(err)
+    console.error(err)
     return reply.boom.badRequest(err.message)
   }
 }

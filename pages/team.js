@@ -16,7 +16,6 @@ import theme from '../styles/theme'
 import { getTeam, addMember, removeMember, joinTeam } from '../lib/teams-api'
 import { getUserTeamProfile } from '../lib/profiles-api'
 
-
 const Map = dynamic(() => import('../components/team-map'), { ssr: false })
 
 export default class Team extends Component {
@@ -228,15 +227,15 @@ export default class Team extends Component {
       <article className='inner page team'>
         <div className='page__heading'>
           <h2>{team.name}</h2>
-          { isUserModerator ? 
-            (
+          { isUserModerator
+            ? (
               <div>
                 <span style={{ 'margin-right': '1rem' }}>
                   <Button variant='primary' href={`/teams/${team.id}/edit`}>Edit Team</Button>
                 </span>
                 <Button variant='primary' href={`/teams/${team.id}/edit-profiles`}>Edit Team Profiles</Button>
               </div>
-            ) 
+            )
             : ''
           }
           { userId && !isMember ? <Button variant='primary' onClick={() => this.joinTeam()}>Join Team</Button> : '' }
@@ -285,19 +284,19 @@ export default class Team extends Component {
                 }
               }
             />
-            <Modal style={{ 
+            <Modal style={{
               content: {
-                maxWidth: '400px', 
+                maxWidth: '400px',
                 maxHeight: '400px',
                 left: 'calc(50% - 200px)',
                 top: 'calc(50% - 200px)'
               },
               overlay: {
-                zIndex: 10000,
+                zIndex: 10000
               }
             }} isOpen={this.state.modalIsOpen}>
               <ProfileModal userId={this.state.profileUserId} attributes={this.state.profileInfo} />
-              <Button size="small" onClick={() => this.closeProfileModal()}>close</Button>
+              <Button size='small' onClick={() => this.closeProfileModal()}>close</Button>
             </Modal>
           </Section>
         </div>
