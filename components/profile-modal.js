@@ -46,7 +46,7 @@ export default function ProfileModal ({ user, attributes }) {
     </>
   }
   return <article className='modal__details'>
-    { user.img ? <img src={user.img}></img> : '' }
+    { user.img ? <img src={user.img} /> : '' }
     <h2>{user.name} </h2>
     {profileContent}
   </article>
