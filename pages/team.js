@@ -113,7 +113,7 @@ export default class Team extends Component {
     )
   }
 
-  async addModerator(osmId) {
+  async addModerator (osmId) {
     const { id } = this.props
     try {
       await assignModerator(id, osmId)
@@ -127,7 +127,7 @@ export default class Team extends Component {
     }
   }
 
-  async removeModerator(osmId) {
+  async removeModerator (osmId) {
     const { id } = this.props
     try {
       await removeModerator(id, osmId)
@@ -158,7 +158,6 @@ export default class Team extends Component {
       })
     }
   }
-
 
   render () {
     const { team, error } = this.state
@@ -198,7 +197,7 @@ export default class Team extends Component {
     const columns = [
       { key: 'id' },
       { key: 'name' },
-      { key: 'role'}
+      { key: 'role' }
     ]
 
     let memberRows = team.members.map(member => {
@@ -231,7 +230,6 @@ export default class Team extends Component {
             this.removeModerator(this.state.profileMeta.id)
           }
         })
-
       }
     }
 
@@ -308,11 +306,11 @@ export default class Team extends Component {
               }
             }} isOpen={this.state.modalIsOpen}>
               <ProfileModal
-               user={this.state.profileMeta}
-               attributes={this.state.profileInfo}
-               onClose={this.closeProfileModal}
-               actions={profileActions}
-                />
+                user={this.state.profileMeta}
+                attributes={this.state.profileInfo}
+                onClose={this.closeProfileModal}
+                actions={profileActions}
+              />
             </Modal>
           </Section>
         </div>
