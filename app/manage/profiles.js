@@ -1,11 +1,11 @@
 const profile = require('../lib/profile')
 const team = require('../lib/team')
 const org = require('../lib/organization')
-const { concat, pick, prop } = require('ramda')
+const { concat, pick, prop, assoc } = require('ramda')
 const { ValidationError, PropertyRequiredError } = require('../lib/utils')
 
 /**
- * Gets a user profile
+ * Gets a user profile in a team
  */
 async function getUserTeamProfile (req, reply) {
   const { osmId, id: teamId } = req.params
@@ -35,21 +35,22 @@ async function getUserTeamProfile (req, reply) {
 
     // Get visibile keys
     const allKeys = concat(teamKeys, orgKeys)
-    allKeys.forEach(({ id, visibility }) => {
+    allKeys.forEach((key) => {
+      const { visibility } = key
       switch (visibility) {
         case 'public': {
-          visibleKeys.push(id)
+          visibleKeys.push(key)
           break
         }
         case 'team': {
           if (requesterIsMemberOfTeam) {
-            visibleKeys.push(id)
+            visibleKeys.push(key)
           }
           break
         }
         case 'org': {
           if (requesterIsMemberOfOrg) {
-            visibleKeys.push(id)
+            visibleKeys.push(key)
           }
           break
         }
@@ -59,9 +60,17 @@ async function getUserTeamProfile (req, reply) {
     // Get values for keys
     const values = await profile.getProfile('user', osmId)
     const tags = prop('tags', values)
-    const visibleValues = pick(visibleKeys, tags)
+    if (!values || !tags) {
+      reply.sendStatus(404)
+    }
+    const visibleKeyIds = visibleKeys.map(prop('id'))
+    const visibleValues = pick(visibleKeyIds, tags)
 
-    reply.send(visibleValues)
+    const keysToSend = visibleKeys.map(key => {
+      return assoc('value', visibleValues[key.id], key)
+    })
+
+    reply.send(keysToSend)
   } catch (err) {
     console.error(err)
     return reply.boom.badImplementation()
@@ -104,9 +113,54 @@ function createProfileKeys (ownerType, profileType) {
 }
 
 /**
+ * Modify profile key
+ */
+async function modifyProfileKey (req, reply) {
+  const { id } = req.params
+  const { body } = req
+
+  if (!id) {
+    reply.boom.badRequest('id is required parameter')
+  }
+
+  try {
+    await profile.modifyProfileKey(id, body)
+    reply.sendStatus(200)
+  } catch (err) {
+    console.error(err)
+    if (err instanceof ValidationError || err instanceof PropertyRequiredError) {
+      reply.boom.badRequest(err)
+    }
+    return reply.boom.badImplementation()
+  }
+}
+
+/**
+ * Delete profile key
+ */
+async function deleteProfileKey (req, reply) {
+  const { id } = req.params
+
+  if (!id) {
+    reply.boom.badRequest('id is required parameter')
+  }
+
+  try {
+    await profile.deleteProfileKey(id)
+    reply.sendStatus(200)
+  } catch (err) {
+    console.error(err)
+    if (err instanceof ValidationError || err instanceof PropertyRequiredError) {
+      reply.boom.badRequest(err)
+    }
+    return reply.boom.badImplementation()
+  }
+}
+
+/**
  * Get the keys set by an owner
  */
-function getProfileKeys (ownerType) {
+function getProfileKeys (ownerType, profileType) {
   return async function (req, reply) {
     const { id } = req.params
 
@@ -115,7 +169,7 @@ function getProfileKeys (ownerType) {
     }
 
     try {
-      const data = await profile.getProfileKeysForOwner(ownerType, id)
+      const data = await profile.getProfileKeysForOwner(ownerType, id, profileType)
       reply.send(data)
     } catch (err) {
       console.error(err)
@@ -152,9 +206,39 @@ function setProfile (profileType) {
   }
 }
 
+/**
+ * Get a user's profile
+ */
+async function getMyProfile (req, reply) {
+  const { user_id } = reply.locals
+  try {
+    const data = await profile.getProfile('user', user_id)
+    reply.send(data)
+  } catch (err) {
+    console.error(err)
+    return reply.boom.badImplementation()
+  }
+}
+
+async function setMyProfile (req, reply) {
+  const { user_id } = reply.locals
+  const { body } = req
+  try {
+    await profile.setProfile(body, 'user', user_id)
+    reply.sendStatus((200))
+  } catch (err) {
+    console.error(err)
+    return reply.boom.badImplementation()
+  }
+}
+
 module.exports = {
   getUserTeamProfile,
   createProfileKeys,
+  modifyProfileKey,
+  deleteProfileKey,
   getProfileKeys,
+  getMyProfile,
+  setMyProfile,
   setProfile
 }

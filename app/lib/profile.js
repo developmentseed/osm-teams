@@ -224,7 +224,7 @@ async function setProfile (attributeValues, profileType, id) {
 /**
  * Get a user's profile
  *
- * @param {string} profileType Type of profile we are getting from to
+ * @param {string} profileType Type of profile
  * @param {integer} id ID of profile for which we are getting the attributes
  * @returns
  */

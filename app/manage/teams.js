@@ -192,10 +192,20 @@ async function updateMembers (req, reply) {
   }
 
   try {
+    let members = []
+    if (add) {
+      members = members.concat(add)
+    }
+    if (remove) {
+      members = members.concat(remove)
+    }
+    // Check if these are OSM users
+    await team.resolveMemberNames(members)
+
     await team.updateMembers(id, add, remove)
     return reply.sendStatus(200)
   } catch (err) {
-    console.log(err)
+    console.error(err)
     return reply.boom.badRequest(err.message)
   }
 }

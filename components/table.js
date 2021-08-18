@@ -64,6 +64,9 @@ function TableBody ({ columns, rows, onRowClick }) {
 }
 
 export default function Table ({ columns, rows, onRowClick }) {
+  if (!rows || !columns) {
+    return <div />
+  }
   return (
     <table>
       <TableHead columns={columns} />

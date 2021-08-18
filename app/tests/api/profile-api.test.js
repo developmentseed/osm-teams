@@ -182,7 +182,7 @@ test('create profile keys for teams users', async t => {
   t.true(includes('user', keyProfileTypes))
 })
 
-test('set profile for a user 1', async t => {
+test('set profile for user 1', async t => {
   const name = 'set profile for a user'
   const team1 = await team.create({ name: 'set profile for a user' }, 1)
   await agent.post(`/api/profiles/keys/teams/${team1.id}/users`)
@@ -192,7 +192,7 @@ test('set profile for a user 1', async t => {
   const keys = await profile.getProfileKeysForOwner('team', team1.id, 'user')
   const keyId = find(propEq('name', name), keys).id
 
-  await agent.post('/api/profiles/users/1')
+  await agent.post('/api/my/profiles')
     .send([{ 'key_id': keyId, value: 'success' }])
     .expect(200)
 

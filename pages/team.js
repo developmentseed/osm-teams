@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { map, prop, contains, reverse } from 'ramda'
-import Popup from 'reactjs-popup'
+import { map, prop, contains, reverse, assoc } from 'ramda'
+import Modal from 'react-modal'
 import dynamic from 'next/dynamic'
 
 import Card from '../components/card'
@@ -9,9 +9,11 @@ import SectionHeader from '../components/section-header'
 import Button from '../components/button'
 import Table from '../components/table'
 import AddMemberForm from '../components/add-member-form'
+import ProfileModal from '../components/profile-modal'
 import theme from '../styles/theme'
 
-import { getTeam, addMember, removeMember, joinTeam } from '../lib/teams-api'
+import { getTeam, addMember, removeMember, joinTeam, assignModerator, removeModerator } from '../lib/teams-api'
+import { getUserTeamProfile } from '../lib/profiles-api'
 
 const Map = dynamic(() => import('../components/team-map'), { ssr: false })
 
@@ -27,9 +29,13 @@ export default class Team extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      profileInfo: [],
+      profileUserId: '',
       loading: true,
       error: undefined
     }
+
+    this.closeProfileModal = this.closeProfileModal.bind(this)
   }
 
   async componentDidMount () {
@@ -52,6 +58,32 @@ export default class Team extends Component {
         loading: false
       })
     }
+  }
+
+  async openProfileModal (user) {
+    const { id } = this.props
+
+    try {
+      const profileInfo = await getUserTeamProfile(id, user.id)
+      this.setState({
+        profileInfo,
+        profileMeta: user,
+        modalIsOpen: true
+      })
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e,
+        team: null,
+        loading: false
+      })
+    }
+  }
+
+  async closeProfileModal () {
+    this.setState({
+      modalIsOpen: false
+    })
   }
 
   async joinTeam () {
@@ -81,10 +113,41 @@ export default class Team extends Component {
     )
   }
 
+  async addModerator (osmId) {
+    const { id } = this.props
+    try {
+      await assignModerator(id, osmId)
+      await this.getTeam()
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e,
+        loading: false
+      })
+    }
+  }
+
+  async removeModerator (osmId) {
+    const { id } = this.props
+    try {
+      await removeModerator(id, osmId)
+      await this.getTeam()
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e,
+        loading: false
+      })
+    }
+  }
+
   async removeMember (osmId) {
     const { id } = this.props
     try {
       await removeMember(id, osmId)
+      if (this.state.modalIsOpen) {
+        await this.closeProfileModal()
+      }
       await this.getTeam()
     } catch (e) {
       console.error(e)
@@ -94,49 +157,6 @@ export default class Team extends Component {
         loading: false
       })
     }
-  }
-
-  renderActions (row, index, columns) {
-    return (
-      <Popup
-        trigger={<span>⚙️</span>}
-        position='right top'
-        on='click'
-        closeOnDocumentClick
-        contentStyle={{ padding: '10px', border: 'none' }}
-      >
-        <ul>
-          <li
-            onClick={async () => {
-              // TODO: show message if error
-              // TODO: require confirmation
-              if (row.id !== this.props.user.uid) {
-                this.removeMember(row.id)
-              }
-            }}
-          >
-            Remove team member
-          </li>
-        </ul>
-        <style jsx>
-          {`
-            ul {
-              list-style: none;
-              padding: 0;
-              margin: 0;
-            }
-
-            li {
-              padding-left: 0.5rem;
-            }
-
-            li:hover {
-              color: ${theme.colors.secondaryColor};
-            }
-          `}
-        </style>
-      </Popup>
-    )
   }
 
   render () {
@@ -158,7 +178,7 @@ export default class Team extends Component {
       } else {
         return (
           <article className='inner page'>
-            <h1>Error fetching team</h1>
+            <h1>Error: {error.message}</h1>
           </article>
         )
       }
@@ -176,29 +196,61 @@ export default class Team extends Component {
 
     const columns = [
       { key: 'id' },
-      { key: 'name' }
+      { key: 'name' },
+      { key: 'role' }
     ]
 
-    let memberRows = team.members
-    if (isUserModerator) {
-      columns.push({ key: 'actions' })
+    let memberRows = team.members.map(member => {
+      const role = contains(parseInt(member.id), moderators) ? 'moderator' : 'member'
+      return assoc('role', role, member)
+    })
 
-      memberRows = memberRows.map((member) => {
-        member.actions = (row, index, columns) => {
-          return this.renderActions(row, index, columns, isUserModerator)
-        }
+    let profileActions = []
 
-        return member
-      })
+    if (this.state.modalIsOpen) {
+      if (this.state.profileMeta.id !== this.props.user.uid) {
+        profileActions.push({
+          name: 'Remove team member',
+          onClick: async () => {
+            this.removeMember(this.state.profileMeta.id)
+          }
+        })
+      }
+      if (!contains(parseInt(this.state.profileMeta.id), moderators)) {
+        profileActions.push({
+          name: 'Promote to moderator',
+          onClick: async () => {
+            this.addModerator(this.state.profileMeta.id)
+          }
+        })
+      } else {
+        profileActions.push({
+          name: 'Remove moderator',
+          onClick: async () => {
+            this.removeModerator(this.state.profileMeta.id)
+          }
+        })
+      }
     }
 
     return (
       <article className='inner page team'>
         <div className='page__heading'>
           <h2>{team.name}</h2>
-          { isUserModerator ? <Button variant='primary' href={`/teams/${team.id}/edit`}>Edit Team</Button> : ''}
+          { isUserModerator
+            ? (
+              <div>
+                <span style={{ 'margin-right': '1rem' }}>
+                  <Button variant='primary' href={`/teams/${team.id}/edit`}>Edit Team</Button>
+                </span>
+                <Button variant='primary' href={`/teams/${team.id}/edit-profiles`}>Edit Team Profiles</Button>
+              </div>
+            )
+            : ''
+          }
           { userId && !isMember ? <Button variant='primary' onClick={() => this.joinTeam()}>Join Team</Button> : '' }
           { !userId ? <Button variant='primary' href={`/login`}>Sign in to join team</Button> : '' }
+          { isMember ? <Button variant='primary' href={`/teams/${team.id}/profile`}>Add Your Profile</Button> : ' '}
         </div>
         <div className='team__details'>
           <Card>
@@ -236,7 +288,30 @@ export default class Team extends Component {
             <Table
               rows={memberRows}
               columns={columns}
+              onRowClick={
+                (row) => {
+                  this.openProfileModal(row)
+                }
+              }
             />
+            <Modal style={{
+              content: {
+                maxWidth: '400px',
+                maxHeight: '400px',
+                left: 'calc(50% - 200px)',
+                top: 'calc(50% - 200px)'
+              },
+              overlay: {
+                zIndex: 10000
+              }
+            }} isOpen={this.state.modalIsOpen}>
+              <ProfileModal
+                user={this.state.profileMeta}
+                attributes={this.state.profileInfo}
+                onClose={this.closeProfileModal}
+                actions={profileActions}
+              />
+            </Modal>
           </Section>
         </div>
         <style jsx>

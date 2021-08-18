@@ -19,8 +19,7 @@ const teamAttributes = [
   'privacy',
   'require_join_request',
   'updated_at',
-  'created_at',
-  'location'
+  'created_at'
 ]
 
 /**
@@ -43,15 +42,23 @@ async function resolveMemberNames (ids) {
       parser.parseString(resp, (err, xml) => {
         if (err) { reject(err) }
 
-        let users = xml.osm.user.map(user => ({
-          id: user['$'].id,
-          name: user['$'].display_name
-        }))
+        let users = xml.osm.user.map(user => {
+          let img = prop('img', user)
+          if (img) {
+            img = img[0]['$'].href
+          }
+          return {
+            id: user['$'].id,
+            name: user['$'].display_name,
+            img
+          }
+        })
 
         resolve(users)
       })
     })
   } catch (e) {
+    console.error(e)
     throw new Error('Could not resolve usernames')
   }
 }
@@ -65,7 +72,7 @@ async function resolveMemberNames (ids) {
 async function get (id) {
   const conn = await db()
   const st = knexPostgis(conn)
-  return unpack(conn('team').select(teamAttributes, st.asGeoJSON('location')).where('id', id))
+  return unpack(conn('team').select(...teamAttributes, st.asGeoJSON('location')).where('id', id))
 }
 
 /**

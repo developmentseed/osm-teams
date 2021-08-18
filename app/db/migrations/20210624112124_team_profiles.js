@@ -38,5 +38,5 @@ exports.down = async (knex) => {
   await knex.schema.alterTable('team', table => {
     table.dropColumn('profile')
   })
-  await knex.schema.dropTable('profile_keys')
+  await knex.schema.raw('DROP TABLE if exists profile_keys CASCADE')
 }

@@ -112,7 +112,7 @@ test('get a team', async t => {
   t.is(team.body.members.length, 1)
 })
 
-test('get team list', async t => {
+test.only('get team list', async t => {
   await agent.post('/api/teams')
     .send({ name: 'map team 5' })
     .expect(200)
@@ -183,6 +183,10 @@ test('updated members in team', async t => {
 })
 
 test('get list of teams by osm id', async t => {
+  await agent.post('/api/teams')
+    .send({ name: 'get list of teams by osm id' })
+    .expect(200)
+
   let teams = await agent.get(`/api/teams?osmId=1`)
     .expect(200)
 
