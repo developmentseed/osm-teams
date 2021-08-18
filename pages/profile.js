@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Modal from 'react-modal'
 import Router from 'next/router'
 import join from 'url-join'
 import getConfig from 'next/config'
@@ -16,10 +17,17 @@ export default class Profile extends Component {
     super(props)
 
     this.state = {
+      isModalOpen: false,
       loading: true,
       teams: [],
       error: undefined
     }
+  }
+
+  openCreateModal () {
+    this.setState({
+      isModalOpen: true
+    })
   }
 
   async refreshTeams () {
@@ -74,16 +82,45 @@ export default class Profile extends Component {
       <div className='inner page'>
         <div className='page__heading'>
           <h2>Profile</h2>
-          <Button variant='primary' href='/teams/create' >Create team</Button>
+          <div>
+            <Button variant='primary' onClick={() => this.openCreateModal()} >Create</Button>
+          </div>
         </div>
         <Section>
           <SectionHeader>Your Teams</SectionHeader>
           {this.renderTeams()}
         </Section>
-        <style jsx>
-          {`
-          `}
-        </style>
+        <Modal style={{
+          content: {
+            maxWidth: '400px',
+            maxHeight: '400px',
+            left: 'calc(50% - 200px)',
+            top: 'calc(50% - 200px)'
+          },
+          overlay: {
+            zIndex: 10000
+          }
+        }} isOpen={this.state.isModalOpen}>
+          <ul>
+            <Button variant='primary fixed-size' href='/teams/create' >Create team</Button>
+            <Button variant='primary fixed-size' href='/organizations/create' >Create Org</Button>
+          </ul>
+          <style jsx>{`
+          ul {
+            width: 300px;
+            height: 300px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+          }
+          ul li {
+            margin-left: auto;
+            margin-right: auto;
+          }
+        `}
+          </style>
+        </Modal>
       </div>
     )
   }

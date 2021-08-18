@@ -32,7 +32,7 @@ export default class FormMap extends Component {
   }
 
   render () {
-    let centerGeojson = this.props.value || '{ "type": "Point", "coordinates": [-77.03637, 38.89511] }'
+    let centerGeojson = this.props.value || '{ "type": "Point", "coordinates": [-73.968056,40.749444] }'
     let center = reverse(JSON.parse(centerGeojson).coordinates)
 
     return (
