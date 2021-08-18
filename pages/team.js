@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { map, prop, contains, reverse } from 'ramda'
-import Popup from 'reactjs-popup'
 import Modal from 'react-modal'
 import dynamic from 'next/dynamic'
 
@@ -35,6 +34,8 @@ export default class Team extends Component {
       loading: true,
       error: undefined
     }
+
+    this.closeProfileModal = this.closeProfileModal.bind(this)
   }
 
   async componentDidMount () {
@@ -116,6 +117,9 @@ export default class Team extends Component {
     const { id } = this.props
     try {
       await removeMember(id, osmId)
+      if (this.state.modalIsOpen) {
+        await this.closeProfileModal()
+      }
       await this.getTeam()
     } catch (e) {
       console.error(e)
@@ -127,48 +131,6 @@ export default class Team extends Component {
     }
   }
 
-  renderActions (row, index, columns) {
-    return (
-      <Popup
-        trigger={<span>⚙️</span>}
-        position='right top'
-        on='click'
-        closeOnDocumentClick
-        contentStyle={{ padding: '10px', border: 'none' }}
-      >
-        <ul>
-          <li
-            onClick={async () => {
-              // TODO: show message if error
-              // TODO: require confirmation
-              if (row.id !== this.props.user.uid) {
-                this.removeMember(row.id)
-              }
-            }}
-          >
-            Remove team member
-          </li>
-        </ul>
-        <style jsx>
-          {`
-            ul {
-              list-style: none;
-              padding: 0;
-              margin: 0;
-            }
-
-            li {
-              padding-left: 0.5rem;
-            }
-
-            li:hover {
-              color: ${theme.colors.secondaryColor};
-            }
-          `}
-        </style>
-      </Popup>
-    )
-  }
 
   render () {
     const { team, error } = this.state
@@ -211,17 +173,28 @@ export default class Team extends Component {
     ]
 
     let memberRows = team.members
-    if (isUserModerator) {
-      columns.push({ key: 'actions' })
 
-      memberRows = memberRows.map((member) => {
-        member.actions = (row, index, columns) => {
-          return this.renderActions(row, index, columns, isUserModerator)
-        }
+    let profileActions = []
 
-        return member
-      })
+    if (this.state.modalIsOpen) {
+      if (this.state.profileMeta.id !== this.props.user.uid) {
+        profileActions.push({
+          name: 'Remove team member',
+          onClick: async () => {
+            this.removeMember(this.state.profileMeta.id)
+          }
+        })
+      }
+      if (!contains(parseInt(this.state.profileMeta.id), moderators)) {
+        profileActions.push({
+          name: 'Promote to moderator',
+          onClick: async () => {
+            this.addModerator(this.state.profileMeta.id)
+          }
+        })
+      }
     }
+    console.log(profileActions)
 
     return (
       <article className='inner page team'>
@@ -295,8 +268,12 @@ export default class Team extends Component {
                 zIndex: 10000
               }
             }} isOpen={this.state.modalIsOpen}>
-              <ProfileModal user={this.state.profileMeta} attributes={this.state.profileInfo} />
-              <Button size='small' onClick={() => this.closeProfileModal()}>close</Button>
+              <ProfileModal
+               user={this.state.profileMeta}
+               attributes={this.state.profileInfo}
+               onClose={this.closeProfileModal}
+               actions={profileActions}
+                />
             </Modal>
           </Section>
         </div>

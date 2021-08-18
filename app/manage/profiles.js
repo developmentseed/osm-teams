@@ -59,10 +59,10 @@ async function getUserTeamProfile (req, reply) {
 
     // Get values for keys
     const values = await profile.getProfile('user', osmId)
-    if (!values) {
+    const tags = prop('tags', values)
+    if (!values || !tags) {
       reply.sendStatus(404)
     }
-    const tags = prop('tags', values)
     const visibleKeyIds = visibleKeys.map(prop('id'))
     const visibleValues = pick(visibleKeyIds, tags)
 
