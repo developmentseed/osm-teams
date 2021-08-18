@@ -7,7 +7,7 @@ import Button from './button'
 function renderActions (actions) {
   return (
     <Popup
-      trigger={<span>⚙️</span>}
+      trigger={<span style={{ cursor: 'pointer' }}>⚙️</span>}
       position='left top'
       on='click'
       closeOnDocumentClick

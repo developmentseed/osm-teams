@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { map, prop, contains, reverse } from 'ramda'
+import { map, prop, contains, reverse, assoc } from 'ramda'
 import Modal from 'react-modal'
 import dynamic from 'next/dynamic'
 
@@ -12,7 +12,7 @@ import AddMemberForm from '../components/add-member-form'
 import ProfileModal from '../components/profile-modal'
 import theme from '../styles/theme'
 
-import { getTeam, addMember, removeMember, joinTeam } from '../lib/teams-api'
+import { getTeam, addMember, removeMember, joinTeam, assignModerator, removeModerator } from '../lib/teams-api'
 import { getUserTeamProfile } from '../lib/profiles-api'
 
 const Map = dynamic(() => import('../components/team-map'), { ssr: false })
@@ -113,6 +113,34 @@ export default class Team extends Component {
     )
   }
 
+  async addModerator(osmId) {
+    const { id } = this.props
+    try {
+      await assignModerator(id, osmId)
+      await this.getTeam()
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e,
+        loading: false
+      })
+    }
+  }
+
+  async removeModerator(osmId) {
+    const { id } = this.props
+    try {
+      await removeModerator(id, osmId)
+      await this.getTeam()
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e,
+        loading: false
+      })
+    }
+  }
+
   async removeMember (osmId) {
     const { id } = this.props
     try {
@@ -169,10 +197,14 @@ export default class Team extends Component {
 
     const columns = [
       { key: 'id' },
-      { key: 'name' }
+      { key: 'name' },
+      { key: 'role'}
     ]
 
-    let memberRows = team.members
+    let memberRows = team.members.map(member => {
+      const role = contains(parseInt(member.id), moderators) ? 'moderator' : 'member'
+      return assoc('role', role, member)
+    })
 
     let profileActions = []
 
@@ -192,9 +224,16 @@ export default class Team extends Component {
             this.addModerator(this.state.profileMeta.id)
           }
         })
+      } else {
+        profileActions.push({
+          name: 'Remove moderator',
+          onClick: async () => {
+            this.removeModerator(this.state.profileMeta.id)
+          }
+        })
+
       }
     }
-    console.log(profileActions)
 
     return (
       <article className='inner page team'>
