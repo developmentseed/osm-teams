@@ -26,18 +26,10 @@ function renderErrors (errors) {
   })
 }
 
-const initialValues = {
-  name: '',
-  hashtag: '',
-  bio: '',
-  editing_policy: '',
-  location: undefined
-}
-
-export default function EditTeamForm ({ onSubmit }) {
+export default function EditTeamForm ({ initialValues, onSubmit }) {
   return (
     <Formik
-      initialValues={{ name: '', }}
+      initialValues={initialValues}
       onSubmit={onSubmit}
       render={({ status, isSubmitting, submitForm, values, errors, setFieldValue, setErrors, setStatus }) => {
         return (

@@ -3,6 +3,20 @@ const team = require('../lib/team')
 const { teamsMembersModeratorsHelper } = require('./utils')
 
 /**
+ * List organizations that a user is a member of
+ */
+async function listMyOrgs (req, reply) {
+  const { user_id } = reply.locals
+  try {
+    const orgs = await organization.listMyOrganizations(user_id)
+    reply.send(orgs)
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest(err.message)
+  }
+}
+
+/**
  * Create an organization
  * Uses the user id in the request and the body to forward
  * to the organization model
@@ -219,5 +233,6 @@ module.exports = {
   addManager,
   removeManager,
   createOrgTeam,
-  getOrgTeams
+  getOrgTeams,
+  listMyOrgs
 }

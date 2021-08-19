@@ -11,6 +11,7 @@ export default class TeamCreate extends Component {
     return (
       <article className='inner page'>
         <EditTeamForm
+          initialValues={{ location: undefined }}
           onSubmit={async (values, actions) => {
             try {
               const team = await createTeam(values)

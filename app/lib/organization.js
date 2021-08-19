@@ -24,6 +24,32 @@ async function get (id) {
 }
 
 /**
+ * List organization of a user
+ *
+ * @param {integer} osmId
+ */
+async function listMyOrganizations (osmId) {
+  const conn = await db()
+  const memberOrgs = await conn('organization').select(conn.raw('distinct(organization.id), organization.name'))
+    .join('organization_team', 'organization_team.organization_id', 'organization.id')
+    .join('member', 'organization_team.id', 'member.team_id')
+    .where('osm_id', osmId)
+
+  const managerOrgs = await conn('organization_manager')
+    .join('organization', 'organization_id', 'organization.id')
+    .select().where('osm_id', osmId)
+  const ownerOrgs = await conn('organization_owner')
+    .join('organization', 'organization_id', 'organization.id')
+    .select().where('osm_id', osmId)
+
+  return {
+    memberOrgs,
+    managerOrgs,
+    ownerOrgs
+  }
+}
+
+/**
  * Get an organization's owners
  * @param {int} id - organization id
  * @return {promise}
@@ -254,5 +280,6 @@ module.exports = {
   isOwner,
   isManager,
   isMember,
-  createOrgTeam
+  createOrgTeam,
+  listMyOrganizations
 }

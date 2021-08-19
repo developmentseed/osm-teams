@@ -31,7 +31,8 @@ const {
   addManager,
   removeManager,
   createOrgTeam,
-  getOrgTeams
+  getOrgTeams,
+  listMyOrgs
 } = require('./organizations')
 
 const {
@@ -100,6 +101,7 @@ function manageRouter (nextApp) {
   /**
    * List, Create, Read, Update, Delete operations on orgs
    */
+  router.get('/api/my/organizations', can('public:authenticated'), listMyOrgs)
   router.post('/api/organizations', can('public:authenticated'), createOrg)
   router.get('/api/organizations/:id', can('public:authenticated'), getOrg) // TODO handle private organizations
   router.put('/api/organizations/:id', can('organization:edit'), updateOrg)

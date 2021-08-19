@@ -8,6 +8,8 @@ import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Table from '../components/table'
 import { getTeams } from '../lib/teams-api'
+import { getMyOrgs } from '../lib/org-api'
+import { assoc, flatten, propEq, find } from 'ramda'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -30,11 +32,13 @@ export default class Profile extends Component {
     })
   }
 
-  async refreshTeams () {
+  async refreshProfileInfo () {
     try {
       let teams = await getTeams({ osmId: this.props.user.uid })
+      let orgs = await getMyOrgs({ osmId: this.props.user.id })
       this.setState({
         teams,
+        orgs,
         loading: false
       })
     } catch (e) {
@@ -48,7 +52,7 @@ export default class Profile extends Component {
   }
 
   componentDidMount () {
-    this.refreshTeams()
+    this.refreshProfileInfo()
   }
 
   renderTeams () {
@@ -74,9 +78,51 @@ export default class Profile extends Component {
     )
   }
 
+  renderOrganizations () {
+    const { orgs } = this.state
+    if (!orgs) return null
+
+    if (orgs.length === 0) {
+      return <p className='inner page'>No orgs</p>
+    }
+
+    const memberOrgs = orgs.memberOrgs.map(assoc('role', 'member'))
+    const managerOrgs = orgs.managerOrgs.map(assoc('role', 'manager'))
+    const ownerOrgs = orgs.ownerOrgs.map(assoc('role', 'owner'))
+
+    let allOrgs = ownerOrgs
+    managerOrgs.forEach(org => {
+      if (!find(propEq('id', org.id))(allOrgs)) {
+        allOrgs.push(org)
+      }
+    })
+    memberOrgs.forEach(org => {
+      if (!find(propEq('id', org.id))(allOrgs)) {
+        allOrgs.push(org)
+      }
+    })
+
+    return (
+      <Table
+        rows={allOrgs}
+        columns={[
+          { key: 'id' },
+          { key: 'name' },
+          { key: 'role' }
+        ]}
+        onRowClick={(row, index) => {
+          Router.push(join(URL, `/organizations?id=${row.id}`), join(URL, `/organizations/${row.id}`))
+        }}
+      />
+    )
+  }
+
   render () {
     if (this.state.loading) return <div className='inner page'>Loading...</div>
     if (this.state.error) return <div className='inner page'> {this.state.error.message} </div>
+
+    const { orgs } = this.state
+    const hasOrgs = flatten(Object.values(orgs)).length > 0
 
     return (
       <div className='inner page'>
@@ -86,6 +132,15 @@ export default class Profile extends Component {
             <Button variant='primary' onClick={() => this.openCreateModal()} >Create</Button>
           </div>
         </div>
+        {
+          hasOrgs
+            ? (
+              <Section>
+                <SectionHeader>Your Organizations</SectionHeader>
+                {this.renderOrganizations()}
+              </Section>)
+            : ''
+        }
         <Section>
           <SectionHeader>Your Teams</SectionHeader>
           {this.renderTeams()}
