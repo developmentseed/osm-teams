@@ -207,7 +207,7 @@ export default class Team extends Component {
 
     let profileActions = []
 
-    if (this.state.modalIsOpen) {
+    if (this.state.modalIsOpen && isUserModerator) {
       if (this.state.profileMeta.id !== this.props.user.uid) {
         profileActions.push({
           name: 'Remove team member',
@@ -236,25 +236,20 @@ export default class Team extends Component {
     return (
       <article className='inner page team'>
         <div className='page__heading'>
-          <h2>{team.name}</h2>
-          { isUserModerator
-            ? (
-              <div>
-                <span style={{ 'margin-right': '1rem' }}>
-                  <Button variant='primary' href={`/teams/${team.id}/edit`}>Edit Team</Button>
-                </span>
-                <Button variant='primary' href={`/teams/${team.id}/edit-profiles`}>Edit Team Profiles</Button>
-              </div>
-            )
-            : ''
-          }
-          { userId && !isMember ? <Button variant='primary' onClick={() => this.joinTeam()}>Join Team</Button> : '' }
+          <h1>{team.name}</h1>
           { !userId ? <Button variant='primary' href={`/login`}>Sign in to join team</Button> : '' }
           { isMember ? <Button variant='primary' href={`/teams/${team.id}/profile`}>Add Your Profile</Button> : ' '}
         </div>
         <div className='team__details'>
           <Card>
-            <SectionHeader>Team Details</SectionHeader>
+            <div className='section-actions'>
+              <SectionHeader>Team Details</SectionHeader>
+              {
+                isUserModerator
+                  ? <Button variant='small' href={`/teams/${team.id}/edit`}>Edit</Button>
+                  : ''
+              }
+            </div>
             <dl>
               <dt>Bio: </dt>
               <dd>{team.bio}</dd>
