@@ -217,13 +217,19 @@ async function createOrgTeam (organizationId, data, osmId) {
  * We get all members of all associated teams with this organization
  * @param {int} organizationId - organization id
  */
-async function getMembers (organizationId) {
+async function getMembers (organizationId, page) {
   if (!organizationId) throw new PropertyRequiredError('organization id')
 
   const conn = await db()
 
   const subquery = conn('organization_team').select('team_id').where('organization_id', organizationId)
-  return conn('member').select(conn.raw('array_agg(team_id) as teams, osm_id')).where('team_id', 'in', subquery).groupBy('osm_id')
+  let query = conn('member').select(conn.raw('array_agg(team_id) as teams, osm_id'))
+    .where('team_id', 'in', subquery).groupBy('osm_id')
+
+  if (page) {
+    query = query.limit(50).offset(page * 20)
+  }
+  return query
 }
 
 /**

@@ -1,6 +1,7 @@
 const organization = require('../lib/organization')
 const team = require('../lib/team')
 const { teamsMembersModeratorsHelper } = require('./utils')
+const { map, prop } = require('ramda')
 
 /**
  * List organizations that a user is a member of
@@ -46,13 +47,44 @@ async function getOrg (req, reply) {
   }
 
   try {
-    const [data, owners, managers] = await Promise.all([
+    let [data, owners, managers] = await Promise.all([
       organization.get(id),
       organization.getOwners(id),
       organization.getManagers(id)
     ])
+    const ownerIds = map(prop('osm_id'), owners)
+    const managerIds = map(prop('osm_id'), managers)
+    if (ownerIds.length > 0) {
+      owners = await team.resolveMemberNames(ownerIds)
+    }
+    if (managerIds.length > 0) {
+      managers = await team.resolveMemberNames(managerIds)
+    }
 
     reply.send({ ...data, owners, managers })
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest(err.message)
+  }
+}
+
+async function getOrgMembers (req, reply) {
+  const { id } = req.params
+
+  if (!id) {
+    return reply.boom.badRequest('organization id is required')
+  }
+
+  let { page } = req.query
+
+  try {
+    let members = await organization.getMembers(id, page)
+    const memberIds = map(prop('osm_id'), members)
+    if (memberIds.length > 0) {
+      members = await team.resolveMemberNames(memberIds)
+    }
+
+    reply.send({ members, page })
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -234,5 +266,6 @@ module.exports = {
   removeManager,
   createOrgTeam,
   getOrgTeams,
-  listMyOrgs
+  listMyOrgs,
+  getOrgMembers
 }

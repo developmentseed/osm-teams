@@ -26,8 +26,13 @@ module.exports = {
   onDemandEntries: {
     websocketPort: 3007
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.plugins = config.plugins || []
+
+    if (isServer) {
+      // Possible drivers for knex - IGNORE
+      config.externals.push(/m[sy]sql|oracle|pg-.+|sqlite\d?/i)
+    }
 
     config.plugins = [
       ...config.plugins,

@@ -32,6 +32,7 @@ const {
   removeManager,
   createOrgTeam,
   getOrgTeams,
+  getOrgMembers,
   listMyOrgs
 } = require('./organizations')
 
@@ -106,6 +107,7 @@ function manageRouter (nextApp) {
   router.get('/api/organizations/:id', can('public:authenticated'), getOrg) // TODO handle private organizations
   router.put('/api/organizations/:id', can('organization:edit'), updateOrg)
   router.delete('/api/organizations/:id', can('organization:edit'), destroyOrg)
+  router.get('/api/organizations/:id/members', can('public:authenticated'), getOrgMembers)
 
   router.put('/api/organizations/:id/addOwner/:osmId', can('organization:edit'), addOwner)
   router.put('/api/organizations/:id/removeOwner/:osmId', can('organization:edit'), removeOwner)
@@ -172,6 +174,10 @@ function manageRouter (nextApp) {
 
   router.get('/organizations/create', can('public:authenticated'), (req, res) => {
     return nextApp.render(req, res, '/org-create')
+  })
+
+  router.get('/organizations/:id', can('public:authenticated'), (req, res) => {
+    return nextApp.render(req, res, '/organization', { id: req.params.id })
   })
 
   return router
