@@ -1,8 +1,68 @@
 const profile = require('../lib/profile')
 const team = require('../lib/team')
 const org = require('../lib/organization')
-const { concat, pick, prop, assoc } = require('ramda')
+const { pick, prop, assoc } = require('ramda')
 const { ValidationError, PropertyRequiredError } = require('../lib/utils')
+
+/**
+ * Gets a user profile in an org
+ */
+async function getUserOrgProfile (req, reply) {
+  const { osmId, id: teamId } = req.params
+  const { user_id: requesterId } = reply.locals
+
+  if (!osmId) {
+    reply.boom.badRequest('osmId is required parameter')
+  }
+
+  try {
+    let visibleKeys = []
+    let orgKeys = []
+    let requesterIsMemberOfOrg = false
+
+    // Get org keys & visibility
+    const associatedOrg = await team.associatedOrg(teamId) // Is the team part of an organization?
+    if (associatedOrg) {
+      orgKeys = await profile.getProfileKeysForOwner('org', associatedOrg, 'user')
+      requesterIsMemberOfOrg = org.isMember(associatedOrg, requesterId)
+    }
+
+    // Get visibile keys
+    orgKeys.forEach((key) => {
+      const { visibility } = key
+      switch (visibility) {
+        case 'public': {
+          visibleKeys.push(key)
+          break
+        }
+        case 'org': {
+          if (requesterIsMemberOfOrg) {
+            visibleKeys.push(key)
+          }
+          break
+        }
+      }
+    })
+
+    // Get values for keys
+    const values = await profile.getProfile('user', osmId)
+    const tags = prop('tags', values)
+    if (!values || !tags) {
+      reply.sendStatus(404)
+    }
+    const visibleKeyIds = visibleKeys.map(prop('id'))
+    const visibleValues = pick(visibleKeyIds, tags)
+
+    const keysToSend = visibleKeys.map(key => {
+      return assoc('value', visibleValues[key.id], key)
+    })
+
+    reply.send(keysToSend)
+  } catch (err) {
+    console.error(err)
+    return reply.boom.badImplementation()
+  }
+}
 
 /**
  * Gets a user profile in a team
@@ -18,7 +78,6 @@ async function getUserTeamProfile (req, reply) {
   try {
     let visibleKeys = []
     let teamKeys = []
-    let orgKeys = []
     let requesterIsMemberOfTeam = false
     let requesterIsMemberOfOrg = false
 
@@ -29,13 +88,11 @@ async function getUserTeamProfile (req, reply) {
     // Get org keys & visibility
     const associatedOrg = await team.associatedOrg(teamId) // Is the team part of an organization?
     if (associatedOrg) {
-      orgKeys = await profile.getProfileKeysForOwner('org', associatedOrg, 'user')
       requesterIsMemberOfOrg = org.isMember(associatedOrg, requesterId)
     }
 
     // Get visibile keys
-    const allKeys = concat(teamKeys, orgKeys)
-    allKeys.forEach((key) => {
+    teamKeys.forEach((key) => {
       const { visibility } = key
       switch (visibility) {
         case 'public': {
@@ -234,6 +291,7 @@ async function setMyProfile (req, reply) {
 
 module.exports = {
   getUserTeamProfile,
+  getUserOrgProfile,
   createProfileKeys,
   modifyProfileKey,
   deleteProfileKey,

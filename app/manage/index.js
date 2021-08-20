@@ -44,7 +44,8 @@ const {
   getMyProfile,
   setMyProfile,
   setProfile,
-  deleteProfileKey
+  deleteProfileKey,
+  getUserOrgProfile
 } = require('./profiles')
 
 /**
@@ -122,6 +123,7 @@ function manageRouter (nextApp) {
    * List, Create, Read, Update, Delete operations on profiles
    */
   router.get('/api/profiles/teams/:id/:osmId', can('public:authenticated'), getUserTeamProfile)
+  router.get('/api/profiles/organizations/:id/:osmId', can('public:authenticated'), getUserOrgProfile)
   router.get('/api/my/profiles', can('public:authenticated'), getMyProfile)
   router.post('/api/my/profiles', can('public:authenticated'), setMyProfile)
 

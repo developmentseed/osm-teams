@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { getOrg, getMembers } from '../lib/org-api'
+import { getOrg, getMembers, addManager, removeManager, addOwner, removeOwner } from '../lib/org-api'
+import { getUserOrgProfile } from '../lib/profiles-api'
 import Card from '../components/card'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
@@ -7,6 +8,8 @@ import Table from '../components/table'
 import theme from '../styles/theme'
 import AddMemberForm from '../components/add-member-form'
 import Button from '../components/Button'
+import Modal from 'react-modal'
+import ProfileModal from '../components/profile-modal'
 import { assoc, propEq, find, contains, prop, map } from 'ramda'
 
 export default class Organization extends Component {
@@ -28,11 +31,39 @@ export default class Organization extends Component {
       loading: true,
       error: undefined
     }
+
+    this.closeProfileModal = this.closeProfileModal.bind(this)
   }
 
   async componentDidMount () {
     await this.getOrg()
     return this.getMembers(0)
+  }
+
+  async openProfileModal (user) {
+    const { id } = this.props
+
+    try {
+      const profileInfo = await getUserOrgProfile(id, user.id)
+      this.setState({
+        profileInfo,
+        profileMeta: user,
+        modalIsOpen: true
+      })
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e,
+        team: null,
+        loading: false
+      })
+    }
+  }
+
+  async closeProfileModal () {
+    this.setState({
+      modalIsOpen: false
+    })
   }
 
   async getMembers (currentPage) {
@@ -88,7 +119,7 @@ export default class Organization extends Component {
       { key: 'role' }
     ]
     const ownerRows = owners.map(assoc('role', 'owner'))
-    const managerRows = owners.map(assoc('role', 'manager'))
+    const managerRows = managers.map(assoc('role', 'manager'))
     let allRows = ownerRows
     managerRows.forEach(row => {
       if (!find(propEq('id', row.id))(ownerRows)) {
@@ -99,6 +130,9 @@ export default class Organization extends Component {
     return <Table
       rows={allRows}
       columns={columns}
+      onRowClick={
+        (row) => this.openProfileModal(row)
+      }
     />
   }
 
@@ -110,6 +144,9 @@ export default class Organization extends Component {
     return <Table
       rows={memberRows}
       columns={columns}
+      onRowClick={
+        (row) => this.openProfileModal(row)
+      }
     />
   }
 
@@ -117,9 +154,10 @@ export default class Organization extends Component {
     const { org, members, error } = this.state
     if (!org) return null
 
-    const userId = this.props.user.uid
+    const userId = parseInt(this.props.user.uid)
     const ownerIds = map(parseInt, map(prop('id'), org.owners))
-    const isUserOwner = contains(parseInt(userId), ownerIds)
+    const managerIds = map(parseInt, map(prop('id'), org.managers))
+    const isUserOwner = contains(userId, ownerIds)
     const disabledLabel = !this.state.loading ? 'primary' : 'disabled'
 
     if (error) {
@@ -141,6 +179,42 @@ export default class Organization extends Component {
             <h1>Error: {error.message}</h1>
           </article>
         )
+      }
+    }
+
+    let profileActions = []
+
+    if (this.state.modalIsOpen && isUserOwner) {
+      const profileId = parseInt(this.state.profileMeta.id)
+      const isProfileManager = contains(profileId, managerIds)
+      const isProfileOwner = contains(profileId, ownerIds)
+      console.log(profileId, userId)
+      if (profileId !== userId && isProfileOwner) {
+        profileActions.push({
+          name: 'Remove owner',
+          onClick: async () => {
+            await removeOwner(org.id, profileId)
+            this.getOrg()
+          }
+        })
+      }
+      if (profileId !== userId && isProfileManager) {
+        if (!isProfileOwner) {
+          profileActions.push({
+            name: 'Promote to owner',
+            onClick: async () => {
+              await addOwner(org.id, profileId)
+              this.getOrg()
+            }
+          })
+          profileActions.push({
+            name: 'Remove manager',
+            onClick: async () => {
+              await removeManager(org.id, profileId)
+              this.getOrg()
+            }
+          })
+        }
       }
     }
 
@@ -169,7 +243,7 @@ export default class Organization extends Component {
                 { isUserOwner && (
                   <AddMemberForm
                     onSubmit={async ({ osmId }) => {
-                      // await addManager(org.id, osmId)
+                      await addManager(org.id, osmId)
                       return this.getOrg()
                     }}
                   />
@@ -193,6 +267,24 @@ export default class Organization extends Component {
           </Section>
           {!this.state.loading ? this.renderMembers(members) : 'Loading...'}
         </div>
+        <Modal style={{
+          content: {
+            maxWidth: '400px',
+            maxHeight: '400px',
+            left: 'calc(50% - 200px)',
+            top: 'calc(50% - 200px)'
+          },
+          overlay: {
+            zIndex: 10000
+          }
+        }} isOpen={this.state.modalIsOpen}>
+          <ProfileModal
+            user={this.state.profileMeta}
+            attributes={this.state.profileInfo}
+            onClose={this.closeProfileModal}
+            actions={profileActions}
+          />
+        </Modal>
         <style jsx>
           {`
             .inner.team {
