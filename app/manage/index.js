@@ -180,6 +180,10 @@ function manageRouter (nextApp) {
     return nextApp.render(req, res, '/organization', { id: req.params.id })
   })
 
+  router.get('/organizations/:id/edit', can('organization:edit'), (req, res) => {
+    return nextApp.render(req, res, '/org-edit', { id: req.params.id })
+  })
+
   return router
 }
 

@@ -17,12 +17,7 @@ function renderErrors (errors) {
   })
 }
 
-const initialValues = {
-  name: '',
-  description: ''
-}
-
-export default function EditOrgForm ({ onSubmit }) {
+export default function EditOrgForm ({ initialValues, onSubmit }) {
   return (
     <Formik
       initialValues={initialValues}
@@ -33,12 +28,12 @@ export default function EditOrgForm ({ onSubmit }) {
             <h2>Details</h2>
             <div className='form-control form-control__vertical'>
               <label htmlFor='name'>Name<span className='form--required'>*</span></label>
-              <Field type='text' name='name' required className={errors.name ? 'form--error' : ''} validate={validateName} />
+              <Field type='text' name='name' value={values.name} required className={errors.name ? 'form--error' : ''} validate={validateName} />
               {errors.name && renderError(errors.name)}
             </div>
             <div className='form-control form-control__vertical'>
               <label htmlFor='description'>Description</label>
-              <Field component='textarea' name='description' />
+              <Field value={values.description} component='textarea' name='description' />
             </div>
             <div className='form-control form-control__vertical'>
               { (status && status.errors) && (renderErrors(status.errors)) }

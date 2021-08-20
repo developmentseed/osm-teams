@@ -2,14 +2,14 @@ import React, { Component, Fragment } from 'react'
 import join from 'url-join'
 import Router from 'next/router'
 import { pick } from 'ramda'
-import { getTeam, updateTeam, destroyTeam } from '../lib/teams-api'
+import { getOrg, updateOrg, destroyOrg } from '../lib/org-api'
 import getConfig from 'next/config'
-import EditTeamForm from '../components/edit-team-form'
+import EditOrgForm from '../components/edit-org-form'
 import Button from '../components/button'
 import theme from '../styles/theme'
 const { publicRuntimeConfig } = getConfig()
 
-export default class TeamEdit extends Component {
+export default class OrgEdit extends Component {
   static async getInitialProps ({ query }) {
     if (query) {
       return {
@@ -30,9 +30,9 @@ export default class TeamEdit extends Component {
   async componentDidMount () {
     const { id } = this.props
     try {
-      let team = await getTeam(id)
+      let org = await getOrg(id)
       this.setState({
-        team,
+        org,
         loading: false
       })
     } catch (e) {
@@ -45,12 +45,12 @@ export default class TeamEdit extends Component {
     }
   }
 
-  async deleteTeam () {
+  async deleteOrg () {
     const { id } = this.props
     try {
-      const res = await destroyTeam(id)
+      const res = await destroyOrg(id)
       if (res.ok) {
-        Router.push(join(publicRuntimeConfig.APP_URL, `/teams`))
+        Router.push(join(publicRuntimeConfig.APP_URL, `/profile`))
       } else {
         throw new Error('Could not delete team')
       }
@@ -72,7 +72,7 @@ export default class TeamEdit extends Component {
           })
         }}
       >
-        Delete this team
+        Delete this organization
       </Button>
     )
 
@@ -91,10 +91,10 @@ export default class TeamEdit extends Component {
           <Button
             variant='danger'
             onClick={() => {
-              this.deleteTeam()
+              this.deleteOrg()
             }}
           >
-            Really delete this team?
+            Really delete this team organization?
           </Button>
         </Fragment>
       )
@@ -103,40 +103,40 @@ export default class TeamEdit extends Component {
   }
 
   render () {
-    const { team, error } = this.state
+    const { org, error } = this.state
 
     if (error) {
       if (error.status >= 400 && error.status < 500) {
         return (
           <article className='inner'>
-            <h1>Team not found</h1>
+            <h1>Org not found</h1>
           </article>
         )
       } else if (error.status >= 500) {
         return (
           <article className='inner'>
-            <h1>Error fetching team</h1>
+            <h1>Error fetching org</h1>
           </article>
         )
       }
     }
 
-    if (!team) return null
+    if (!org) return null
 
     return (
       <article className='inner page'>
         <section>
           <div className='page__heading'>
-            <h1>Edit Team</h1>
-            <Button variant='primary' href={`/teams/${team.id}/edit-profiles`}>Edit Team Profiles</Button>
+            <h1>Edit Org</h1>
+            <Button variant='primary' href={`/organizations/${org.id}/edit-profiles`}>Edit Org Profiles</Button>
           </div>
-          <EditTeamForm
-            initialValues={pick(['name', 'bio', 'hashtag', 'editing_policy', 'location'], team)}
+          <EditOrgForm
+            initialValues={pick(['name', 'description'], org)}
             onSubmit={async (values, actions) => {
               try {
-                await updateTeam(team.id, values)
+                await updateOrg(org.id, values)
                 actions.setSubmitting(false)
-                Router.push(join(publicRuntimeConfig.APP_URL, `/teams/${team.id}`))
+                Router.push(join(publicRuntimeConfig.APP_URL, `/organizations/${org.id}`))
               } catch (e) {
                 console.error(e)
                 actions.setSubmitting(false)
@@ -148,7 +148,7 @@ export default class TeamEdit extends Component {
         </section>
         <section className='danger-zone'>
           <h2>Danger Zone 🎸</h2>
-          <p>Delete this team, team information and all memberships associated to this team</p>
+          <p>Delete this org, org information and all memberships associated to this team</p>
           { this.renderDeleter() }
 
         </section>

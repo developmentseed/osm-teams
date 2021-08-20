@@ -5,8 +5,9 @@ import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Table from '../components/table'
 import theme from '../styles/theme'
+import AddMemberForm from '../components/add-member-form'
 import Button from '../components/Button'
-import { assoc, propEq, find } from 'ramda'
+import { assoc, propEq, find, contains, prop, map } from 'ramda'
 
 export default class Organization extends Component {
   static async getInitialProps ({ query }) {
@@ -116,6 +117,11 @@ export default class Organization extends Component {
     const { org, members, error } = this.state
     if (!org) return null
 
+    const userId = this.props.user.uid
+    const ownerIds = map(parseInt, map(prop('id'), org.owners))
+    const isUserOwner = contains(parseInt(userId), ownerIds)
+    const disabledLabel = !this.state.loading ? 'primary' : 'disabled'
+
     if (error) {
       if (error.status === 401 || error.status === 403) {
         return (
@@ -141,11 +147,14 @@ export default class Organization extends Component {
     return (
       <article className='inner page team'>
         <div className='page__heading'>
-          <h2>{org.name}</h2>
+          <h1>{org.name}</h1>
         </div>
         <div className='team__details'>
           <Card>
-            <SectionHeader>Org Details</SectionHeader>
+            <div className='section-actions'>
+              <SectionHeader>Org Details</SectionHeader>
+              <Button variant='small' href={`/organizations/${org.id}/edit`}>Edit</Button>
+            </div>
             <dl>
               <dt>Bio: </dt>
               <dd>{org.description}</dd>
@@ -156,6 +165,16 @@ export default class Organization extends Component {
           <Section>
             <div className='section-actions'>
               <SectionHeader>Staff Members</SectionHeader>
+              <div>
+                { isUserOwner && (
+                  <AddMemberForm
+                    onSubmit={async ({ osmId }) => {
+                      // await addManager(org.id, osmId)
+                      return this.getOrg()
+                    }}
+                  />
+                )}
+              </div>
             </div>
           </Section>
           {this.renderStaff(org.owners, org.managers)}
@@ -164,11 +183,15 @@ export default class Organization extends Component {
           <Section>
             <div className='section-actions'>
               <SectionHeader>Organization Members</SectionHeader>
+              <div>
+                <span style={{ 'marginRight': '1rem' }}>
+                  {this.state.page > 0 ? <Button onClick={() => this.getPrevPage()} disabled={this.state.loading} variant={`${disabledLabel} small`}>Back</Button> : ''}
+                </span>
+                <Button onClick={() => this.getNextPage()} disabled={this.state.loading} variant={`${disabledLabel} small`}>Next</Button>
+              </div>
             </div>
           </Section>
-          {this.renderMembers(members)}
-          { this.state.page > 0 ? <Button onClick={() => this.getPrevPage()} variant='primary small'>Back</Button> : ''}
-          <Button onClick={() => this.getNextPage()} variant='primary small'>Next</Button>
+          {!this.state.loading ? this.renderMembers(members) : 'Loading...'}
         </div>
         <style jsx>
           {`

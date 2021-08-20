@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Popup from 'reactjs-popup'
+import Router from 'next/router'
 import { Formik, Field, Form } from 'formik'
 import { getTeamMemberAttributes, getMyProfile, setMyProfile } from '../lib/profiles-api'
 import Button from '../components/button'
@@ -98,7 +99,7 @@ export default class TeamProfile extends Component {
             try {
               await setMyProfile(data)
               actions.setSubmitting(false)
-              this.getTeamProfileForm()
+              Router.push(`/teams/${this.props.id}`)
             } catch (e) {
               console.error(e)
               actions.setSubmitting(false)
