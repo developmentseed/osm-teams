@@ -16,7 +16,8 @@ export default class Organization extends Component {
   static async getInitialProps ({ query }) {
     if (query) {
       return {
-        id: query.id
+        id: query.id,
+        isMemberOfOrg: query.isMemberOfOrg
       }
     }
   }
@@ -158,6 +159,7 @@ export default class Organization extends Component {
     const ownerIds = map(parseInt, map(prop('id'), org.owners))
     const managerIds = map(parseInt, map(prop('id'), org.managers))
     const isUserOwner = contains(userId, ownerIds)
+    const isUserManager = contains(userId, managerIds)
     const disabledLabel = !this.state.loading ? 'primary' : 'disabled'
 
     if (error) {
@@ -188,7 +190,6 @@ export default class Organization extends Component {
       const profileId = parseInt(this.state.profileMeta.id)
       const isProfileManager = contains(profileId, managerIds)
       const isProfileOwner = contains(profileId, ownerIds)
-      console.log(profileId, userId)
       if (profileId !== userId && isProfileOwner) {
         profileActions.push({
           name: 'Remove owner',
@@ -222,6 +223,7 @@ export default class Organization extends Component {
       <article className='inner page team'>
         <div className='page__heading'>
           <h1>{org.name}</h1>
+          { (org.isMemberOfOrg || isUserOwner || isUserManager) ? <Button variant='primary' href={`/organizations/${org.id}/profile`}>Add Your Profile</Button> : ' '}
         </div>
         <div className='team__details'>
           <Card>

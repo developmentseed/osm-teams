@@ -132,7 +132,11 @@ function manageRouter (nextApp) {
 
   router.get('/api/profiles/keys/organizations/:id', can('organization:edit'), getProfileKeys('org', 'org'))
   router.post('/api/profiles/keys/organizations/:id', can('organization:edit'), createProfileKeys('org', 'org'))
+
+  router.get('/api/profiles/keys/organizations/:id/teams', can('organization:edit'), getProfileKeys('org', 'team'))
   router.post('/api/profiles/keys/organizations/:id/teams', can('organization:edit'), createProfileKeys('org', 'team'))
+
+  router.get('/api/profiles/keys/organizations/:id/users', can('organization:edit'), getProfileKeys('org', 'user'))
   router.post('/api/profiles/keys/organizations/:id/users', can('organization:edit'), createProfileKeys('org', 'user'))
 
   router.get('/api/profiles/keys/teams/:id', can('team:edit'), getProfileKeys('team', 'team'))
@@ -170,20 +174,28 @@ function manageRouter (nextApp) {
     return nextApp.render(req, res, '/team-edit-profile', { id: req.params.id })
   })
 
-  router.get('/teams/:id/profile', can('team:view'), (req, res) => {
-    return nextApp.render(req, res, '/team-profile', { id: req.params.id })
+  router.get('/teams/:id/profile', can('team:member'), (req, res) => {
+    return nextApp.render(req, res, '/profile-form', { id: req.params.id, formType: 'team' })
   })
 
   router.get('/organizations/create', can('public:authenticated'), (req, res) => {
     return nextApp.render(req, res, '/org-create')
   })
 
-  router.get('/organizations/:id', can('public:authenticated'), (req, res) => {
+  router.get('/organizations/:id', can('public:authenticated'), async (req, res) => {
     return nextApp.render(req, res, '/organization', { id: req.params.id })
   })
 
   router.get('/organizations/:id/edit', can('organization:edit'), (req, res) => {
     return nextApp.render(req, res, '/org-edit', { id: req.params.id })
+  })
+
+  router.get('/organizations/:id/edit-profiles', can('organization:edit'), (req, res) => {
+    return nextApp.render(req, res, '/org-edit-profile', { id: req.params.id })
+  })
+
+  router.get('/organizations/:id/profile', can('organization:member'), (req, res) => {
+    return nextApp.render(req, res, '/profile-form', { id: req.params.id, formType: 'org' })
   })
 
   return router

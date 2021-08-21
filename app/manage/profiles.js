@@ -8,7 +8,7 @@ const { ValidationError, PropertyRequiredError } = require('../lib/utils')
  * Gets a user profile in an org
  */
 async function getUserOrgProfile (req, reply) {
-  const { osmId, id: teamId } = req.params
+  const { osmId, id: orgId } = req.params
   const { user_id: requesterId } = reply.locals
 
   if (!osmId) {
@@ -16,16 +16,23 @@ async function getUserOrgProfile (req, reply) {
   }
 
   try {
+    const values = await profile.getProfile('user', osmId)
+    const tags = prop('tags', values)
+    if (!values || !tags) {
+      return reply.sendStatus(404)
+    }
+
     let visibleKeys = []
     let orgKeys = []
     let requesterIsMemberOfOrg = false
+    let requesterIsManagerOfOrg = false
+    let requesterIsOwnerOfOrg = false
 
     // Get org keys & visibility
-    const associatedOrg = await team.associatedOrg(teamId) // Is the team part of an organization?
-    if (associatedOrg) {
-      orgKeys = await profile.getProfileKeysForOwner('org', associatedOrg, 'user')
-      requesterIsMemberOfOrg = org.isMember(associatedOrg, requesterId)
-    }
+    orgKeys = await profile.getProfileKeysForOwner('org', orgId, 'user')
+    requesterIsMemberOfOrg = await org.isMember(orgId, requesterId)
+    requesterIsManagerOfOrg = await org.isManager(orgId, requesterId)
+    requesterIsOwnerOfOrg = await org.isManager(orgId, requesterId)
 
     // Get visibile keys
     orgKeys.forEach((key) => {
@@ -36,7 +43,7 @@ async function getUserOrgProfile (req, reply) {
           break
         }
         case 'org': {
-          if (requesterIsMemberOfOrg) {
+          if (requesterIsMemberOfOrg || requesterIsOwnerOfOrg || requesterIsManagerOfOrg) {
             visibleKeys.push(key)
           }
           break
@@ -45,11 +52,6 @@ async function getUserOrgProfile (req, reply) {
     })
 
     // Get values for keys
-    const values = await profile.getProfile('user', osmId)
-    const tags = prop('tags', values)
-    if (!values || !tags) {
-      reply.sendStatus(404)
-    }
     const visibleKeyIds = visibleKeys.map(prop('id'))
     const visibleValues = pick(visibleKeyIds, tags)
 

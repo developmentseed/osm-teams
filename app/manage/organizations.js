@@ -41,16 +41,18 @@ async function createOrg (req, reply) {
  */
 async function getOrg (req, reply) {
   const { id } = req.params
+  const { user_id } = reply.locals
 
   if (!id) {
     return reply.boom.badRequest('organization id is required')
   }
 
   try {
-    let [data, owners, managers] = await Promise.all([
+    let [data, owners, managers, isMemberOfOrg] = await Promise.all([
       organization.get(id),
       organization.getOwners(id),
-      organization.getManagers(id)
+      organization.getManagers(id),
+      organization.isMember(id, user_id)
     ])
     const ownerIds = map(prop('osm_id'), owners)
     const managerIds = map(prop('osm_id'), managers)
@@ -61,7 +63,7 @@ async function getOrg (req, reply) {
       managers = await team.resolveMemberNames(managerIds)
     }
 
-    reply.send({ ...data, owners, managers })
+    reply.send({ ...data, owners, managers, isMemberOfOrg })
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)

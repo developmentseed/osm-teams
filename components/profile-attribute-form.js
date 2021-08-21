@@ -18,7 +18,7 @@ const defaultValues = {
   required: []
 }
 
-export default function ProfileAttributeForm ({ onSubmit, initialValues = defaultValues }) {
+export default function ProfileAttributeForm ({ onSubmit, initialValues = defaultValues, formType='team' }) {
   return (
     <Formik
       validate={validate}
@@ -39,6 +39,10 @@ export default function ProfileAttributeForm ({ onSubmit, initialValues = defaul
       }}
       render={({ errors, status, isSubmitting, values }) => {
         const addAttributeText = `Submit ${isSubmitting ? ' 🕙' : ''}`
+        let typeOption = <option value='team'>Team</option>
+        if (formType === 'org') {
+          typeOption = <option value='org'>Organization</option>
+        }
 
         return (
           <Form>
@@ -73,7 +77,7 @@ export default function ProfileAttributeForm ({ onSubmit, initialValues = defaul
                 id='visibility'
                 value={values.visibility}
               >
-                <option value='team'>Team</option>
+                {typeOption}
                 <option value='public'>Public</option>
               </Field>
             </div>

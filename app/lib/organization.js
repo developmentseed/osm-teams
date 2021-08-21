@@ -239,8 +239,9 @@ async function getMembers (organizationId, page) {
  */
 async function isMember (organizationId, osmId) {
   if (!osmId) throw new PropertyRequiredError('osm id')
-  const members = (await getMembers(organizationId)).map(prop('osm_id'))
-  return includes(osmId, members)
+  const members = await getMembers(organizationId)
+  const memberIds = members.map(prop('osm_id'))
+  return includes(osmId, memberIds)
 }
 
 /**
