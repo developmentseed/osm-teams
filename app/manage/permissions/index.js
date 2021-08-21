@@ -17,12 +17,14 @@ const keyPermissions = {
 const teamPermissions = {
   'team:edit': require('./edit-team'),
   'team:view': require('./view-team'),
-  'team:join': require('./join-team')
+  'team:join': require('./join-team'),
+  'team:member': require('./member-team')
 }
 
 const organizationPermissions = {
   'organization:edit': require('./edit-org'),
-  'organization:create-team': require('./create-org-team')
+  'organization:create-team': require('./create-org-team'),
+  'organization:member': require('./member-org')
 }
 
 const clientPermissions = {
