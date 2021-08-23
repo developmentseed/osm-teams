@@ -114,7 +114,7 @@ async function list (options) {
   const conn = await db()
   const st = knexPostgis(conn)
 
-  let query = conn('team').select(teamAttributes, st.asGeoJSON('location'))
+  let query = conn('team').select(...teamAttributes, st.asGeoJSON('location'))
 
   if (osmId) {
     query = query.whereIn('id', function () {
