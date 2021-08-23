@@ -5,10 +5,10 @@ import Popup from 'reactjs-popup'
 import ProfileAttributeForm from '../components/profile-attribute-form'
 import Button from '../components/button'
 import Table from '../components/table'
-import { addOrgMemberAttributes, getOrgMemberAttributes, modifyAttribute, deleteAttribute } from '../lib/profiles-api'
+import { addOrgTeamAttributes, getOrgTeamAttributes, modifyAttribute, deleteAttribute } from '../lib/profiles-api'
 import theme from '../styles/theme'
 
-export default class OrgEditProfile extends Component {
+export default class OrgEditTeamProfile extends Component {
   static async getInitialProps ({ query }) {
     if (query) {
       return {
@@ -98,10 +98,10 @@ export default class OrgEditProfile extends Component {
   async getAttributes () {
     const { id } = this.props
     try {
-      let memberAttributes = await getOrgMemberAttributes(id)
+      let teamAttributes = await getOrgTeamAttributes(id)
       this.setState({
         orgId: id,
-        memberAttributes,
+        teamAttributes,
         loading: false
       })
     } catch (e) {
@@ -109,14 +109,14 @@ export default class OrgEditProfile extends Component {
       this.setState({
         error: e,
         orgId: null,
-        memberAttributes: [],
+        teamAttributes: [],
         loading: false
       })
     }
   }
 
   render () {
-    const { memberAttributes, orgId } = this.state
+    const { teamAttributes, orgId } = this.state
     const columns = [
       { key: 'name' },
       { key: 'description' },
@@ -126,8 +126,8 @@ export default class OrgEditProfile extends Component {
     ]
 
     let rows = []
-    if (memberAttributes) {
-      rows = memberAttributes.map((attribute) => {
+    if (teamAttributes) {
+      rows = teamAttributes.map((attribute) => {
         let newAttribute = assoc('actions', this.renderActions, attribute)
         newAttribute.required = attribute.required.toString()
         return newAttribute
@@ -146,9 +146,9 @@ export default class OrgEditProfile extends Component {
       <article className='inner page'>
         <section>
           <h2>Current Attributes</h2>
-          <p>Members of your organization will be able to add these attributes to their profile.</p>
+          <p>Teams of your organization will be able to add these attributes to their profile.</p>
           {
-            memberAttributes && isEmpty(memberAttributes)
+            teamAttributes && isEmpty(teamAttributes)
               ? "You haven't added any attributes yet!"
               : <Table rows={rows} columns={columns} />
           }
@@ -179,7 +179,7 @@ export default class OrgEditProfile extends Component {
                 <ProfileAttributeForm
                   formType='org'
                   onSubmit={async (attributes) => {
-                    await addOrgMemberAttributes(orgId, attributes)
+                    await addOrgTeamAttributes(orgId, attributes)
                     this.setState({ isAdding: false })
                     return this.getAttributes()
                   }}
@@ -214,5 +214,5 @@ export default class OrgEditProfile extends Component {
         </section>
       </article>
     )
-  }
+  }Team
 }

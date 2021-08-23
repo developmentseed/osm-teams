@@ -128,7 +128,12 @@ export default class OrgEdit extends Component {
         <section>
           <div className='page__heading'>
             <h1>Edit Org</h1>
-            <Button variant='primary' href={`/organizations/${org.id}/edit-profiles`}>Edit Org Profiles</Button>
+            <div>
+              <span style={{ 'marginRight': '1rem' }}>
+                <Button variant='primary' href={`/organizations/${org.id}/edit-profiles`}>Edit Member Profiles</Button>
+              </span>
+              <Button variant='primary' href={`/organizations/${org.id}/edit-team-profiles`}>Edit Team Profiles</Button>
+            </div>
           </div>
           <EditOrgForm
             initialValues={pick(['name', 'description'], org)}

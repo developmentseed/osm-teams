@@ -13,12 +13,17 @@ const validate = values => {
 
 const defaultValues = {
   name: '',
-  visibility: 'team',
   description: '',
+  visibility: 'team',
   required: []
 }
 
-export default function ProfileAttributeForm ({ onSubmit, initialValues = defaultValues, formType='team' }) {
+export default function ProfileAttributeForm ({ onSubmit, initialValues = defaultValues, formType = 'team' }) {
+  if (formType === 'org') {
+    initialValues['visibility'] = (initialValues['visibility'] === 'public') ? 'public' : 'org'
+  }
+  console.log(initialValues)
+
   return (
     <Formik
       validate={validate}
