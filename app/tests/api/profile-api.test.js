@@ -91,25 +91,21 @@ test('get team user profile within an org', async t => {
 
   /* user 1 gets the profile of user 2 from team1 (they are on the same team)
    We should get:
-   - the org key that has org visibility
-   - the org key that has team visibility
-   - the org key that has public visibility
    - the team key that has org visibility
    - the team key that has team visibility
    - the team key that has public visibility
   */
   const res1 = await agent.get(`/api/profiles/teams/${team1.id}/2`).expect(200)
-  t.is(Object.keys(res1.body).length, team1Keys.length + org1Keys.length)
+  t.is(Object.keys(res1.body).length, team1Keys.length)
 
   /* user 1 gets the profile of user 2 from team2 (they are on different teams)
-   we should only get 4 keys:
-   - the org key that has org visibility
-   - the org key that has public visibility
+   we should only get all 3 keys since user 1 is an owner of the org:
    - the team key that has org visibility
+   - the team key that has team visibility
    - the team key that has public visibility
   */
   const res2 = await agent.get(`/api/profiles/teams/${team2.id}/2`).expect(200)
-  t.is(Object.keys(res2.body).length, 4)
+  t.is(Object.keys(res2.body).length, team2Keys.length)
 })
 
 test('create profile keys for org', async t => {
