@@ -388,7 +388,7 @@ async function isPublic (teamId) {
  *
  * If the team is part of an org, return its associated org
  * @param teamId - team id
- * @returns {int} organization id or null
+ * @returns {Object} organization id and name
  */
 async function associatedOrg (teamId) {
   if (!teamId) throw new Error('team id is required as first argument')
@@ -397,8 +397,9 @@ async function associatedOrg (teamId) {
   return unpack(
     conn('organization_team')
       .where('team_id', teamId)
-      .select('organization_id')
-  ).then(prop('organization_id'))
+      .join('organization', 'organization_id', 'organization.id')
+      .select('organization_id', 'name')
+  )
 }
 
 module.exports = {

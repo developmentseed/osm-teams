@@ -31,7 +31,9 @@ const {
   addManager,
   removeManager,
   createOrgTeam,
-  getOrgTeams
+  getOrgTeams,
+  getOrgMembers,
+  listMyOrgs
 } = require('./organizations')
 
 const {
@@ -42,8 +44,11 @@ const {
   getMyProfile,
   setMyProfile,
   setProfile,
-  deleteProfileKey
+  deleteProfileKey,
+  getUserOrgProfile,
+  getTeamProfile
 } = require('./profiles')
+const { getOrgStaff } = require('../lib/organization')
 
 /**
  * The manageRouter handles all routes related to the first party
@@ -100,10 +105,12 @@ function manageRouter (nextApp) {
   /**
    * List, Create, Read, Update, Delete operations on orgs
    */
+  router.get('/api/my/organizations', can('public:authenticated'), listMyOrgs)
   router.post('/api/organizations', can('public:authenticated'), createOrg)
   router.get('/api/organizations/:id', can('public:authenticated'), getOrg) // TODO handle private organizations
   router.put('/api/organizations/:id', can('organization:edit'), updateOrg)
   router.delete('/api/organizations/:id', can('organization:edit'), destroyOrg)
+  router.get('/api/organizations/:id/members', can('public:authenticated'), getOrgMembers)
 
   router.put('/api/organizations/:id/addOwner/:osmId', can('organization:edit'), addOwner)
   router.put('/api/organizations/:id/removeOwner/:osmId', can('organization:edit'), removeOwner)
@@ -118,6 +125,7 @@ function manageRouter (nextApp) {
    * List, Create, Read, Update, Delete operations on profiles
    */
   router.get('/api/profiles/teams/:id/:osmId', can('public:authenticated'), getUserTeamProfile)
+  router.get('/api/profiles/organizations/:id/:osmId', can('public:authenticated'), getUserOrgProfile)
   router.get('/api/my/profiles', can('public:authenticated'), getMyProfile)
   router.post('/api/my/profiles', can('public:authenticated'), setMyProfile)
 
@@ -126,7 +134,11 @@ function manageRouter (nextApp) {
 
   router.get('/api/profiles/keys/organizations/:id', can('organization:edit'), getProfileKeys('org', 'org'))
   router.post('/api/profiles/keys/organizations/:id', can('organization:edit'), createProfileKeys('org', 'org'))
+
+  router.get('/api/profiles/keys/organizations/:id/teams', can('organization:edit'), getProfileKeys('org', 'team'))
   router.post('/api/profiles/keys/organizations/:id/teams', can('organization:edit'), createProfileKeys('org', 'team'))
+
+  router.get('/api/profiles/keys/organizations/:id/users', can('organization:edit'), getProfileKeys('org', 'user'))
   router.post('/api/profiles/keys/organizations/:id/users', can('organization:edit'), createProfileKeys('org', 'user'))
 
   router.get('/api/profiles/keys/teams/:id', can('team:edit'), getProfileKeys('team', 'team'))
@@ -134,6 +146,7 @@ function manageRouter (nextApp) {
   router.post('/api/profiles/keys/teams/:id', can('team:edit'), createProfileKeys('team', 'team'))
   router.post('/api/profiles/keys/teams/:id/users', can('team:edit'), createProfileKeys('team', 'user'))
 
+  router.get('/api/profiles/teams/:id', can('public:authenticated'), getTeamProfile)
   router.post('/api/profiles/teams/:id', can('team:edit'), setProfile('team'))
   router.post('/api/profiles/organizations/:id', can('organization:edit'), setProfile('org'))
 
@@ -148,11 +161,13 @@ function manageRouter (nextApp) {
     return nextApp.render(req, res, '/profile')
   })
 
-  router.get('/teams/create', can('public:authenticated'), (req, res) => {
-    return nextApp.render(req, res, '/team-create', { id: req.params.id })
+  router.get('/teams/create', can('public:authenticated'), async (req, res) => {
+    const staff = await getOrgStaff(res.locals.user_id)
+    console.log(staff)
+    return nextApp.render(req, res, '/team-create', { staff })
   })
 
-  router.get('/teams/:id', can('team:view'), (req, res) => {
+  router.get('/teams/:id', can('team:view'), async (req, res) => {
     return nextApp.render(req, res, '/team', { id: req.params.id })
   })
 
@@ -164,8 +179,32 @@ function manageRouter (nextApp) {
     return nextApp.render(req, res, '/team-edit-profile', { id: req.params.id })
   })
 
-  router.get('/teams/:id/profile', can('team:view'), (req, res) => {
-    return nextApp.render(req, res, '/team-profile', { id: req.params.id })
+  router.get('/teams/:id/profile', can('team:member'), (req, res) => {
+    return nextApp.render(req, res, '/profile-form', { id: req.params.id, formType: 'team' })
+  })
+
+  router.get('/organizations/create', can('public:authenticated'), (req, res) => {
+    return nextApp.render(req, res, '/org-create')
+  })
+
+  router.get('/organizations/:id', can('public:authenticated'), async (req, res) => {
+    return nextApp.render(req, res, '/organization', { id: req.params.id })
+  })
+
+  router.get('/organizations/:id/edit', can('organization:edit'), (req, res) => {
+    return nextApp.render(req, res, '/org-edit', { id: req.params.id })
+  })
+
+  router.get('/organizations/:id/edit-profiles', can('organization:edit'), (req, res) => {
+    return nextApp.render(req, res, '/org-edit-profile', { id: req.params.id })
+  })
+
+  router.get('/organizations/:id/profile', can('organization:member'), (req, res) => {
+    return nextApp.render(req, res, '/profile-form', { id: req.params.id, formType: 'org' })
+  })
+
+  router.get('/organizations/:id/edit-team-profiles', can('organization:member'), (req, res) => {
+    return nextApp.render(req, res, '/org-edit-team-profile', { id: req.params.id })
   })
 
   return router

@@ -65,6 +65,10 @@ const style = css`
                 4px 4px ${theme.colors.secondaryColor};
     border-color: ${theme.colors.secondaryColor};
   }
+
+  .button.fixed-size {
+    width: 200px;
+  }
 `
 
 export default function Button ({ name, id, value, variant, type, disabled, href, onClick, children, size }) {

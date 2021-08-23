@@ -1,7 +1,8 @@
 const team = require('../lib/team')
-const { prop, map } = require('ramda')
+const { prop, map, dissoc } = require('ramda')
 const urlRegex = require('url-regex')
 const { teamsMembersModeratorsHelper } = require('./utils')
+const profile = require('../lib/profile')
 
 const isUrl = urlRegex({ exact: true })
 const getOsmId = prop('osm_id')
@@ -51,6 +52,7 @@ async function getTeam (req, reply) {
 
   try {
     const teamData = await team.get(id)
+    const associatedOrg = await team.associatedOrg(id)
     const memberIds = map(getOsmId, (await team.getMembers(id)))
     const members = await team.resolveMemberNames(memberIds)
     const moderators = await team.getModerators(id)
@@ -59,7 +61,7 @@ async function getTeam (req, reply) {
       return reply.boom.notFound()
     }
 
-    return reply.send(Object.assign({}, teamData, { members, moderators }))
+    return reply.send(Object.assign({}, teamData, { members, moderators }, { org: associatedOrg }))
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -95,7 +97,12 @@ async function updateTeam (req, reply) {
   }
 
   try {
-    const data = await team.update(id, body)
+    const tags = prop('tags', body)
+    if (tags) {
+      await profile.setProfile(tags, 'team', id)
+    }
+    const teamData = dissoc('tags', body)
+    const data = await team.update(id, teamData)
     reply.send(data)
   } catch (err) {
     console.log(err)

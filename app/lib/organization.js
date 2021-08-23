@@ -24,6 +24,32 @@ async function get (id) {
 }
 
 /**
+ * List organization of a user
+ *
+ * @param {integer} osmId
+ */
+async function listMyOrganizations (osmId) {
+  const conn = await db()
+  const memberOrgs = await conn('organization').select(conn.raw('distinct(organization.id), organization.name'))
+    .join('organization_team', 'organization_team.organization_id', 'organization.id')
+    .join('member', 'organization_team.id', 'member.team_id')
+    .where('osm_id', osmId)
+
+  const managerOrgs = await conn('organization_manager')
+    .join('organization', 'organization_id', 'organization.id')
+    .select().where('osm_id', osmId)
+  const ownerOrgs = await conn('organization_owner')
+    .join('organization', 'organization_id', 'organization.id')
+    .select().where('osm_id', osmId)
+
+  return {
+    memberOrgs,
+    managerOrgs,
+    ownerOrgs
+  }
+}
+
+/**
  * Get an organization's owners
  * @param {int} id - organization id
  * @return {promise}
@@ -191,13 +217,19 @@ async function createOrgTeam (organizationId, data, osmId) {
  * We get all members of all associated teams with this organization
  * @param {int} organizationId - organization id
  */
-async function getMembers (organizationId) {
+async function getMembers (organizationId, page) {
   if (!organizationId) throw new PropertyRequiredError('organization id')
 
   const conn = await db()
 
   const subquery = conn('organization_team').select('team_id').where('organization_id', organizationId)
-  return conn('member').select(conn.raw('array_agg(team_id) as teams, osm_id')).where('team_id', 'in', subquery).groupBy('osm_id')
+  let query = conn('member').select(conn.raw('array_agg(team_id) as teams, osm_id'))
+    .where('team_id', 'in', subquery).groupBy('osm_id')
+
+  if (page) {
+    query = query.limit(50).offset(page * 20)
+  }
+  return query
 }
 
 /**
@@ -207,8 +239,9 @@ async function getMembers (organizationId) {
  */
 async function isMember (organizationId, osmId) {
   if (!osmId) throw new PropertyRequiredError('osm id')
-  const members = (await getMembers(organizationId)).map(prop('osm_id'))
-  return includes(osmId, members)
+  const members = await getMembers(organizationId)
+  const memberIds = members.map(prop('osm_id'))
+  return includes(osmId, memberIds)
 }
 
 /**
@@ -239,6 +272,33 @@ async function isManager (organizationId, osmId) {
   return result.length > 0
 }
 
+/**
+ * getOrgStaff
+ * @param {Object} options - parameters
+ * @param {Object} options.organizationId - filter by organization
+ * @param {Object} options.osmId - filter by osm id
+ */
+async function getOrgStaff (options) {
+  const conn = await db()
+  let ownerQuery = conn('organization_owner')
+    .select(conn.raw("organization_id, osm_id, 'owner' as type, organization.name"))
+    .join('organization', 'organization.id', 'organization_owner.organization_id')
+
+  let managerQuery = conn('organization_manager')
+    .select(conn.raw("organization_id, osm_id, 'manager' as type, organization.name"))
+    .join('organization', 'organization.id', 'organization_manager.organization_id')
+
+  if (options.organizationId) {
+    ownerQuery = ownerQuery.where('organization.id', options.organizationId)
+    managerQuery = ownerQuery.where('organization.id', options.organizationId)
+  }
+  if (options.osmId) {
+    ownerQuery = ownerQuery.where('organization_owner.osm_id', options.osmId)
+    managerQuery = ownerQuery.where('organization_manager.osm_id', options.osmId)
+  }
+  return ownerQuery.unionAll(managerQuery)
+}
+
 module.exports = {
   get,
   create,
@@ -254,5 +314,7 @@ module.exports = {
   isOwner,
   isManager,
   isMember,
-  createOrgTeam
+  createOrgTeam,
+  listMyOrganizations,
+  getOrgStaff
 }

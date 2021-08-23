@@ -1,42 +1,11 @@
 import React, { Component } from 'react'
-import Popup from 'reactjs-popup'
+import Router from 'next/router'
+import descriptionPopup from './description-popup'
 import { Formik, Field, Form } from 'formik'
-import { getTeamMemberAttributes, getMyProfile, setMyProfile } from '../lib/profiles-api'
+import { getOrgMemberAttributes, getTeamMemberAttributes, getMyProfile, setMyProfile } from '../lib/profiles-api'
 import Button from '../components/button'
 import { prop } from 'ramda'
-
-const descriptionPopup = (description) => {
-  return (
-    <Popup
-      position='right top'
-      on='click'
-      closeOnDocumentClick
-      trigger={
-        <span className='infolink'>
-          <style jsx>
-            {`.infolink:after {
-        content: '?';
-        display: inline-block;
-        font-family: sans-serif;
-        font-weight: bold;
-        text-align: center;
-        font-size: 0.8em;
-        line-height: 0.8em;
-        border-radius: 50%;
-        margin-left: 6px;
-        padding: 0.13em 0.2em 0.09em 0.2em;
-        color: inherit;
-        border: 1px solid;
-        text-decoration: none;
-      }`}
-          </style>
-        </span>}
-    >
-      {description}
-    </Popup>
-  )
-}
-export default class TeamProfile extends Component {
+export default class ProfileForm extends Component {
   static async getInitialProps ({ query }) {
     if (query) {
       return {
@@ -56,16 +25,30 @@ export default class TeamProfile extends Component {
   }
 
   async componentDidMount () {
-    this.getTeamProfileForm()
+    this.getProfileForm()
   }
 
-  async getTeamProfileForm () {
-    const { id } = this.props
+  async getProfileForm () {
+    const { id, formType } = this.props
     try {
-      let memberAttributes = await getTeamMemberAttributes(id)
+      let memberAttributes
+      let returnUrl
+      switch (formType) {
+        case 'org': {
+          memberAttributes = await getOrgMemberAttributes(id)
+          returnUrl = `/organizations/${this.props.id}`
+          break
+        }
+        case 'team': {
+          memberAttributes = await getTeamMemberAttributes(id)
+          returnUrl = `/teams/${this.props.id}`
+          break
+        }
+      }
       let profileValues = (await getMyProfile()).tags
       this.setState({
-        teamId: id,
+        id,
+        returnUrl,
         memberAttributes,
         profileValues,
         loading: false
@@ -80,12 +63,12 @@ export default class TeamProfile extends Component {
   }
 
   render () {
-    let { memberAttributes, profileValues } = this.state
+    let { memberAttributes, profileValues, returnUrl } = this.state
     profileValues = profileValues || {}
 
     return (
       <article className='inner page'>
-        <h2>Team Profile</h2>
+        <h2>Add Your Profile</h2>
         <Formik
           enableReinitialize
           initialValues={profileValues}
@@ -98,7 +81,7 @@ export default class TeamProfile extends Component {
             try {
               await setMyProfile(data)
               actions.setSubmitting(false)
-              this.getTeamProfileForm()
+              Router.push(returnUrl)
             } catch (e) {
               console.error(e)
               actions.setSubmitting(false)
