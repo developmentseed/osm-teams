@@ -13,7 +13,7 @@ import ProfileModal from '../components/profile-modal'
 import theme from '../styles/theme'
 
 import { getTeam, addMember, removeMember, joinTeam, assignModerator, removeModerator } from '../lib/teams-api'
-import { getUserTeamProfile } from '../lib/profiles-api'
+import { getTeamProfile, getUserTeamProfile } from '../lib/profiles-api'
 
 const Map = dynamic(() => import('../components/team-map'), { ssr: false })
 
@@ -46,8 +46,10 @@ export default class Team extends Component {
     const { id } = this.props
     try {
       let team = await getTeam(id)
+      let teamProfile = await getTeamProfile(id)
       this.setState({
         team,
+        teamProfile,
         loading: false
       })
     } catch (e) {
@@ -160,7 +162,8 @@ export default class Team extends Component {
   }
 
   render () {
-    const { team, error } = this.state
+    const { team, error, teamProfile } = this.state
+    console.log(teamProfile)
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -250,10 +253,8 @@ export default class Team extends Component {
               }
             </div>
             <dl>
-              <dt>Bio: </dt>
-              <dd>{team.bio}</dd>
-              <dt>Hashtag: </dt>
-              <dd>{team.hashtag}</dd>
+              {team.bio ? <><dt>Bio: </dt><dd>{team.bio}</dd></> : ''}
+              {team.hashtag ? <><dt>Hashtag: </dt><dd>{team.hashtag}</dd></> : ''}
             </dl>
             {
               team.editing_policy && (
@@ -264,6 +265,18 @@ export default class Team extends Component {
               team.org ? <dl>
                 <dt>Organization:</dt>
                 <dd><a href={`/organizations/${team.org.organization_id}`} >{team.org.name}</a></dd>
+                {
+                  teamProfile ? teamProfile.map(key => {
+                    if (key.value) {
+                      return (
+                        <>
+                          <dt>{key.name}:</dt>
+                          <dd>{key.value}</dd>
+                        </>
+                      )
+                    }
+                  }) : ''
+                }
               </dl>
                 : ''
             }
@@ -353,13 +366,13 @@ export default class Team extends Component {
             dt {
               font-family: ${theme.typography.headingFontFamily};
               text-transform: uppercase;
-              flex-basis: 20%;
+              flex-basis: 50%;
               margin-right: ${theme.layout.globalSpacing};
             }
 
             dd {
               margin: 0;
-              flex-basis: 70%;
+              flex-basis: 40%;
               flex-grow: 1;
             }
 

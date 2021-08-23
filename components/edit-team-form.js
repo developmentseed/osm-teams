@@ -32,8 +32,8 @@ function renderErrors (errors) {
 export default function EditTeamForm ({ initialValues, onSubmit, staff, isCreateForm, extraTags = [], profileValues }) {
   if (profileValues) {
     initialValues.tags = {}
-    Object.keys(profileValues).forEach(key => {
-      initialValues.tags[`key-${key}`] = profileValues[key]
+    profileValues.forEach(({ id, value }) => {
+      initialValues.tags[`key-${id}`] = value
     })
   }
   return (
@@ -51,7 +51,7 @@ export default function EditTeamForm ({ initialValues, onSubmit, staff, isCreate
         if (extraTags.length > 0) {
           extraFields = extraTags.map(({ id, name, required, description }) => {
             return (
-              <div className='form-control form-control__vertical'>
+              <div className='form-control form-control__vertical' key={`extra-tag-${id}`}>
                 <label htmlFor={`extra-tag-${id}`}>{name}
                   {required ? <span className='form--required'>*</span> : ''}
                   {description ? descriptionPopup(description) : ''}

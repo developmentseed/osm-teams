@@ -90,23 +90,28 @@ async function getTeamProfile (req, reply) {
       reply.sendStatus(404)
     }
 
-    const isUserModerator = await team.isModerator(teamId, requesterId)
-    if (isUserModerator) {
-      return reply.send(tags)
-    }
-
-    // Get team attributes
-    teamKeys = await profile.getProfileKeysForOwner('org', teamId, 'team')
-    requesterIsMemberOfTeam = await team.isMember(teamId, requesterId) // Is the requester part of this team?
-
     // Get org keys & visibility
     const associatedOrg = await team.associatedOrg(teamId) // Is the team part of an organization?
-    if (associatedOrg) {
-      requesterIsMemberOfOrg = await org.isMember(associatedOrg.organization_id, requesterId)
-      requesterIsOwnerOfOrg = await org.isOwner(associatedOrg.organization_id, requesterId)
+
+    if (!associatedOrg) {
+      return reply.sendStatus(404)
     }
-    if (requesterIsOwnerOfOrg) {
-      return reply.send(tags)
+
+    const isUserModerator = await team.isModerator(teamId, requesterId)
+
+    // Get team attributes
+    teamKeys = await profile.getProfileKeysForOwner('org', associatedOrg.organization_id, 'team')
+    requesterIsMemberOfTeam = await team.isMember(teamId, requesterId) // Is the requester part of this team?
+    requesterIsMemberOfOrg = await org.isMember(associatedOrg.organization_id, requesterId)
+    requesterIsOwnerOfOrg = await org.isOwner(associatedOrg.organization_id, requesterId)
+
+    if (isUserModerator || requesterIsOwnerOfOrg) {
+      const allIds = teamKeys.map(prop('id'))
+      const allValues = pick(allIds, tags)
+      const keysToSend = teamKeys.map(key => {
+        return assoc('value', allValues[key.id], key)
+      })
+      return reply.send(keysToSend)
     }
 
     // Get visibile keys
@@ -183,7 +188,12 @@ async function getUserTeamProfile (req, reply) {
     }
 
     if (requesterIsOwnerOfOrg) {
-      return reply.send(tags)
+      const allIds = teamKeys.map(prop('id'))
+      const allValues = pick(allIds, tags)
+      const keysToSend = teamKeys.map(key => {
+        return assoc('value', allValues[key.id], key)
+      })
+      return reply.send(keysToSend)
     }
 
     // Get visibile keys
