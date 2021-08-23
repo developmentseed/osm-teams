@@ -247,6 +247,11 @@ async function getProfile (profileType, id) {
     .then(prop('profile'))
 }
 
+async function getUserManageToken (id) {
+  const conn = await db()
+  return unpack(conn('users').select('manageToken').where('id', id).debug())
+}
+
 module.exports = {
   addProfileKeys,
   modifyProfileKey,
@@ -255,5 +260,6 @@ module.exports = {
   getProfileKeysForOwner,
   setProfile,
   getProfile,
-  getTableForProfileType
+  getTableForProfileType,
+  getUserManageToken
 }

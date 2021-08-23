@@ -48,7 +48,9 @@ const {
   getUserOrgProfile,
   getTeamProfile
 } = require('./profiles')
+
 const { getOrgStaff } = require('../lib/organization')
+const { getUserManageToken } = require('../lib/profile')
 
 /**
  * The manageRouter handles all routes related to the first party
@@ -153,8 +155,10 @@ function manageRouter (nextApp) {
   /**
    * Page renders
    */
-  router.get('/clients', can('clients'), (req, res) => {
-    return nextApp.render(req, res, '/clients')
+  router.get('/clients', can('clients'), async (req, res) => {
+    const { manageToken } = await getUserManageToken(res.locals.user_id)
+    const access_token = manageToken.access_token
+    return nextApp.render(req, res, '/clients', { access_token })
   })
 
   router.get('/profile', can('clients'), (req, res) => {

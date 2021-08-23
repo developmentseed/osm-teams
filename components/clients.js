@@ -123,6 +123,7 @@ class Clients extends Component {
   render () {
     if (this.state.loading) return <div className='inner page'>Loading...</div>
     if (this.state.error) return <div className='inner page'> {this.state.error.message} </div>
+    let token = this.props.token || ''
 
     let clients = this.state.clients
     let clientSection = <p>No clients created</p>
@@ -185,13 +186,15 @@ class Clients extends Component {
               <label>Name: </label>
               <input type='text'
                 placeholder='My app'
+                required='true'
                 onChange={this.handleClientNameChange}
               />
             </div>
             <div className='form-control form-control__vertical'>
               <label>Callback URL: </label>
-              <input type='text'
+              <input type='url'
                 placeholder='https://myapp/callback'
+                required='true'
                 onChange={this.handleClientCallbackChange}
               />
             </div>
@@ -209,6 +212,10 @@ class Clients extends Component {
               : <div />
           }
           <Card>
+            <h3>Your personal access token</h3>
+            <p>
+              <textarea rows='4' cols='30'>{token}</textarea>
+            </p>
             <h3>Your apps</h3>
             {
               clientSection
