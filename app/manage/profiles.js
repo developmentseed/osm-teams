@@ -12,7 +12,7 @@ async function getUserOrgProfile (req, reply) {
   const { user_id: requesterId } = reply.locals
 
   if (!osmId) {
-    reply.boom.badRequest('osmId is required parameter')
+    return reply.boom.badRequest('osmId is required parameter')
   }
 
   try {
@@ -59,7 +59,7 @@ async function getUserOrgProfile (req, reply) {
       return assoc('value', visibleValues[key.id], key)
     })
 
-    reply.send(keysToSend)
+    return reply.send(keysToSend)
   } catch (err) {
     console.error(err)
     return reply.boom.badImplementation()
@@ -67,14 +67,14 @@ async function getUserOrgProfile (req, reply) {
 }
 
 /**
- * Gets a user profile in a team
+ * Gets a team profile
  */
-async function getUserTeamProfile (req, reply) {
-  const { osmId, id: teamId } = req.params
+async function getTeamProfile (req, reply) {
+  const { id: teamId } = req.params
   const { user_id: requesterId } = reply.locals
 
-  if (!osmId) {
-    reply.boom.badRequest('osmId is required parameter')
+  if (!teamId) {
+    reply.boom.badRequest('teamId is required parameter')
   }
 
   try {
@@ -82,15 +82,31 @@ async function getUserTeamProfile (req, reply) {
     let teamKeys = []
     let requesterIsMemberOfTeam = false
     let requesterIsMemberOfOrg = false
+    let requesterIsOwnerOfOrg = false
+
+    const values = await profile.getProfile('team', teamId)
+    const tags = prop('tags', values)
+    if (!values || !tags) {
+      reply.sendStatus(404)
+    }
+
+    const isUserModerator = await team.isModerator(teamId, requesterId)
+    if (isUserModerator) {
+      return reply.send(tags)
+    }
 
     // Get team attributes
-    teamKeys = await profile.getProfileKeysForOwner('team', teamId, 'user')
+    teamKeys = await profile.getProfileKeysForOwner('org', teamId, 'team')
     requesterIsMemberOfTeam = await team.isMember(teamId, requesterId) // Is the requester part of this team?
 
     // Get org keys & visibility
     const associatedOrg = await team.associatedOrg(teamId) // Is the team part of an organization?
     if (associatedOrg) {
-      requesterIsMemberOfOrg = org.isMember(associatedOrg.organization_id, requesterId)
+      requesterIsMemberOfOrg = await org.isMember(associatedOrg.organization_id, requesterId)
+      requesterIsOwnerOfOrg = await org.isOwner(associatedOrg.organization_id, requesterId)
+    }
+    if (requesterIsOwnerOfOrg) {
+      return reply.send(tags)
     }
 
     // Get visibile keys
@@ -117,11 +133,6 @@ async function getUserTeamProfile (req, reply) {
     })
 
     // Get values for keys
-    const values = await profile.getProfile('user', osmId)
-    const tags = prop('tags', values)
-    if (!values || !tags) {
-      reply.sendStatus(404)
-    }
     const visibleKeyIds = visibleKeys.map(prop('id'))
     const visibleValues = pick(visibleKeyIds, tags)
 
@@ -129,7 +140,84 @@ async function getUserTeamProfile (req, reply) {
       return assoc('value', visibleValues[key.id], key)
     })
 
-    reply.send(keysToSend)
+    return reply.send(keysToSend)
+  } catch (err) {
+    console.error(err)
+    return reply.boom.badImplementation()
+  }
+}
+
+/**
+ * Gets a user profile in a team
+ */
+async function getUserTeamProfile (req, reply) {
+  const { osmId, id: teamId } = req.params
+  const { user_id: requesterId } = reply.locals
+
+  if (!osmId) {
+    return reply.boom.badRequest('osmId is required parameter')
+  }
+
+  try {
+    let visibleKeys = []
+    let teamKeys = []
+    let requesterIsMemberOfTeam = false
+    let requesterIsMemberOfOrg = false
+    let requesterIsOwnerOfOrg = false
+
+    const values = await profile.getProfile('user', osmId)
+    const tags = prop('tags', values)
+    if (!values || !tags) {
+      return reply.sendStatus(404)
+    }
+
+    // Get team attributes
+    teamKeys = await profile.getProfileKeysForOwner('team', teamId, 'user')
+    requesterIsMemberOfTeam = await team.isMember(teamId, requesterId) // Is the requester part of this team?
+
+    // Get org keys & visibility
+    const associatedOrg = await team.associatedOrg(teamId) // Is the team part of an organization?
+    if (associatedOrg) {
+      requesterIsMemberOfOrg = await org.isMember(associatedOrg.organization_id, requesterId)
+      requesterIsOwnerOfOrg = await org.isOwner(associatedOrg.organization_id, requesterId)
+    }
+
+    if (requesterIsOwnerOfOrg) {
+      return reply.send(tags)
+    }
+
+    // Get visibile keys
+    teamKeys.forEach((key) => {
+      const { visibility } = key
+      switch (visibility) {
+        case 'public': {
+          visibleKeys.push(key)
+          break
+        }
+        case 'team': {
+          if (requesterIsMemberOfTeam) {
+            visibleKeys.push(key)
+          }
+          break
+        }
+        case 'org': {
+          if (requesterIsMemberOfOrg) {
+            visibleKeys.push(key)
+          }
+          break
+        }
+      }
+    })
+
+    // Get values for keys
+    const visibleKeyIds = visibleKeys.map(prop('id'))
+    const visibleValues = pick(visibleKeyIds, tags)
+
+    const keysToSend = visibleKeys.map(key => {
+      return assoc('value', visibleValues[key.id], key)
+    })
+
+    return reply.send(keysToSend)
   } catch (err) {
     console.error(err)
     return reply.boom.badImplementation()
@@ -145,7 +233,7 @@ function createProfileKeys (ownerType, profileType) {
     const { body } = req
 
     if (!id) {
-      reply.boom.badRequest('id is required parameter')
+      return reply.boom.badRequest('id is required parameter')
     }
 
     try {
@@ -160,11 +248,11 @@ function createProfileKeys (ownerType, profileType) {
       })
 
       const data = await profile.addProfileKeys(attributesToAdd, ownerType, id)
-      reply.send(data)
+      return reply.send(data)
     } catch (err) {
       console.error(err)
       if (err instanceof ValidationError || err instanceof PropertyRequiredError) {
-        reply.boom.badRequest(err)
+        return reply.boom.badRequest(err)
       }
       return reply.boom.badImplementation()
     }
@@ -179,16 +267,16 @@ async function modifyProfileKey (req, reply) {
   const { body } = req
 
   if (!id) {
-    reply.boom.badRequest('id is required parameter')
+    return reply.boom.badRequest('id is required parameter')
   }
 
   try {
     await profile.modifyProfileKey(id, body)
-    reply.sendStatus(200)
+    return reply.sendStatus(200)
   } catch (err) {
     console.error(err)
     if (err instanceof ValidationError || err instanceof PropertyRequiredError) {
-      reply.boom.badRequest(err)
+      return reply.boom.badRequest(err)
     }
     return reply.boom.badImplementation()
   }
@@ -201,16 +289,16 @@ async function deleteProfileKey (req, reply) {
   const { id } = req.params
 
   if (!id) {
-    reply.boom.badRequest('id is required parameter')
+    return reply.boom.badRequest('id is required parameter')
   }
 
   try {
     await profile.deleteProfileKey(id)
-    reply.sendStatus(200)
+    return reply.sendStatus(200)
   } catch (err) {
     console.error(err)
     if (err instanceof ValidationError || err instanceof PropertyRequiredError) {
-      reply.boom.badRequest(err)
+      return reply.boom.badRequest(err)
     }
     return reply.boom.badImplementation()
   }
@@ -224,16 +312,16 @@ function getProfileKeys (ownerType, profileType) {
     const { id } = req.params
 
     if (!id) {
-      reply.boom.badRequest('id is required parameter')
+      return reply.boom.badRequest('id is required parameter')
     }
 
     try {
       const data = await profile.getProfileKeysForOwner(ownerType, id, profileType)
-      reply.send(data)
+      return reply.send(data)
     } catch (err) {
       console.error(err)
       if (err instanceof ValidationError || err instanceof PropertyRequiredError) {
-        reply.boom.badRequest(err)
+        return reply.boom.badRequest(err)
       }
       return reply.boom.badImplementation()
     }
@@ -252,7 +340,7 @@ function setProfile (profileType) {
     const { body } = req
 
     if (!id) {
-      reply.boom.badRequest('id is required parameter')
+      return reply.boom.badRequest('id is required parameter')
     }
 
     try {
@@ -272,7 +360,7 @@ async function getMyProfile (req, reply) {
   const { user_id } = reply.locals
   try {
     const data = await profile.getProfile('user', user_id)
-    reply.send(data)
+    return reply.send(data)
   } catch (err) {
     console.error(err)
     return reply.boom.badImplementation()
@@ -284,7 +372,7 @@ async function setMyProfile (req, reply) {
   const { body } = req
   try {
     await profile.setProfile(body, 'user', user_id)
-    reply.sendStatus((200))
+    return reply.sendStatus((200))
   } catch (err) {
     console.error(err)
     return reply.boom.badImplementation()
@@ -300,5 +388,6 @@ module.exports = {
   getProfileKeys,
   getMyProfile,
   setMyProfile,
-  setProfile
+  setProfile,
+  getTeamProfile
 }

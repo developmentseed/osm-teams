@@ -1,5 +1,6 @@
 import React from 'react'
 import { Formik, Field, Form } from 'formik'
+import descriptionPopup from './description-popup'
 import urlRegex from 'url-regex'
 import Button from '../components/button'
 import dynamic from 'next/dynamic'
@@ -28,17 +29,42 @@ function renderErrors (errors) {
   })
 }
 
-export default function EditTeamForm ({ initialValues, onSubmit, staff, isCreateForm }) {
+export default function EditTeamForm ({ initialValues, onSubmit, staff, isCreateForm, extraTags = [], profileValues }) {
+  if (profileValues) {
+    initialValues.tags = {}
+    Object.keys(profileValues).forEach(key => {
+      initialValues.tags[`key-${key}`] = profileValues[key]
+    })
+  }
   return (
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
       render={({ status, isSubmitting, submitForm, values, errors, setFieldValue, setErrors, setStatus }) => {
         let uniqueOrgs
+        let extraFields
         if (staff && isCreateForm) {
           uniqueOrgs = uniqBy(prop('organization_id'), staff.map(({ name, organization_id }) => {
             return { name, organization_id }
           }))
+        }
+        if (extraTags.length > 0) {
+          extraFields = extraTags.map(({ id, name, required, description }) => {
+            return (
+              <div className='form-control form-control__vertical'>
+                <label htmlFor={`extra-tag-${id}`}>{name}
+                  {required ? <span className='form--required'>*</span> : ''}
+                  {description ? descriptionPopup(description) : ''}
+                </label>
+                <Field
+                  type='text'
+                  name={`tags.key-${id}`}
+                  required={required}
+                  value={values.tags[`key-${id}`]}
+                />
+              </div>
+            )
+          })
         }
 
         return (
@@ -76,6 +102,13 @@ export default function EditTeamForm ({ initialValues, onSubmit, staff, isCreate
                   </Field>
                 </div>
               )
+              : ''
+            }
+            {extraTags.length > 0
+              ? <>
+                <h2>Org Attributes</h2>
+                {extraFields}
+              </>
               : ''
             }
             <h2>Location</h2>

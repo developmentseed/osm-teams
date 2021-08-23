@@ -1,7 +1,8 @@
 const team = require('../lib/team')
-const { prop, map } = require('ramda')
+const { prop, map, dissoc } = require('ramda')
 const urlRegex = require('url-regex')
 const { teamsMembersModeratorsHelper } = require('./utils')
+const profile = require('../lib/profile')
 
 const isUrl = urlRegex({ exact: true })
 const getOsmId = prop('osm_id')
@@ -96,7 +97,12 @@ async function updateTeam (req, reply) {
   }
 
   try {
-    const data = await team.update(id, body)
+    const tags = prop('tags', body)
+    if (tags) {
+      await profile.setProfile(tags, 'team', id)
+    }
+    const teamData = dissoc('tags', body)
+    const data = await team.update(id, teamData)
     reply.send(data)
   } catch (err) {
     console.log(err)

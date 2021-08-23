@@ -1,12 +1,13 @@
 import React, { Component, Fragment } from 'react'
 import join from 'url-join'
 import Router from 'next/router'
-import { pick } from 'ramda'
+import { pick, split } from 'ramda'
 import { getTeam, updateTeam, destroyTeam } from '../lib/teams-api'
 import getConfig from 'next/config'
 import EditTeamForm from '../components/edit-team-form'
 import Button from '../components/button'
 import theme from '../styles/theme'
+import { getOrgTeamAttributes, getTeamProfile } from '../lib/profiles-api'
 const { publicRuntimeConfig } = getConfig()
 
 export default class TeamEdit extends Component {
@@ -31,8 +32,16 @@ export default class TeamEdit extends Component {
     const { id } = this.props
     try {
       let team = await getTeam(id)
+      let teamAttributes = []
+      let profileValues = {}
+      if (team.org) {
+        teamAttributes = await getOrgTeamAttributes(team.org.organization_id)
+        profileValues = await getTeamProfile(id)
+      }
       this.setState({
         team,
+        profileValues,
+        teamAttributes,
         loading: false
       })
     } catch (e) {
@@ -103,7 +112,7 @@ export default class TeamEdit extends Component {
   }
 
   render () {
-    const { team, error } = this.state
+    const { team, error, teamAttributes, profileValues } = this.state
 
     if (error) {
       if (error.status >= 400 && error.status < 500) {
@@ -132,8 +141,19 @@ export default class TeamEdit extends Component {
           </div>
           <EditTeamForm
             initialValues={pick(['name', 'bio', 'hashtag', 'editing_policy', 'location'], team)}
+            profileValues={profileValues}
+            extraTags={teamAttributes}
             onSubmit={async (values, actions) => {
               try {
+                let tags = Object.keys(values.tags).map(key => {
+                  return {
+                    key_id: split('-', key)[1],
+                    value: values.tags[key]
+                  }
+                })
+
+                values.tags = tags
+
                 await updateTeam(team.id, values)
                 actions.setSubmitting(false)
                 Router.push(join(publicRuntimeConfig.APP_URL, `/teams/${team.id}`))
