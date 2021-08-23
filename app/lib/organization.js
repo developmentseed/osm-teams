@@ -272,6 +272,33 @@ async function isManager (organizationId, osmId) {
   return result.length > 0
 }
 
+/**
+ * getOrgStaff
+ * @param {Object} options - parameters
+ * @param {Object} options.organizationId - filter by organization
+ * @param {Object} options.osmId - filter by osm id
+ */
+async function getOrgStaff (options) {
+  const conn = await db()
+  let ownerQuery = conn('organization_owner')
+    .select(conn.raw("organization_id, osm_id, 'owner' as type, organization.name"))
+    .join('organization', 'organization.id', 'organization_owner.organization_id')
+
+  let managerQuery = conn('organization_manager')
+    .select(conn.raw("organization_id, osm_id, 'manager' as type, organization.name"))
+    .join('organization', 'organization.id', 'organization_manager.organization_id')
+
+  if (options.organizationId) {
+    ownerQuery = ownerQuery.where('organization.id', options.organizationId)
+    managerQuery = ownerQuery.where('organization.id', options.organizationId)
+  }
+  if (options.osmId) {
+    ownerQuery = ownerQuery.where('organization_owner.osm_id', options.osmId)
+    managerQuery = ownerQuery.where('organization_manager.osm_id', options.osmId)
+  }
+  return ownerQuery.unionAll(managerQuery)
+}
+
 module.exports = {
   get,
   create,
@@ -288,5 +315,6 @@ module.exports = {
   isManager,
   isMember,
   createOrgTeam,
-  listMyOrganizations
+  listMyOrganizations,
+  getOrgStaff
 }

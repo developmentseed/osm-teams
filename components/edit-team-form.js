@@ -3,6 +3,8 @@ import { Formik, Field, Form } from 'formik'
 import urlRegex from 'url-regex'
 import Button from '../components/button'
 import dynamic from 'next/dynamic'
+import { uniqBy, prop } from 'ramda'
+
 const FormMap = dynamic(() => import('../components/form-map'), { ssr: false })
 
 const isUrl = urlRegex({ exact: true })
@@ -26,12 +28,19 @@ function renderErrors (errors) {
   })
 }
 
-export default function EditTeamForm ({ initialValues, onSubmit }) {
+export default function EditTeamForm ({ initialValues, onSubmit, staff, isCreateForm }) {
   return (
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
       render={({ status, isSubmitting, submitForm, values, errors, setFieldValue, setErrors, setStatus }) => {
+        let uniqueOrgs
+        if (staff && isCreateForm) {
+          uniqueOrgs = uniqBy(prop('organization_id'), staff.map(({ name, organization_id }) => {
+            return { name, organization_id }
+          }))
+        }
+
         return (
           <Form>
             <h2>Details</h2>
@@ -54,6 +63,21 @@ export default function EditTeamForm ({ initialValues, onSubmit }) {
               <small className='pt1'>URL to your team's editing policy if you have one (include http/https)</small>
               {errors.editing_policy && renderError(errors.editing_policy)}
             </div>
+            { staff && isCreateForm
+              ? (
+                <div className='form-control form-control__vertical'>
+                  <label htmlFor='organization'>Add to Organization</label>
+                  <Field as='select' name='organization'>
+                    <option value=''>No organization</option>
+                    {uniqueOrgs.map(({ organization_id, name }) => {
+                      return <option value={organization_id}>{name}</option>
+                    }
+                    )}
+                  </Field>
+                </div>
+              )
+              : ''
+            }
             <h2>Location</h2>
             <div className='form-control form-control__vertical'>
               <FormMap style={{ height: '300px', width: '100%' }} name='location' value={values.location} onChange={setFieldValue} />

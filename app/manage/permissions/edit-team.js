@@ -18,7 +18,7 @@ async function updateTeam (uid, { id }) {
 
   // check if user is an owner of this team through an organization
   const org = await associatedOrg(id)
-  const ownerOfTeam = org && (await isOwner(org, uid))
+  const ownerOfTeam = org && (await isOwner(org.organization_id, uid))
 
   return ownerOfTeam || isModerator(id, uid)
 }

@@ -90,7 +90,7 @@ async function getUserTeamProfile (req, reply) {
     // Get org keys & visibility
     const associatedOrg = await team.associatedOrg(teamId) // Is the team part of an organization?
     if (associatedOrg) {
-      requesterIsMemberOfOrg = org.isMember(associatedOrg, requesterId)
+      requesterIsMemberOfOrg = org.isMember(associatedOrg.organization_id, requesterId)
     }
 
     // Get visibile keys

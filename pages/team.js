@@ -260,6 +260,13 @@ export default class Team extends Component {
                 <a href={team.editing_policy} className='team__editing_policy'>Organized editing policy</a>
               )
             }
+            {
+              team.org ? <dl>
+                <dt>Organization:</dt>
+                <dd><a href={`/organizations/${team.org.organization_id}`} >{team.org.name}</a></dd>
+              </dl>
+                : ''
+            }
             <SectionHeader>Location</SectionHeader>
             { this.renderMap(team.location) }
           </Card>

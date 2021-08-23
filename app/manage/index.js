@@ -47,6 +47,7 @@ const {
   deleteProfileKey,
   getUserOrgProfile
 } = require('./profiles')
+const { getOrgStaff } = require('../lib/organization')
 
 /**
  * The manageRouter handles all routes related to the first party
@@ -158,11 +159,13 @@ function manageRouter (nextApp) {
     return nextApp.render(req, res, '/profile')
   })
 
-  router.get('/teams/create', can('public:authenticated'), (req, res) => {
-    return nextApp.render(req, res, '/team-create')
+  router.get('/teams/create', can('public:authenticated'), async (req, res) => {
+    const staff = await getOrgStaff(res.locals.user_id)
+    console.log(staff)
+    return nextApp.render(req, res, '/team-create', { staff })
   })
 
-  router.get('/teams/:id', can('team:view'), (req, res) => {
+  router.get('/teams/:id', can('team:view'), async (req, res) => {
     return nextApp.render(req, res, '/team', { id: req.params.id })
   })
 
@@ -196,6 +199,10 @@ function manageRouter (nextApp) {
 
   router.get('/organizations/:id/profile', can('organization:member'), (req, res) => {
     return nextApp.render(req, res, '/profile-form', { id: req.params.id, formType: 'org' })
+  })
+
+  router.get('/organizations/:id/edit-team-profiles', can('organization:member'), (req, res) => {
+    return nextApp.render(req, res, '/org-edit-team-profile', { id: req.params.id })
   })
 
   return router
