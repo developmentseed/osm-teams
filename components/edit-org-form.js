@@ -17,7 +17,12 @@ function renderErrors (errors) {
   })
 }
 
-export default function EditOrgForm ({ initialValues, onSubmit }) {
+const defaultValues = {
+  name: '',
+  description: ''
+}
+
+export default function EditOrgForm ({ initialValues = defaultValues, onSubmit }) {
   return (
     <Formik
       initialValues={initialValues}
