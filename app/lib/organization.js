@@ -1,6 +1,6 @@
 const db = require('../db')
 const team = require('./team')
-const { map, prop, contains, includes } = require('ramda')
+const { map, prop, includes } = require('ramda')
 const { unpack, PropertyRequiredError } = require('./utils')
 
 // Organization attributes (without profile)
@@ -151,7 +151,7 @@ async function removeOwner (id, osmId) {
   }
 
   // Only ids that are already in owner list can be removed. Requests for nonexistant ids should fail silently
-  if (contains(osmId, owners)) {
+  if (includes(osmId, owners)) {
     return unpack(conn('organization_owner').where({ organization_id: id, osm_id: osmId }).del())
   }
 }
@@ -186,7 +186,7 @@ async function removeManager (id, osmId) {
   const managers = map(prop('osm_id'), await getManagers(id))
 
   // Only ids that are already in manager list can be removed. Requests for nonexistant ids should fail silently
-  if (contains(osmId, managers)) {
+  if (includes(osmId, managers)) {
     return unpack(conn('organization_manager').where({ organization_id: id, osm_id: osmId }).del())
   }
 }
@@ -241,7 +241,7 @@ async function isMember (organizationId, osmId) {
   if (!osmId) throw new PropertyRequiredError('osm id')
   const members = await getMembers(organizationId)
   const memberIds = members.map(prop('osm_id'))
-  return includes(osmId, memberIds)
+  return includes(Number(osmId), map(Number, memberIds))
 }
 
 /**

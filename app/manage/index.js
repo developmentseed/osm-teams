@@ -140,11 +140,11 @@ function manageRouter (nextApp) {
   router.get('/api/profiles/keys/organizations/:id/teams', can('organization:edit'), getProfileKeys('org', 'team'))
   router.post('/api/profiles/keys/organizations/:id/teams', can('organization:edit'), createProfileKeys('org', 'team'))
 
-  router.get('/api/profiles/keys/organizations/:id/users', can('organization:edit'), getProfileKeys('org', 'user'))
+  router.get('/api/profiles/keys/organizations/:id/users', can('organization:member'), getProfileKeys('org', 'user'))
   router.post('/api/profiles/keys/organizations/:id/users', can('organization:edit'), createProfileKeys('org', 'user'))
 
   router.get('/api/profiles/keys/teams/:id', can('team:edit'), getProfileKeys('team', 'team'))
-  router.get('/api/profiles/keys/teams/:id/users', can('team:edit'), getProfileKeys('team', 'user'))
+  router.get('/api/profiles/keys/teams/:id/users', can('team:member'), getProfileKeys('team', 'user'))
   router.post('/api/profiles/keys/teams/:id', can('team:edit'), createProfileKeys('team', 'team'))
   router.post('/api/profiles/keys/teams/:id/users', can('team:edit'), createProfileKeys('team', 'user'))
 
@@ -167,7 +167,6 @@ function manageRouter (nextApp) {
 
   router.get('/teams/create', can('public:authenticated'), async (req, res) => {
     const staff = await getOrgStaff(res.locals.user_id)
-    console.log(staff)
     return nextApp.render(req, res, '/team-create', { staff })
   })
 

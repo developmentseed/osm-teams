@@ -87,7 +87,7 @@ async function getTeamProfile (req, reply) {
     const values = await profile.getProfile('team', teamId)
     const tags = prop('tags', values)
     if (!values || !tags) {
-      reply.sendStatus(404)
+      return reply.sendStatus(404)
     }
 
     // Get org keys & visibility

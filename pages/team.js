@@ -13,7 +13,7 @@ import ProfileModal from '../components/profile-modal'
 import theme from '../styles/theme'
 
 import { getTeam, addMember, removeMember, joinTeam, assignModerator, removeModerator } from '../lib/teams-api'
-import { getTeamProfile, getUserTeamProfile } from '../lib/profiles-api'
+import { getTeamProfile, getUserOrgProfile, getUserTeamProfile } from '../lib/profiles-api'
 
 const Map = dynamic(() => import('../components/team-map'), { ssr: false })
 
@@ -64,9 +64,14 @@ export default class Team extends Component {
 
   async openProfileModal (user) {
     const { id } = this.props
+    const { team } = this.state
 
     try {
-      const profileInfo = await getUserTeamProfile(id, user.id)
+      let profileInfo = await getUserTeamProfile(id, user.id)
+      if (team.org) {
+        let userOrgProfile = await getUserOrgProfile(team.org.organization_id, user.id)
+        profileInfo = profileInfo.concat(userOrgProfile)
+      }
       this.setState({
         profileInfo,
         profileMeta: user,
@@ -163,7 +168,6 @@ export default class Team extends Component {
 
   render () {
     const { team, error, teamProfile } = this.state
-    console.log(teamProfile)
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
