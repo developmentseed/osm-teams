@@ -5,7 +5,7 @@ import Popup from 'reactjs-popup'
 import ProfileAttributeForm from '../components/profile-attribute-form'
 import Button from '../components/button'
 import Table from '../components/table'
-import { addTeamMemberAttributes, getTeamMemberAttributes, modifyMemberAttribute, deleteMemberAttribute } from '../lib/profiles-api'
+import { addTeamMemberAttributes, getTeamMemberAttributes, modifyAttribute, deleteAttribute } from '../lib/profiles-api'
 import theme from '../styles/theme'
 
 export default class TeamEditProfile extends Component {
@@ -161,7 +161,7 @@ export default class TeamEditProfile extends Component {
                 <ProfileAttributeForm
                   initialValues={this.state.rowToModify}
                   onSubmit={async (attribute) => {
-                    await modifyMemberAttribute(attribute.id, attribute)
+                    await modifyAttribute(attribute.id, attribute)
                     this.setState({ isModifying: false })
                     return this.getAttributes()
                   }}
@@ -196,7 +196,7 @@ export default class TeamEditProfile extends Component {
               ? <>
                 <Button variant='danger' onClick={
                   async () => {
-                    await deleteMemberAttribute(this.state.rowToDelete.id)
+                    await deleteAttribute(this.state.rowToDelete.id)
                     this.setState({ isDeleting: false })
                     return this.getAttributes()
                   }
