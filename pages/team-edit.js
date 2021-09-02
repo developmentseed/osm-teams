@@ -33,7 +33,7 @@ export default class TeamEdit extends Component {
     try {
       let team = await getTeam(id)
       let teamAttributes = []
-      let profileValues = {}
+      let profileValues = []
       if (team.org) {
         teamAttributes = await getOrgTeamAttributes(team.org.organization_id)
         profileValues = await getTeamProfile(id)
