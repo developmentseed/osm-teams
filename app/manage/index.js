@@ -12,6 +12,7 @@ const {
   createTeam,
   destroyTeam,
   getTeam,
+  getTeamMembers,
   joinTeam,
   listTeams,
   listMyTeams,
@@ -95,6 +96,7 @@ function manageRouter (nextApp) {
   router.get('/api/my/teams', can('public:authenticated'), listMyTeams)
   router.post('/api/teams', can('public:authenticated'), createTeam)
   router.get('/api/teams/:id', can('team:view'), getTeam)
+  router.get('/api/teams/:id/members', can('team:view'), getTeamMembers)
   router.put('/api/teams/:id', can('team:edit'), updateTeam)
   router.delete('/api/teams/:id', can('team:edit'), destroyTeam)
   router.put('/api/teams/add/:id/:osmId', can('team:edit'), addMember)
