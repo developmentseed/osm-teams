@@ -17,6 +17,7 @@ const keyPermissions = {
 const teamPermissions = {
   'team:edit': require('./edit-team'),
   'team:view': require('./view-team'),
+  'team:view-members': require('./view-team-members'),
   'team:join': require('./join-team'),
   'team:member': require('./member-team')
 }

@@ -89,6 +89,14 @@ export default function EditTeamForm ({ initialValues, onSubmit, staff, isCreate
               <small className='pt1'>URL to your team's editing policy if you have one (include http/https)</small>
               {errors.editing_policy && renderError(errors.editing_policy)}
             </div>
+            <div className='form-control form-control__vertical'>
+              <label htmlFor='privacy'>Privacy</label>
+              <Field as='select' name='privacy'>
+                <option value='public'>Public</option>
+                <option value='private'>Private</option>
+              </Field>
+              <small className='pt1'>A private team does not show its member list or team details to non-members.</small>
+            </div>
             { staff && isCreateForm
               ? (
                 <div className='form-control form-control__vertical'>

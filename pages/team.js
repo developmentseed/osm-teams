@@ -46,8 +46,10 @@ export default class Team extends Component {
     const { id } = this.props
     try {
       let team = await getTeam(id)
-      let teamMembers = await getTeamMembers(id)
-      let teamProfile = await getTeamProfile(id)
+      let teamMembers = { moderators: [], members: [] }
+      let teamProfile = []
+      teamMembers = await getTeamMembers(id)
+      teamProfile = await getTeamProfile(id)
       this.setState({
         team,
         teamProfile,
@@ -193,7 +195,7 @@ export default class Team extends Component {
       }
     }
 
-    if (!team || !teamMembers) return null
+    if (!team) return null
 
     const userId = this.props.user.uid
     const members = map(prop('id'), teamMembers.members)
@@ -291,48 +293,53 @@ export default class Team extends Component {
           </Card>
         </div>
         <div className='team__table'>
-          <Section>
-            <div className='section-actions'>
-              <SectionHeader>Team Members</SectionHeader>
-              <div>
-                { isUserModerator && (
-                  <AddMemberForm
-                    onSubmit={async ({ osmId }) => {
-                      await addMember(team.id, osmId)
-                      return this.getTeam()
-                    }}
+          {
+            (team.privacy === 'public' || isMember) ? (
+              <Section>
+                <div className='section-actions'>
+                  <SectionHeader>Team Members</SectionHeader>
+                  <div>
+                    {isUserModerator && (
+                      <AddMemberForm
+                        onSubmit={async ({ osmId }) => {
+                          await addMember(team.id, osmId)
+                          return this.getTeam()
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
+                <Table
+                  rows={memberRows}
+                  columns={columns}
+                  onRowClick={
+                    (row) => {
+                      this.openProfileModal(row)
+                    }
+                  }
+                />
+                <Modal style={{
+                  content: {
+                    maxWidth: '400px',
+                    maxHeight: '400px',
+                    left: 'calc(50% - 200px)',
+                    top: 'calc(50% - 200px)'
+                  },
+                  overlay: {
+                    zIndex: 10000
+                  }
+                }} isOpen={this.state.modalIsOpen}>
+                  <ProfileModal
+                    user={this.state.profileMeta}
+                    attributes={this.state.profileInfo}
+                    onClose={this.closeProfileModal}
+                    actions={profileActions}
                   />
-                )}
-              </div>
-            </div>
-            <Table
-              rows={memberRows}
-              columns={columns}
-              onRowClick={
-                (row) => {
-                  this.openProfileModal(row)
-                }
-              }
-            />
-            <Modal style={{
-              content: {
-                maxWidth: '400px',
-                maxHeight: '400px',
-                left: 'calc(50% - 200px)',
-                top: 'calc(50% - 200px)'
-              },
-              overlay: {
-                zIndex: 10000
-              }
-            }} isOpen={this.state.modalIsOpen}>
-              <ProfileModal
-                user={this.state.profileMeta}
-                attributes={this.state.profileInfo}
-                onClose={this.closeProfileModal}
-                actions={profileActions}
-              />
-            </Modal>
-          </Section>
+                </Modal>
+              </Section>
+            )
+              : <div />
+          }
         </div>
         <style jsx>
           {`
