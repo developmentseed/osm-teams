@@ -34,7 +34,8 @@ const {
   createOrgTeam,
   getOrgTeams,
   getOrgMembers,
-  listMyOrgs
+  listMyOrgs,
+  getOrgStaff
 } = require('./organizations')
 
 const {
@@ -50,7 +51,6 @@ const {
   getTeamProfile
 } = require('./profiles')
 
-const { getOrgStaff } = require('../lib/organization')
 const { getUserManageToken } = require('../lib/profile')
 
 /**
@@ -111,10 +111,11 @@ function manageRouter (nextApp) {
    */
   router.get('/api/my/organizations', can('public:authenticated'), listMyOrgs)
   router.post('/api/organizations', can('public:authenticated'), createOrg)
-  router.get('/api/organizations/:id', can('public:authenticated'), getOrg) // TODO handle private organizations
+  router.get('/api/organizations/:id', can('public:authenticated'), getOrg)
   router.put('/api/organizations/:id', can('organization:edit'), updateOrg)
   router.delete('/api/organizations/:id', can('organization:edit'), destroyOrg)
-  router.get('/api/organizations/:id/members', can('public:authenticated'), getOrgMembers)
+  router.get('/api/organizations/:id/staff', can('organization:view-members'), getOrgStaff)
+  router.get('/api/organizations/:id/members', can('organization:view-members'), getOrgMembers)
 
   router.put('/api/organizations/:id/addOwner/:osmId', can('organization:edit'), addOwner)
   router.put('/api/organizations/:id/removeOwner/:osmId', can('organization:edit'), removeOwner)
@@ -168,7 +169,7 @@ function manageRouter (nextApp) {
   })
 
   router.get('/teams/create', can('public:authenticated'), async (req, res) => {
-    const staff = await getOrgStaff(res.locals.user_id)
+    const staff = await getOrgStaff({ osmId: Number(res.locals.user_id) })
     return nextApp.render(req, res, '/team-create', { staff })
   })
 

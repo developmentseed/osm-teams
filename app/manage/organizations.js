@@ -36,7 +36,7 @@ async function createOrg (req, reply) {
 }
 
 /**
- * Get an organization
+ * Get an organization's metadata
  * Requires id of organization
  */
 async function getOrg (req, reply) {
@@ -48,11 +48,32 @@ async function getOrg (req, reply) {
   }
 
   try {
-    let [data, owners, managers, isMemberOfOrg] = await Promise.all([
+    let [data, isMemberOfOrg] = await Promise.all([
       organization.get(id),
+      organization.isMember(id, user_id)
+    ])
+    reply.send({ ...data, isMemberOfOrg })
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest(err.message)
+  }
+}
+
+/**
+ * Get an organization's staff
+ * Requires id of organization
+ */
+async function getOrgStaff (req, reply) {
+  const { id } = req.params
+
+  if (!id) {
+    return reply.boom.badRequest('organization id is required')
+  }
+
+  try {
+    let [owners, managers] = await Promise.all([
       organization.getOwners(id),
       organization.getManagers(id),
-      organization.isMember(id, user_id)
     ])
     const ownerIds = map(prop('osm_id'), owners)
     const managerIds = map(prop('osm_id'), managers)
@@ -63,7 +84,7 @@ async function getOrg (req, reply) {
       managers = await team.resolveMemberNames(managerIds)
     }
 
-    reply.send({ ...data, owners, managers, isMemberOfOrg })
+    reply.send({ owners, managers })
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -269,5 +290,6 @@ module.exports = {
   createOrgTeam,
   getOrgTeams,
   listMyOrgs,
+  getOrgStaff,
   getOrgMembers
 }
