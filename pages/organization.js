@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { getOrg, getMembers, addManager, removeManager, addOwner, removeOwner } from '../lib/org-api'
+import { getOrg, getOrgStaff, getMembers, addManager, removeManager, addOwner, removeOwner } from '../lib/org-api'
 import { getUserOrgProfile } from '../lib/profiles-api'
 import Card from '../components/card'
 import Section from '../components/section'
@@ -13,7 +13,7 @@ import ProfileModal from '../components/profile-modal'
 import { assoc, propEq, find, contains, prop, map } from 'ramda'
 
 export default class Organization extends Component {
-  static async getInitialProps ({ query }) {
+  static async getInitialProps({ query }) {
     if (query) {
       return {
         id: query.id,
@@ -22,12 +22,14 @@ export default class Organization extends Component {
     }
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       profileInfo: [],
       profileUserId: '',
       members: [],
+      managers: [],
+      owners: [],
       page: 0,
       loading: true,
       error: undefined
@@ -36,12 +38,13 @@ export default class Organization extends Component {
     this.closeProfileModal = this.closeProfileModal.bind(this)
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     await this.getOrg()
+    await this.getOrgStaff()
     return this.getMembers(0)
   }
 
-  async openProfileModal (user) {
+  async openProfileModal(user) {
     const { id } = this.props
 
     try {
@@ -61,13 +64,32 @@ export default class Organization extends Component {
     }
   }
 
-  async closeProfileModal () {
+  async closeProfileModal() {
     this.setState({
       modalIsOpen: false
     })
   }
 
-  async getMembers (currentPage) {
+  async getOrgStaff() {
+    const { id } = this.props
+    try {
+      let { managers, owners } = await getOrgStaff(id)
+      this.setState({
+        managers,
+        owners
+      })
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e,
+        managers: [],
+        owners: [],
+        loading: false
+      })
+    }
+  }
+
+  async getMembers(currentPage) {
     const { id } = this.props
     try {
       let { members, page } = await getMembers(id, currentPage)
@@ -86,17 +108,17 @@ export default class Organization extends Component {
     }
   }
 
-  async getNextPage () {
+  async getNextPage() {
     this.setState({ loading: true })
     await this.getMembers(this.state.page + 1)
   }
 
-  async getPrevPage () {
+  async getPrevPage() {
     this.setState({ loading: true })
     await this.getMembers(this.state.page - 1)
   }
 
-  async getOrg () {
+  async getOrg() {
     const { id } = this.props
     try {
       let org = await getOrg(id)
@@ -113,7 +135,7 @@ export default class Organization extends Component {
     }
   }
 
-  renderStaff (owners, managers) {
+  renderStaff(owners, managers) {
     const columns = [
       { key: 'id' },
       { key: 'name' },
@@ -137,7 +159,7 @@ export default class Organization extends Component {
     />
   }
 
-  renderMembers (memberRows) {
+  renderMembers(memberRows) {
     const columns = [
       { key: 'id' },
       { key: 'name' }
@@ -151,15 +173,18 @@ export default class Organization extends Component {
     />
   }
 
-  render () {
-    const { org, members, error } = this.state
+  render() {
+    const { org, members, managers, owners, error } = this.state
     if (!org) return null
 
     const userId = parseInt(this.props.user.uid)
-    const ownerIds = map(parseInt, map(prop('id'), org.owners))
-    const managerIds = map(parseInt, map(prop('id'), org.managers))
+    const ownerIds = map(parseInt, map(prop('id'), owners))
+    const managerIds = map(parseInt, map(prop('id'), managers))
     const isUserOwner = contains(userId, ownerIds)
     const disabledLabel = !this.state.loading ? 'primary' : 'disabled'
+
+    const isOrgPublic = (org.privacy === 'public')
+    const isMemberOfOrg = org.isMemberOfOrg
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -227,7 +252,7 @@ export default class Organization extends Component {
           <Card>
             <div className='section-actions'>
               <SectionHeader>Org Details</SectionHeader>
-              { isUserOwner ? <Button variant='small' href={`/organizations/${org.id}/edit`}>Edit</Button> : '' }
+              {isUserOwner ? <Button variant='small' href={`/organizations/${org.id}/edit`}>Edit</Button> : ''}
             </div>
             <dl>
               <dt>Bio: </dt>
@@ -235,38 +260,42 @@ export default class Organization extends Component {
             </dl>
           </Card>
         </div>
-        <div className='team__table'>
-          <Section>
-            <div className='section-actions'>
-              <SectionHeader>Staff Members</SectionHeader>
-              <div>
-                { isUserOwner && (
-                  <AddMemberForm
-                    onSubmit={async ({ osmId }) => {
-                      await addManager(org.id, osmId)
-                      return this.getOrg()
-                    }}
-                  />
-                )}
+        {(isOrgPublic || isMemberOfOrg) ? (
+          <div className='team__table'>
+            <Section>
+              <div className='section-actions'>
+                <SectionHeader>Staff Members</SectionHeader>
+                <div>
+                  {isUserOwner && (
+                    <AddMemberForm
+                      onSubmit={async ({ osmId }) => {
+                        await addManager(org.id, osmId)
+                        return this.getOrg()
+                      }}
+                    />
+                  )}
+                </div>
               </div>
-            </div>
-          </Section>
-          {this.renderStaff(org.owners, org.managers)}
-        </div>
-        <div className='team__table'>
-          <Section>
-            <div className='section-actions'>
-              <SectionHeader>Organization Members</SectionHeader>
-              <div>
-                <span style={{ 'marginRight': '1rem' }}>
-                  {this.state.page > 0 ? <Button onClick={() => this.getPrevPage()} disabled={this.state.loading} variant={`${disabledLabel} small`}>Back</Button> : ''}
-                </span>
-                <Button onClick={() => this.getNextPage()} disabled={this.state.loading} variant={`${disabledLabel} small`}>Next</Button>
+            </Section>
+            {this.renderStaff(owners, managers)}
+          </div>
+        ) : <div />}
+        {(isOrgPublic || isMemberOfOrg) ? (
+          <div className='team__table'>
+            <Section>
+              <div className='section-actions'>
+                <SectionHeader>Organization Members</SectionHeader>
+                <div>
+                  <span style={{ 'marginRight': '1rem' }}>
+                    {this.state.page > 0 ? <Button onClick={() => this.getPrevPage()} disabled={this.state.loading} variant={`${disabledLabel} small`}>Back</Button> : ''}
+                  </span>
+                  <Button onClick={() => this.getNextPage()} disabled={this.state.loading} variant={`${disabledLabel} small`}>Next</Button>
+                </div>
               </div>
-            </div>
-          </Section>
-          {!this.state.loading ? this.renderMembers(members) : 'Loading...'}
-        </div>
+            </Section>
+            {!this.state.loading ? this.renderMembers(members) : 'Loading...'}
+          </div>
+        ) : <div />}
         <Modal style={{
           content: {
             maxWidth: '400px',

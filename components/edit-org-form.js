@@ -19,7 +19,7 @@ function renderErrors (errors) {
 
 const defaultValues = {
   name: '',
-  description: ''
+  description: '',
 }
 
 export default function EditOrgForm ({ initialValues = defaultValues, onSubmit }) {
@@ -39,6 +39,14 @@ export default function EditOrgForm ({ initialValues = defaultValues, onSubmit }
             <div className='form-control form-control__vertical'>
               <label htmlFor='description'>Description</label>
               <Field value={values.description} component='textarea' name='description' />
+            </div>
+            <div className='form-control form-control__vertical'>
+              <label htmlFor='privacy'>Visibility</label>
+              <Field as='select' name='privacy'>
+                <option value='public'>Public</option>
+                <option value='private'>Private</option>
+              </Field>
+              <small className='pt1'>A private organization does not show its member list or team details to non-members.</small>
             </div>
             <div className='form-control form-control__vertical'>
               { (status && status.errors) && (renderErrors(status.errors)) }

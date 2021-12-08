@@ -136,7 +136,7 @@ export default class OrgEdit extends Component {
             </div>
           </div>
           <EditOrgForm
-            initialValues={pick(['name', 'description'], org)}
+            initialValues={pick(['name', 'description', 'privacy'], org)}
             onSubmit={async (values, actions) => {
               try {
                 await updateOrg(org.id, values)
