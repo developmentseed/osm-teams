@@ -90,7 +90,7 @@ export default function EditTeamForm ({ initialValues, onSubmit, staff, isCreate
               {errors.editing_policy && renderError(errors.editing_policy)}
             </div>
             <div className='form-control form-control__vertical'>
-              <label htmlFor='privacy'>Privacy</label>
+              <label htmlFor='privacy'>Visibility</label>
               <Field as='select' name='privacy'>
                 <option value='public'>Public</option>
                 <option value='private'>Private</option>
