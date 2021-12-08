@@ -8,6 +8,7 @@ const orgAttributes = [
   'id',
   'name',
   'description',
+  'privacy',
   'created_at',
   'updated_at'
 ]
@@ -233,7 +234,7 @@ async function getMembers (organizationId, page) {
 }
 
 /**
- * Checks if an osmId is part of an organization
+ * Checks if an osmId is part of an organization members
  * @param {int} organizationId - organization id
  * @param {int} osmId - id of member we are testing
  */
@@ -242,6 +243,23 @@ async function isMember (organizationId, osmId) {
   const members = await getMembers(organizationId)
   const memberIds = members.map(prop('osm_id'))
   return includes(Number(osmId), map(Number, memberIds))
+}
+
+/**
+ * Checks if an osmId is part of an organization members or staff
+ * @param {int} organizationId - organization id
+ * @param {int} osmId - id of member we are testing
+ */
+async function isMemberOrStaff (organizationId, osmId) {
+  if (!organizationId) throw new PropertyRequiredError('organization id')
+  if (!osmId) throw new PropertyRequiredError('osm id')
+  const conn = await db()
+  const subquery = conn('organization_team').select('team_id').where('organization_id', organizationId)
+  const memberQuery = conn('member').select('osm_id').where('team_id', 'in', subquery).andWhere('osm_id', osmId)
+  const ownerQuery = conn('organization_owner').select('osm_id').where({ organization_id: organizationId, osm_id: osmId })
+  const managerQuery = conn('organization_manager').select('osm_id').where({ organization_id: organizationId, osm_id: osmId })
+  const result = await memberQuery.union(ownerQuery).union(managerQuery)
+  return result.length > 0
 }
 
 /**
@@ -290,13 +308,27 @@ async function getOrgStaff (options) {
 
   if (options.organizationId) {
     ownerQuery = ownerQuery.where('organization.id', options.organizationId)
-    managerQuery = ownerQuery.where('organization.id', options.organizationId)
+    managerQuery = managerQuery.where('organization.id', options.organizationId)
   }
   if (options.osmId) {
     ownerQuery = ownerQuery.where('organization_owner.osm_id', options.osmId)
-    managerQuery = ownerQuery.where('organization_manager.osm_id', options.osmId)
+    managerQuery = managerQuery.where('organization_manager.osm_id', options.osmId)
   }
   return ownerQuery.unionAll(managerQuery)
+}
+
+/**
+ * isPublic
+ * Checks if org privacy is public
+ *
+ * @param orgId - ord id
+ * @returns {Boolean} is the org public?
+ */
+async function isPublic (orgId) {
+  if (!orgId) throw new PropertyRequiredError('organization id')
+  const conn = await db()
+  const { privacy } = await unpack(conn('organization').where({ id: orgId }))
+  return (privacy === 'public')
 }
 
 module.exports = {
@@ -311,10 +343,12 @@ module.exports = {
   getOwners,
   getManagers,
   getMembers,
+  isMemberOrStaff,
   isOwner,
   isManager,
   isMember,
   createOrgTeam,
   listMyOrganizations,
-  getOrgStaff
+  getOrgStaff,
+  isPublic
 }
