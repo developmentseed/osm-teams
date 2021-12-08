@@ -1,4 +1,4 @@
-const { isMember, isOwner, isManager } = require('../../lib/organization')
+const { isMemberOrStaff } = require('../../lib/organization')
 
 /**
  * org:member
@@ -11,12 +11,7 @@ const { isMember, isOwner, isManager } = require('../../lib/organization')
  */
 async function memberOrg (uid, { id }) {
   try {
-    const [member, owner, manager] = await Promise.all([
-      isMember(id, uid),
-      isOwner(id, uid),
-      isManager(id, uid)
-    ])
-    return member || owner || manager
+    return await isMemberOrStaff(id, uid)
   } catch (e) {
     return false
   }
