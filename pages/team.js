@@ -294,7 +294,7 @@ export default class Team extends Component {
         </div>
         <div className='team__table'>
           {
-            (team.privacy === 'public' || isMember) ? (
+            (memberRows.length > 0) ? (
               <Section>
                 <div className='section-actions'>
                   <SectionHeader>Team Members</SectionHeader>

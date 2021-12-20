@@ -9,6 +9,7 @@ const orgAttributes = [
   'name',
   'description',
   'privacy',
+  'teams_can_be_public',
   'created_at',
   'updated_at'
 ]

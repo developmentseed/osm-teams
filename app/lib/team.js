@@ -379,7 +379,19 @@ async function isMember (teamId, osmId) {
 async function isPublic (teamId) {
   if (!teamId) throw new Error('team id is required as first argument')
   const conn = await db()
-  const { privacy } = await unpack(conn('team').where({ id: teamId }))
+  const { privacy } = await unpack(
+    conn('team')
+    .select('id', conn.raw(`
+    case
+    when (
+      select teams_can_be_public from organization join organization_team on organization.id = organization_id where team_id = team.id
+    ) = false then 'private'
+    when privacy = 'private' then 'private'
+    when privacy = 'public' then 'public'
+    end privacy
+    `))
+    .where({ id: teamId })
+  )
   return (privacy === 'public')
 }
 
