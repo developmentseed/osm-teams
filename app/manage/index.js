@@ -1,5 +1,6 @@
 const router = require('express-promise-router')()
 const expressPino = require('express-pino-logger')
+const { path } = require('ramda')
 
 const { getClients, createClient, deleteClient } = require('./client')
 const { login, loginAccept, logout } = require('./login')
@@ -52,6 +53,7 @@ const {
 } = require('./profiles')
 
 const { getUserManageToken } = require('../lib/profile')
+const organization = require('../lib/organization')
 
 /**
  * The manageRouter handles all routes related to the first party
@@ -72,7 +74,7 @@ function manageRouter (nextApp) {
    * Home page
    */
   router.get('/', (req, res) => {
-    return nextApp.render(req, res, '/', { user: req.session.user })
+    return nextApp.render(req, res, '/', { user: path(['session', 'user'], req) })
   })
 
   /**
@@ -169,7 +171,7 @@ function manageRouter (nextApp) {
   })
 
   router.get('/teams/create', can('public:authenticated'), async (req, res) => {
-    const staff = await getOrgStaff({ osmId: Number(res.locals.user_id) })
+    const staff = await organization.getOrgStaff({ osmId: Number(res.locals.user_id) })
     return nextApp.render(req, res, '/team-create', { staff })
   })
 

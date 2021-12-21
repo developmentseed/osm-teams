@@ -32,7 +32,6 @@ async function editKey (uid, { id }) {
     owners = await organization.getOwners(key.owner_org)
   }
   let osmIds = owners.map(owner => (R.prop('osm_id', owner)).toString())
-  console.log(osmIds, uid, osmIds.includes(uid))
   return osmIds.includes(uid.toString())
 }
 
