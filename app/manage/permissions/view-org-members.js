@@ -10,7 +10,7 @@ const { isPublic, isMemberOrStaff } = require('../../lib/organization')
  * @param {Object} params request parameters
  * @returns {boolean} can the request go through?
  */
-async function viewOrgMembers(uid, { id }) {
+async function viewOrgMembers (uid, { id }) {
   try {
     const publicOrg = await isPublic(id)
     if (publicOrg) return publicOrg

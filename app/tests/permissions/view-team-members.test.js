@@ -38,4 +38,3 @@ test('private team members are visible to team moderators', async t => {
     .set('Authorization', `Bearer user100`)
   t.is(res.status, 200)
 })
-

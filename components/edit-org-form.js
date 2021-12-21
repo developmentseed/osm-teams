@@ -19,7 +19,7 @@ function renderErrors (errors) {
 
 const defaultValues = {
   name: '',
-  description: '',
+  description: ''
 }
 
 export default function EditOrgForm ({ initialValues = defaultValues, onSubmit }) {

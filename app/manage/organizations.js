@@ -73,7 +73,7 @@ async function getOrgStaff (req, reply) {
   try {
     let [owners, managers] = await Promise.all([
       organization.getOwners(id),
-      organization.getManagers(id),
+      organization.getManagers(id)
     ])
     const ownerIds = map(prop('osm_id'), owners)
     const managerIds = map(prop('osm_id'), managers)

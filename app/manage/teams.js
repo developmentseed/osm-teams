@@ -82,7 +82,6 @@ async function getTeamMembers (req, reply) {
     console.log(err)
     return reply.boom.badRequest(err.message)
   }
-
 }
 
 async function createTeam (req, reply) {

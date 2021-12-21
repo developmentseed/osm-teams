@@ -13,7 +13,7 @@ import ProfileModal from '../components/profile-modal'
 import { assoc, propEq, find, contains, prop, map } from 'ramda'
 
 export default class Organization extends Component {
-  static async getInitialProps({ query }) {
+  static async getInitialProps ({ query }) {
     if (query) {
       return {
         id: query.id,
@@ -22,7 +22,7 @@ export default class Organization extends Component {
     }
   }
 
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       profileInfo: [],
@@ -38,13 +38,13 @@ export default class Organization extends Component {
     this.closeProfileModal = this.closeProfileModal.bind(this)
   }
 
-  async componentDidMount() {
+  async componentDidMount () {
     await this.getOrg()
     await this.getOrgStaff()
     return this.getMembers(0)
   }
 
-  async openProfileModal(user) {
+  async openProfileModal (user) {
     const { id } = this.props
 
     try {
@@ -64,13 +64,13 @@ export default class Organization extends Component {
     }
   }
 
-  async closeProfileModal() {
+  async closeProfileModal () {
     this.setState({
       modalIsOpen: false
     })
   }
 
-  async getOrgStaff() {
+  async getOrgStaff () {
     const { id } = this.props
     try {
       let { managers, owners } = await getOrgStaff(id)
@@ -89,7 +89,7 @@ export default class Organization extends Component {
     }
   }
 
-  async getMembers(currentPage) {
+  async getMembers (currentPage) {
     const { id } = this.props
     try {
       let { members, page } = await getMembers(id, currentPage)
@@ -108,17 +108,17 @@ export default class Organization extends Component {
     }
   }
 
-  async getNextPage() {
+  async getNextPage () {
     this.setState({ loading: true })
     await this.getMembers(this.state.page + 1)
   }
 
-  async getPrevPage() {
+  async getPrevPage () {
     this.setState({ loading: true })
     await this.getMembers(this.state.page - 1)
   }
 
-  async getOrg() {
+  async getOrg () {
     const { id } = this.props
     try {
       let org = await getOrg(id)
@@ -135,7 +135,7 @@ export default class Organization extends Component {
     }
   }
 
-  renderStaff(owners, managers) {
+  renderStaff (owners, managers) {
     const columns = [
       { key: 'id' },
       { key: 'name' },
@@ -159,7 +159,7 @@ export default class Organization extends Component {
     />
   }
 
-  renderMembers(memberRows) {
+  renderMembers (memberRows) {
     const columns = [
       { key: 'id' },
       { key: 'name' }
@@ -173,7 +173,7 @@ export default class Organization extends Component {
     />
   }
 
-  render() {
+  render () {
     const { org, members, managers, owners, error } = this.state
     if (!org) return null
 

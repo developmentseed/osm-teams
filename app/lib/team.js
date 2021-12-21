@@ -381,7 +381,7 @@ async function isPublic (teamId) {
   const conn = await db()
   const { privacy } = await unpack(
     conn('team')
-    .select('id', conn.raw(`
+      .select('id', conn.raw(`
     case
     when (
       select teams_can_be_public from organization join organization_team on organization.id = organization_id where team_id = team.id
@@ -390,7 +390,7 @@ async function isPublic (teamId) {
     when privacy = 'public' then 'public'
     end privacy
     `))
-    .where({ id: teamId })
+      .where({ id: teamId })
   )
   return (privacy === 'public')
 }
