@@ -53,15 +53,31 @@ async function getTeam (req, reply) {
   try {
     const teamData = await team.get(id)
     const associatedOrg = await team.associatedOrg(id)
+
+    if (!teamData) {
+      return reply.boom.notFound()
+    }
+
+    return reply.send(Object.assign({}, teamData, { org: associatedOrg }))
+  } catch (err) {
+    console.log(err)
+    return reply.boom.badRequest(err.message)
+  }
+}
+
+async function getTeamMembers (req, reply) {
+  const { id } = req.params
+
+  if (!id) {
+    return reply.boom.badRequest('team id is required')
+  }
+
+  try {
     const memberIds = map(getOsmId, (await team.getMembers(id)))
     const members = await team.resolveMemberNames(memberIds)
     const moderators = await team.getModerators(id)
 
-    if (!teamData && !members) {
-      return reply.boom.notFound()
-    }
-
-    return reply.send(Object.assign({}, teamData, { members, moderators }, { org: associatedOrg }))
+    return reply.send(Object.assign({}, { teamId: id }, { members, moderators }))
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -264,6 +280,7 @@ module.exports = {
   createTeam,
   destroyTeam,
   getTeam,
+  getTeamMembers,
   joinTeam,
   listTeams,
   listMyTeams,

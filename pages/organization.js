@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { getOrg, getMembers, addManager, removeManager, addOwner, removeOwner } from '../lib/org-api'
+import { getOrg, getOrgStaff, getMembers, addManager, removeManager, addOwner, removeOwner } from '../lib/org-api'
 import { getUserOrgProfile } from '../lib/profiles-api'
 import Card from '../components/card'
 import Section from '../components/section'
@@ -28,6 +28,8 @@ export default class Organization extends Component {
       profileInfo: [],
       profileUserId: '',
       members: [],
+      managers: [],
+      owners: [],
       page: 0,
       loading: true,
       error: undefined
@@ -38,6 +40,7 @@ export default class Organization extends Component {
 
   async componentDidMount () {
     await this.getOrg()
+    await this.getOrgStaff()
     return this.getMembers(0)
   }
 
@@ -65,6 +68,25 @@ export default class Organization extends Component {
     this.setState({
       modalIsOpen: false
     })
+  }
+
+  async getOrgStaff () {
+    const { id } = this.props
+    try {
+      let { managers, owners } = await getOrgStaff(id)
+      this.setState({
+        managers,
+        owners
+      })
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e,
+        managers: [],
+        owners: [],
+        loading: false
+      })
+    }
   }
 
   async getMembers (currentPage) {
@@ -152,14 +174,17 @@ export default class Organization extends Component {
   }
 
   render () {
-    const { org, members, error } = this.state
+    const { org, members, managers, owners, error } = this.state
     if (!org) return null
 
     const userId = parseInt(this.props.user.uid)
-    const ownerIds = map(parseInt, map(prop('id'), org.owners))
-    const managerIds = map(parseInt, map(prop('id'), org.managers))
+    const ownerIds = map(parseInt, map(prop('id'), owners))
+    const managerIds = map(parseInt, map(prop('id'), managers))
     const isUserOwner = contains(userId, ownerIds)
     const disabledLabel = !this.state.loading ? 'primary' : 'disabled'
+
+    const isOrgPublic = (org.privacy === 'public')
+    const isMemberOfOrg = org.isMemberOfOrg
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -227,7 +252,7 @@ export default class Organization extends Component {
           <Card>
             <div className='section-actions'>
               <SectionHeader>Org Details</SectionHeader>
-              { isUserOwner ? <Button variant='small' href={`/organizations/${org.id}/edit`}>Edit</Button> : '' }
+              {isUserOwner ? <Button variant='small' href={`/organizations/${org.id}/edit`}>Edit</Button> : ''}
             </div>
             <dl>
               <dt>Bio: </dt>
@@ -235,38 +260,42 @@ export default class Organization extends Component {
             </dl>
           </Card>
         </div>
-        <div className='team__table'>
-          <Section>
-            <div className='section-actions'>
-              <SectionHeader>Staff Members</SectionHeader>
-              <div>
-                { isUserOwner && (
-                  <AddMemberForm
-                    onSubmit={async ({ osmId }) => {
-                      await addManager(org.id, osmId)
-                      return this.getOrg()
-                    }}
-                  />
-                )}
+        {(isOrgPublic || isMemberOfOrg) ? (
+          <div className='team__table'>
+            <Section>
+              <div className='section-actions'>
+                <SectionHeader>Staff Members</SectionHeader>
+                <div>
+                  {isUserOwner && (
+                    <AddMemberForm
+                      onSubmit={async ({ osmId }) => {
+                        await addManager(org.id, osmId)
+                        return this.getOrg()
+                      }}
+                    />
+                  )}
+                </div>
               </div>
-            </div>
-          </Section>
-          {this.renderStaff(org.owners, org.managers)}
-        </div>
-        <div className='team__table'>
-          <Section>
-            <div className='section-actions'>
-              <SectionHeader>Organization Members</SectionHeader>
-              <div>
-                <span style={{ 'marginRight': '1rem' }}>
-                  {this.state.page > 0 ? <Button onClick={() => this.getPrevPage()} disabled={this.state.loading} variant={`${disabledLabel} small`}>Back</Button> : ''}
-                </span>
-                <Button onClick={() => this.getNextPage()} disabled={this.state.loading} variant={`${disabledLabel} small`}>Next</Button>
+            </Section>
+            {this.renderStaff(owners, managers)}
+          </div>
+        ) : <div />}
+        {(isOrgPublic || isMemberOfOrg) ? (
+          <div className='team__table'>
+            <Section>
+              <div className='section-actions'>
+                <SectionHeader>Organization Members</SectionHeader>
+                <div>
+                  <span style={{ 'marginRight': '1rem' }}>
+                    {this.state.page > 0 ? <Button onClick={() => this.getPrevPage()} disabled={this.state.loading} variant={`${disabledLabel} small`}>Back</Button> : ''}
+                  </span>
+                  <Button onClick={() => this.getNextPage()} disabled={this.state.loading} variant={`${disabledLabel} small`}>Next</Button>
+                </div>
               </div>
-            </div>
-          </Section>
-          {!this.state.loading ? this.renderMembers(members) : 'Loading...'}
-        </div>
+            </Section>
+            {!this.state.loading ? this.renderMembers(members) : 'Loading...'}
+          </div>
+        ) : <div />}
         <Modal style={{
           content: {
             maxWidth: '400px',

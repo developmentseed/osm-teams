@@ -12,7 +12,7 @@ import AddMemberForm from '../components/add-member-form'
 import ProfileModal from '../components/profile-modal'
 import theme from '../styles/theme'
 
-import { getTeam, addMember, removeMember, joinTeam, assignModerator, removeModerator } from '../lib/teams-api'
+import { getTeam, getTeamMembers, addMember, removeMember, joinTeam, assignModerator, removeModerator } from '../lib/teams-api'
 import { getTeamProfile, getUserOrgProfile, getUserTeamProfile } from '../lib/profiles-api'
 
 const Map = dynamic(() => import('../components/team-map'), { ssr: false })
@@ -46,10 +46,14 @@ export default class Team extends Component {
     const { id } = this.props
     try {
       let team = await getTeam(id)
-      let teamProfile = await getTeamProfile(id)
+      let teamMembers = { moderators: [], members: [] }
+      let teamProfile = []
+      teamMembers = await getTeamMembers(id)
+      teamProfile = await getTeamProfile(id)
       this.setState({
         team,
         teamProfile,
+        teamMembers,
         loading: false
       })
     } catch (e) {
@@ -167,7 +171,7 @@ export default class Team extends Component {
   }
 
   render () {
-    const { team, error, teamProfile } = this.state
+    const { team, error, teamProfile, teamMembers } = this.state
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -194,8 +198,8 @@ export default class Team extends Component {
     if (!team) return null
 
     const userId = this.props.user.uid
-    const members = map(prop('id'), team.members)
-    const moderators = map(prop('osm_id'), team.moderators)
+    const members = map(prop('id'), teamMembers.members)
+    const moderators = map(prop('osm_id'), teamMembers.moderators)
 
     // TODO: moderators is an array of ints while members are an array of strings. fix this.
     const isUserModerator = contains(parseInt(userId), moderators)
@@ -207,7 +211,7 @@ export default class Team extends Component {
       { key: 'role' }
     ]
 
-    let memberRows = team.members.map(member => {
+    let memberRows = teamMembers.members.map(member => {
       const role = contains(parseInt(member.id), moderators) ? 'moderator' : 'member'
       return assoc('role', role, member)
     })
@@ -289,48 +293,53 @@ export default class Team extends Component {
           </Card>
         </div>
         <div className='team__table'>
-          <Section>
-            <div className='section-actions'>
-              <SectionHeader>Team Members</SectionHeader>
-              <div>
-                { isUserModerator && (
-                  <AddMemberForm
-                    onSubmit={async ({ osmId }) => {
-                      await addMember(team.id, osmId)
-                      return this.getTeam()
-                    }}
+          {
+            (memberRows.length > 0) ? (
+              <Section>
+                <div className='section-actions'>
+                  <SectionHeader>Team Members</SectionHeader>
+                  <div>
+                    {isUserModerator && (
+                      <AddMemberForm
+                        onSubmit={async ({ osmId }) => {
+                          await addMember(team.id, osmId)
+                          return this.getTeam()
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
+                <Table
+                  rows={memberRows}
+                  columns={columns}
+                  onRowClick={
+                    (row) => {
+                      this.openProfileModal(row)
+                    }
+                  }
+                />
+                <Modal style={{
+                  content: {
+                    maxWidth: '400px',
+                    maxHeight: '400px',
+                    left: 'calc(50% - 200px)',
+                    top: 'calc(50% - 200px)'
+                  },
+                  overlay: {
+                    zIndex: 10000
+                  }
+                }} isOpen={this.state.modalIsOpen}>
+                  <ProfileModal
+                    user={this.state.profileMeta}
+                    attributes={this.state.profileInfo}
+                    onClose={this.closeProfileModal}
+                    actions={profileActions}
                   />
-                )}
-              </div>
-            </div>
-            <Table
-              rows={memberRows}
-              columns={columns}
-              onRowClick={
-                (row) => {
-                  this.openProfileModal(row)
-                }
-              }
-            />
-            <Modal style={{
-              content: {
-                maxWidth: '400px',
-                maxHeight: '400px',
-                left: 'calc(50% - 200px)',
-                top: 'calc(50% - 200px)'
-              },
-              overlay: {
-                zIndex: 10000
-              }
-            }} isOpen={this.state.modalIsOpen}>
-              <ProfileModal
-                user={this.state.profileMeta}
-                attributes={this.state.profileInfo}
-                onClose={this.closeProfileModal}
-                actions={profileActions}
-              />
-            </Modal>
-          </Section>
+                </Modal>
+              </Section>
+            )
+              : <div />
+          }
         </div>
         <style jsx>
           {`

@@ -34,9 +34,9 @@ export default class TeamEdit extends Component {
       let team = await getTeam(id)
       let teamAttributes = []
       let profileValues = []
+      profileValues = await getTeamProfile(id)
       if (team.org) {
         teamAttributes = await getOrgTeamAttributes(team.org.organization_id)
-        profileValues = await getTeamProfile(id)
       }
       this.setState({
         team,
@@ -140,7 +140,7 @@ export default class TeamEdit extends Component {
             <Button variant='primary' href={`/teams/${team.id}/edit-profiles`}>Edit Team Profiles</Button>
           </div>
           <EditTeamForm
-            initialValues={pick(['name', 'bio', 'hashtag', 'editing_policy', 'location'], team)}
+            initialValues={pick(['name', 'bio', 'hashtag', 'editing_policy', 'location', 'privacy'], team)}
             profileValues={profileValues}
             extraTags={teamAttributes}
             onSubmit={async (values, actions) => {

@@ -75,6 +75,18 @@ test('get organization', async t => {
   const org = await agent.get(`/api/organizations/${res.body.id}`)
 
   t.is(org.body.name, 'get organization')
+})
+
+/**
+ * Test get an organization's staff
+ */
+test('get organization staff', async t => {
+  const res = await agent.post('/api/organizations')
+    .send({ name: 'get organization staff' })
+    .expect(200)
+
+  const org = await agent.get(`/api/organizations/${res.body.id}/staff`)
+
   t.is(org.body.owners.length, 1)
   t.is(org.body.managers.length, 1)
 })

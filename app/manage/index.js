@@ -1,5 +1,6 @@
 const router = require('express-promise-router')()
 const expressPino = require('express-pino-logger')
+const { path } = require('ramda')
 
 const { getClients, createClient, deleteClient } = require('./client')
 const { login, loginAccept, logout } = require('./login')
@@ -12,6 +13,7 @@ const {
   createTeam,
   destroyTeam,
   getTeam,
+  getTeamMembers,
   joinTeam,
   listTeams,
   listMyTeams,
@@ -33,7 +35,8 @@ const {
   createOrgTeam,
   getOrgTeams,
   getOrgMembers,
-  listMyOrgs
+  listMyOrgs,
+  getOrgStaff
 } = require('./organizations')
 
 const {
@@ -49,8 +52,8 @@ const {
   getTeamProfile
 } = require('./profiles')
 
-const { getOrgStaff } = require('../lib/organization')
 const { getUserManageToken } = require('../lib/profile')
+const organization = require('../lib/organization')
 
 /**
  * The manageRouter handles all routes related to the first party
@@ -71,7 +74,7 @@ function manageRouter (nextApp) {
    * Home page
    */
   router.get('/', (req, res) => {
-    return nextApp.render(req, res, '/', { user: req.session.user })
+    return nextApp.render(req, res, '/', { user: path(['session', 'user'], req) })
   })
 
   /**
@@ -95,6 +98,7 @@ function manageRouter (nextApp) {
   router.get('/api/my/teams', can('public:authenticated'), listMyTeams)
   router.post('/api/teams', can('public:authenticated'), createTeam)
   router.get('/api/teams/:id', can('team:view'), getTeam)
+  router.get('/api/teams/:id/members', can('team:view-members'), getTeamMembers)
   router.put('/api/teams/:id', can('team:edit'), updateTeam)
   router.delete('/api/teams/:id', can('team:edit'), destroyTeam)
   router.put('/api/teams/add/:id/:osmId', can('team:edit'), addMember)
@@ -109,10 +113,11 @@ function manageRouter (nextApp) {
    */
   router.get('/api/my/organizations', can('public:authenticated'), listMyOrgs)
   router.post('/api/organizations', can('public:authenticated'), createOrg)
-  router.get('/api/organizations/:id', can('public:authenticated'), getOrg) // TODO handle private organizations
+  router.get('/api/organizations/:id', can('public:authenticated'), getOrg)
   router.put('/api/organizations/:id', can('organization:edit'), updateOrg)
   router.delete('/api/organizations/:id', can('organization:edit'), destroyOrg)
-  router.get('/api/organizations/:id/members', can('public:authenticated'), getOrgMembers)
+  router.get('/api/organizations/:id/staff', can('organization:view-members'), getOrgStaff)
+  router.get('/api/organizations/:id/members', can('organization:view-members'), getOrgMembers)
 
   router.put('/api/organizations/:id/addOwner/:osmId', can('organization:edit'), addOwner)
   router.put('/api/organizations/:id/removeOwner/:osmId', can('organization:edit'), removeOwner)
@@ -166,7 +171,7 @@ function manageRouter (nextApp) {
   })
 
   router.get('/teams/create', can('public:authenticated'), async (req, res) => {
-    const staff = await getOrgStaff(res.locals.user_id)
+    const staff = await organization.getOrgStaff({ osmId: Number(res.locals.user_id) })
     return nextApp.render(req, res, '/team-create', { staff })
   })
 
