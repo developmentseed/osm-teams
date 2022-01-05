@@ -30,26 +30,42 @@ async function getUserOrgProfile (req, reply) {
 
     // Get org keys & visibility
     orgKeys = await profile.getProfileKeysForOwner('org', orgId, 'user')
-    requesterIsMemberOfOrg = await org.isMember(orgId, requesterId)
-    requesterIsManagerOfOrg = await org.isManager(orgId, requesterId)
-    requesterIsOwnerOfOrg = await org.isManager(orgId, requesterId)
 
-    // Get visibile keys
-    orgKeys.forEach((key) => {
-      const { visibility } = key
-      switch (visibility) {
-        case 'public': {
-          visibleKeys.push(key)
-          break
-        }
-        case 'org': {
-          if (requesterIsMemberOfOrg || requesterIsOwnerOfOrg || requesterIsManagerOfOrg) {
+    if (requesterId === osmId) {
+      const allIds = orgKeys.map(prop('id'))
+      const allValues = pick(allIds, tags)
+      const keysToSend = orgKeys.map(key => {
+        return assoc('value', allValues[key.id], key)
+      })
+      return reply.send(keysToSend)
+    } else {
+      requesterIsMemberOfOrg = await org.isMember(orgId, requesterId)
+      requesterIsManagerOfOrg = await org.isManager(orgId, requesterId)
+      requesterIsOwnerOfOrg = await org.isOwner(orgId, requesterId)
+
+      // Get visibile keys
+      orgKeys.forEach((key) => {
+        const { visibility } = key
+        switch (visibility) {
+          case 'public': {
             visibleKeys.push(key)
+            break
           }
-          break
+          case 'org_staff': {
+            if (requesterIsOwnerOfOrg || requesterIsManagerOfOrg) {
+              visibleKeys.push(key)
+            }
+            break
+          }
+          case 'org': {
+            if (requesterIsMemberOfOrg || requesterIsOwnerOfOrg || requesterIsManagerOfOrg) {
+              visibleKeys.push(key)
+            }
+            break
+          }
         }
-      }
-    })
+      })
+    }
 
     // Get values for keys
     const visibleKeyIds = visibleKeys.map(prop('id'))
@@ -82,6 +98,7 @@ async function getTeamProfile (req, reply) {
     let teamKeys = []
     let requesterIsMemberOfTeam = false
     let requesterIsMemberOfOrg = false
+    let requesterIsManagerOfOrg = false
     let requesterIsOwnerOfOrg = false
 
     const values = await profile.getProfile('team', teamId)
@@ -99,10 +116,11 @@ async function getTeamProfile (req, reply) {
 
     const isUserModerator = await team.isModerator(teamId, requesterId)
 
-    // Get team attributes
+    // Get team attributes from org
     teamKeys = await profile.getProfileKeysForOwner('org', associatedOrg.organization_id, 'team')
     requesterIsMemberOfTeam = await team.isMember(teamId, requesterId) // Is the requester part of this team?
-    requesterIsMemberOfOrg = await org.isMember(associatedOrg.organization_id, requesterId)
+    requesterIsMemberOfOrg = await org.isMemberOrStaff(associatedOrg.organization_id, requesterId)
+    requesterIsManagerOfOrg = await org.isManager(associatedOrg.organization_id, requesterId)
     requesterIsOwnerOfOrg = await org.isOwner(associatedOrg.organization_id, requesterId)
 
     if (isUserModerator || requesterIsOwnerOfOrg) {
@@ -124,6 +142,12 @@ async function getTeamProfile (req, reply) {
         }
         case 'team': {
           if (requesterIsMemberOfTeam) {
+            visibleKeys.push(key)
+          }
+          break
+        }
+        case 'org_staff': {
+          if (requesterIsOwnerOfOrg || requesterIsManagerOfOrg) {
             visibleKeys.push(key)
           }
           break

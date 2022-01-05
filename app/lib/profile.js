@@ -1,6 +1,6 @@
 const db = require('../db')
 const { unpack, ValidationError, checkRequiredProperties, PropertyRequiredError } = require('../lib/utils')
-const { map, has, propEq, anyPass, forEach, mergeRight, prop, assoc, pick, keys } = require('ramda')
+const { map, has, propEq, anyPass, forEach, prop, assoc, pick, keys } = require('ramda')
 
 /**
  * Given the profile type return the db table
@@ -40,7 +40,8 @@ const profileTypeValid = anyPass([
 const visibilityValid = anyPass([
   propEq('visibility', 'public'),
   propEq('visibility', 'team'),
-  propEq('visibility', 'org')
+  propEq('visibility', 'org'),
+  propEq('visibility', 'org_staff')
 ])
 
 /**
@@ -51,7 +52,7 @@ const visibilityValid = anyPass([
  * @param {string} attribute.description Description of the attribute
  * @param {string} attribute.profileType enum: 'owner', 'user', 'team'
  * @param {boolean} attribute.required whether this attribute is required to be filled
- * @param {enum} attribute.visibility enum: 'owner', 'user', 'team'
+ * @param {enum} attribute.visibility enum: 'org_staff', 'org', 'user', 'team'
  */
 function checkProfileKey (attribute) {
   checkRequiredProperties(['name', 'profileType'], attribute)
@@ -61,7 +62,7 @@ function checkProfileKey (attribute) {
   }
 
   if (has('visibility', attribute) && !visibilityValid(attribute)) {
-    throw new ValidationError('visibility should be one of "public", "team" or "org"')
+    throw new ValidationError('visibility should be one of "public", "team", "org" or "org_staff"')
   }
 }
 
@@ -73,7 +74,7 @@ function checkProfileKey (attribute) {
  * @param {string} attributes[].description Description of the attribute
  * @param {string} attributes[].profileType enum: 'owner', 'user', 'team'
  * @param {boolean} attributes[].required whether this attribute is required to be filled
- * @param {enum} attributes[].visibility enum: 'owner', 'user', 'team'
+ * @param {enum} attributes[].visibility enum: 'org_staff', 'org', 'user', 'team'
  * @param {string} ownerType enum: 'owner', 'user', 'team'
  * @param {integer} ownerId iD in owner, user or team tables
  */
@@ -114,11 +115,11 @@ async function addProfileKeys (attributes, ownerType, ownerId) {
  * @param {integer} id id of key to modify
  * @param {string} attribute.description Description of the attribute
  * @param {boolean} attribute.required whether this attribute is required to be filled
- * @param {enum} attribute.visibility enum: 'owner', 'user', 'team'
+ * @param {enum} attribute.visibility enum: 'org_staff', 'org', 'user', 'team'
  */
 async function modifyProfileKey (id, attribute) {
   if (has('visibility', attribute) && !visibilityValid(attribute)) {
-    throw new ValidationError('visibility should be one of "public", "team" or "org"')
+    throw new ValidationError('visibility should be one of "public", "team", "org" or "org_staff"')
   }
 
   const conn = await db()
@@ -209,10 +210,11 @@ async function setProfile (attributeValues, profileType, id) {
   tags = pick(map(prop('id'), tagsInDB), tags)
 
   // Add the attribute values
-  tags = attributeValues.reduce(
-    (acc, curr) => mergeRight(acc, { [curr['key_id']]: curr['value'] }),
-    tags
-  )
+  attributeValues.forEach(tagPair => {
+    if (tagPair.key_id) {
+      tags[tagPair.key_id] = tagPair.value
+    }
+  })
 
   const table = getTableForProfileType(profileType)
 

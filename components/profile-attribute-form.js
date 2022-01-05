@@ -46,7 +46,10 @@ export default function ProfileAttributeForm ({ onSubmit, initialValues = defaul
         const addAttributeText = `Submit ${isSubmitting ? ' 🕙' : ''}`
         let typeOption = <option value='team'>Team</option>
         if (formType === 'org') {
-          typeOption = <option value='org'>Organization</option>
+          typeOption = <>
+            <option value='org'>Organization</option>
+            <option value='org_staff'>Organization Staff</option>
+          </>
         }
 
         return (
