@@ -49,7 +49,7 @@
     "leaflet": "^1.7.1",
     "leaflet-control-geocoder": "^1.13.0",
     "next": "^8.0.1",
-    "node-fetch": "^2.6.6",
+    "node-fetch": "^3.1.1",
     "passport-light": "^1.0.1",
     "passport-oauth": "^1.0.0",
     "passport-openstreetmap": "^0.1.2",
