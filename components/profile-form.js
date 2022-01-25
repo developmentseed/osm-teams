@@ -3,6 +3,7 @@ import Router from 'next/router'
 import descriptionPopup from './description-popup'
 import { Formik, Field, Form } from 'formik'
 import { getOrgMemberAttributes, getTeamMemberAttributes, getMyProfile, setMyProfile } from '../lib/profiles-api'
+import { getOrg } from '../lib/org-api'
 import { getTeam } from '../lib/teams-api'
 import Button from '../components/button'
 import { prop } from 'ramda'
@@ -21,13 +22,22 @@ export default class ProfileForm extends Component {
       memberAttributes: [],
       orgAttributes: [],
       profileValues: {},
+      consentChecked: true,
       loading: true,
       error: undefined
     }
+
+    this.setConsentChecked = this.setConsentChecked.bind(this)
   }
 
   async componentDidMount () {
     this.getProfileForm()
+  }
+
+  setConsentChecked (checked) {
+    this.setState({
+      consentChecked: checked
+    })
   }
 
   async getProfileForm () {
@@ -35,10 +45,14 @@ export default class ProfileForm extends Component {
     try {
       let memberAttributes = []
       let orgAttributes = []
+      let org = {}
+      let consentChecked = true
       const returnUrl = `/teams/${this.props.id}`
       const team = await getTeam(id)
       if (team.org) {
+        org = await getOrg(team.org.organization_id)
         orgAttributes = await getOrgMemberAttributes(team.org.organization_id)
+        consentChecked = !(org && org.privacy_policy)
       }
       memberAttributes = await getTeamMemberAttributes(id)
       let profileValues = (await getMyProfile()).tags
@@ -46,6 +60,8 @@ export default class ProfileForm extends Component {
         id,
         returnUrl,
         memberAttributes,
+        consentChecked,
+        org,
         orgAttributes,
         profileValues,
         loading: false
@@ -60,7 +76,7 @@ export default class ProfileForm extends Component {
   }
 
   render () {
-    let { memberAttributes, orgAttributes, profileValues, returnUrl } = this.state
+    let { memberAttributes, orgAttributes, org, profileValues, returnUrl, consentChecked } = this.state
     profileValues = profileValues || {}
 
     return (
@@ -126,9 +142,22 @@ export default class ProfileForm extends Component {
                 })
                   : 'No profile form to fill yet'
                 }
+                { org && org.privacy_policy
+                  ? <div>
+                    <h3>Privacy Policy</h3>
+                    <span>
+                      {org.privacy_policy.body}
+                    </span>
+                    <div>
+                      <input type='checkbox' checked={consentChecked} onChange={e => this.setConsentChecked(e.target.checked)} />
+                      {org.privacy_policy.consentText}
+                    </div>
+                  </div>
+                  : <div />
+                }
                 {status && status.msg && <div>{status.msg}</div>}
-                <div style={{ marginTop: '1rem' }}className='form-control form-control__vertical'>
-                  <Button type='submit' variant='submit' disabled={isSubmitting}>
+                <div style={{ marginTop: '1rem' }} className='form-control form-control__vertical'>
+                  <Button type='submit' variant='submit' disabled={!consentChecked || isSubmitting}>
                     {addProfileText}
                   </Button>
                 </div>

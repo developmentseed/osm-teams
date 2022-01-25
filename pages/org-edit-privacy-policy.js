@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import join from 'url-join'
-import { pick, prop } from 'ramda'
+import { prop } from 'ramda'
 import getConfig from 'next/config'
 import Router from 'next/router'
 import { getOrg, updateOrgPrivacyPolicy } from '../lib/org-api'
