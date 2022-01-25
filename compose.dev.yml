@@ -10,4 +10,4 @@ services:
       - .:/usr/src/app
       - ./node_modules:/usr/src/app/node_modules
     command:
-      npm run dev
+      sh -c "npm run migrate && npm run dev"

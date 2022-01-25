@@ -207,11 +207,15 @@ function manageRouter (nextApp) {
     return nextApp.render(req, res, '/org-edit-profile', { id: req.params.id })
   })
 
+  router.get('/organizations/:id/edit-privacy-policy', can('organization:edit'), (req, res) => {
+    return nextApp.render(req, res, '/org-edit-privacy-policy', { id: req.params.id })
+  })
+
   router.get('/organizations/:id/profile', can('organization:member'), (req, res) => {
     return nextApp.render(req, res, '/profile-form', { id: req.params.id, formType: 'org' })
   })
 
-  router.get('/organizations/:id/edit-team-profiles', can('organization:member'), (req, res) => {
+  router.get('/organizations/:id/edit-team-profiles', can('organization:edit'), (req, res) => {
     return nextApp.render(req, res, '/org-edit-team-profile', { id: req.params.id })
   })
 

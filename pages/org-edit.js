@@ -128,12 +128,6 @@ export default class OrgEdit extends Component {
         <section>
           <div className='page__heading'>
             <h1>Edit Org</h1>
-            <div>
-              <span style={{ 'marginRight': '1rem' }}>
-                <Button variant='primary' href={`/organizations/${org.id}/edit-profiles`}>Edit Member Profiles</Button>
-              </span>
-              <Button variant='primary' href={`/organizations/${org.id}/edit-team-profiles`}>Edit Team Profiles</Button>
-            </div>
           </div>
           <EditOrgForm
             initialValues={pick(['name', 'description', 'privacy', 'teams_can_be_public'], org)}
@@ -150,6 +144,20 @@ export default class OrgEdit extends Component {
               }
             }}
           />
+        </section>
+        <section>
+          <div className='page__heading'>
+            <h2>Org Attributes</h2>
+          </div>
+          <div>
+            <span style={{ 'marginRight': '1rem' }}>
+              <Button variant='primary' href={`/organizations/${org.id}/edit-profiles`}>Edit Member Attributes</Button>
+            </span>
+            <span style={{ 'marginRight': '1rem' }}>
+              <Button variant='primary' href={`/organizations/${org.id}/edit-team-profiles`}>Edit Team Attributes</Button>
+            </span>
+            <Button variant='primary' href={`/organizations/${org.id}/edit-privacy-policy`}>Edit Privacy Policy</Button>
+          </div>
         </section>
         <section className='danger-zone'>
           <h2>Danger Zone 🎸</h2>

@@ -214,5 +214,5 @@ export default class OrgEditTeamProfile extends Component {
         </section>
       </article>
     )
-  }Team
+  }
 }

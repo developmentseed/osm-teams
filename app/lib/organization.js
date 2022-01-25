@@ -10,6 +10,7 @@ const orgAttributes = [
   'description',
   'privacy',
   'teams_can_be_public',
+  'privacy_policy',
   'created_at',
   'updated_at'
 ]
@@ -113,8 +114,6 @@ async function destroy (id) {
  * @return {promise}
  */
 async function update (id, data) {
-  if (!data.name) throw new Error('data.name property is required')
-
   const conn = await db()
   return unpack(conn('organization').where('id', id).update(data).returning(orgAttributes))
 }

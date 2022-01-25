@@ -127,7 +127,7 @@ export default class Profile extends Component {
     return (
       <div className='inner page'>
         <div className='page__heading'>
-          <h1>Profile</h1>
+          <h1>Teams & Organizations</h1>
           <div>
             <Button variant='primary' onClick={() => this.openCreateModal()} >Create</Button>
           </div>
