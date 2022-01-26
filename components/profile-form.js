@@ -77,7 +77,7 @@ export default class ProfileForm extends Component {
   }
 
   render () {
-    let { memberAttributes, orgAttributes, org, profileValues, returnUrl, consentChecked, team} = this.state
+    let { memberAttributes, orgAttributes, org, profileValues, returnUrl, consentChecked, team } = this.state
     profileValues = profileValues || {}
 
     const teamName = prop('name', team) || 'team'
@@ -149,10 +149,10 @@ export default class ProfileForm extends Component {
                 { org && org.privacy_policy
                   ? <div>
                     <h2>Privacy Policy</h2>
-                    <div style={{maxHeight: '100px', width: '80%', overflow: 'scroll', marginBottom: '1rem'}}>
+                    <div style={{ maxHeight: '100px', width: '80%', overflow: 'scroll', marginBottom: '1rem' }}>
                       {org.privacy_policy.body}
                     </div>
-                    <div style={{maxHeight: '100px', width: '80%', overflow: 'scroll'}}>
+                    <div style={{ maxHeight: '100px', width: '80%', overflow: 'scroll' }}>
                       <input type='checkbox' checked={consentChecked} onChange={e => this.setConsentChecked(e.target.checked)} />
                       {org.privacy_policy.consentText}
                     </div>
