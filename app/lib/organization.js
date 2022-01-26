@@ -1,6 +1,6 @@
 const db = require('../db')
 const team = require('./team')
-const { map, prop, includes } = require('ramda')
+const { map, prop, includes, has, isNil } = require('ramda')
 const { unpack, PropertyRequiredError } = require('./utils')
 
 // Organization attributes (without profile)
@@ -115,6 +115,9 @@ async function destroy (id) {
  */
 async function update (id, data) {
   const conn = await db()
+  if (has('name', data) && isNil(prop('name', data))) {
+    throw new Error('data.name property is required')
+  }
   return unpack(conn('organization').where('id', id).update(data).returning(orgAttributes))
 }
 
