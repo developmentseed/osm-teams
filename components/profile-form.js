@@ -59,6 +59,7 @@ export default class ProfileForm extends Component {
       this.setState({
         id,
         returnUrl,
+        team,
         memberAttributes,
         consentChecked,
         org,
@@ -76,12 +77,15 @@ export default class ProfileForm extends Component {
   }
 
   render () {
-    let { memberAttributes, orgAttributes, org, profileValues, returnUrl, consentChecked } = this.state
+    let { memberAttributes, orgAttributes, org, profileValues, returnUrl, consentChecked, team} = this.state
     profileValues = profileValues || {}
+
+    const teamName = prop('name', team) || 'team'
+    const orgName = prop('name', org) || 'org'
 
     return (
       <article className='inner page'>
-        <h1>Add Your Profile</h1>
+        <h1>Add Your Details!</h1>
         <Formik
           enableReinitialize
           initialValues={profileValues}
@@ -107,7 +111,7 @@ export default class ProfileForm extends Component {
               <Form>
                 {orgAttributes.length > 0
                   ? <>
-                    <h2>Org Profile</h2>
+                    <h2>Details for <b>{orgName}</b></h2>
                     {orgAttributes.map(attribute => {
                       return <div className='form-control form-control__vertical'>
                         <label>{attribute.name}
@@ -125,7 +129,7 @@ export default class ProfileForm extends Component {
                   </>
                   : ''
                 }
-                <h2>Team Profile</h2>
+                <h2>Details for <b>{teamName}</b></h2>
                 { memberAttributes.length > 0 ? memberAttributes.map(attribute => {
                   return <div className='form-control form-control__vertical'>
                     <label>{attribute.name}
@@ -144,11 +148,11 @@ export default class ProfileForm extends Component {
                 }
                 { org && org.privacy_policy
                   ? <div>
-                    <h3>Privacy Policy</h3>
-                    <span>
+                    <h2>Privacy Policy</h2>
+                    <div style={{maxHeight: '100px', width: '80%', overflow: 'scroll', marginBottom: '1rem'}}>
                       {org.privacy_policy.body}
-                    </span>
-                    <div>
+                    </div>
+                    <div style={{maxHeight: '100px', width: '80%', overflow: 'scroll'}}>
                       <input type='checkbox' checked={consentChecked} onChange={e => this.setConsentChecked(e.target.checked)} />
                       {org.privacy_policy.consentText}
                     </div>
