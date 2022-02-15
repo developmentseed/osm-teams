@@ -4,14 +4,10 @@ if (!process.env.NODE_ENV) {
   process.env.NODE_ENV = 'development'
 }
 
-if (process.env.DSN) {
-  DATABASE_URL = process.env.DSN
-} else {
-  if (process.env.NODE_ENV === 'development') {
-    DATABASE_URL = 'postgres://postgres@localhost/osm-teams?sslmode=disable'
-  } else if (process.env.NODE_ENV === 'test') {
-    DATABASE_URL = 'postgres://postgres@localhost/osm-teams-test?sslmode=disable'
-  }
+if (process.env.NODE_ENV === 'development') {
+  DATABASE_URL = 'postgres://postgres:postgres@localhost:5433/osm-teams?sslmode=disable'
+} else if (process.env.NODE_ENV === 'test') {
+  DATABASE_URL = 'postgres://postgres:postgres@localhost:5434/osm-teams?sslmode=disable'
 }
 
 module.exports = {

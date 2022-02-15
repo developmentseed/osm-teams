@@ -12,3 +12,4 @@ node_modules.nosync
 hydra-config/prod/prod.yml
 .nyc_output
 coverage
+docker-data/*

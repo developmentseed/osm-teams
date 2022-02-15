@@ -16,27 +16,18 @@
 Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
 <!-- markdownlint-enable MD034 -->
 
+## Development
 
-## Installation
+Install requirements:
 
-### Requirements
+- [nvm](https://github.com/creationix/nvm)
+- [Docker](https://www.docker.com)
 
-- [PostgreSQL](https://www.postgresql.org). On OS X, the easiest is to install [Postgres.app](https://postgresapp.com/).
-- [Node.js](https://nodejs.org) v12.16+
-- [Docker](https://www.docker.com/) & Docker Compose
+Visit your [OpenStreetMap settings](https://www.openstreetmap.org/account/edit) page and register an OAuth1 Client App:
 
-### Setting up Hydra
+![OSM Client App](oauth1-osm-client-app.png "OAuth1 page at OSM Website")
 
-1. Create the database for tokens
-
-    ```bash
-    createdb osm-teams
-    createdb osm-teams-test
-    ```
-
-    For the rest of this documentation, we will assume that the database location is `postgres://postgres@localhost/osm-teams?sslmode=disable` on your local machine. Inside docker, that location is `postgres://postgres@host.docker.internal/osm-teams?sslmode=disable`
-
-1. Create an `.env` file by copying `.env.sample` and replacing the values as needed. `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` are values obtained by creating a new OAuth app on openstreetmap.org. The .env file can contain:
+Create an `.env` file by copying `.env.sample` and replacing the values as needed. `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` are values available at the OAuth app page on openstreetmap.org. The .env file should contain:
 
     ```bash
     OSM_CONSUMER_KEY=<osm-teams-app>
@@ -44,25 +35,11 @@ Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
     DSN=postgres://postgres@host.docker.internal/osm-teams?sslmode=disable
     ```
 
-1. Build the docker images:
+Start Hydra and PostgreSQL with Docker:
 
-    ```bash
-    docker-compose -f compose.yml build
-    ```
+    docker-compose -f compose.dev.yml up --build
 
-1. Start Hydra and the server
-
-    ```bash
-    docker-compose -f compose.yml -f compose.dev.yml up
-    ```
-
-⚠️ In development, `docker-compose -f compose.yml -f compose.dev.yml up` enables hot module reloading while you make modifications to the code. `docker-compose up` should be used for production/staging deployments.
-
-This will start hydra where the token issuer is at `http://localhost:4444` and the admin interface is at `http://localhost:4445`. This also sets up the consent and login interface at `http://localhost:8989` (where we will create a first-party oauth app)
-
-### Setting up the OSM-teams app
-
-Create the [first-party](https://auth0.com/docs/applications/concepts/app-types-first-third-party) "manage" app
+On a separate terminal, create the [first-party](https://auth0.com/docs/applications/concepts/app-types-first-third-party) "manage" app:
 
 ```bash
 docker-compose exec hydra hydra clients create --endpoint http://localhost:4445 \
@@ -73,6 +50,22 @@ docker-compose exec hydra hydra clients create --endpoint http://localhost:4445 
   --scope openid,offline,clients \
   --callbacks http://localhost:8989/login/accept
 ```
+
+Install Node.js the required version (see [.nvmrc](.nvmrc) file):
+
+    nvm i
+
+Install Node.js modules:
+
+    yarn
+
+Migrate `dev-db` database:
+
+    yarn migrate
+
+Start development server:
+
+    yarn dev
 
 <!-- markdownlint-disable MD034 -->
 ✨ You can now login to the app at http://localhost:8989
