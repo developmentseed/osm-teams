@@ -39,31 +39,27 @@ services:
 
   dev-db:
     platform: linux/amd64
-    image: kartoza/postgis:13.0
+    image: mdillon/postgis:9.6-alpine
     restart: 'always'
     ports:
         - 5433:5432
     environment:
         - ALLOW_IP_RANGE=0.0.0.0/0
         - POSTGRES_DB=osm-teams
-        # - POSTGRES_USER=docker
-        # - POSTGRES_PASS=docker
-        - DATADIR=/opt/postgres/data
+        - PGDATA=/opt/postgres/data
     volumes:
         - ./docker-data/dev-db:/opt/postgres/data      
 
   test-db:
     platform: linux/amd64
-    image: kartoza/postgis:13.0
+    image: mdillon/postgis:9.6-alpine
     restart: 'always'
     ports:
         - 5434:5432
     environment:
         - ALLOW_IP_RANGE=0.0.0.0/0
-        - POSTGRES_DB=osm-teams
-        # - POSTGRES_USER=docker
-        # - POSTGRES_PASS=docker
-        - DATADIR=/opt/postgres/data
+        - POSTGRES_DB=osm-teams-test
+        - PGDATA=/opt/postgres/data
     volumes:
         - ./docker-data/test-db:/opt/postgres/data    
 
