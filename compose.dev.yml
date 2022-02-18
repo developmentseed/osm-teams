@@ -49,6 +49,8 @@ services:
         - PGDATA=/opt/postgres/data
     volumes:
         - ./docker-data/dev-db:/opt/postgres/data      
+    networks:
+      - intranet
 
   test-db:
     platform: linux/amd64
@@ -62,6 +64,8 @@ services:
         - PGDATA=/opt/postgres/data
     volumes:
         - ./docker-data/test-db:/opt/postgres/data    
+    networks:
+      - intranet
 
 networks:
   intranet:
