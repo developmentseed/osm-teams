@@ -1,4 +1,4 @@
-let DATABASE_URL = process.env.DATABASE_URL
+let DATABASE_URL = process.env.DSN || process.env.DATABASE_URL
 
 if (!DATABASE_URL) {
   if (process.env.NODE_ENV === 'development') {
