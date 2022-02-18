@@ -32,7 +32,7 @@ Create an `.env` file by copying `.env.sample` and replacing the values as neede
     ```bash
     OSM_CONSUMER_KEY=<osm-teams-app>
     OSM_CONSUMER_SECRET=<osm-teams-app-secret>
-    DSN=postgres://postgres@host.docker.internal:5433/osm-teams?sslmode=disable
+    DSN=postgres://postgres@dev-db/osm-teams?sslmode=disable
     ```
 
 Start Hydra and PostgreSQL with Docker:

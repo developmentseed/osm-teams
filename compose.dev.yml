@@ -19,8 +19,6 @@ services:
     depends_on:
       - hydra-migrate
     restart: always
-    networks:
-      - intranet
   
   hydra-migrate:
     image: oryd/hydra:v1.9.2
@@ -34,8 +32,6 @@ services:
     env_file:
       .env
     restart: on-failure
-    networks:
-      - intranet
 
   dev-db:
     platform: linux/amd64
@@ -48,9 +44,7 @@ services:
         - POSTGRES_DB=osm-teams
         - PGDATA=/opt/postgres/data
     volumes:
-        - ./docker-data/dev-db:/opt/postgres/data      
-    networks:
-      - intranet
+        - ./docker-data/dev-db:/opt/postgres/data
 
   test-db:
     platform: linux/amd64
@@ -64,8 +58,4 @@ services:
         - PGDATA=/opt/postgres/data
     volumes:
         - ./docker-data/test-db:/opt/postgres/data    
-    networks:
-      - intranet
 
-networks:
-  intranet:
