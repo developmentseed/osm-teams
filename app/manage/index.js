@@ -39,6 +39,8 @@ const {
   getOrgStaff
 } = require('./organizations')
 
+const { createBadge } = require('./badges')
+
 const {
   getUserTeamProfile,
   createProfileKeys,
@@ -127,6 +129,13 @@ function manageRouter (nextApp) {
 
   router.post('/api/organizations/:id/teams', can('organization:create-team'), createOrgTeam)
   router.get('/api/organizations/:id/teams', getOrgTeams)
+
+  // Organization badges
+  router.post(
+    '/api/organizations/:id/badge',
+    can('organization:edit'),
+    createBadge
+  )
 
   /**
    * List, Create, Read, Update, Delete operations on profiles
