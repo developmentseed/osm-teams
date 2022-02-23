@@ -48,7 +48,7 @@
     "knex-postgis": "^0.14.1",
     "leaflet": "^1.7.1",
     "leaflet-control-geocoder": "^1.13.0",
-    "next": "^8.0.1",
+    "next": "^12.1.0",
     "node-fetch": "^2.6.7",
     "passport-light": "^1.0.1",
     "passport-oauth": "^1.0.0",
