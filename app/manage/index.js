@@ -131,25 +131,25 @@ function manageRouter (nextApp) {
   router.get('/api/organizations/:id/teams', getOrgTeams)
 
   /**
-   * Badges routes
+   * Manage organization badges
    */
   router.get(
-    '/api/organizations/:id/badge',
+    '/api/organizations/:id/badges',
     can('organization:edit'),
     listBadges
   )
   router.post(
-    '/api/organizations/:id/badge',
+    '/api/organizations/:id/badges',
     can('organization:edit'),
     createBadge
   )
   router.patch(
-    '/api/organizations/:id/badge/:badgeId',
+    '/api/organizations/:id/badges/:badgeId',
     can('organization:edit'),
     patchBadge
   )
   router.delete(
-    '/api/organizations/:id/badge/:badgeId',
+    '/api/organizations/:id/badges/:badgeId',
     can('organization:edit'),
     deleteBadge
   )

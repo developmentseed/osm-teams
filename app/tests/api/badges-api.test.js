@@ -109,7 +109,7 @@ test('Create badge', async (t) => {
   // Owners can create badges
   badge1 = (
     await orgOwner.agent
-      .post(`/api/organizations/${org1.id}/badge`)
+      .post(`/api/organizations/${org1.id}/badges`)
       .send({ name: 'badge 1', color: 'red' })
       .expect(200)
   ).body
@@ -123,19 +123,19 @@ test('Create badge', async (t) => {
 
   // Manager are not allowed
   await orgManager.agent
-    .post(`/api/organizations/${org1.id}/badge`)
+    .post(`/api/organizations/${org1.id}/badges`)
     .send({ name: 'badge 1', color: 'red' })
     .expect(401)
 
   // Org Team Members are not allowed
   await orgTeamMember.agent
-    .post(`/api/organizations/${org1.id}/badge`)
+    .post(`/api/organizations/${org1.id}/badges`)
     .send({ name: 'badge 1', color: 'red' })
     .expect(401)
 
   // Non-members are not-allowed
   await notOrgMember.agent
-    .post(`/api/organizations/${org1.id}/badge`)
+    .post(`/api/organizations/${org1.id}/badges`)
     .send({ name: 'badge 1', color: 'red' })
     .expect(401)
 })
@@ -147,7 +147,7 @@ test('Patch badge', async (t) => {
   // Allow owners
   let patchedBadge = (
     await orgOwner.agent
-      .patch(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+      .patch(`/api/organizations/${org1.id}/badges/${badge1.id}`)
       .send({ name: 'badge number 1', color: 'blue' })
       .expect(200)
   ).body
@@ -161,19 +161,19 @@ test('Patch badge', async (t) => {
 
   // Disallow managers
   await orgManager.agent
-    .patch(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+    .patch(`/api/organizations/${org1.id}/badges/${badge1.id}`)
     .send({ name: 'badge 1', color: 'red' })
     .expect(401)
 
   // Disallow org team Members
   await orgManager.agent
-    .patch(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+    .patch(`/api/organizations/${org1.id}/badges/${badge1.id}`)
     .send({ name: 'badge 1', color: 'red' })
     .expect(401)
 
   // Disallow non-members
   await notOrgMember.agent
-    .patch(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+    .patch(`/api/organizations/${org1.id}/badges/${badge1.id}`)
     .send({ name: 'badge 1', color: 'red' })
     .expect(401)
 })
@@ -184,19 +184,19 @@ test('Patch badge', async (t) => {
 test('List badges', async (t) => {
   // Add more badges
   await orgOwner.agent
-    .post(`/api/organizations/${org1.id}/badge`)
+    .post(`/api/organizations/${org1.id}/badges`)
     .send({ name: 'badge number 2', color: 'green' })
     .expect(200)
 
   // Add more badges
   await orgOwner.agent
-    .post(`/api/organizations/${org1.id}/badge`)
+    .post(`/api/organizations/${org1.id}/badges`)
     .send({ name: 'badge number 3', color: 'yellow' })
     .expect(200)
 
   // Owners can list badges
   const badgesList = (
-    await orgOwner.agent.get(`/api/organizations/${org1.id}/badge`).expect(200)
+    await orgOwner.agent.get(`/api/organizations/${org1.id}/badges`).expect(200)
   ).body
 
   t.deepEqual(badgesList, [
@@ -227,27 +227,27 @@ test('List badges', async (t) => {
 test('Delete badge', async (t) => {
   // Disallow managers
   await orgManager.agent
-    .delete(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+    .delete(`/api/organizations/${org1.id}/badges/${badge1.id}`)
     .expect(401)
 
   // Disallow org team Members
   await orgManager.agent
-    .delete(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+    .delete(`/api/organizations/${org1.id}/badges/${badge1.id}`)
     .expect(401)
 
   // Disallow non-members
   await notOrgMember.agent
-    .delete(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+    .delete(`/api/organizations/${org1.id}/badges/${badge1.id}`)
     .expect(401)
 
   // Allow owners
   await orgOwner.agent
-    .delete(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+    .delete(`/api/organizations/${org1.id}/badges/${badge1.id}`)
     .expect(200)
 
   // Check if badge list has changed
   const badgesList = (
-    await orgOwner.agent.get(`/api/organizations/${org1.id}/badge`).expect(200)
+    await orgOwner.agent.get(`/api/organizations/${org1.id}/badges`).expect(200)
   ).body
 
   t.deepEqual(badgesList, [
