@@ -17,15 +17,35 @@ const migrationsDirectory = path.join(
 
 let app
 let dbClient
-let orgAdminAgent
+let org1
+let orgTeam1
+let orgOwner = {
+  id: 1
+}
+let orgManager = {
+  id: 2
+}
+let orgTeamMember = {
+  id: 3
+}
+let notOrgMember = {
+  id: 4
+}
+let badge1
+
 let introspectStub = sinon.stub(hydra, 'introspect')
 
 async function createUserAgent ({ id }) {
+  // Add user to db
   await dbClient('users').insert({ id })
+
+  // Mock hydra auth
   introspectStub.withArgs(`user${id}`).returns({
     active: true,
     sub: `${id}`
   })
+
+  // Return agent with auth token
   return require('supertest')
     .agent(app)
     .set('Authorization', `Bearer user${id}`)
@@ -44,9 +64,38 @@ test.before(async () => {
   console.log('Starting server...')
   app = await require('../../index')()
 
-  // seed
+  // Create user agents
   console.log('Creating agents...')
-  orgAdminAgent = await createUserAgent({ id: 1 })
+  orgOwner.agent = await createUserAgent(orgOwner)
+  orgManager.agent = await createUserAgent(orgManager)
+  orgTeamMember.agent = await createUserAgent(orgTeamMember)
+  notOrgMember.agent = await createUserAgent(notOrgMember)
+
+  // Create organization
+  org1 = (
+    await orgOwner.agent
+      .post('/api/organizations')
+      .send({ name: 'Organization 1' })
+      .expect(200)
+  ).body
+
+  // Create a team
+  orgTeam1 = (
+    await orgOwner.agent
+      .post(`/api/organizations/${org1.id}/teams`)
+      .send({ name: 'Organization 1 - Team 1' })
+      .expect(200)
+  ).body
+
+  // Add team member
+  await orgOwner.agent
+    .put(`/api/team/${orgTeam1.id}/${orgTeamMember.id}`)
+    .expect(200)
+
+  // Add manager
+  await orgOwner.agent
+    .put(`/api/organizations/${org1.id}/addManager/${orgManager.id}`)
+    .expect(200)
 })
 
 test.after.always(async () => {
@@ -54,25 +103,79 @@ test.after.always(async () => {
 })
 
 /**
- * Test create an organization
+ * CREATE BADGE
  */
 test('Add badge to organization', async (t) => {
-  const { body: org1 } = await orgAdminAgent
-    .post('/api/organizations')
-    .send({ name: 'create an organization' })
-    .expect(200)
-
-  const { body: badge1 } = await orgAdminAgent
-    .post(`/api/organizations/${org1.id}/badge`)
-    .send({ name: 'badge 1', color: 'red' })
-    .expect(200)
+  // Owners can create badges
+  badge1 = (
+    await orgOwner.agent
+      .post(`/api/organizations/${org1.id}/badge`)
+      .send({ name: 'badge 1', color: 'red' })
+      .expect(200)
+  ).body
 
   t.deepEqual(badge1, {
     id: 1,
-    organization_id: org1.id,
+    organization_id: 1,
     name: 'badge 1',
     color: 'red'
   })
+
+  // Manager are not allowed
+  await orgManager.agent
+    .post(`/api/organizations/${org1.id}/badge`)
+    .send({ name: 'badge 1', color: 'red' })
+    .expect(401)
+
+  // Org Team Members are not allowed
+  await orgTeamMember.agent
+    .post(`/api/organizations/${org1.id}/badge`)
+    .send({ name: 'badge 1', color: 'red' })
+    .expect(401)
+
+  // Non-members are not-allowed
+  await notOrgMember.agent
+    .post(`/api/organizations/${org1.id}/badge`)
+    .send({ name: 'badge 1', color: 'red' })
+    .expect(401)
+})
+
+/**
+ * PATCH BADGE
+ */
+test('Patch badge', async (t) => {
+  // Allow owners
+  let patchedBadge = (
+    await orgOwner.agent
+      .patch(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+      .send({ name: 'badge number 1', color: 'blue' })
+      .expect(200)
+  ).body
+
+  t.deepEqual(patchedBadge, {
+    id: 1,
+    organization_id: 1,
+    name: 'badge number 1',
+    color: 'blue'
+  })
+
+  // Disallow managers
+  await orgManager.agent
+    .patch(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+    .send({ name: 'badge 1', color: 'red' })
+    .expect(401)
+
+  // Disallow org team Members
+  await orgManager.agent
+    .patch(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+    .send({ name: 'badge 1', color: 'red' })
+    .expect(401)
+
+  // Disallow non-members
+  await notOrgMember.agent
+    .patch(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+    .send({ name: 'badge 1', color: 'red' })
+    .expect(401)
 })
 
 // Badge creation

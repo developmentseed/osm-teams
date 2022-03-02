@@ -39,7 +39,7 @@ const {
   getOrgStaff
 } = require('./organizations')
 
-const { createBadge } = require('./badges')
+const { createBadge, patchBadge} = require('./badges')
 
 const {
   getUserTeamProfile,
@@ -135,6 +135,11 @@ function manageRouter (nextApp) {
     '/api/organizations/:id/badge',
     can('organization:edit'),
     createBadge
+  )
+  router.patch(
+    '/api/organizations/:id/badge/:badgeId',
+    can('organization:edit'),
+    patchBadge
   )
 
   /**
