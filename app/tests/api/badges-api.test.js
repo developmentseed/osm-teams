@@ -178,6 +178,94 @@ test('Patch badge', async (t) => {
     .expect(401)
 })
 
+/**
+ * LIST BADGES
+ */
+test('List badges', async (t) => {
+  // Add more badges
+  await orgOwner.agent
+    .post(`/api/organizations/${org1.id}/badge`)
+    .send({ name: 'badge number 2', color: 'green' })
+    .expect(200)
+
+  // Add more badges
+  await orgOwner.agent
+    .post(`/api/organizations/${org1.id}/badge`)
+    .send({ name: 'badge number 3', color: 'yellow' })
+    .expect(200)
+
+  // Owners can list badges
+  const badgesList = (
+    await orgOwner.agent.get(`/api/organizations/${org1.id}/badge`).expect(200)
+  ).body
+
+  t.deepEqual(badgesList, [
+    {
+      id: 1,
+      organization_id: 1,
+      name: 'badge number 1',
+      color: 'blue'
+    },
+    {
+      id: 2,
+      organization_id: 1,
+      name: 'badge number 2',
+      color: 'green'
+    },
+    {
+      id: 3,
+      organization_id: 1,
+      name: 'badge number 3',
+      color: 'yellow'
+    }
+  ])
+})
+
+/**
+ * DELETE BADGE
+ */
+test('Delete badge', async (t) => {
+  // Disallow managers
+  await orgManager.agent
+    .delete(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+    .expect(401)
+
+  // Disallow org team Members
+  await orgManager.agent
+    .delete(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+    .expect(401)
+
+  // Disallow non-members
+  await notOrgMember.agent
+    .delete(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+    .expect(401)
+
+  // Allow owners
+  await orgOwner.agent
+    .delete(`/api/organizations/${org1.id}/badge/${badge1.id}`)
+    .expect(200)
+
+  // Check if badge list has changed
+  const badgesList = (
+    await orgOwner.agent.get(`/api/organizations/${org1.id}/badge`).expect(200)
+  ).body
+
+  t.deepEqual(badgesList, [
+    {
+      id: 2,
+      organization_id: 1,
+      name: 'badge number 2',
+      color: 'green'
+    },
+    {
+      id: 3,
+      organization_id: 1,
+      name: 'badge number 3',
+      color: 'yellow'
+    }
+  ])
+})
+
 // Badge creation
 // - Only org admins can create badges
 // - Only org admins can edit badges

@@ -20,6 +20,27 @@ function route ({ validate, handler }) {
 }
 
 module.exports = {
+  listBadges: route({
+    validate: {
+      params: yup
+        .object({
+          id: yup.number().required().positive().integer()
+        })
+        .required()
+    },
+    handler: async function (req, reply) {
+      try {
+        const conn = await db()
+        const badges = await conn('organization_badge')
+          .select('*')
+          .where('organization_id', req.params.id)
+        reply.send(badges)
+      } catch (err) {
+        console.log(err)
+        return reply.boom.badRequest(err.message)
+      }
+    }
+  }),
   createBadge: route({
     validate: {
       params: yup
@@ -73,6 +94,27 @@ module.exports = {
           .where('id', req.params.badgeId)
           .returning('*')
         reply.send(badge)
+      } catch (err) {
+        console.log(err)
+        return reply.boom.badRequest(err.message)
+      }
+    }
+  }),
+  deleteBadge: route({
+    validate: {
+      params: yup
+        .object({
+          badgeId: yup.number().required().positive().integer()
+        })
+        .required()
+    },
+    handler: async function (req, reply) {
+      try {
+        const conn = await db()
+        await conn('organization_badge')
+          .delete()
+          .where('id', req.params.badgeId)
+        return reply.sendStatus(200)
       } catch (err) {
         console.log(err)
         return reply.boom.badRequest(err.message)
