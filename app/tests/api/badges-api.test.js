@@ -105,7 +105,7 @@ test.after.always(async () => {
 /**
  * CREATE BADGE
  */
-test('Add badge to organization', async (t) => {
+test('Create badge', async (t) => {
   // Owners can create badges
   badge1 = (
     await orgOwner.agent

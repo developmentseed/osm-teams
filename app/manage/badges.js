@@ -49,5 +49,34 @@ module.exports = {
         return reply.boom.badRequest(err.message)
       }
     }
+  }),
+  patchBadge: route({
+    validate: {
+      params: yup
+        .object({
+          id: yup.number().required().positive().integer(),
+          badgeId: yup.number().required().positive().integer()
+        })
+        .required(),
+      body: yup
+        .object({
+          name: yup.string().optional(),
+          color: yup.string().optional()
+        })
+        .required()
+    },
+    handler: async function (req, reply) {
+      try {
+        const conn = await db()
+        const [badge] = await conn('organization_badge')
+          .update(req.body)
+          .where('id', req.params.badgeId)
+          .returning('*')
+        reply.send(badge)
+      } catch (err) {
+        console.log(err)
+        return reply.boom.badRequest(err.message)
+      }
+    }
   })
 }
