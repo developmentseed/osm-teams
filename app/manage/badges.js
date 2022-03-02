@@ -1,5 +1,6 @@
 const db = require('../db')
 const yup = require('yup')
+const organization = require('../lib/organization')
 
 function route ({ validate, handler }) {
   return async (req, reply) => {
@@ -115,6 +116,38 @@ module.exports = {
           .delete()
           .where('id', req.params.badgeId)
         return reply.sendStatus(200)
+      } catch (err) {
+        console.log(err)
+        return reply.boom.badRequest(err.message)
+      }
+    }
+  }),
+  assignUserBadge: route({
+    validate: {
+      params: yup
+        .object({
+          id: yup.number().required().positive().integer(),
+          badgeId: yup.number().required().positive().integer(),
+          userId: yup.number().required().positive().integer()
+        })
+        .required()
+    },
+    handler: async function (req, reply) {
+      try {
+        const conn = await db()
+
+        // user is member
+        await organization.isMember(req.params.id, req.params.userId)
+
+        // assign badge
+        const [badge] = await conn('user_badge')
+          .insert({
+            user_id: req.params.userId,
+            badge_id: req.params.badgeId
+          })
+          .returning('*')
+
+        reply.send(badge)
       } catch (err) {
         console.log(err)
         return reply.boom.badRequest(err.message)

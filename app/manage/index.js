@@ -39,7 +39,7 @@ const {
   getOrgStaff
 } = require('./organizations')
 
-const { createBadge, patchBadge, deleteBadge, listBadges } = require('./badges')
+const { createBadge, patchBadge, deleteBadge, listBadges, assignUserBadge } = require('./badges')
 
 const {
   getUserTeamProfile,
@@ -153,6 +153,25 @@ function manageRouter (nextApp) {
     can('organization:edit'),
     deleteBadge
   )
+
+  /**
+   * Manage organization member badges
+   */
+  router.post(
+    '/api/organizations/:id/badges/:badgeId/assign/:userId',
+    can('organization:edit'),
+    assignUserBadge
+  )
+  // router.patch(
+  //   '/api/organizations/:id/badges/:badgeId/assign/:userId',
+  //   can('organization:edit'),
+  //   updateUserBadge
+  // )
+  // router.delete(
+  //   '/api/organizations/:id/badges/:badgeId/remove/:userId',
+  //   can('organization:edit'),
+  //   removeUserBadge
+  // )
 
   /**
    * List, Create, Read, Update, Delete operations on profiles

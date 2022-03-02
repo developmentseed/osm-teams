@@ -31,7 +31,7 @@ let orgTeamMember = {
 let notOrgMember = {
   id: 4
 }
-let badge1
+let badge1, badge2
 
 let introspectStub = sinon.stub(hydra, 'introspect')
 
@@ -183,10 +183,10 @@ test('Patch badge', async (t) => {
  */
 test('List badges', async (t) => {
   // Add more badges
-  await orgOwner.agent
+  badge2 = (await orgOwner.agent
     .post(`/api/organizations/${org1.id}/badges`)
     .send({ name: 'badge number 2', color: 'green' })
-    .expect(200)
+    .expect(200)).body
 
   // Add more badges
   await orgOwner.agent
@@ -266,8 +266,35 @@ test('Delete badge', async (t) => {
   ])
 })
 
-// Badge creation
-// - Only org admins can create badges
-// - Only org admins can edit badges
-// - Moderators can assign/edit/remove badges
-// - Badges are include in user profile
+/**
+ * ASSIGN BADGE
+ */
+test('Assign badge', async (t) => {
+  const assignBadgeRoute = `/api/organizations/${org1.id}/badges/${badge2.id}/assign/${orgTeamMember.id}`
+
+  // Disallow managers
+  await orgManager.agent
+    .post(assignBadgeRoute)
+    .expect(401)
+
+  // Disallow org team Members
+  await orgManager.agent
+    .post(assignBadgeRoute)
+    .expect(401)
+
+  // Disallow non-members
+  await notOrgMember.agent
+    .post(assignBadgeRoute)
+    .expect(401)
+
+  // Allow owners
+  const badgeAssignment = (await orgOwner.agent
+    .post(`/api/organizations/${org1.id}/badges/${badge2.id}/assign/${orgTeamMember.id}`)
+    .expect(200)).body
+
+  t.like(badgeAssignment, {
+    badge_id: badge2.id,
+    user_id: orgTeamMember.id
+  })
+  t.falsy(badgeAssignment.assignedAt)
+})
