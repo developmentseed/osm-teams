@@ -179,5 +179,42 @@ module.exports = {
         return reply.boom.badRequest(err.message)
       }
     }
+  }),
+  updateUserBadge: route({
+    validate: {
+      params: yup
+        .object({
+          badgeId: yup.number().required().positive().integer(),
+          userId: yup.number().required().positive().integer()
+        })
+        .required(),
+      body: yup
+        .object({
+          assigned_at: yup.date().optional(),
+          valid_until: yup.date().optional()
+        })
+    },
+    handler: async function (req, reply) {
+      try {
+        const conn = await db()
+
+        // assign badge
+        const [badge] = await conn('user_badge')
+          .update({
+            assigned_at: req.body.assigned_at,
+            valid_until: req.body.valid_until
+          })
+          .where({
+            user_id: req.params.userId,
+            badge_id: req.params.badgeId
+          })
+          .returning('*')
+
+        reply.send(badge)
+      } catch (err) {
+        console.log(err)
+        return reply.boom.badRequest(err.message)
+      }
+    }
   })
 }

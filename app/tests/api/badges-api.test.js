@@ -166,7 +166,7 @@ test('Patch badge', async (t) => {
     .expect(401)
 
   // Disallow org team Members
-  await orgManager.agent
+  await orgTeamMember.agent
     .patch(`/api/organizations/${org1.id}/badges/${badge1.id}`)
     .send({ name: 'badge 1', color: 'red' })
     .expect(401)
@@ -243,7 +243,7 @@ test('Delete badge', async (t) => {
     .expect(401)
 
   // Disallow org team Members
-  await orgManager.agent
+  await orgTeamMember.agent
     .delete(`/api/organizations/${org1.id}/badges/${badge1.id}`)
     .expect(401)
 
@@ -296,7 +296,7 @@ test('Assign badge', async (t) => {
     .expect(401)
 
   // Disallow org team Members
-  await orgManager.agent
+  await orgTeamMember.agent
     .post(assignBadgeRoute)
     .expect(401)
 
@@ -354,3 +354,23 @@ test('List user badges', async (t) => {
   ] })
 })
 
+/**
+ * UPDATE BADGE
+ */
+test('Update badge', async (t) => {
+  const updateBadgeRoute = `/api/organizations/${org1.id}/member/${orgTeamMember.id}/badge/${badge2.id}`
+
+  // Allow owners
+  const badgeAssignment = (await orgOwner.agent
+    .patch(updateBadgeRoute)
+    .send({
+      valid_until: '2021-01-01Z'
+    })
+    .expect(200)).body
+
+  t.like(badgeAssignment, {
+    badge_id: badge2.id,
+    user_id: orgTeamMember.id,
+    valid_until: '2021-01-01T00:00:00.000Z'
+  })
+})
