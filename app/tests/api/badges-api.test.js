@@ -1,19 +1,10 @@
-const path = require('path')
 const test = require('ava')
 const sinon = require('sinon')
 
 const db = require('../../db')
 const hydra = require('../../lib/hydra')
 
-const { dropTables } = require('../utils')
-
-const migrationsDirectory = path.join(
-  __dirname,
-  '..',
-  '..',
-  'db',
-  'migrations'
-)
+const { resetDb } = require('../utils')
 
 let app
 let dbClient
@@ -55,11 +46,7 @@ test.before(async () => {
   console.log('Connecting to test database...')
   dbClient = await db()
 
-  console.log('Dropping tables...')
-  await dropTables(dbClient)
-
-  console.log('Migrating...')
-  await dbClient.migrate.latest({ directory: migrationsDirectory })
+  await resetDb(dbClient)
 
   console.log('Starting server...')
   app = await require('../../index')()

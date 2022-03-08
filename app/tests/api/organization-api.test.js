@@ -1,19 +1,18 @@
-const path = require('path')
 const test = require('ava')
 const sinon = require('sinon')
 
 const db = require('../../db')
+const { resetDb } = require('../utils')
 const team = require('../../lib/team')
 const organization = require('../../lib/organization')
 const permissions = require('../../manage/permissions')
-
-const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
 
 let agent
 
 test.before(async () => {
   const conn = await db()
-  await conn.migrate.latest({ directory: migrationsDirectory })
+
+  await resetDb(conn)
 
   // seed
   await conn('users').insert({ id: 1 })
@@ -34,12 +33,6 @@ test.before(async () => {
   sinon.stub(permissions, 'check').callsFake(middleware)
 
   agent = require('supertest').agent(await require('../../index')())
-})
-
-test.after.always(async () => {
-  const conn = await db()
-  await conn.migrate.rollback({ directory: migrationsDirectory })
-  conn.destroy()
 })
 
 /**
