@@ -1,6 +1,7 @@
 const db = require('../db')
 const yup = require('yup')
 const organization = require('../lib/organization')
+const profile = require('../lib/profile')
 
 function route ({ validate, handler }) {
   return async (req, reply) => {
@@ -130,7 +131,12 @@ module.exports = {
           badgeId: yup.number().required().positive().integer(),
           userId: yup.number().required().positive().integer()
         })
-        .required()
+        .required(),
+      body: yup
+        .object({
+          assigned_at: yup.date().optional(),
+          valid_until: yup.date().optional()
+        })
     },
     handler: async function (req, reply) {
       try {
@@ -143,11 +149,31 @@ module.exports = {
         const [badge] = await conn('user_badge')
           .insert({
             user_id: req.params.userId,
-            badge_id: req.params.badgeId
+            badge_id: req.params.badgeId,
+            assigned_at: req.body.assigned_at,
+            valid_until: req.body.valid_until
           })
           .returning('*')
 
         reply.send(badge)
+      } catch (err) {
+        console.log(err)
+        return reply.boom.badRequest(err.message)
+      }
+    }
+  }),
+  listUserBadges: route({
+    validate: {
+      params: yup
+        .object({
+          userId: yup.number().required().positive().integer()
+        })
+        .required()
+    },
+    handler: async function (req, reply) {
+      try {
+        const badges = await profile.getUserBadges(req.params.userId)
+        reply.send({ badges })
       } catch (err) {
         console.log(err)
         return reply.boom.badRequest(err.message)

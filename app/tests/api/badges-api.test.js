@@ -31,7 +31,7 @@ let orgTeamMember = {
 let notOrgMember = {
   id: 4
 }
-let badge1, badge2
+let badge1, badge2, badge3
 
 let introspectStub = sinon.stub(hydra, 'introspect')
 
@@ -189,9 +189,15 @@ test('List badges', async (t) => {
     .expect(200)).body
 
   // Add more badges
-  await orgOwner.agent
+  badge3 = (await orgOwner.agent
     .post(`/api/organizations/${org1.id}/badges`)
     .send({ name: 'badge number 3', color: 'yellow' })
+    .expect(200)).body
+
+  // Add more badges
+  await orgOwner.agent
+    .post(`/api/organizations/${org1.id}/badges`)
+    .send({ name: 'badge number 4', color: 'pink' })
     .expect(200)
 
   // Owners can list badges
@@ -217,6 +223,12 @@ test('List badges', async (t) => {
       organization_id: 1,
       name: 'badge number 3',
       color: 'yellow'
+    },
+    {
+      id: 4,
+      organization_id: 1,
+      name: 'badge number 4',
+      color: 'pink'
     }
   ])
 })
@@ -262,6 +274,12 @@ test('Delete badge', async (t) => {
       organization_id: 1,
       name: 'badge number 3',
       color: 'yellow'
+    },
+    {
+      id: 4,
+      organization_id: 1,
+      name: 'badge number 4',
+      color: 'pink'
     }
   ])
 })
@@ -290,11 +308,49 @@ test('Assign badge', async (t) => {
   // Allow owners
   const badgeAssignment = (await orgOwner.agent
     .post(`/api/organizations/${org1.id}/badges/${badge2.id}/assign/${orgTeamMember.id}`)
+    .send({ assigned_at: '2020-02-02T00:00:00.000Z', valid_until: '2020-05-05T00:00:00.000Z' })
     .expect(200)).body
 
   t.like(badgeAssignment, {
     badge_id: badge2.id,
-    user_id: orgTeamMember.id
+    user_id: orgTeamMember.id,
+    assigned_at: '2020-02-02T00:00:00.000Z',
+    valid_until: '2020-05-05T00:00:00.000Z'
   })
   t.falsy(badgeAssignment.assignedAt)
 })
+
+/**
+ * LIST USER BADGES
+ */
+test('List user badges', async (t) => {
+  // Assign badge 3
+  await orgOwner.agent
+    .post(`/api/organizations/${org1.id}/badges/${badge3.id}/assign/${orgTeamMember.id}`)
+    .send({ assigned_at: '2020-07-07T00:00:00.000Z', valid_until: '2020-08-08T00:00:00.000Z' })
+    .expect(200)
+
+  const badges = (await orgManager.agent
+    .get(`/api/user/${orgTeamMember.id}/badges`)
+    .expect(200)).body
+
+  t.like(badges, { badges: [
+    {
+      id: 2,
+      organization_id: 1,
+      name: 'badge number 2',
+      color: 'green',
+      assigned_at: '2020-02-02T00:00:00.000Z',
+      valid_until: '2020-05-05T00:00:00.000Z'
+    },
+    {
+      id: 3,
+      organization_id: 1,
+      name: 'badge number 3',
+      color: 'yellow',
+      assigned_at: '2020-07-07T00:00:00.000Z',
+      valid_until: '2020-08-08T00:00:00.000Z'
+    }
+  ] })
+})
+
