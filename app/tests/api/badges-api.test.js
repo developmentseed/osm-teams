@@ -360,6 +360,21 @@ test('List user badges', async (t) => {
 test('Update badge', async (t) => {
   const updateBadgeRoute = `/api/organizations/${org1.id}/member/${orgTeamMember.id}/badge/${badge2.id}`
 
+  // Disallow managers
+  await orgManager.agent
+    .patch(updateBadgeRoute)
+    .expect(401)
+
+  // Disallow org team Members
+  await orgTeamMember.agent
+    .patch(updateBadgeRoute)
+    .expect(401)
+
+  // Disallow non-members
+  await notOrgMember.agent
+    .patch(updateBadgeRoute)
+    .expect(401)
+
   // Allow owners
   const badgeAssignment = (await orgOwner.agent
     .patch(updateBadgeRoute)
@@ -373,4 +388,46 @@ test('Update badge', async (t) => {
     user_id: orgTeamMember.id,
     valid_until: '2021-01-01T00:00:00.000Z'
   })
+})
+
+/**
+ * REMOVE BADGE
+ */
+test('Remove badge', async (t) => {
+  const removeBadgeRoute = `/api/organizations/${org1.id}/member/${orgTeamMember.id}/badge/${badge2.id}`
+
+  // Disallow managers
+  await orgManager.agent
+    .delete(removeBadgeRoute)
+    .expect(401)
+
+  // Disallow org team Members
+  await orgTeamMember.agent
+    .delete(removeBadgeRoute)
+    .expect(401)
+
+  // Disallow non-members
+  await notOrgMember.agent
+    .delete(removeBadgeRoute)
+    .expect(401)
+
+  // Allow owners
+  await orgOwner.agent
+    .delete(removeBadgeRoute)
+    .expect(200)
+
+  const badges = (await orgManager.agent
+    .get(`/api/user/${orgTeamMember.id}/badges`)
+    .expect(200)).body
+
+  t.like(badges, { badges: [
+    {
+      id: 3,
+      organization_id: 1,
+      name: 'badge number 3',
+      color: 'yellow',
+      assigned_at: '2020-07-07T00:00:00.000Z',
+      valid_until: '2020-08-08T00:00:00.000Z'
+    }
+  ] })
 })

@@ -216,5 +216,33 @@ module.exports = {
         return reply.boom.badRequest(err.message)
       }
     }
+  }),
+  removeUserBadge: route({
+    validate: {
+      params: yup
+        .object({
+          badgeId: yup.number().required().positive().integer(),
+          userId: yup.number().required().positive().integer()
+        })
+        .required()
+    },
+    handler: async function (req, reply) {
+      try {
+        const conn = await db()
+
+        // delete user badge
+        await conn('user_badge')
+          .delete()
+          .where({
+            user_id: req.params.userId,
+            badge_id: req.params.badgeId
+          })
+
+        reply.sendStatus(200)
+      } catch (err) {
+        console.log(err)
+        return reply.boom.badRequest(err.message)
+      }
+    }
   })
 }

@@ -46,7 +46,8 @@ const {
   listBadges,
   assignUserBadge,
   listUserBadges,
-  updateUserBadge
+  updateUserBadge,
+  removeUserBadge
 } = require('./badges')
 
 const {
@@ -181,16 +182,11 @@ function manageRouter (nextApp) {
     updateUserBadge
   )
 
-  // router.patch(
-  //   '/api/organizations/:id/badges/:badgeId/assign/:userId',
-  //   can('organization:edit'),
-  //   updateUserBadge
-  // )
-  // router.delete(
-  //   '/api/organizations/:id/badges/:badgeId/remove/:userId',
-  //   can('organization:edit'),
-  //   removeUserBadge
-  // )
+  router.delete(
+    `/api/organizations/:id/member/:userId/badge/:badgeId`,
+    can('organization:edit'),
+    removeUserBadge
+  )
 
   /**
    * List, Create, Read, Update, Delete operations on profiles
