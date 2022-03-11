@@ -2,6 +2,19 @@
   "name": "osm-teams",
   "version": "0.2.0",
   "description": "Teams for OpenStreetMap!",
+  "homepage": "https://mapping.team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/developmentseed/osm-teams.git"
+  },
+  "bugs": {
+    "url": "https://github.com/developmentseed/osm-teams/issues"
+  },
+  "author": {
+    "name": "Development Seed",
+    "url": "https://developmentseed.org"
+  },
+  "license": "MIT",
   "scripts": {
     "docs:validate": "swagger-cli validate docs/api.yml",
     "docs:api": "swagger-markdown -i docs/api.yml -o docs/api.md",
@@ -12,8 +25,7 @@
     "lint": "devseed-standard",
     "lintfix": "devseed-standard --fix",
     "build": "next build",
-    "start": "NODE_ENV=production node app/index.js",
-    "sandbox": "budo sandbox/index.js --dir sandbox/ --live"
+    "start": "NODE_ENV=production node app/index.js"
   },
   "browserify": {
     "transform": [
@@ -85,7 +97,6 @@
     "@babel/preset-react": "^7.16.7",
     "ava": "^3.15.0",
     "babelify": "^10.0.0",
-    "budo": "^11.6.4",
     "devseed-standard": "^1.1.0",
     "nodemon": "^1.19.4",
     "nyc": "^15.1.0",
