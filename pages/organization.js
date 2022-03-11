@@ -11,7 +11,24 @@ import Button from '../components/button'
 import Modal from 'react-modal'
 import ProfileModal from '../components/profile-modal'
 import { assoc, propEq, find, contains, prop, map } from 'ramda'
+import APIClient from '../lib/api-client'
 
+const apiClient = new APIClient()
+
+export function SectionWrapper (props) {
+  return (
+    <div>
+      {props.children}
+      <style jsx>
+        {`
+          div {
+            grid-column: 1 / span 12;
+          }
+        `}
+      </style>
+    </div>
+  )
+}
 export default class Organization extends Component {
   static async getInitialProps ({ query }) {
     if (query) {
@@ -36,11 +53,14 @@ export default class Organization extends Component {
     }
 
     this.closeProfileModal = this.closeProfileModal.bind(this)
+    this.renderBadges = this.renderBadges.bind(this)
+    this.getBadges = this.getBadges.bind(this)
   }
 
   async componentDidMount () {
     await this.getOrg()
     await this.getOrgStaff()
+    await this.getBadges()
     return this.getMembers(0)
   }
 
@@ -157,6 +177,63 @@ export default class Organization extends Component {
         (row) => this.openProfileModal(row)
       }
     />
+  }
+
+  async getBadges () {
+    try {
+      const { id: orgId } = this.props
+
+      const badges = await apiClient.get(`/organizations/${orgId}/badges`)
+      this.setState({
+        badges
+      })
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e,
+        team: null,
+        loading: false
+      })
+    }
+  }
+
+  renderBadges () {
+    const self = this
+    const { id: orgId } = this.props
+    const columns = [
+      { key: 'name' },
+      { key: 'color' }
+    ]
+
+    async function addBadge () {
+      try {
+        await apiClient.post(`/organizations/${orgId}/badges`, {
+          name: 'badge 1',
+          color: 'red'
+        })
+        self.getBadges()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    return <SectionWrapper>
+      <Section>
+        <div className='section-actions'>
+          <SectionHeader>Badges</SectionHeader>
+          <div>
+            <Button variant='primary small' onClick={() => addBadge()}>Add</Button>
+          </div>
+        </div>
+      </Section>
+      {
+        this.state.badges && <Table
+          rows={this.state.badges}
+          columns={columns}
+        />
+      }
+
+    </SectionWrapper>
   }
 
   renderMembers (memberRows) {
@@ -296,6 +373,7 @@ export default class Organization extends Component {
             {!this.state.loading ? this.renderMembers(members) : 'Loading...'}
           </div>
         ) : <div />}
+        {this.renderBadges()}
         <Modal style={{
           content: {
             maxWidth: '400px',
