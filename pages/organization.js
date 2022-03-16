@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Router from 'next/router'
 import { getOrg, getOrgStaff, getMembers, addManager, removeManager, addOwner, removeOwner } from '../lib/org-api'
 import { getUserOrgProfile } from '../lib/profiles-api'
 import Card from '../components/card'
@@ -12,6 +13,11 @@ import Modal from 'react-modal'
 import ProfileModal from '../components/profile-modal'
 import { assoc, propEq, find, contains, prop, map } from 'ramda'
 import APIClient from '../lib/api-client'
+import getConfig from 'next/config'
+import join from 'url-join'
+
+const { publicRuntimeConfig } = getConfig()
+const URL = publicRuntimeConfig.APP_URL
 
 const apiClient = new APIClient()
 
@@ -217,23 +223,30 @@ export default class Organization extends Component {
       }
     }
 
-    return <SectionWrapper>
-      <Section>
-        <div className='section-actions'>
-          <SectionHeader>Badges</SectionHeader>
-          <div>
-            <Button variant='primary small' onClick={() => addBadge()}>Add</Button>
+    return (
+      <SectionWrapper>
+        <Section>
+          <div className='section-actions'>
+            <SectionHeader>Badges</SectionHeader>
+            <div>
+              <Button
+                variant='primary small'
+                onClick={() =>
+                  Router.push(
+                    join(URL, `/organizations/${orgId}/badges/add`)
+                  )
+                }
+              >
+                Add
+              </Button>
+            </div>
           </div>
-        </div>
-      </Section>
-      {
-        this.state.badges && <Table
-          rows={this.state.badges}
-          columns={columns}
-        />
-      }
-
-    </SectionWrapper>
+        </Section>
+        {this.state.badges && (
+          <Table rows={this.state.badges} columns={columns} />
+        )}
+      </SectionWrapper>
+    )
   }
 
   renderMembers (memberRows) {

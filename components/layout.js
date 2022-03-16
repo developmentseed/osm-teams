@@ -203,6 +203,12 @@ function Layout (props) {
             padding: 0.5rem 1rem 0.5rem 0.25rem;
             margin-right: 1rem;
             border: 2px solid ${theme.colors.primaryColor};
+            
+          }
+          
+          .form-control :global(input[type="color"]) {
+            padding: 3px;
+            height: 2.5rem;
           }
 
           .status--alert {

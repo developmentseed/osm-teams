@@ -275,6 +275,13 @@ function manageRouter (nextApp) {
     return nextApp.render(req, res, '/org-edit-team-profile', { id: req.params.id })
   })
 
+  /**
+   * Badged pages
+   * */
+  router.get('/organizations/:id/badges/add', can('organization:edit'), (req, res) => {
+    return nextApp.render(req, res, '/badges/add', { id: req.params.id })
+  })
+
   return router
 }
 
