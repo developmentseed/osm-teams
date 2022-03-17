@@ -21,6 +21,7 @@ const listBadges = routeWrapper({
       const badges = await conn('organization_badge')
         .select('*')
         .where('organization_id', req.params.id)
+        .orderBy('id')
       reply.send(badges)
     } catch (err) {
       console.log(err)
@@ -54,6 +55,33 @@ const createBadge = routeWrapper({
           organization_id: req.params.id,
           ...req.body
         })
+        .returning('*')
+      reply.send(badge)
+    } catch (err) {
+      console.log(err)
+      return reply.boom.badRequest(err.message)
+    }
+  }
+})
+
+/**
+ * Get organization badge
+ */
+const getBadge = routeWrapper({
+  validate: {
+    params: yup
+      .object({
+        id: yup.number().required().positive().integer(),
+        badgeId: yup.number().required().positive().integer()
+      })
+      .required()
+  },
+  handler: async function (req, reply) {
+    try {
+      const conn = await db()
+      const [badge] = await conn('organization_badge')
+        .select('*')
+        .where('id', req.params.badgeId)
         .returning('*')
       reply.send(badge)
     } catch (err) {
@@ -260,6 +288,7 @@ const removeUserBadge = routeWrapper({
 module.exports = {
   listBadges,
   createBadge,
+  getBadge,
   patchBadge,
   deleteBadge,
   assignUserBadge,

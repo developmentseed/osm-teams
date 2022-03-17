@@ -230,7 +230,12 @@ export default class Organization extends Component {
           </div>
         </Section>
         {this.state.badges && (
-          <Table rows={this.state.badges} columns={columns} />
+          <Table rows={this.state.badges} columns={columns} onRowClick={
+            ({ id: badgeId }) => Router.push(
+              join(URL, `/organizations/${orgId}/badges/${badgeId}`)
+            )
+
+          } />
         )}
       </SectionWrapper>
     )

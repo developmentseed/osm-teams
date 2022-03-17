@@ -5,7 +5,6 @@ import APIClient from '../../lib/api-client'
 import { getOrg } from '../../lib/org-api'
 import Button from '../../components/button'
 import Router from 'next/router'
-import { getRandomColor } from '../../lib/utils'
 import getConfig from 'next/config'
 
 const { publicRuntimeConfig } = getConfig()
@@ -34,11 +33,12 @@ function ButtonWrapper ({ children }) {
   )
 }
 
-export default class AddBadge extends Component {
+export default class EditBadge extends Component {
   static async getInitialProps ({ query }) {
     if (query) {
       return {
-        orgId: query.id
+        orgId: query.id,
+        badgeId: query.badgeId
       }
     }
   }
@@ -48,10 +48,12 @@ export default class AddBadge extends Component {
     this.state = {}
 
     this.getOrg = this.getOrg.bind(this)
+    this.getBadge = this.getBadge.bind(this)
   }
 
   async componentDidMount () {
     this.getOrg()
+    this.getBadge()
   }
 
   async getOrg () {
@@ -70,16 +72,40 @@ export default class AddBadge extends Component {
     }
   }
 
-  render () {
-    const { orgId } = this.props
+  async getBadge () {
+    try {
+      const { orgId, badgeId } = this.props
 
-    if (!this.state.org) {
+      const badge = await apiClient.get(
+        `/organizations/${orgId}/badges/${badgeId}`
+      )
+      this.setState({
+        badge
+      })
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e,
+        team: null,
+        loading: false
+      })
+    }
+  }
+
+  render () {
+    const self = this
+
+    if (!this.state.org || !this.state.badge) {
       return (
         <article className='inner page'>
           <div>Loading...</div>
         </article>
       )
     }
+
+    const { orgId, badgeId } = this.props
+
+    const { badge } = this.state
 
     return (
       <article className='inner page'>
@@ -88,24 +114,23 @@ export default class AddBadge extends Component {
             <h1>{this.state.org.name}</h1>
           </div>
           <div className='page__heading'>
-            <h2>New badge</h2>
+            <h2>Edit Badge</h2>
           </div>
 
           <Formik
-            initialValues={{ name: '', color: getRandomColor() }}
-            onSubmit={async ({ name, color }, actions) => {
-              actions.setSubmitting(true)
-              console.log('onSubmit')
+            initialValues={{ name: badge.name, color: badge.color }}
+            onSubmit={async ({ name, color }) => {
               try {
-                await apiClient.post(`/organizations/${orgId}/badges`, {
-                  name,
-                  color
-                })
+                await apiClient.patch(
+                  `/organizations/${orgId}/badges/${badgeId}`,
+                  {
+                    name,
+                    color
+                  }
+                )
                 Router.push(join(URL, `/organizations/${orgId}`))
               } catch (error) {
                 console.log(error)
-              } finally {
-                actions.setSubmitting(false)
               }
             }}
             render={({
@@ -144,13 +169,13 @@ export default class AddBadge extends Component {
                       disabled={isSubmitting}
                       variant='primary'
                       type='submit'
-                      value='submit'
+                      value='update'
                     />
                     <Button
                       variant='disable small'
                       onClick={() => {
                         Router.push(
-                          join(URL, `/organizations/${orgId}`)
+                          join(URL, `/organizations/${self.props.orgId}`)
                         )
                       }}
                       type='submit'
