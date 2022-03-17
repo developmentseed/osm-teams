@@ -204,24 +204,11 @@ export default class Organization extends Component {
   }
 
   renderBadges () {
-    const self = this
     const { id: orgId } = this.props
     const columns = [
       { key: 'name' },
       { key: 'color' }
     ]
-
-    async function addBadge () {
-      try {
-        await apiClient.post(`/organizations/${orgId}/badges`, {
-          name: 'badge 1',
-          color: 'red'
-        })
-        self.getBadges()
-      } catch (error) {
-        console.log(error)
-      }
-    }
 
     return (
       <SectionWrapper>

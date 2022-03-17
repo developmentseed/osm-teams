@@ -5,6 +5,11 @@ import APIClient from '../../lib/api-client'
 import { getOrg } from '../../lib/org-api'
 import Button from '../../components/button'
 import Router from 'next/router'
+import { getRandomColor } from '../../lib/utils'
+import getConfig from 'next/config'
+
+const { publicRuntimeConfig } = getConfig()
+const URL = publicRuntimeConfig.APP_URL
 
 const apiClient = new APIClient()
 
@@ -21,6 +26,17 @@ function renderErrors (errors) {
   return keys.map((key) => {
     return renderError(errors[key])
   })
+}
+
+function ButtonWrapper ({ children }) {
+  return <div>
+    {children}
+    <style jsx global>{`
+      .button {
+        margin-right: 10px;
+      }
+    }`}</style>
+  </div>
 }
 
 export default class OrgCreate extends Component {
@@ -61,35 +77,32 @@ export default class OrgCreate extends Component {
   }
 
   render () {
-    console.log('render')
-    console.log(this.org)
+    const self = this
 
     if (!this.state.org) {
-      return <div>Loading...</div>
+      return <article className='inner page'><div>Loading...</div></article>
     }
 
     return (
       <article className='inner page'>
         <section>
           <div className='page__heading'>
-            <h1>New badge</h1>
+            <h1>{this.state.org.name}</h1>
           </div>
-
           <div className='page__heading'>
-            <h2>Organization: {this.state.org.name}</h2>
+            <h2>New badge</h2>
           </div>
 
           <Formik
-            initialValues={{ name: '', color: '' }}
+            initialValues={{ name: '', color: getRandomColor() }}
             onSubmit={async ({ name, color }) => {
               try {
-                // await apiClient.post(`/organizations/${orgId}/badges`, {
                 await apiClient.post(`/organizations/1/badges`, {
                   name,
                   color
                 })
                 Router.push(
-                  join(URL, `/organizations/${this.props.id}`)
+                  join(URL, `/organizations/${self.props.id}`)
                 )
               } catch (error) {
                 console.log(error)
@@ -122,9 +135,7 @@ export default class OrgCreate extends Component {
                     {errors.name && renderError(errors.name)}
                   </div>
                   <div className='form-control form-control__vertical'>
-                    <label htmlFor='color'>
-                      Color<span className='form--required'>*</span>
-                    </label>
+                    <label htmlFor='color'>Color: {values.color}</label>
                     <Field
                       type='color'
                       name='color'
@@ -133,8 +144,8 @@ export default class OrgCreate extends Component {
                     />
                     {errors.color && renderError(errors.color)}
                   </div>
-                  <div className='form-control form-control__vertical'>
-                    { (status && status.errors) && (renderErrors(status.errors)) }
+                  <ButtonWrapper>
+                    {status && status.errors && renderErrors(status.errors)}
                     <Button
                       disabled={isSubmitting}
                       variant='primary'
@@ -150,7 +161,17 @@ export default class OrgCreate extends Component {
                       type='submit'
                       value='submit'
                     />
-                  </div>
+                    <Button
+                      variant='disable small'
+                      onClick={() => {
+                        Router.push(
+                          join(URL, `/organizations/${self.props.id}`)
+                        )
+                      }}
+                      type='submit'
+                      value='cancel'
+                    />
+                  </ButtonWrapper>
                 </Form>
               )
             }}
