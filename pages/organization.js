@@ -205,10 +205,7 @@ export default class Organization extends Component {
 
   renderBadges () {
     const { id: orgId } = this.props
-    const columns = [
-      { key: 'name' },
-      { key: 'color' }
-    ]
+    const columns = [{ key: 'name' }, { key: 'color' }]
 
     return (
       <SectionWrapper>
@@ -230,7 +227,16 @@ export default class Organization extends Component {
           </div>
         </Section>
         {this.state.badges && (
-          <Table rows={this.state.badges} columns={columns} onRowClick={
+          <Table rows={(this.state.badges || []).map((row) => {
+            return {
+              ...row,
+              color: () => (
+                <svg width='20' height='20'>
+                  <rect width='20' height='20' style={{ fill: row.color }} />
+                </svg>
+              )
+            }
+          })} columns={columns} onRowClick={
             ({ id: badgeId }) => Router.push(
               join(URL, `/organizations/${orgId}/badges/${badgeId}`)
             )
