@@ -13,7 +13,7 @@ function TableHead ({ columns }) {
                 column.onClick && column.onClick()
               }}
             >
-              {column.key}
+              {column.header || column.key}
             </th>
           )
         })}

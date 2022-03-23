@@ -271,13 +271,14 @@ function createProfileKeys (ownerType, profileType) {
     }
 
     try {
-      const attributesToAdd = body.map(({ name, description, required, visibility }) => {
+      const attributesToAdd = body.map(({ name, description, required, visibility, key_type }) => {
         return {
           name,
           description,
           required,
           visibility,
-          profileType
+          profileType,
+          key_type
         }
       })
 

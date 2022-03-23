@@ -121,6 +121,7 @@ export default class OrgEditProfile extends Component {
       { key: 'name' },
       { key: 'description' },
       { key: 'visibility' },
+      { key: 'key_type', header: 'type' },
       { key: 'required' },
       { key: 'actions' }
     ]
