@@ -6,6 +6,7 @@ import { getOrg } from '../../lib/org-api'
 import Button from '../../components/button'
 import Router from 'next/router'
 import getConfig from 'next/config'
+import { toast } from 'react-toastify'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -130,6 +131,7 @@ export default class EditBadge extends Component {
                 )
                 Router.push(join(URL, `/organizations/${orgId}`))
               } catch (error) {
+                toast.error(`There was an error editing badge '${name}'. Please try again later.`)
                 console.log(error)
               }
             }}

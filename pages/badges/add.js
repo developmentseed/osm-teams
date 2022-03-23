@@ -7,6 +7,7 @@ import Button from '../../components/button'
 import Router from 'next/router'
 import { getRandomColor } from '../../lib/utils'
 import getConfig from 'next/config'
+import { toast } from 'react-toastify'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -95,7 +96,6 @@ export default class AddBadge extends Component {
             initialValues={{ name: '', color: getRandomColor() }}
             onSubmit={async ({ name, color }, actions) => {
               actions.setSubmitting(true)
-              console.log('onSubmit')
               try {
                 await apiClient.post(`/organizations/${orgId}/badges`, {
                   name,
@@ -104,6 +104,7 @@ export default class AddBadge extends Component {
                 Router.push(join(URL, `/organizations/${orgId}`))
               } catch (error) {
                 console.log(error)
+                toast.error(`There was an error creating badge '${name}'. Please try again later.`)
               } finally {
                 actions.setSubmitting(false)
               }
