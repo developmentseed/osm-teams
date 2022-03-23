@@ -6,7 +6,7 @@ import { Formik, Field, Form, ErrorMessage } from 'formik'
 import { getOrgMemberAttributes, getTeamMemberAttributes, getMyProfile, setMyProfile } from '../lib/profiles-api'
 import { getTeam } from '../lib/teams-api'
 import Button from '../components/button'
-import { prop, propOr } from 'ramda'
+import { propOr } from 'ramda'
 export default class ProfileForm extends Component {
   static async getInitialProps ({ query }) {
     if (query) {
@@ -60,7 +60,6 @@ export default class ProfileForm extends Component {
     }
   }
 
-
   render () {
     let { memberAttributes, orgAttributes, profileValues, returnUrl, loading } = this.state
 
@@ -81,24 +80,24 @@ export default class ProfileForm extends Component {
       switch (attr.key_type) {
         case 'email': {
           schema[attr.id] = Yup.string().email('Invalid email')
-          break;
+          break
         }
         case 'number': {
           schema[attr.id] = Yup.number().typeError('Invalid number')
-          break;
+          break
         }
         case 'url': {
           schema[attr.id] = Yup.string().url('Invalid URL')
-          break;
+          break
         }
         case 'date': {
           schema[attr.id] = Yup.date('Invalid date')
-          break;
+          break
         }
         case 'tel': {
           const phoneRegex = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
           schema[attr.id] = Yup.string().matches(phoneRegex, 'Invalid phone number')
-          break;
+          break
         }
         case 'color': {
           const hexRegex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i
