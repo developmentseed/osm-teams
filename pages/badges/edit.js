@@ -7,6 +7,7 @@ import Button from '../../components/button'
 import Router from 'next/router'
 import getConfig from 'next/config'
 import { toast } from 'react-toastify'
+import theme from '../../styles/theme'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -186,28 +187,70 @@ export default class EditBadge extends Component {
               )
             }}
           />
-          <div style={{ marginTop: '20px' }}>
-            <Button
-              variant='danger small'
-              type='submit'
-              value='Delete this badge'
-              onClick={async (e) => {
-                e.preventDefault()
-                try {
-                  await apiClient.delete(
-                    `/organizations/${orgId}/badges/${badgeId}`
-                  )
-                  Router.push(join(URL, `/organizations/${orgId}`))
-                } catch (error) {
-                  toast.error(
-                    `There was an error deleting the badge. Please try again later.`
-                  )
-                  console.log(error)
-                }
-              }}
-            />
-          </div>
+          <section className='danger-zone'>
+            <h2>Danger zone</h2>
+            <p>
+              Delete this badge and remove it from all assigned members.
+            </p>
+            {this.state.isDeleting ? (
+              <>
+                <Button
+                  onClick={() => {
+                    this.setState({
+                      isDeleting: false
+                    })
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant='danger'
+                  onClick={async (e) => {
+                    e.preventDefault()
+                    try {
+                      await apiClient.delete(
+                        `/organizations/${orgId}/badges/${badgeId}`
+                      )
+                      Router.push(join(URL, `/organizations/${orgId}`))
+                    } catch (error) {
+                      toast.error(
+                        `There was an error deleting the badge. Please try again later.`
+                      )
+                      console.log(error)
+                    }
+                  }}
+                >
+                  Confirm Delete
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant='danger'
+                type='submit'
+                value='Delete'
+                onClick={async (e) => {
+                  this.setState({
+                    isDeleting: true
+                  })
+                }}
+              />
+            )}
+          </section>
         </section>
+        <style jsx global>
+          {`
+            .danger-zone {
+              border: 1px solid ${theme.colors.secondaryColor};
+              background: white;
+              margin: 4rem 0;
+              padding: 2rem;
+            }
+
+            .danger-zone .button {
+              margin-right: 2rem;
+            }
+          `}
+        </style>
       </article>
     )
   }
