@@ -141,7 +141,10 @@ const deleteBadge = routeWrapper({
       await conn('organization_badge')
         .delete()
         .where('id', req.params.badgeId)
-      return reply.sendStatus(200)
+      return reply.send({
+        status: 200,
+        message: `Badge ${req.params.badgeId} deleted successfully.`
+      })
     } catch (err) {
       console.log(err)
       return reply.boom.badRequest(err.message)

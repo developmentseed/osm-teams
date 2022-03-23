@@ -131,15 +131,13 @@ export default class EditBadge extends Component {
                 )
                 Router.push(join(URL, `/organizations/${orgId}`))
               } catch (error) {
-                toast.error(`There was an error editing badge '${name}'. Please try again later.`)
+                toast.error(
+                  `There was an error editing badge '${name}'. Please try again later.`
+                )
                 console.log(error)
               }
             }}
-            render={({
-              isSubmitting,
-              values,
-              errors
-            }) => {
+            render={({ isSubmitting, values, errors }) => {
               return (
                 <Form>
                   <div className='form-control form-control__vertical'>
@@ -188,6 +186,27 @@ export default class EditBadge extends Component {
               )
             }}
           />
+          <div style={{ marginTop: '20px' }}>
+            <Button
+              variant='danger small'
+              type='submit'
+              value='Delete this badge'
+              onClick={async (e) => {
+                e.preventDefault()
+                try {
+                  await apiClient.delete(
+                    `/organizations/${orgId}/badges/${badgeId}`
+                  )
+                  Router.push(join(URL, `/organizations/${orgId}`))
+                } catch (error) {
+                  toast.error(
+                    `There was an error deleting the badge. Please try again later.`
+                  )
+                  console.log(error)
+                }
+              }}
+            />
+          </div>
         </section>
       </article>
     )
