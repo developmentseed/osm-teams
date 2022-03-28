@@ -8,7 +8,7 @@ exports.up = async function (knex) {
     table
       .integer('user_id')
       .references('id')
-      .inTable('organization_badge')
+      .inTable('users')
       .onDelete('CASCADE')
     table.datetime('assigned_at').defaultTo(knex.fn.now())
     table.datetime('valid_until')
