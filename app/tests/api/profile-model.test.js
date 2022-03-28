@@ -1,18 +1,16 @@
-
-const path = require('path')
 const { range, map, contains, prop, propEq, find, includes } = require('ramda')
 const test = require('ava')
 const db = require('../../db')
 const organization = require('../../lib/organization')
 const team = require('../../lib/team')
 const profile = require('../../lib/profile')
+const { resetDb } = require('../utils')
 const { ValidationError, PropertyRequiredError } = require('../../lib/utils')
-
-const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
 
 test.before(async () => {
   const conn = await db()
-  await conn.migrate.latest({ directory: migrationsDirectory })
+
+  await resetDb(conn)
 
   // seed
   await conn('users').insert({ id: 1 })
@@ -24,12 +22,6 @@ test.before(async () => {
   await conn('users').insert({ id: 7 })
   await conn('users').insert({ id: 8 })
   await conn('users').insert({ id: 9 })
-})
-
-test.after.always(async () => {
-  const conn = await db()
-  await conn.migrate.rollback({ directory: migrationsDirectory })
-  conn.destroy()
 })
 
 test('add attributes for a public user profile', async (t) => {

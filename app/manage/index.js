@@ -40,6 +40,17 @@ const {
 } = require('./organizations')
 
 const {
+  createBadge,
+  patchBadge,
+  deleteBadge,
+  listBadges,
+  assignUserBadge,
+  listUserBadges,
+  updateUserBadge,
+  removeUserBadge
+} = require('./badges')
+
+const {
   getUserTeamProfile,
   createProfileKeys,
   getProfileKeys,
@@ -127,6 +138,55 @@ function manageRouter (nextApp) {
 
   router.post('/api/organizations/:id/teams', can('organization:create-team'), createOrgTeam)
   router.get('/api/organizations/:id/teams', getOrgTeams)
+
+  /**
+   * Manage organization badges
+   */
+  router.get(
+    '/api/organizations/:id/badges',
+    can('organization:edit'),
+    listBadges
+  )
+  router.post(
+    '/api/organizations/:id/badges',
+    can('organization:edit'),
+    createBadge
+  )
+  router.patch(
+    '/api/organizations/:id/badges/:badgeId',
+    can('organization:edit'),
+    patchBadge
+  )
+  router.delete(
+    '/api/organizations/:id/badges/:badgeId',
+    can('organization:edit'),
+    deleteBadge
+  )
+
+  /**
+   * Manage user badges
+   */
+  router.post(
+    '/api/organizations/:id/badges/:badgeId/assign/:userId',
+    can('organization:edit'),
+    assignUserBadge
+  )
+  router.get(
+    '/api/user/:userId/badges',
+    can('public:authenticated'),
+    listUserBadges
+  )
+  router.patch(
+    `/api/organizations/:id/member/:userId/badge/:badgeId`,
+    can('organization:edit'),
+    updateUserBadge
+  )
+
+  router.delete(
+    `/api/organizations/:id/member/:userId/badge/:badgeId`,
+    can('organization:edit'),
+    removeUserBadge
+  )
 
   /**
    * List, Create, Read, Update, Delete operations on profiles
