@@ -8,6 +8,8 @@ import Router from 'next/router'
 import getConfig from 'next/config'
 import { toast } from 'react-toastify'
 import theme from '../../styles/theme'
+import Table from '../../components/table'
+import AddMemberForm from '../../components/add-member-form'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -94,6 +96,45 @@ export default class EditBadge extends Component {
     }
   }
 
+  renderAssignedMembers ({ orgId, badgeId }) {
+    const columns = [{ key: 'id' }, { key: 'name' }, { key: 'role' }]
+
+    const sampleData = [
+      { id: 1, username: 'user1' },
+      { id: 2, username: 'user2' }
+    ]
+
+    return (
+      <section>
+        <div className='page__heading'>
+          <h2>Assigned Members</h2>
+        </div>
+
+        <AddMemberForm
+          onSubmit={async ({ osmId }) => {
+            try {
+              await apiClient.post(
+                `/organizations/${orgId}/badges/${badgeId}/assign/${osmId}`
+              )
+              // Router.push(join(URL, `/organizations/${orgId}`))
+            } catch (error) {
+              console.log(error)
+              toast.error(
+                `There was an error assigning the badge. Please try again later.`
+              )
+            }
+          }}
+        />
+
+        <Table
+          rows={sampleData}
+          columns={columns}
+          onRowClick={(row) => this.openProfileModal(row)}
+        />
+      </section>
+    )
+  }
+
   render () {
     const self = this
 
@@ -111,14 +152,13 @@ export default class EditBadge extends Component {
 
     return (
       <article className='inner page'>
+        <div className='page__heading'>
+          <h1>{this.state.org.name}</h1>
+        </div>
         <section>
-          <div className='page__heading'>
-            <h1>{this.state.org.name}</h1>
-          </div>
           <div className='page__heading'>
             <h2>Edit Badge</h2>
           </div>
-
           <Formik
             initialValues={{ name: badge.name, color: badge.color }}
             onSubmit={async ({ name, color }) => {
@@ -187,55 +227,56 @@ export default class EditBadge extends Component {
               )
             }}
           />
-          <section className='danger-zone'>
-            <h2>Danger zone</h2>
-            <p>
-              Delete this badge and remove it from all assigned members.
-            </p>
-            {this.state.isDeleting ? (
-              <>
-                <Button
-                  onClick={() => {
-                    this.setState({
-                      isDeleting: false
-                    })
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant='danger'
-                  onClick={async (e) => {
-                    e.preventDefault()
-                    try {
-                      await apiClient.delete(
-                        `/organizations/${orgId}/badges/${badgeId}`
-                      )
-                      Router.push(join(URL, `/organizations/${orgId}`))
-                    } catch (error) {
-                      toast.error(
-                        `There was an error deleting the badge. Please try again later.`
-                      )
-                      console.log(error)
-                    }
-                  }}
-                >
-                  Confirm Delete
-                </Button>
-              </>
-            ) : (
+        </section>
+
+        {this.renderAssignedMembers({ orgId, badgeId })}
+
+        <section className='danger-zone'>
+          <h2>Danger zone</h2>
+          <p>Delete this badge and remove it from all assigned members.</p>
+          {this.state.isDeleting ? (
+            <>
               <Button
-                variant='danger'
-                type='submit'
-                value='Delete'
-                onClick={async (e) => {
+                onClick={() => {
                   this.setState({
-                    isDeleting: true
+                    isDeleting: false
                   })
                 }}
-              />
-            )}
-          </section>
+              >
+                Cancel
+              </Button>
+              <Button
+                variant='danger'
+                onClick={async (e) => {
+                  e.preventDefault()
+                  try {
+                    await apiClient.delete(
+                      `/organizations/${orgId}/badges/${badgeId}`
+                    )
+                    Router.push(join(URL, `/organizations/${orgId}`))
+                  } catch (error) {
+                    toast.error(
+                      `There was an error deleting the badge. Please try again later.`
+                    )
+                    console.log(error)
+                  }
+                }}
+              >
+                Confirm Delete
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant='danger'
+              type='submit'
+              value='Delete'
+              onClick={async (e) => {
+                this.setState({
+                  isDeleting: true
+                })
+              }}
+            />
+          )}
         </section>
         <style jsx global>
           {`

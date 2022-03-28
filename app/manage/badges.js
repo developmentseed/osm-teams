@@ -83,7 +83,18 @@ const getBadge = routeWrapper({
         .select('*')
         .where('id', req.params.badgeId)
         .returning('*')
-      reply.send(badge)
+
+      const users = await conn('user_badge')
+        .select('*')
+        .leftJoin(
+          'organization_badge',
+          'user_badge.badge_id',
+          'organization_badge.id'
+        )
+        .where('badge_id', req.params.badgeId)
+        .returning('*')
+
+      reply.send({ ...badge, users })
     } catch (err) {
       console.log(err)
       return reply.boom.badRequest(err.message)
@@ -138,9 +149,7 @@ const deleteBadge = routeWrapper({
   handler: async function (req, reply) {
     try {
       const conn = await db()
-      await conn('organization_badge')
-        .delete()
-        .where('id', req.params.badgeId)
+      await conn('organization_badge').delete().where('id', req.params.badgeId)
       return reply.send({
         status: 200,
         message: `Badge ${req.params.badgeId} deleted successfully.`
@@ -164,18 +173,38 @@ const assignUserBadge = routeWrapper({
         userId: yup.number().required().positive().integer()
       })
       .required(),
-    body: yup
-      .object({
-        assigned_at: yup.date().optional(),
-        valid_until: yup.date().optional()
-      })
+    body: yup.object({
+      assigned_at: yup.date().optional(),
+      valid_until: yup.date().optional()
+    })
   },
   handler: async function (req, reply) {
     try {
       const conn = await db()
 
-      // user is member
-      await organization.isMember(req.params.id, req.params.userId)
+      // user is related to org?
+      const isMember = await organization.isMember(
+        req.params.id,
+        req.params.userId
+      )
+      if (!isMember) {
+        const isManager = await organization.isManager(
+          req.params.id,
+          req.params.userId
+        )
+        if (!isManager) {
+          const isOwner = await organization.isOwner(
+            req.params.id,
+            req.params.userId
+          )
+          if (!isOwner) {
+          } else {
+            return reply.boom.badRequest(
+              'User is not part of the organization.'
+            )
+          }
+        }
+      }
 
       // assign badge
       const [badge] = await conn('user_badge')
@@ -228,11 +257,10 @@ const updateUserBadge = routeWrapper({
         userId: yup.number().required().positive().integer()
       })
       .required(),
-    body: yup
-      .object({
-        assigned_at: yup.date().optional(),
-        valid_until: yup.date().optional()
-      })
+    body: yup.object({
+      assigned_at: yup.date().optional(),
+      valid_until: yup.date().optional()
+    })
   },
   handler: async function (req, reply) {
     try {
