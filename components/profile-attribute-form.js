@@ -105,6 +105,7 @@ export default function ProfileAttributeForm ({ onSubmit, initialValues = defaul
                 <option value='date'>Date</option>
                 <option value='tel'>Telephone</option>
                 <option value='color'>Color</option>
+                <option value='gender'>Gender</option>
               </Field>
             </div>
 

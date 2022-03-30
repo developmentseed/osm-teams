@@ -1,12 +1,75 @@
 import React, { Component } from 'react'
+import theme from '../styles/theme'
+import CreatableSelect from 'react-select/creatable'
 import * as Yup from 'yup'
 import Router from 'next/router'
 import descriptionPopup from './description-popup'
-import { Formik, Field, Form, ErrorMessage } from 'formik'
+import { Formik, Field, useField, Form, ErrorMessage } from 'formik'
 import { getOrgMemberAttributes, getTeamMemberAttributes, getMyProfile, setMyProfile } from '../lib/profiles-api'
 import { getTeam } from '../lib/teams-api'
 import Button from '../components/button'
 import { propOr } from 'ramda'
+
+function GenderSelectField (props) {
+  const [field, meta, { setValue, setTouched }] = useField(props.name)
+
+  const onChange = function (option) {
+    if (option) {
+      return setValue(option.value)
+    } else {
+      return setValue(null)
+    }
+  }
+
+  const options = [
+    { value: 'female', label: 'Female' },
+    { value: 'male', label: 'Male' },
+    { value: 'non-binary', label: 'Non-Binary' },
+    { value: 'undisclosed', label: 'I prefer not to say' }
+  ]
+
+  function findOrCreate (fieldValue) {
+    let found = options.find((option) => option.value === field.value)
+    if (!found) {
+      return { value: fieldValue, label: fieldValue }
+    }
+    return found
+  }
+
+  const styles = {
+    control: (provided) => ({
+      ...provided,
+      minWidth: '220px',
+      width: '220px',
+      border: `2px solid ${theme.colors.primaryColor}`
+    }),
+    option: (provided) => ({
+      ...provided,
+      minWidth: '220px',
+      width: '220px'
+    })
+
+  }
+
+  return <div>
+    <CreatableSelect
+      styles={styles}
+      isClearable
+      formatCreateLabel={(inputValue) => `Write in ${inputValue}`}
+      placeholder='Select or Write-In'
+      defaultValue={findOrCreate(field.value)}
+      options={options}
+      onChange={onChange}
+      onBlur={setTouched}
+    />
+    {meta.touched && meta.error ? (
+      <div className='form--error'>
+        <ErrorMessage name={props.name} />
+      </div>
+    ) : null}
+  </div>
+}
+
 export default class ProfileForm extends Component {
   static async getInitialProps ({ query }) {
     if (query) {
@@ -105,7 +168,11 @@ export default class ProfileForm extends Component {
           break
         }
         default: {
-          schema[attr.id] = Yup.string()
+          if (attr.required) {
+            schema[attr.id] = Yup.string().required('This is a required field').nullable()
+          } else {
+            schema[attr.id] = Yup.string().nullable()
+          }
         }
       }
     })
@@ -148,14 +215,19 @@ export default class ProfileForm extends Component {
                           {attribute.required ? <span className='form--required'>*</span> : ''}
                           {attribute.description ? descriptionPopup(attribute.description) : ''}
                         </label>
-                        <Field
-                          type={attribute.key_type}
-                          name={attribute.id}
-                          required={attribute.required}
-                        />
-                        <div className='form--error'>
-                          <ErrorMessage name={attribute.id} />
-                        </div>
+                        { attribute.key_type === 'gender'
+                          ? <GenderSelectField name={attribute.id} />
+                          : <>
+                            <Field
+                              type={attribute.key_type}
+                              name={attribute.id}
+                              required={attribute.required}
+                            />
+                            <div className='form--error'>
+                              <ErrorMessage name={attribute.id} />
+                            </div>
+                          </>
+                        }
                       </div>
                     })}
                   </>
@@ -168,14 +240,19 @@ export default class ProfileForm extends Component {
                       {attribute.required ? <span className='form--required'>*</span> : ''}
                       {attribute.description ? descriptionPopup(attribute.description) : ''}
                     </label>
-                    <Field
-                      type={attribute.key_type}
-                      name={attribute.id}
-                      required={attribute.required}
-                    />
-                    <div className='form--error'>
-                      <ErrorMessage name={attribute.id} />
-                    </div>
+                    {attribute.key_type === 'gender'
+                      ? <GenderSelectField name={attribute.id} />
+                      : <>
+                        <Field
+                          type={attribute.key_type}
+                          name={attribute.id}
+                          required={attribute.required}
+                        />
+                        <div className='form--error'>
+                          <ErrorMessage name={attribute.id} />
+                        </div>
+                      </>
+                    }
                   </div>
                 })
                   : 'No profile form to fill yet'
