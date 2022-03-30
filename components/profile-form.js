@@ -22,9 +22,9 @@ function GenderSelectField (props) {
   }
 
   const options = [
+    { value: 'non-binary', label: 'Non-Binary' },
     { value: 'female', label: 'Female' },
     { value: 'male', label: 'Male' },
-    { value: 'non-binary', label: 'Non-Binary' },
     { value: 'undisclosed', label: 'I prefer not to say' }
   ]
 
@@ -56,7 +56,7 @@ function GenderSelectField (props) {
       styles={styles}
       isClearable
       formatCreateLabel={(inputValue) => `Write in ${inputValue}`}
-      placeholder='Select or Write-In'
+      placeholder='Write or select'
       defaultValue={findOrCreate(field.value)}
       options={options}
       onChange={onChange}
@@ -216,7 +216,12 @@ export default class ProfileForm extends Component {
                           {attribute.description ? descriptionPopup(attribute.description) : ''}
                         </label>
                         { attribute.key_type === 'gender'
-                          ? <GenderSelectField name={attribute.id} />
+                        ? <label>Type into the open field what most accurately describes you or select from the drop-down.</label>
+                        : null
+                        }
+                        { attribute.key_type === 'gender'
+                          ?
+                          <GenderSelectField name={attribute.id} />
                           : <>
                             <Field
                               type={attribute.key_type}
@@ -240,6 +245,10 @@ export default class ProfileForm extends Component {
                       {attribute.required ? <span className='form--required'>*</span> : ''}
                       {attribute.description ? descriptionPopup(attribute.description) : ''}
                     </label>
+                    {attribute.key_type === 'gender'
+                      ? <label>Type into the open field what most accurately describes you or select from the drop-down.</label>
+                      : null
+                    }
                     {attribute.key_type === 'gender'
                       ? <GenderSelectField name={attribute.id} />
                       : <>
