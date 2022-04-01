@@ -203,9 +203,7 @@ const assignUserBadge = routeWrapper({
       )
 
       if (!isMemberOrStaff) {
-        return reply.boom.badRequest(
-          'User is not part of the organization.'
-        )
+        return reply.boom.badRequest('User is not part of the organization.')
       }
 
       // assign badge
@@ -220,8 +218,11 @@ const assignUserBadge = routeWrapper({
 
       reply.send(badge)
     } catch (err) {
-      console.log(err)
-      return reply.boom.badRequest(err.message)
+      if (err.code === '23505') {
+        return reply.boom.badRequest('User is already assigned to badge.')
+      } else {
+        return reply.boom.badRequest('Unexpected error, please try again later.')
+      }
     }
   }
 })

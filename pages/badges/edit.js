@@ -101,31 +101,23 @@ export default class EditBadge extends Component {
               await apiClient.post(
                 `/organizations/${orgId}/badges/${badgeId}/assign/${osmId}`
               )
-              // Router.push(join(URL, `/organizations/${orgId}`))
+              this.loadData()
             } catch (error) {
-              if (
-                error.message === 'User is not part of the organization.'
-              ) {
-                toast.error(
-                  `User is not part of the organization, badge was not assigned.`
-                )
-              } else {
-                toast.error(
-                  `An unexpected error occurred, please try again later.`
-                )
-              }
+              toast.error(error.message)
             }
           }}
         />
 
-        <Table
-          rows={users.map((u) => ({
-            ...u,
-            assignedAt: u.assignedAt && toDateString(u.assignedAt),
-            validUntil: u.validUntil && toDateString(u.validUntil)
-          }))}
-          columns={columns}
-        />
+        {users.length > 0 && (
+          <Table
+            rows={users.map((u) => ({
+              ...u,
+              assignedAt: u.assignedAt && toDateString(u.assignedAt),
+              validUntil: u.validUntil && toDateString(u.validUntil)
+            }))}
+            columns={columns}
+          />
+        )}
       </section>
     )
   }

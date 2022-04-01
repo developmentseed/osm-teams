@@ -12,6 +12,7 @@ exports.up = async function (knex) {
       .onDelete('CASCADE')
     table.datetime('assigned_at').defaultTo(knex.fn.now())
     table.datetime('valid_until')
+    table.unique(['badge_id', 'user_id'])
   })
 }
 
