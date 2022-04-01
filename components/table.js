@@ -102,12 +102,12 @@ export default function Table ({ columns, rows, onRowClick }) {
 
           tbody tr {
             background: #fff;
-            cursor: pointer;
+            ${onRowClick && 'cursor: pointer'}
           }
 
-          tbody tr:hover {
+          ${onRowClick && `tbody tr:hover {
             background: ${theme.colors.primaryLite};
-          }
+          }`}
           `}
       </style>
     </table>
