@@ -16,6 +16,8 @@
 Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
 <!-- markdownlint-enable MD034 -->
 
+API Docs: https://mapping.team/api/docs
+
 ## Development
 
 Install requirements:
@@ -71,6 +73,7 @@ Start development server:
 ✨ You can now login to the app at http://localhost:8989
 <!-- markdownlint-enable MD034 -->
 
+Local API documentation will be available at http://localhost:8989/api/docs.
 ## Acknowledgments
 
 - This app is based off of [OSM/Hydra](https://github.com/kamicut/osmhydra)
