@@ -256,7 +256,7 @@ async function getUserManageToken (id) {
 
 async function getUserBadges (id) {
   const conn = await db()
-  return conn('user_badge')
+  return conn('user_badges')
     .select([
       'id',
       'assigned_at',
@@ -267,10 +267,10 @@ async function getUserBadges (id) {
     ])
     .leftJoin(
       'organization_badge',
-      'user_badge.badge_id',
+      'user_badges.badge_id',
       'organization_badge.id'
     )
-    .where('user_badge.user_id', id)
+    .where('user_badges.user_id', id)
 }
 
 module.exports = {

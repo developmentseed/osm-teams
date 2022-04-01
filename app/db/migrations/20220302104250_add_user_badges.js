@@ -1,5 +1,5 @@
 exports.up = async function (knex) {
-  await knex.schema.createTable('user_badge', (table) => {
+  await knex.schema.createTable('user_badges', (table) => {
     table
       .integer('badge_id')
       .references('id')
@@ -16,5 +16,5 @@ exports.up = async function (knex) {
 }
 
 exports.down = async function (knex) {
-  await knex.schema.dropTable('user_badge')
+  await knex.schema.dropTable('user_badges')
 }

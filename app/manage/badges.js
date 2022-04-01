@@ -84,19 +84,19 @@ const getBadge = routeWrapper({
         .where('id', req.params.badgeId)
         .returning('*')
 
-      const users = await conn('user_badge')
+      const users = await conn('user_badges')
         .select({
-          id: 'user_badge.user_id',
+          id: 'user_badges.user_id',
           profile: 'profile',
-          assignedAt: 'user_badge.assigned_at',
-          validUntil: 'user_badge.valid_until'
+          assignedAt: 'user_badges.assigned_at',
+          validUntil: 'user_badges.valid_until'
         })
         .leftJoin(
           'organization_badge',
-          'user_badge.badge_id',
+          'user_badges.badge_id',
           'organization_badge.id'
         )
-        .leftJoin('users', 'user_badge.user_id', 'users.id')
+        .leftJoin('users', 'user_badges.user_id', 'users.id')
         .where('badge_id', req.params.badgeId)
         .returning('*')
 
@@ -220,7 +220,7 @@ const assignUserBadge = routeWrapper({
       }
 
       // assign badge
-      const [badge] = await conn('user_badge')
+      const [badge] = await conn('user_badges')
         .insert({
           user_id: req.params.userId,
           badge_id: req.params.badgeId,
@@ -280,7 +280,7 @@ const updateUserBadge = routeWrapper({
       const conn = await db()
 
       // assign badge
-      const [badge] = await conn('user_badge')
+      const [badge] = await conn('user_badges')
         .update({
           assigned_at: req.body.assigned_at,
           valid_until: req.body.valid_until
@@ -316,7 +316,7 @@ const removeUserBadge = routeWrapper({
       const conn = await db()
 
       // delete user badge
-      await conn('user_badge').delete().where({
+      await conn('user_badges').delete().where({
         user_id: req.params.userId,
         badge_id: req.params.badgeId
       })
