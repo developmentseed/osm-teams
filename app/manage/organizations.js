@@ -147,7 +147,7 @@ async function destroyOrg (req, reply) {
 
   try {
     await organization.destroy(id)
-    reply.sendStatus(200)
+    return reply.sendStatus(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)

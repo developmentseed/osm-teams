@@ -41,7 +41,7 @@ async function init () {
   /**
    * Docs endpoints
    */
-  app.use(['/api', '/api/docs'], swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+  app.use(['/api/docs'], swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
   /**
    * Handle all other route GET with nextjs
