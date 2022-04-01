@@ -76,7 +76,7 @@ test.before(async () => {
 
   // Add team member
   await orgOwner.agent
-    .put(`/api/team/${orgTeam1.id}/${orgTeamMember.id}`)
+    .put(`/api/teams/add/${orgTeam1.id}/${orgTeamMember.id}`)
     .expect(200)
 
   // Add manager

@@ -197,26 +197,15 @@ const assignUserBadge = routeWrapper({
       const conn = await db()
 
       // user is related to org?
-      const isMember = await organization.isMember(
+      const isMemberOrStaff = await organization.isMemberOrStaff(
         req.params.id,
         req.params.userId
       )
-      if (!isMember) {
-        const isManager = await organization.isManager(
-          req.params.id,
-          req.params.userId
+
+      if (!isMemberOrStaff) {
+        return reply.boom.badRequest(
+          'User is not part of the organization.'
         )
-        if (!isManager) {
-          const isOwner = await organization.isOwner(
-            req.params.id,
-            req.params.userId
-          )
-          if (!isOwner) {
-            return reply.boom.badRequest(
-              'User is not part of the organization.'
-            )
-          }
-        }
       }
 
       // assign badge
