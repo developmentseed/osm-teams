@@ -51,6 +51,8 @@ export default class EditBadge extends Component {
   constructor (props) {
     super(props)
     this.state = {}
+
+    this.loadData = this.loadData.bind(this)
   }
 
   async componentDidMount () {
@@ -81,8 +83,7 @@ export default class EditBadge extends Component {
     const columns = [
       { key: 'id', label: 'OSM ID' },
       { key: 'displayName', label: 'Display Name' },
-      { key: 'assignedAt', label: 'Assigned At' },
-      { key: 'validUntil', label: 'Valid Until' }
+      { key: 'assignedAt', label: 'Assigned At' }
     ]
 
     const { badge } = this.state
@@ -102,10 +103,17 @@ export default class EditBadge extends Component {
               )
               // Router.push(join(URL, `/organizations/${orgId}`))
             } catch (error) {
-              console.log(error)
-              toast.error(
-                `There was an error assigning the badge. Please try again later.`
-              )
+              if (
+                error.message === 'User is not part of the organization.'
+              ) {
+                toast.error(
+                  `User is not part of the organization, badge was not assigned.`
+                )
+              } else {
+                toast.error(
+                  `An unexpected error occurred, please try again later.`
+                )
+              }
             }
           }}
         />

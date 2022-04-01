@@ -212,7 +212,6 @@ const assignUserBadge = routeWrapper({
             req.params.userId
           )
           if (!isOwner) {
-          } else {
             return reply.boom.badRequest(
               'User is not part of the organization.'
             )
