@@ -13,7 +13,7 @@ function TableHead ({ columns }) {
                 column.onClick && column.onClick()
               }}
             >
-              {column.key}
+              {column.label || column.key}
             </th>
           )
         })}

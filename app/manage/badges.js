@@ -85,16 +85,30 @@ const getBadge = routeWrapper({
         .returning('*')
 
       const users = await conn('user_badge')
-        .select('*')
+        .select({
+          id: 'user_badge.user_id',
+          profile: 'profile',
+          assignedAt: 'user_badge.assigned_at',
+          validUntil: 'user_badge.valid_until'
+        })
         .leftJoin(
           'organization_badge',
           'user_badge.badge_id',
           'organization_badge.id'
         )
+        .leftJoin('users', 'user_badge.user_id', 'users.id')
         .where('badge_id', req.params.badgeId)
         .returning('*')
 
-      reply.send({ ...badge, users })
+      reply.send({
+        ...badge,
+        users: users.map((u) => ({
+          id: u.id,
+          assignedAt: u.assignedAt,
+          validUntil: u.validUntil,
+          displayName: u.profile.displayName
+        }))
+      })
     } catch (err) {
       console.log(err)
       return reply.boom.badRequest(err.message)

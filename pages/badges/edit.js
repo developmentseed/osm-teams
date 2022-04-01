@@ -10,6 +10,7 @@ import { toast } from 'react-toastify'
 import theme from '../../styles/theme'
 import Table from '../../components/table'
 import AddMemberForm from '../../components/add-member-form'
+import { toDateString } from '../../app/lib/utils'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -50,59 +51,42 @@ export default class EditBadge extends Component {
   constructor (props) {
     super(props)
     this.state = {}
-
-    this.getOrg = this.getOrg.bind(this)
-    this.getBadge = this.getBadge.bind(this)
   }
 
   async componentDidMount () {
-    this.getOrg()
-    this.getBadge()
+    this.loadData()
   }
 
-  async getOrg () {
+  async loadData () {
+    const { orgId, badgeId } = this.props
     try {
-      let org = await getOrg(this.props.orgId)
+      const [org, badge] = await Promise.all([
+        getOrg(orgId),
+        apiClient.get(`/organizations/${orgId}/badges/${badgeId}`)
+      ])
       this.setState({
-        org
-      })
-    } catch (e) {
-      console.error(e)
-      this.setState({
-        error: e,
-        org: null,
-        loading: false
-      })
-    }
-  }
-
-  async getBadge () {
-    try {
-      const { orgId, badgeId } = this.props
-
-      const badge = await apiClient.get(
-        `/organizations/${orgId}/badges/${badgeId}`
-      )
-      this.setState({
+        org,
         badge
       })
-    } catch (e) {
-      console.error(e)
+    } catch (error) {
+      console.error(error)
       this.setState({
-        error: e,
-        team: null,
+        error,
         loading: false
       })
     }
   }
 
   renderAssignedMembers ({ orgId, badgeId }) {
-    const columns = [{ key: 'id' }, { key: 'name' }, { key: 'role' }]
-
-    const sampleData = [
-      { id: 1, username: 'user1' },
-      { id: 2, username: 'user2' }
+    const columns = [
+      { key: 'id', label: 'OSM ID' },
+      { key: 'displayName', label: 'Display Name' },
+      { key: 'assignedAt', label: 'Assigned At' },
+      { key: 'validUntil', label: 'Valid Until' }
     ]
+
+    const { badge } = this.state
+    const users = (badge && badge.users) || []
 
     return (
       <section>
@@ -127,9 +111,12 @@ export default class EditBadge extends Component {
         />
 
         <Table
-          rows={sampleData}
+          rows={users.map((u) => ({
+            ...u,
+            assignedAt: u.assignedAt && toDateString(u.assignedAt),
+            validUntil: u.validUntil && toDateString(u.validUntil)
+          }))}
           columns={columns}
-          onRowClick={(row) => this.openProfileModal(row)}
         />
       </section>
     )
@@ -138,7 +125,13 @@ export default class EditBadge extends Component {
   render () {
     const self = this
 
-    if (!this.state.org || !this.state.badge) {
+    if (this.state.error) {
+      return (
+        <article className='inner page'>
+          <div>An unexpected error occurred, please try again later.</div>
+        </article>
+      )
+    } else if (!this.state.org || !this.state.badge) {
       return (
         <article className='inner page'>
           <div>Loading...</div>
