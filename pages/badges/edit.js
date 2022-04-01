@@ -283,6 +283,10 @@ export default class EditBadge extends Component {
             .danger-zone .button {
               margin-right: 2rem;
             }
+
+            section {
+              margin-bottom: 20px;
+            }
           `}
         </style>
       </article>
