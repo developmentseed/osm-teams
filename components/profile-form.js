@@ -127,7 +127,11 @@ export default class ProfileForm extends Component {
     let { memberAttributes, orgAttributes, profileValues, returnUrl, loading } = this.state
 
     if (loading) {
-      return <div>Loading...</div>
+      return (
+        <article className='inner page'>
+          <div>Loading...</div>
+        </article>
+      )
     }
 
     const allAttributes = memberAttributes.concat(orgAttributes)
