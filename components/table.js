@@ -43,34 +43,41 @@ function Row ({ columns, row, index, onRowClick }) {
   )
 }
 
-function TableBody ({ columns, rows, onRowClick }) {
+function TableBody ({ columns, rows, onRowClick, emptyPlaceHolder }) {
   return (
     <tbody className='lh-copy'>
       {
-        rows.map((row, index) => {
-          return (
-            <Row
-              key={`row-${index}`}
-              columns={columns}
-              row={row}
-              index={index}
-              onRowClick={onRowClick}
-            />
-          )
-        })
+        !rows || rows.length === 0 ? <tr
+        >
+          <td
+            key={`row-empty`}
+            colSpan={columns.length}
+          >
+            {emptyPlaceHolder || 'No data available.'}
+          </td>
+
+        </tr>
+          : rows.map((row, index) => {
+            return (
+              <Row
+                key={`row-${index}`}
+                columns={columns}
+                row={row}
+                index={index}
+                onRowClick={onRowClick}
+              />
+            )
+          })
       }
     </tbody>
   )
 }
 
-export default function Table ({ columns, rows, onRowClick }) {
-  if (!rows || !columns) {
-    return <div />
-  }
+export default function Table ({ columns, rows, onRowClick, emptyPlaceHolder }) {
   return (
     <table>
       <TableHead columns={columns} />
-      <TableBody columns={columns} rows={rows} onRowClick={onRowClick} />
+      <TableBody columns={columns} rows={rows} onRowClick={onRowClick} emptyPlaceHolder={emptyPlaceHolder} />
       <style jsx global>
         {`
           table {

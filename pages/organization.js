@@ -167,6 +167,7 @@ export default class Organization extends Component {
     return <Table
       rows={memberRows}
       columns={columns}
+      emptyPlaceHolder={this.state.loading ? 'Loading...' : 'This organization has no members.'}
       onRowClick={
         (row) => this.openProfileModal(row)
       }
@@ -293,7 +294,7 @@ export default class Organization extends Component {
                 </div>
               </div>
             </Section>
-            {!this.state.loading ? this.renderMembers(members) : 'Loading...'}
+            {this.renderMembers(members)}
           </div>
         ) : <div />}
         <Modal style={{
