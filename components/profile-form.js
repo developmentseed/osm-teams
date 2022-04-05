@@ -30,6 +30,9 @@ function GenderSelectField (props) {
 
   function findOrCreate (fieldValue) {
     let found = options.find((option) => option.value === field.value)
+    if (!fieldValue) {
+      return null
+    }
     if (!found) {
       return { value: fieldValue, label: fieldValue }
     }
@@ -216,7 +219,7 @@ export default class ProfileForm extends Component {
                           {attribute.description ? descriptionPopup(attribute.description) : ''}
                         </label>
                         { attribute.key_type === 'gender'
-                        ? <label>Type into the open field what most accurately describes you or select from the drop-down.</label>
+                        ? <label>Type in or select your gender from the drop-down.</label>
                         : null
                         }
                         { attribute.key_type === 'gender'
@@ -246,7 +249,7 @@ export default class ProfileForm extends Component {
                       {attribute.description ? descriptionPopup(attribute.description) : ''}
                     </label>
                     {attribute.key_type === 'gender'
-                      ? <label>Type into the open field what most accurately describes you or select from the drop-down.</label>
+                      ? <label>Type in or select your gender from the drop-down.</label>
                       : null
                     }
                     {attribute.key_type === 'gender'
