@@ -150,13 +150,16 @@ export default class Organization extends Component {
       }
     })
 
-    return <Table
-      rows={allRows}
-      columns={columns}
-      onRowClick={
-        (row) => this.openProfileModal(row)
-      }
-    />
+    return (
+      <Table
+        rows={allRows}
+        columns={columns}
+        emptyPlaceHolder={
+          this.state.loading ? 'Loading...' : 'This organization has no staff.'
+        }
+        onRowClick={(row) => this.openProfileModal(row)}
+      />
+    )
   }
 
   renderMembers (memberRows) {
@@ -164,14 +167,18 @@ export default class Organization extends Component {
       { key: 'id' },
       { key: 'name' }
     ]
-    return <Table
-      rows={memberRows}
-      columns={columns}
-      emptyPlaceHolder={this.state.loading ? 'Loading...' : 'This organization has no members.'}
-      onRowClick={
-        (row) => this.openProfileModal(row)
-      }
-    />
+    return (
+      <Table
+        rows={memberRows}
+        columns={columns}
+        emptyPlaceHolder={
+          this.state.loading
+            ? 'Loading...'
+            : 'This organization has no members.'
+        }
+        onRowClick={(row) => this.openProfileModal(row)}
+      />
+    )
   }
 
   render () {
