@@ -216,12 +216,11 @@ export default class ProfileForm extends Component {
                           {attribute.description ? descriptionPopup(attribute.description) : ''}
                         </label>
                         { attribute.key_type === 'gender'
-                        ? <label>Type into the open field what most accurately describes you or select from the drop-down.</label>
-                        : null
+                          ? <label>Type into the open field what most accurately describes you or select from the drop-down.</label>
+                          : null
                         }
                         { attribute.key_type === 'gender'
-                          ?
-                          <GenderSelectField name={attribute.id} />
+                          ? <GenderSelectField name={attribute.id} />
                           : <>
                             <Field
                               type={attribute.key_type}
