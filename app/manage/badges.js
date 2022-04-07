@@ -3,6 +3,7 @@ const yup = require('yup')
 const organization = require('../lib/organization')
 const profile = require('../lib/profile')
 const { routeWrapper } = require('./utils')
+const team = require('../lib/team')
 
 /**
  * Get the list of badges of an organization
@@ -84,10 +85,9 @@ const getBadge = routeWrapper({
         .where('id', req.params.badgeId)
         .returning('*')
 
-      const users = await conn('user_badges')
+      let users = await conn('user_badges')
         .select({
           id: 'user_badges.user_id',
-          profile: 'profile',
           assignedAt: 'user_badges.assigned_at',
           validUntil: 'user_badges.valid_until'
         })
@@ -96,18 +96,29 @@ const getBadge = routeWrapper({
           'user_badges.badge_id',
           'organization_badge.id'
         )
-        .leftJoin('users', 'user_badges.user_id', 'users.id')
         .where('badge_id', req.params.badgeId)
         .returning('*')
 
-      reply.send({
-        ...badge,
-        users: users.map((u) => ({
+      if (users.length > 0) {
+        // Get user profiles
+        const userProfiles = (
+          await team.resolveMemberNames(users.map((u) => u.id))
+        ).reduce((acc, u) => {
+          acc[u.id] = u
+          return acc
+        }, {})
+
+        users = users.map((u) => ({
           id: u.id,
           assignedAt: u.assignedAt,
           validUntil: u.validUntil,
-          displayName: u.profile.displayName
+          displayName: userProfiles[u.id] ? userProfiles[u.id].name : ''
         }))
+      }
+
+      reply.send({
+        ...badge,
+        users
       })
     } catch (err) {
       console.log(err)
@@ -218,10 +229,13 @@ const assignUserBadge = routeWrapper({
 
       reply.send(badge)
     } catch (err) {
+      console.log(err)
       if (err.code === '23505') {
         return reply.boom.badRequest('User is already assigned to badge.')
       } else {
-        return reply.boom.badRequest('Unexpected error, please try again later.')
+        return reply.boom.badRequest(
+          'Unexpected error, please try again later.'
+        )
       }
     }
   }

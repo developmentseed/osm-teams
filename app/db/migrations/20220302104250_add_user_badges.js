@@ -5,11 +5,7 @@ exports.up = async function (knex) {
       .references('id')
       .inTable('organization_badge')
       .onDelete('CASCADE')
-    table
-      .integer('user_id')
-      .references('id')
-      .inTable('users')
-      .onDelete('CASCADE')
+    table.integer('user_id')
     table.datetime('assigned_at').defaultTo(knex.fn.now())
     table.datetime('valid_until')
     table.unique(['badge_id', 'user_id'])
