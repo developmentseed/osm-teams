@@ -146,13 +146,8 @@ export default class AssignBadge extends Component {
                       value='update'
                     />
                     <Button
-                      variant='disable small'
-                      onClick={() => {
-                        Router.push(
-                          join(URL, `/organizations/${self.props.orgId}`)
-                        )
-                      }}
-                      type='submit'
+                      variant='small'
+                      href={`/organizations/${orgId}/badges/${badgeId}`}
                       value='cancel'
                     />
                   </ButtonWrapper>
