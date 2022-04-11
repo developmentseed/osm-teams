@@ -188,18 +188,16 @@ export default class Organization extends Component {
   async getBadges () {
     try {
       const { id: orgId } = this.props
-
       const badges = await apiClient.get(`/organizations/${orgId}/badges`)
       this.setState({
         badges
       })
     } catch (e) {
-      console.error(e)
-      this.setState({
-        error: e,
-        team: null,
-        loading: false
-      })
+      if (e.statusCode === 401) {
+        console.log("User doesn't have access to organization badges.")
+      } else {
+        console.error(e)
+      }
     }
   }
 
@@ -207,7 +205,9 @@ export default class Organization extends Component {
     const { id: orgId } = this.props
     const columns = [{ key: 'name' }, { key: 'color' }]
 
-    return (
+    // Do not render section if badges list cannot be fetched. This might happen
+    // on network error but also when the user doesn't have privileges.
+    return this.state.badges ? (
       <SectionWrapper>
         <Section>
           <div className='section-actions'>
@@ -244,7 +244,7 @@ export default class Organization extends Component {
           } />
         )}
       </SectionWrapper>
-    )
+    ) : null
   }
 
   renderMembers (memberRows) {
