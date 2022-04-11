@@ -75,6 +75,7 @@
     "react-dom": "^16.14.0",
     "react-leaflet": "^2.8.0",
     "react-modal": "^3.14.4",
+    "react-toastify": "^8.2.0",
     "reactjs-popup": "^1.5.0",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",

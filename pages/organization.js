@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Router from 'next/router'
 import { getOrg, getOrgStaff, getMembers, addManager, removeManager, addOwner, removeOwner } from '../lib/org-api'
 import { getUserOrgProfile } from '../lib/profiles-api'
 import Card from '../components/card'
@@ -11,7 +12,29 @@ import Button from '../components/button'
 import Modal from 'react-modal'
 import ProfileModal from '../components/profile-modal'
 import { assoc, propEq, find, contains, prop, map } from 'ramda'
+import APIClient from '../lib/api-client'
+import getConfig from 'next/config'
+import join from 'url-join'
 
+const { publicRuntimeConfig } = getConfig()
+const URL = publicRuntimeConfig.APP_URL
+
+const apiClient = new APIClient()
+
+export function SectionWrapper (props) {
+  return (
+    <div>
+      {props.children}
+      <style jsx>
+        {`
+          div {
+            grid-column: 1 / span 12;
+          }
+        `}
+      </style>
+    </div>
+  )
+}
 export default class Organization extends Component {
   static async getInitialProps ({ query }) {
     if (query) {
@@ -36,11 +59,14 @@ export default class Organization extends Component {
     }
 
     this.closeProfileModal = this.closeProfileModal.bind(this)
+    this.renderBadges = this.renderBadges.bind(this)
+    this.getBadges = this.getBadges.bind(this)
   }
 
   async componentDidMount () {
     await this.getOrg()
     await this.getOrgStaff()
+    await this.getBadges()
     return this.getMembers(0)
   }
 
@@ -157,6 +183,68 @@ export default class Organization extends Component {
         (row) => this.openProfileModal(row)
       }
     />
+  }
+
+  async getBadges () {
+    try {
+      const { id: orgId } = this.props
+      const badges = await apiClient.get(`/organizations/${orgId}/badges`)
+      this.setState({
+        badges
+      })
+    } catch (e) {
+      if (e.statusCode === 401) {
+        console.log("User doesn't have access to organization badges.")
+      } else {
+        console.error(e)
+      }
+    }
+  }
+
+  renderBadges () {
+    const { id: orgId } = this.props
+    const columns = [{ key: 'name' }, { key: 'color' }]
+
+    // Do not render section if badges list cannot be fetched. This might happen
+    // on network error but also when the user doesn't have privileges.
+    return this.state.badges ? (
+      <SectionWrapper>
+        <Section>
+          <div className='section-actions'>
+            <SectionHeader>Badges</SectionHeader>
+            <div>
+              <Button
+                variant='primary small'
+                onClick={() =>
+                  Router.push(
+                    join(URL, `/organizations/${orgId}/badges/add`)
+                  )
+                }
+              >
+                Add
+              </Button>
+            </div>
+          </div>
+        </Section>
+        {this.state.badges && (
+          <Table rows={(this.state.badges || []).map((row) => {
+            return {
+              ...row,
+              color: () => (
+                <svg width='20' height='20'>
+                  <rect width='20' height='20' style={{ fill: row.color }} />
+                </svg>
+              )
+            }
+          })} columns={columns} onRowClick={
+            ({ id: badgeId }) => Router.push(
+              join(URL, `/organizations/${orgId}/badges/${badgeId}`)
+            )
+
+          } />
+        )}
+      </SectionWrapper>
+    ) : null
   }
 
   renderMembers (memberRows) {
@@ -296,6 +384,7 @@ export default class Organization extends Component {
             {!this.state.loading ? this.renderMembers(members) : 'Loading...'}
           </div>
         ) : <div />}
+        {this.renderBadges()}
         <Modal style={{
           content: {
             maxWidth: '400px',

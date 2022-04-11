@@ -3,6 +3,7 @@ const yup = require('yup')
 const organization = require('../lib/organization')
 const profile = require('../lib/profile')
 const { routeWrapper } = require('./utils')
+const team = require('../lib/team')
 
 /**
  * Get the list of badges of an organization
@@ -21,6 +22,7 @@ const listBadges = routeWrapper({
       const badges = await conn('organization_badge')
         .select('*')
         .where('organization_id', req.params.id)
+        .orderBy('id')
       reply.send(badges)
     } catch (err) {
       console.log(err)
@@ -56,6 +58,68 @@ const createBadge = routeWrapper({
         })
         .returning('*')
       reply.send(badge)
+    } catch (err) {
+      console.log(err)
+      return reply.boom.badRequest(err.message)
+    }
+  }
+})
+
+/**
+ * Get organization badge
+ */
+const getBadge = routeWrapper({
+  validate: {
+    params: yup
+      .object({
+        id: yup.number().required().positive().integer(),
+        badgeId: yup.number().required().positive().integer()
+      })
+      .required()
+  },
+  handler: async function (req, reply) {
+    try {
+      const conn = await db()
+      const [badge] = await conn('organization_badge')
+        .select('*')
+        .where('id', req.params.badgeId)
+        .returning('*')
+
+      let users = await conn('user_badges')
+        .select({
+          id: 'user_badges.user_id',
+          assignedAt: 'user_badges.assigned_at',
+          validUntil: 'user_badges.valid_until'
+        })
+        .leftJoin(
+          'organization_badge',
+          'user_badges.badge_id',
+          'organization_badge.id'
+        )
+        .where('badge_id', req.params.badgeId)
+        .returning('*')
+
+      if (users.length > 0) {
+        // Get user profiles
+        const userProfiles = (
+          await team.resolveMemberNames(users.map((u) => u.id))
+        ).reduce((acc, u) => {
+          acc[u.id] = u
+          return acc
+        }, {})
+
+        users = users.map((u) => ({
+          id: u.id,
+          assignedAt: u.assignedAt,
+          validUntil: u.validUntil,
+          displayName: userProfiles[u.id] ? userProfiles[u.id].name : ''
+        }))
+      }
+
+      reply.send({
+        ...badge,
+        users
+      })
     } catch (err) {
       console.log(err)
       return reply.boom.badRequest(err.message)
@@ -110,10 +174,11 @@ const deleteBadge = routeWrapper({
   handler: async function (req, reply) {
     try {
       const conn = await db()
-      await conn('organization_badge')
-        .delete()
-        .where('id', req.params.badgeId)
-      return reply.sendStatus(200)
+      await conn('organization_badge').delete().where('id', req.params.badgeId)
+      return reply.send({
+        status: 200,
+        message: `Badge ${req.params.badgeId} deleted successfully.`
+      })
     } catch (err) {
       console.log(err)
       return reply.boom.badRequest(err.message)
@@ -133,21 +198,27 @@ const assignUserBadge = routeWrapper({
         userId: yup.number().required().positive().integer()
       })
       .required(),
-    body: yup
-      .object({
-        assigned_at: yup.date().optional(),
-        valid_until: yup.date().optional()
-      })
+    body: yup.object({
+      assigned_at: yup.date().optional(),
+      valid_until: yup.date().optional()
+    })
   },
   handler: async function (req, reply) {
     try {
       const conn = await db()
 
-      // user is member
-      await organization.isMember(req.params.id, req.params.userId)
+      // user is related to org?
+      const isMemberOrStaff = await organization.isMemberOrStaff(
+        req.params.id,
+        req.params.userId
+      )
+
+      if (!isMemberOrStaff) {
+        return reply.boom.badRequest('User is not part of the organization.')
+      }
 
       // assign badge
-      const [badge] = await conn('user_badge')
+      const [badge] = await conn('user_badges')
         .insert({
           user_id: req.params.userId,
           badge_id: req.params.badgeId,
@@ -159,7 +230,13 @@ const assignUserBadge = routeWrapper({
       reply.send(badge)
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      if (err.code === '23505') {
+        return reply.boom.badRequest('User is already assigned to badge.')
+      } else {
+        return reply.boom.badRequest(
+          'Unexpected error, please try again later.'
+        )
+      }
     }
   }
 })
@@ -197,18 +274,17 @@ const updateUserBadge = routeWrapper({
         userId: yup.number().required().positive().integer()
       })
       .required(),
-    body: yup
-      .object({
-        assigned_at: yup.date().optional(),
-        valid_until: yup.date().optional()
-      })
+    body: yup.object({
+      assigned_at: yup.date().optional(),
+      valid_until: yup.date().optional()
+    })
   },
   handler: async function (req, reply) {
     try {
       const conn = await db()
 
       // assign badge
-      const [badge] = await conn('user_badge')
+      const [badge] = await conn('user_badges')
         .update({
           assigned_at: req.body.assigned_at,
           valid_until: req.body.valid_until
@@ -244,7 +320,7 @@ const removeUserBadge = routeWrapper({
       const conn = await db()
 
       // delete user badge
-      await conn('user_badge').delete().where({
+      await conn('user_badges').delete().where({
         user_id: req.params.userId,
         badge_id: req.params.badgeId
       })
@@ -260,6 +336,7 @@ const removeUserBadge = routeWrapper({
 module.exports = {
   listBadges,
   createBadge,
+  getBadge,
   patchBadge,
   deleteBadge,
   assignUserBadge,
