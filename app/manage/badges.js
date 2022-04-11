@@ -275,19 +275,22 @@ const updateUserBadge = routeWrapper({
       })
       .required(),
     body: yup.object({
-      assigned_at: yup.date().optional(),
-      valid_until: yup.date().optional()
+      assigned_at: yup.date(),
+      valid_until: yup.date().nullable()
     })
   },
   handler: async function (req, reply) {
     try {
       const conn = await db()
 
-      // assign badge
+      const { assigned_at, valid_until } = req.body
+
+      // Yup validation returns time-zoned dates, update query use UTC strings
+      // to avoid that.
       const [badge] = await conn('user_badges')
         .update({
-          assigned_at: req.body.assigned_at,
-          valid_until: req.body.valid_until
+          assigned_at: assigned_at.toISOString(),
+          valid_until: valid_until ? valid_until.toISOString() : null
         })
         .where({
           user_id: req.params.userId,
