@@ -83,7 +83,8 @@ export default class EditBadge extends Component {
     const columns = [
       { key: 'id', label: 'OSM ID' },
       { key: 'displayName', label: 'Display Name' },
-      { key: 'assignedAt', label: 'Assigned At' }
+      { key: 'assignedAt', label: 'Assigned At' },
+      { key: 'validUntil', label: 'Valid Until' }
     ]
 
     const { badge } = this.state
@@ -97,14 +98,12 @@ export default class EditBadge extends Component {
 
         <AddMemberForm
           onSubmit={async ({ osmId }) => {
-            try {
-              await apiClient.post(
+            Router.push(
+              join(
+                URL,
                 `/organizations/${orgId}/badges/${badgeId}/assign/${osmId}`
               )
-              this.loadData()
-            } catch (error) {
-              toast.error(error.message)
-            }
+            )
           }}
         />
 
@@ -116,6 +115,14 @@ export default class EditBadge extends Component {
               validUntil: u.validUntil && toDateString(u.validUntil)
             }))}
             columns={columns}
+            onRowClick={({ id }) =>
+              Router.push(
+                join(
+                  URL,
+                  `/organizations/${orgId}/badges/${badgeId}/assign/${id}`
+                )
+              )
+            }
           />
         )}
       </section>

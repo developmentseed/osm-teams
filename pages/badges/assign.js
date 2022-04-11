@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import { Formik, Field, Form } from 'formik'
 import APIClient from '../../lib/api-client'
 import Button from '../../components/button'
-import Router from 'next/router'
-import join from 'url-join'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 
@@ -85,24 +83,20 @@ export default class AssignBadge extends Component {
     return (
       <>
         <div className='page__heading'>
-          <h1>Badge Assignment</h1>
+          <h1>{badge.name} Badge</h1>
         </div>
         <section>
           <div className='page__heading'>
-            <h2>Badge: {badge.name}</h2>
-          </div>
-          <div className='page__heading'>
-            <h2>
-              User: {user.id}
-            </h2>
+            <h2>User: {userId} (OSM id)</h2>
           </div>
           <Formik
             initialValues={{
               assignedAt:
-                (user.assignedAt && user.assignedAt.substring(0, 10)) ||
+                (user && user.assignedAt && user.assignedAt.substring(0, 10)) ||
                 format(Date.now(), 'yyyy-MM-dd'),
               validUntil:
-                (user.validUntil && user.validUntil.substring(0, 10)) || ''
+                (user && user.validUntil && user.validUntil.substring(0, 10)) ||
+                ''
             }}
             onSubmit={async ({ assignedAt, validUntil }) => {
               try {
@@ -143,7 +137,7 @@ export default class AssignBadge extends Component {
                       disabled={isSubmitting}
                       variant='primary'
                       type='submit'
-                      value='update'
+                      value={user ? 'Update' : 'Assign'}
                     />
                     <Button
                       variant='small'
