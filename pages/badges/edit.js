@@ -9,7 +9,6 @@ import getConfig from 'next/config'
 import { toast } from 'react-toastify'
 import theme from '../../styles/theme'
 import Table from '../../components/table'
-import AddMemberForm from '../../components/add-member-form'
 import { toDateString } from '../../app/lib/utils'
 
 const { publicRuntimeConfig } = getConfig()
@@ -62,13 +61,21 @@ export default class EditBadge extends Component {
   async loadData () {
     const { orgId, badgeId } = this.props
     try {
-      const [org, badge] = await Promise.all([
-        getOrg(orgId),
-        apiClient.get(`/organizations/${orgId}/badges/${badgeId}`)
-      ])
+      const [org, badge, { members }, { managers, owners }] = await Promise.all(
+        [
+          getOrg(orgId),
+          apiClient.get(`/organizations/${orgId}/badges/${badgeId}`),
+          apiClient.get(`/organizations/${orgId}/members`),
+          apiClient.get(`/organizations/${orgId}/staff`)
+        ]
+      )
+
+      const assignablePeople = members.concat(managers).concat(owners)
+
       this.setState({
         org,
-        badge
+        badge,
+        assignablePeople
       })
     } catch (error) {
       console.error(error)
@@ -87,25 +94,52 @@ export default class EditBadge extends Component {
       { key: 'validUntil', label: 'Valid Until' }
     ]
 
-    const { badge } = this.state
+    const { badge, assignablePeople } = this.state
     const users = (badge && badge.users) || []
 
     return (
       <section>
-        <div className='page__heading'>
-          <h2>Assigned Members</h2>
+        <div className='team__table'>
+          <div className='page__heading'>
+            <h2>Assigned Members</h2>
+            <Formik
+              initialValues={{ osmIdentifier: '' }}
+              onSubmit={async ({ osmIdentifier }) => {
+                const user = assignablePeople.find(
+                  (p) =>
+                    p.id === osmIdentifier ||
+                    p.name.toLowerCase() === osmIdentifier.toLowerCase()
+                )
+                if (!user) {
+                  toast.error('User is part of this organization.')
+                } else {
+                  Router.push(
+                    join(
+                      URL,
+                      `/organizations/${orgId}/badges/${badgeId}/assign/${user.id}`
+                    )
+                  )
+                }
+              }}
+              render={({ values }) => {
+                return (
+                  <Form className='form-control'>
+                    <Field
+                      type='text'
+                      name='osmIdentifier'
+                      id='osmIdentifier'
+                      placeholder='OSM id or username'
+                      value={values.osmIdentifier}
+                    />
+                    <Button type='submit' variant='submit'>
+                      Assign
+                    </Button>
+                  </Form>
+                )
+              }}
+            />
+          </div>
         </div>
-
-        <AddMemberForm
-          onSubmit={async ({ osmId }) => {
-            Router.push(
-              join(
-                URL,
-                `/organizations/${orgId}/badges/${badgeId}/assign/${osmId}`
-              )
-            )
-          }}
-        />
 
         {users.length > 0 && (
           <Table
@@ -170,7 +204,7 @@ export default class EditBadge extends Component {
                     color
                   }
                 )
-                Router.push(join(URL, `/organizations/${orgId}`))
+                toast.success('Badge updated successfully.')
               } catch (error) {
                 toast.error(
                   `There was an error editing badge '${name}'. Please try again later.`
@@ -214,13 +248,8 @@ export default class EditBadge extends Component {
                     />
                     <Button
                       variant='disable small'
-                      onClick={() => {
-                        Router.push(
-                          join(URL, `/organizations/${self.props.orgId}`)
-                        )
-                      }}
-                      type='submit'
-                      value='cancel'
+                      href={`/organizations/${self.props.orgId}`}
+                      value='Go to organization page'
                     />
                   </ButtonWrapper>
                 </Form>
@@ -293,6 +322,10 @@ export default class EditBadge extends Component {
 
             section {
               margin-bottom: 20px;
+            }
+
+            .assign__table {
+              grid-column: 1 / span 12;
             }
           `}
         </style>

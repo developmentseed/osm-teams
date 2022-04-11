@@ -199,8 +199,8 @@ const assignUserBadge = routeWrapper({
       })
       .required(),
     body: yup.object({
-      assigned_at: yup.date().optional(),
-      valid_until: yup.date().optional()
+      assigned_at: yup.date(),
+      valid_until: yup.date().nullable()
     })
   },
   handler: async function (req, reply) {
@@ -218,12 +218,13 @@ const assignUserBadge = routeWrapper({
       }
 
       // assign badge
+      const { assigned_at, valid_until } = req.body
       const [badge] = await conn('user_badges')
         .insert({
           user_id: req.params.userId,
           badge_id: req.params.badgeId,
-          assigned_at: req.body.assigned_at,
-          valid_until: req.body.valid_until
+          assigned_at: assigned_at.toISOString(),
+          valid_until: valid_until ? valid_until.toISOString() : null
         })
         .returning('*')
 

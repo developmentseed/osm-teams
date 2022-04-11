@@ -100,14 +100,25 @@ export default class AssignBadge extends Component {
             }}
             onSubmit={async ({ assignedAt, validUntil }) => {
               try {
-                await apiClient.patch(
-                  `/organizations/${orgId}/member/${userId}/badge/${badgeId}`,
-                  {
-                    assigned_at: assignedAt,
-                    valid_until: validUntil !== '' ? validUntil : null
-                  }
-                )
-                toast.info('Assignment updated successfully.')
+                const payload = {
+                  assigned_at: assignedAt,
+                  valid_until: validUntil !== '' ? validUntil : null
+                }
+
+                if (!user) {
+                  await apiClient.post(
+                    `/organizations/${orgId}/badges/${badgeId}/assign/${userId}`,
+                    payload
+                  )
+                  toast.info('Badge assigned successfully.')
+                } else {
+                  await apiClient.patch(
+                    `/organizations/${orgId}/member/${userId}/badge/${badgeId}`,
+                    payload
+                  )
+                  toast.info('Badge updated successfully.')
+                }
+                this.loadData()
               } catch (error) {
                 console.log(error)
                 toast.error(`Unexpected error, please try again later.`)
@@ -142,7 +153,7 @@ export default class AssignBadge extends Component {
                     <Button
                       variant='small'
                       href={`/organizations/${orgId}/badges/${badgeId}`}
-                      value='cancel'
+                      value='Go to badge view'
                     />
                   </ButtonWrapper>
                 </Form>
