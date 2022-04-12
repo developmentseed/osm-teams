@@ -199,7 +199,7 @@ const assignUserBadge = routeWrapper({
       })
       .required(),
     body: yup.object({
-      assigned_at: yup.date(),
+      assigned_at: yup.date().required(),
       valid_until: yup.date().nullable()
     })
   },
@@ -276,7 +276,7 @@ const updateUserBadge = routeWrapper({
       })
       .required(),
     body: yup.object({
-      assigned_at: yup.date(),
+      assigned_at: yup.date().required(),
       valid_until: yup.date().nullable()
     })
   },
