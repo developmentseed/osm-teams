@@ -176,13 +176,16 @@ export default class Organization extends Component {
       }
     })
 
-    return <Table
-      rows={allRows}
-      columns={columns}
-      onRowClick={
-        (row) => this.openProfileModal(row)
-      }
-    />
+    return (
+      <Table
+        rows={allRows}
+        columns={columns}
+        emptyPlaceHolder={
+          this.state.loading ? 'Loading...' : 'This organization has no staff.'
+        }
+        onRowClick={(row) => this.openProfileModal(row)}
+      />
+    )
   }
 
   async getBadges () {
@@ -252,13 +255,18 @@ export default class Organization extends Component {
       { key: 'id' },
       { key: 'name' }
     ]
-    return <Table
-      rows={memberRows}
-      columns={columns}
-      onRowClick={
-        (row) => this.openProfileModal(row)
-      }
-    />
+    return (
+      <Table
+        rows={memberRows}
+        columns={columns}
+        emptyPlaceHolder={
+          this.state.loading
+            ? 'Loading...'
+            : 'This organization has no members.'
+        }
+        onRowClick={(row) => this.openProfileModal(row)}
+      />
+    )
   }
 
   render () {
@@ -381,7 +389,7 @@ export default class Organization extends Component {
                 </div>
               </div>
             </Section>
-            {!this.state.loading ? this.renderMembers(members) : 'Loading...'}
+            {this.renderMembers(members)}
           </div>
         ) : <div />}
         {this.renderBadges()}
