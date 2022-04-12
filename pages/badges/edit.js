@@ -111,7 +111,7 @@ export default class EditBadge extends Component {
                     p.name.toLowerCase() === osmIdentifier.toLowerCase()
                 )
                 if (!user) {
-                  toast.error('User is part of this organization.')
+                  toast.error('User is not part of this organization.')
                 } else {
                   Router.push(
                     join(
@@ -128,7 +128,7 @@ export default class EditBadge extends Component {
                       type='text'
                       name='osmIdentifier'
                       id='osmIdentifier'
-                      placeholder='OSM id or username'
+                      placeholder='OSM id'
                       value={values.osmIdentifier}
                     />
                     <Button type='submit' variant='submit'>
