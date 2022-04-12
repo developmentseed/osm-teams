@@ -78,7 +78,7 @@ export default function Button ({ name, id, value, variant, type, disabled, href
   if (href) {
     let fullUrl
     (href.startsWith('http')) ? (fullUrl = href) : (fullUrl = join(publicRuntimeConfig.APP_URL, href))
-    return <a href={fullUrl} className={[`button`, variant, size].join(' ')} disabled={disabled} name={name} id={id}>{children}<style jsx>{style}</style></a>
+    return <a href={fullUrl} className={[`button`, variant, size].join(' ')} disabled={disabled} name={name} id={id}>{children || value}<style jsx>{style}</style></a>
   }
   return <div onClick={onClick} className={[`button`, variant, size].join(' ')} disabled={disabled}>{children}<style jsx>{style}</style></div>
 }

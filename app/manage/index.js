@@ -301,6 +301,13 @@ function manageRouter (nextApp) {
       })
     }
   )
+  router.get(
+    '/organizations/:id/badges/:badgeId/assign/:userId',
+    can('organization:edit'),
+    (req, res) => {
+      return nextApp.render(req, res, '/badges/assign', req.params)
+    }
+  )
 
   return router
 }
