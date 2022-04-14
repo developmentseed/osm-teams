@@ -76,7 +76,7 @@ test.before(async () => {
 
   // Add team member
   await orgOwner.agent
-    .put(`/api/team/${orgTeam1.id}/${orgTeamMember.id}`)
+    .put(`/api/teams/add/${orgTeam1.id}/${orgTeamMember.id}`)
     .expect(200)
 
   // Add manager
@@ -366,6 +366,7 @@ test('Update badge', async (t) => {
   const badgeAssignment = (await orgOwner.agent
     .patch(updateBadgeRoute)
     .send({
+      assigned_at: '2020-01-01Z',
       valid_until: '2021-01-01Z'
     })
     .expect(200)).body
@@ -373,6 +374,7 @@ test('Update badge', async (t) => {
   t.like(badgeAssignment, {
     badge_id: badge2.id,
     user_id: orgTeamMember.id,
+    assigned_at: '2020-01-01T00:00:00.000Z',
     valid_until: '2021-01-01T00:00:00.000Z'
   })
 })

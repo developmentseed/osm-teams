@@ -41,6 +41,7 @@ const {
 
 const {
   createBadge,
+  getBadge,
   patchBadge,
   deleteBadge,
   listBadges,
@@ -151,6 +152,11 @@ function manageRouter (nextApp) {
     '/api/organizations/:id/badges',
     can('organization:edit'),
     createBadge
+  )
+  router.get(
+    '/api/organizations/:id/badges/:badgeId',
+    can('organization:edit'),
+    getBadge
   )
   router.patch(
     '/api/organizations/:id/badges/:badgeId',
@@ -274,6 +280,34 @@ function manageRouter (nextApp) {
   router.get('/organizations/:id/edit-team-profiles', can('organization:member'), (req, res) => {
     return nextApp.render(req, res, '/org-edit-team-profile', { id: req.params.id })
   })
+
+  /**
+   * Badge pages
+   * */
+  router.get(
+    '/organizations/:id/badges/add',
+    can('organization:edit'),
+    (req, res) => {
+      return nextApp.render(req, res, '/badges/add', { id: req.params.id })
+    }
+  )
+  router.get(
+    '/organizations/:id/badges/:badgeId',
+    can('organization:edit'),
+    (req, res) => {
+      return nextApp.render(req, res, '/badges/edit', {
+        id: req.params.id,
+        badgeId: req.params.badgeId
+      })
+    }
+  )
+  router.get(
+    '/organizations/:id/badges/:badgeId/assign/:userId',
+    can('organization:edit'),
+    (req, res) => {
+      return nextApp.render(req, res, '/badges/assign', req.params)
+    }
+  )
 
   return router
 }
