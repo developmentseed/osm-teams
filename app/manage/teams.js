@@ -1,8 +1,13 @@
 const team = require('../lib/team')
+const db = require('../db')
+const yup = require('yup')
+const crypto = require('crypto')
+const { routeWrapper } = require('./utils')
 const { prop, map, dissoc } = require('ramda')
 const urlRegex = require('url-regex')
 const { teamsMembersModeratorsHelper } = require('./utils')
 const profile = require('../lib/profile')
+const { id } = require('date-fns/locale')
 
 const isUrl = urlRegex({ exact: true })
 const getOsmId = prop('osm_id')
@@ -253,6 +258,101 @@ async function removeMember (req, reply) {
   }
 }
 
+const getJoinInvitations = routeWrapper({
+  validate: {
+    params: yup.object({
+      id: yup.number().required().positive().integer()
+    }).required()
+  },
+  handler: async function (req, reply) {
+    try {
+      const conn = await db()
+      const invitations = await conn('invitations')
+        .select().where('team_id', req.params.id).orderBy('created_at', 'desc') // Most recent first
+
+      reply.send(invitations)
+    } catch (e) {
+      console.error(e)
+      reply.boom.badRequest(e.message)
+    }
+  }
+})
+
+const createJoinInvitation = routeWrapper({
+  validate: {
+    params: yup.object({
+      id: yup.number().required().positive().integer()
+    }).required()
+  },
+  handler: async function (req, reply) {
+    try {
+      const conn = await db()
+      const uuid = crypto.randomUUID()
+      const [invitation] = await conn('invitations').insert({
+        id: uuid,
+        team_id: req.params.id
+      }).returning('*')
+      reply.send(invitation)
+    } catch (err) {
+      console.log(err)
+      return reply.boom.badRequest(err.message)
+    }
+  }
+})
+
+const deleteJoinInvitation = routeWrapper({
+  validate: {
+    params: yup.object({
+      id: yup.number().required().positive().integer(),
+      uuid: yup.string().uuid().required()
+    }).required()
+  },
+  handler: async function (req, reply) {
+    try {
+      const conn = await db()
+      await conn('invitations').where({
+        team_id: req.params.id,
+        id: req.params.uuid
+      }).del()
+      reply.sendStatus(200)
+    } catch (err) {
+      console.log(err)
+      return reply.boom.badRequest(err.message)
+    }
+  }
+})
+
+const acceptJoinInvitation = routeWrapper({
+  validate: {
+    params: yup.object({
+      id: yup.number().required().positive().integer(),
+      uuid: yup.string().uuid().required()
+    }).required()
+  },
+  handler: async (req, reply) => {
+    const user = reply.locals.user_id
+    try {
+      const conn = await db()
+      const [invitation] = await conn('invitations').where({
+        team_id: req.params.id,
+        id: req.params.uuid
+      })
+
+      // If this invitation doesn't exist, then it's not valid
+      if (!invitation) {
+        return reply.sendStatus(404)
+      }
+      else {
+        team.addMember(req.params.id, user)
+        return reply.sendStatus(200)
+      }
+    } catch (err) {
+      console.log(err)
+      return reply.boom.badRequest(err.message)
+    }
+  }
+})
+
 async function joinTeam (req, reply) {
   const { id } = req.params
   const osmId = reply.locals.user_id
@@ -287,5 +387,9 @@ module.exports = {
   removeMember,
   removeModerator,
   updateMembers,
-  updateTeam
+  updateTeam,
+  getJoinInvitations,
+  createJoinInvitation,
+  deleteJoinInvitation,
+  acceptJoinInvitation
 }

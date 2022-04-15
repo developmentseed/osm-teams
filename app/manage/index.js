@@ -20,7 +20,11 @@ const {
   removeMember,
   removeModerator,
   updateMembers,
-  updateTeam
+  updateTeam,
+  getJoinInvitations,
+  createJoinInvitation,
+  deleteJoinInvitation,
+  acceptJoinInvitation,
 } = require('./teams')
 
 const {
@@ -65,7 +69,8 @@ const {
 } = require('./profiles')
 
 const { getUserManageToken } = require('../lib/profile')
-const organization = require('../lib/organization')
+const orgModel = require('../lib/organization')
+const teamModel =require('../lib/team')
 
 /**
  * The manageRouter handles all routes related to the first party
@@ -119,6 +124,14 @@ function manageRouter (nextApp) {
   router.put('/api/teams/:id/join', can('team:join'), joinTeam)
   router.put('/api/teams/:id/assignModerator/:osmId', can('team:edit'), assignModerator)
   router.put('/api/teams/:id/removeModerator/:osmId', can('team:edit'), removeModerator)
+  
+  /**
+   * Manage inviations to teams
+   */
+  router.get('/api/teams/:id/invitations', can('team:edit'), getJoinInvitations)
+  router.post('/api/teams/:id/invitations', can('team:edit'), createJoinInvitation)
+  router.delete('/api/teams/:id/invitations/:uuid', can('team:edit'), deleteJoinInvitation)
+  router.post('/api/teams/:id/invitations/:uuid/accept', can('public:authenticated'), acceptJoinInvitation)
 
   /**
    * List, Create, Read, Update, Delete operations on orgs
@@ -237,7 +250,7 @@ function manageRouter (nextApp) {
   })
 
   router.get('/teams/create', can('public:authenticated'), async (req, res) => {
-    const staff = await organization.getOrgStaff({ osmId: Number(res.locals.user_id) })
+    const staff = await orgModel.getOrgStaff({ osmId: Number(res.locals.user_id) })
     return nextApp.render(req, res, '/team-create', { staff })
   })
 
@@ -255,6 +268,19 @@ function manageRouter (nextApp) {
 
   router.get('/teams/:id/profile', can('team:member'), (req, res) => {
     return nextApp.render(req, res, '/profile-form', { id: req.params.id, formType: 'team' })
+  })
+
+  router.get('/teams/:id/invitations/:uuid', async (req, res) => {
+    const teamId = req.params.id
+    const invitationId = req.params.uuid
+    const isInvitationValid = await teamModel.isInvitationValid(teamId, invitationId)
+
+    if (!isInvitationValid) {
+      return res.sendStatus(404)
+    }
+
+    const teamData = await teamModel.get(req.params.id)
+    return nextApp.render(req, res, '/invitation', { team_id: req.params.id, invitation_id: req.params.uuid, team: teamData })
   })
 
   router.get('/organizations/create', can('public:authenticated'), (req, res) => {
@@ -280,6 +306,7 @@ function manageRouter (nextApp) {
   router.get('/organizations/:id/edit-team-profiles', can('organization:member'), (req, res) => {
     return nextApp.render(req, res, '/org-edit-team-profile', { id: req.params.id })
   })
+
 
   /**
    * Badge pages

@@ -3,7 +3,7 @@ const knexPostgis = require('knex-postgis')
 const join = require('url-join')
 const xml2js = require('xml2js')
 const { unpack } = require('./utils')
-const { prop } = require('ramda')
+const { prop, isEmpty } = require('ramda')
 const request = require('request-promise-native')
 
 const { serverRuntimeConfig } = require('../../next.config')
@@ -414,6 +414,16 @@ async function associatedOrg (teamId) {
   )
 }
 
+async function isInvitationValid (teamId, invitationId) {
+  if (!teamId) throw new Error('team id is required as first argument')
+  if (!invitationId) throw new Error('invitation id is required as second argument')
+
+  const conn = await db()
+  const invitations = await conn('invitations').where({ team_id: teamId, id: invitationId })
+
+  return !isEmpty(invitations)
+}
+
 module.exports = {
   get,
   list,
@@ -433,6 +443,7 @@ module.exports = {
   isModerator,
   isMember,
   isPublic,
+  isInvitationValid,
   resolveMemberNames,
   associatedOrg
 }
