@@ -335,13 +335,16 @@ export default class Organization extends Component {
               this.getOrg()
             }
           })
-          profileActions.push({
-            name: 'Assign a Badge',
-            onClick: () => Router.push(
-              join(URL, `/organizations/${org.id}/badges/assign/${profileId}`)
-            )
-          })
         }
+      }
+
+      if (isProfileManager || isProfileOwner) {
+        profileActions.push({
+          name: 'Assign a Badge',
+          onClick: () => Router.push(
+            join(URL, `/organizations/${org.id}/badges/assign/${profileId}`)
+          )
+        })
       }
     }
 
