@@ -329,7 +329,10 @@ const removeUserBadge = routeWrapper({
         badge_id: req.params.badgeId
       })
 
-      reply.sendStatus(200)
+      return reply.send({
+        status: 200,
+        message: `Badge ${req.params.badgeId} unassigned successfully.`
+      })
     } catch (err) {
       console.log(err)
       return reply.boom.badRequest(err.message)

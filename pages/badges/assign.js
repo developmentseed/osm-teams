@@ -4,6 +4,12 @@ import APIClient from '../../lib/api-client'
 import Button from '../../components/button'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
+import join from 'url-join'
+import Router from 'next/router'
+import getConfig from 'next/config'
+
+const { publicRuntimeConfig } = getConfig()
+const URL = publicRuntimeConfig.APP_URL
 
 const apiClient = new APIClient()
 
@@ -20,6 +26,19 @@ function ButtonWrapper ({ children }) {
   )
 }
 
+function Section ({ children }) {
+  return (
+    <section>
+      {children}
+      <style jsx global>{`
+      section {
+        margin-bottom: 20px;
+      }
+    }`}</style>
+    </section>
+  )
+}
+
 export default class AssignBadge extends Component {
   static async getInitialProps ({ query }) {
     if (query) {
@@ -33,7 +52,9 @@ export default class AssignBadge extends Component {
 
   constructor (props) {
     super(props)
-    this.state = {}
+    this.state = {
+      isDeleting: false
+    }
 
     this.loadData = this.loadData.bind(this)
   }
@@ -43,21 +64,22 @@ export default class AssignBadge extends Component {
   }
 
   async loadData () {
-    const { orgId, badgeId, userId } = this.props
-    try {
-      const [org, badge] = await Promise.all([
-        apiClient.get(`/organizations/${orgId}`),
-        apiClient.get(`/organizations/${orgId}/badges/${badgeId}`)
-      ])
+    const { orgId, badgeId } = this.props
 
-      // Check if user already has the badge
-      const user =
-        badge.users && badge.users.find((u) => u.id === parseInt(userId))
+    try {
+      const org = await apiClient.get(`/organizations/${orgId}`)
+      let badge, badges
+
+      if (badgeId) {
+        badge = await apiClient.get(`/organizations/${orgId}/badges/${badgeId}`)
+      } else {
+        badges = await apiClient.get(`/organizations/${orgId}/badges`)
+      }
 
       this.setState({
         org,
         badge,
-        user
+        badges
       })
     } catch (error) {
       console.error(error)
@@ -73,22 +95,19 @@ export default class AssignBadge extends Component {
       return <div>An unexpected error occurred, please try again later.</div>
     }
 
-    if (!this.state.org && !this.state.badge) {
+    if (!this.state.org && (!this.state.badge || !this.state.badges)) {
       return <div>Loading...</div>
     }
 
-    const { orgId, badgeId, userId } = this.props
-    const { badge, user } = this.state
+    const { orgId, userId } = this.props
+    const { badges, badge, user } = this.state
 
     return (
       <>
         <div className='page__heading'>
-          <h1>{badge.name} Badge</h1>
+          <h1>Badge Assignment</h1>
         </div>
-        <section>
-          <div className='page__heading'>
-            <h2>User: {userId} (OSM id)</h2>
-          </div>
+        <Section>
           <Formik
             initialValues={{
               assignedAt:
@@ -98,7 +117,7 @@ export default class AssignBadge extends Component {
                 (user && user.validUntil && user.validUntil.substring(0, 10)) ||
                 ''
             }}
-            onSubmit={async ({ assignedAt, validUntil }) => {
+            onSubmit={async ({ assignedAt, validUntil, badgeId }) => {
               try {
                 const payload = {
                   assigned_at: assignedAt,
@@ -110,7 +129,12 @@ export default class AssignBadge extends Component {
                     `/organizations/${orgId}/badges/${badgeId}/assign/${userId}`,
                     payload
                   )
-                  toast.info('Badge assigned successfully.')
+                  Router.push(
+                    join(
+                      URL,
+                      `/organizations/${orgId}/badges/${badgeId}/assign/${userId}`
+                    )
+                  )
                 } else {
                   await apiClient.patch(
                     `/organizations/${orgId}/member/${userId}/badge/${badgeId}`,
@@ -124,9 +148,29 @@ export default class AssignBadge extends Component {
                 toast.error(`Unexpected error, please try again later.`)
               }
             }}
-            render={({ isSubmitting, values, errors }) => {
+            render={({ isSubmitting, values }) => {
               return (
                 <Form>
+                  <div className='page__heading'>
+                    <h2>User: {userId} (OSM id)</h2>
+                  </div>
+                  {badge ? (
+                    <div className='page__heading'>
+                      <h2>Badge: {badge && badge.name}</h2>
+                    </div>
+                  ) : (
+                    <div className='form-control form-control__vertical'>
+                      <label htmlFor='badgeId'>Badge:</label>
+                      <Field as='select' name='badgeId'>
+                        <option value=''>Select a badge</option>
+                        {badges.map((b) => (
+                          <option key={b.id} value={b.id}>
+                            {b.name}
+                          </option>
+                        ))}
+                      </Field>
+                    </div>
+                  )}
                   <div className='form-control form-control__vertical'>
                     <label htmlFor='assignedAt'>Assigned At (required)</label>
                     <Field
@@ -148,19 +192,68 @@ export default class AssignBadge extends Component {
                       disabled={isSubmitting}
                       variant='primary'
                       type='submit'
-                      value={user ? 'Update' : 'Assign'}
+                      value={badge ? 'Update' : 'Assign'}
                     />
                     <Button
                       variant='small'
-                      href={`/organizations/${orgId}/badges/${badgeId}`}
-                      value='Go to badge view'
+                      href={`/organizations/${orgId}`}
+                      value='Go to organization view'
                     />
                   </ButtonWrapper>
                 </Form>
               )
             }}
           />
-        </section>
+        </Section>
+        {badge && (
+          <Section>
+            <div>
+              {this.state.isDeleting ? (
+                <>
+                  <Button
+                    onClick={() => {
+                      this.setState({
+                        isDeleting: false
+                      })
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant='danger'
+                    onClick={async (e) => {
+                      e.preventDefault()
+                      try {
+                        await apiClient.delete(
+                          `/organizations/${orgId}/member/${userId}/badge/${badge.id}`
+                        )
+                        Router.push(join(URL, `/organizations/${orgId}`))
+                      } catch (error) {
+                        toast.error(
+                          `There was an error unassigning the badge. Please try again later.`
+                        )
+                        console.log(error)
+                      }
+                    }}
+                  >
+                    Confirm Unassign
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant='danger'
+                  type='submit'
+                  value='Unassign this badge'
+                  onClick={async (e) => {
+                    this.setState({
+                      isDeleting: true
+                    })
+                  }}
+                />
+              )}
+            </div>
+          </Section>
+        )}
       </>
     )
   }
