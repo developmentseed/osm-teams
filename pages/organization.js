@@ -337,6 +337,15 @@ export default class Organization extends Component {
           })
         }
       }
+
+      if (isProfileManager || isProfileOwner) {
+        profileActions.push({
+          name: 'Assign a Badge',
+          onClick: () => Router.push(
+            join(URL, `/organizations/${org.id}/badges/assign/${profileId}`)
+          )
+        })
+      }
     }
 
     return (

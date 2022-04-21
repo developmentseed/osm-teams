@@ -301,12 +301,19 @@ function manageRouter (nextApp) {
       })
     }
   )
+
+  // Use same page for two routes
+  const assignBadgePageRoute = [
+    can('organization:edit'),
+    (req, res) => nextApp.render(req, res, '/badges/assign', req.params)
+  ]
+  router.get(
+    '/organizations/:id/badges/assign/:userId',
+    ...assignBadgePageRoute
+  )
   router.get(
     '/organizations/:id/badges/:badgeId/assign/:userId',
-    can('organization:edit'),
-    (req, res) => {
-      return nextApp.render(req, res, '/badges/assign', req.params)
-    }
+    ...assignBadgePageRoute
   )
 
   return router
