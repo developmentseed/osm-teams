@@ -4,6 +4,7 @@
  * Route middleware to interact with OSM OAuth
  */
 const passport = require('passport-light')
+const R = require('ramda')
 const hydra = require('./hydra')
 const url = require('url')
 const db = require('../db')
@@ -55,11 +56,12 @@ function openstreetmap (req, res) {
     let conn = await db()
     let [user] = await conn('users').where('id', profile.id)
     if (user) {
+      const newProfile = R.mergeDeepRight(user.profile, profile)
       await conn('users').where('id', profile.id).update(
         {
           'osmToken': token,
           'osmTokenSecret': tokenSecret,
-          'profile': JSON.stringify(profile)
+          'profile': JSON.stringify(newProfile)
         }
       )
     } else {
