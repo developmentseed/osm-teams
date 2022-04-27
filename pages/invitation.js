@@ -4,13 +4,13 @@ import Router from 'next/router'
 import getConfig from 'next/config'
 import { toast } from 'react-toastify'
 import Button from '../components/button'
-import { getTeam, getTeamJoinInvitations, acceptTeamJoinInvitation } from '../lib/teams-api'
+import { acceptTeamJoinInvitation } from '../lib/teams-api'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
 
 export default class Invitation extends Component {
-  static async getInitialProps({ query }) {
+  static async getInitialProps ({ query }) {
     if (query) {
       return {
         teamId: query.team_id,
@@ -36,7 +36,7 @@ export default class Invitation extends Component {
     })
   }
 
-  async rejectInvitation() {
+  async rejectInvitation () {
     Router.push(URL)
   }
 
@@ -49,7 +49,7 @@ export default class Invitation extends Component {
       }
       this.setState({
         invitationSuccess: true,
-        invitationPending: false,
+        invitationPending: false
       })
     } catch (err) {
       console.error(err)
@@ -60,7 +60,7 @@ export default class Invitation extends Component {
     }
   }
 
-  render() {
+  render () {
     const { team, error } = this.state
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -87,21 +87,28 @@ export default class Invitation extends Component {
     if (!team) return null
     return (
       <article className='inner page'>
-          You have been invited to join <b>{team.name}</b>
-          <br />
-          <br />
-          { this.state.invitationPending ? 
+        You have been invited to join <b>{team.name}</b>
+        <br />
+        <br />
+        {this.state.invitationPending ? (
           <>
-            <Button variant='submit' onClick={() => this.acceptInvitation()}>Accept</Button>
-            <span style={{ marginLeft: '1rem' }}><Button onClick={() => this.rejectInvitation()}>Cancel</Button></span>
+            <Button variant='submit' onClick={() => this.acceptInvitation()}>
+              Accept
+            </Button>
+            <span style={{ marginLeft: '1rem' }}>
+              <Button onClick={() => this.rejectInvitation()}>Cancel</Button>
+            </span>
           </>
-          : ''
-          }
-          {
-            this.state.invitationSuccess ?
-            <Button variant='submit' href={join(URL, 'teams',`${team.id}`)}>Go to your team</Button>
-            : ''
-          }
+        ) : (
+          ''
+        )}
+        {this.state.invitationSuccess ? (
+          <Button variant='submit' href={join(URL, 'teams', `${team.id}`)}>
+            Go to your team
+          </Button>
+        ) : (
+          ''
+        )}
       </article>
     )
   }
