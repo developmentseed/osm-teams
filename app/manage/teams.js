@@ -7,7 +7,6 @@ const { prop, map, dissoc } = require('ramda')
 const urlRegex = require('url-regex')
 const { teamsMembersModeratorsHelper } = require('./utils')
 const profile = require('../lib/profile')
-const { id } = require('date-fns/locale')
 
 const isUrl = urlRegex({ exact: true })
 const getOsmId = prop('osm_id')
@@ -341,8 +340,7 @@ const acceptJoinInvitation = routeWrapper({
       // If this invitation doesn't exist, then it's not valid
       if (!invitation) {
         return reply.sendStatus(404)
-      }
-      else {
+      } else {
         team.addMember(req.params.id, user)
         return reply.sendStatus(200)
       }

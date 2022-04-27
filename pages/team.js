@@ -14,7 +14,7 @@ import AddMemberForm from '../components/add-member-form'
 import ProfileModal from '../components/profile-modal'
 import theme from '../styles/theme'
 
-import { getTeam, getTeamMembers, addMember, removeMember, joinTeam, assignModerator, removeModerator, 
+import { getTeam, getTeamMembers, addMember, removeMember, joinTeam, assignModerator, removeModerator,
   getTeamJoinInvitations, createTeamJoinInvitation } from '../lib/teams-api'
 import { getTeamProfile, getUserOrgProfile, getUserTeamProfile } from '../lib/profiles-api'
 import { toast } from 'react-toastify'
@@ -65,7 +65,7 @@ export default class Team extends Component {
     }
   }
 
-  async createJoinLink() {
+  async createJoinLink () {
     const { id } = this.props
     try {
       await createTeamJoinInvitation(id)
@@ -75,7 +75,6 @@ export default class Team extends Component {
       toast.error(e)
     }
   }
-
 
   async getTeam () {
     const { id } = this.props
@@ -325,14 +324,14 @@ export default class Team extends Component {
             }
             <SectionHeader>Location</SectionHeader>
             { this.renderMap(team.location) }
-            { isUserModerator ? 
-              <div style={{ marginTop: '1rem' }}>
+            { isUserModerator
+              ? <div style={{ marginTop: '1rem' }}>
                 <SectionHeader>Join Link</SectionHeader>
-                {joinLink ? <div>{joinLink}</div> :
-                  <Button onClick={() => this.createJoinLink()}>Create Join Link</Button>
+                {joinLink ? <div>{joinLink}</div>
+                  : <Button onClick={() => this.createJoinLink()}>Create Join Link</Button>
                 }
               </div>
-            : ''}
+              : ''}
           </Card>
         </div>
         <div className='team__table'>

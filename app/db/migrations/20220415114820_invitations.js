@@ -6,8 +6,8 @@ exports.up = async function (knex) {
     table.timestamp('created_at').defaultTo(knex.fn.now())
     table.timestamp('expires_at').nullable()
   })
-};
+}
 
 exports.down = async function (knex) {
   return knex.schema.dropTable('invitations')
-};
+}

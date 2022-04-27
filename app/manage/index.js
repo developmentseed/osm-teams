@@ -24,7 +24,7 @@ const {
   getJoinInvitations,
   createJoinInvitation,
   deleteJoinInvitation,
-  acceptJoinInvitation,
+  acceptJoinInvitation
 } = require('./teams')
 
 const {
@@ -70,7 +70,7 @@ const {
 
 const { getUserManageToken } = require('../lib/profile')
 const orgModel = require('../lib/organization')
-const teamModel =require('../lib/team')
+const teamModel = require('../lib/team')
 
 /**
  * The manageRouter handles all routes related to the first party
@@ -124,7 +124,7 @@ function manageRouter (nextApp) {
   router.put('/api/teams/:id/join', can('team:join'), joinTeam)
   router.put('/api/teams/:id/assignModerator/:osmId', can('team:edit'), assignModerator)
   router.put('/api/teams/:id/removeModerator/:osmId', can('team:edit'), removeModerator)
-  
+
   /**
    * Manage inviations to teams
    */
@@ -306,7 +306,6 @@ function manageRouter (nextApp) {
   router.get('/organizations/:id/edit-team-profiles', can('organization:member'), (req, res) => {
     return nextApp.render(req, res, '/org-edit-team-profile', { id: req.params.id })
   })
-
 
   /**
    * Badge pages
