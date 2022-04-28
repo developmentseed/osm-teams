@@ -8,6 +8,7 @@ import SectionHeader from '../components/section-header'
 import Table from '../components/table'
 import theme from '../styles/theme'
 import AddMemberForm from '../components/add-member-form'
+import SvgSquare from '../components/svg-square'
 import Button from '../components/button'
 import Modal from 'react-modal'
 import ProfileModal from '../components/profile-modal'
@@ -74,10 +75,18 @@ export default class Organization extends Component {
     const { id } = this.props
 
     try {
+      // Fetch profile attributes
       const profileInfo = await getUserOrgProfile(id, user.id)
+
+      // Fetch badges for this organization
+      const profileBadges = (
+        await apiClient.get(`/user/${user.id}/badges`)
+      ).badges.filter((b) => b.organization_id === parseInt(id))
+
       this.setState({
         profileInfo,
         profileMeta: user,
+        profileBadges,
         modalIsOpen: true
       })
     } catch (e) {
@@ -233,11 +242,7 @@ export default class Organization extends Component {
           <Table rows={(this.state.badges || []).map((row) => {
             return {
               ...row,
-              color: () => (
-                <svg width='20' height='20'>
-                  <rect width='20' height='20' style={{ fill: row.color }} />
-                </svg>
-              )
+              color: () => <SvgSquare color={row.color} />
             }
           })} columns={columns} onRowClick={
             ({ id: badgeId }) => Router.push(
@@ -415,6 +420,7 @@ export default class Organization extends Component {
         }} isOpen={this.state.modalIsOpen}>
           <ProfileModal
             user={this.state.profileMeta}
+            badges={this.state.profileBadges}
             attributes={this.state.profileInfo}
             onClose={this.closeProfileModal}
             actions={profileActions}
