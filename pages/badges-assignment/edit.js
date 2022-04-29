@@ -8,7 +8,6 @@ import { toast } from 'react-toastify'
 import join from 'url-join'
 import Router from 'next/router'
 import getConfig from 'next/config'
-import { id } from 'date-fns/locale'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -159,7 +158,7 @@ export default class EditBadgeAssignment extends Component {
                 toast.error(`Unexpected error, please try again later.`)
               }
             }}
-            render={({ isSubmitting, values, errors, touched }) => {
+            render={({ isSubmitting, values, errors }) => {
               return (
                 <Form>
                   <div className='page__heading'>
