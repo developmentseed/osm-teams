@@ -105,24 +105,23 @@ export default class EditBadge extends Component {
           </div>
         </div>
 
-        {users.length > 0 && (
-          <Table
-            rows={users.map((u) => ({
-              ...u,
-              assignedAt: u.assignedAt && toDateString(u.assignedAt),
-              validUntil: u.validUntil && toDateString(u.validUntil)
-            }))}
-            columns={columns}
-            onRowClick={({ id }) =>
-              Router.push(
-                join(
-                  URL,
-                  `/organizations/${orgId}/badges/${badgeId}/assign/${id}`
-                )
+        <Table
+          rows={users.map((u) => ({
+            ...u,
+            assignedAt: u.assignedAt && toDateString(u.assignedAt),
+            validUntil: u.validUntil && toDateString(u.validUntil)
+          }))}
+          emptyPlaceHolder='No members have this badge assigned. Badges can be assigned via user profile actions.'
+          columns={columns}
+          onRowClick={({ id }) =>
+            Router.push(
+              join(
+                URL,
+                `/organizations/${orgId}/badges/${badgeId}/assign/${id}`
               )
-            }
-          />
-        )}
+            )
+          }
+        />
       </section>
     )
   }
