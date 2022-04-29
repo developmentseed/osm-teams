@@ -139,7 +139,12 @@ export default class NewBadgeAssignment extends Component {
                 )
               } catch (error) {
                 console.log(error)
-                toast.error(`Unexpected error, please try again later.`)
+
+                if (error.message === 'User is already assigned to badge.') {
+                  toast.error(`User is already assigned to this badge, please select a different one.`)
+                } else {
+                  toast.error(`Unexpected error, please try again later.`)
+                }
               }
             }}
             render={({ isSubmitting, values, errors, touched }) => {
