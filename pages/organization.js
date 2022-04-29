@@ -312,6 +312,7 @@ export default class Organization extends Component {
     let profileActions = []
 
     if (this.state.modalIsOpen && isUserOwner) {
+      console.log('here')
       const profileId = parseInt(this.state.profileMeta.id)
       const isProfileManager = contains(profileId, managerIds)
       const isProfileOwner = contains(profileId, ownerIds)
@@ -343,14 +344,13 @@ export default class Organization extends Component {
         }
       }
 
-      if (isProfileManager || isProfileOwner) {
-        profileActions.push({
-          name: 'Assign a Badge',
-          onClick: () => Router.push(
+      profileActions.push({
+        name: 'Assign a Badge',
+        onClick: () =>
+          Router.push(
             join(URL, `/organizations/${org.id}/badges/assign/${profileId}`)
           )
-        })
-      }
+      })
     }
 
     return (
