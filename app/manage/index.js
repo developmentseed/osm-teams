@@ -328,18 +328,18 @@ function manageRouter (nextApp) {
     }
   )
 
-  // Use same page for two routes
-  const assignBadgePageRoute = [
-    can('organization:edit'),
-    (req, res) => nextApp.render(req, res, '/badges/assign', req.params)
-  ]
+  // New badge assignment
   router.get(
     '/organizations/:id/badges/assign/:userId',
-    ...assignBadgePageRoute
+    can('organization:edit'),
+    (req, res) => nextApp.render(req, res, '/badges-assignment/new', req.params)
   )
+
+  // Edit badge assignment
   router.get(
     '/organizations/:id/badges/:badgeId/assign/:userId',
-    ...assignBadgePageRoute
+    can('organization:edit'),
+    (req, res) => nextApp.render(req, res, '/badges-assignment/edit', req.params)
   )
 
   return router

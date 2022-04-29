@@ -94,7 +94,7 @@ export default class EditBadge extends Component {
       { key: 'validUntil', label: 'Valid Until' }
     ]
 
-    const { badge, assignablePeople } = this.state
+    const { badge } = this.state
     const users = (badge && badge.users) || []
 
     return (
@@ -102,63 +102,26 @@ export default class EditBadge extends Component {
         <div className='team__table'>
           <div className='page__heading'>
             <h2>Assigned Members</h2>
-            <Formik
-              initialValues={{ osmIdentifier: '' }}
-              onSubmit={async ({ osmIdentifier }) => {
-                const user = assignablePeople.find(
-                  (p) =>
-                    p.id === osmIdentifier ||
-                    p.name.toLowerCase() === osmIdentifier.toLowerCase()
-                )
-                if (!user) {
-                  toast.error('User is not part of this organization.')
-                } else {
-                  Router.push(
-                    join(
-                      URL,
-                      `/organizations/${orgId}/badges/${badgeId}/assign/${user.id}`
-                    )
-                  )
-                }
-              }}
-              render={({ values }) => {
-                return (
-                  <Form className='form-control'>
-                    <Field
-                      type='text'
-                      name='osmIdentifier'
-                      id='osmIdentifier'
-                      placeholder='OSM id'
-                      value={values.osmIdentifier}
-                    />
-                    <Button type='submit' variant='submit'>
-                      Assign
-                    </Button>
-                  </Form>
-                )
-              }}
-            />
           </div>
         </div>
 
-        {users.length > 0 && (
-          <Table
-            rows={users.map((u) => ({
-              ...u,
-              assignedAt: u.assignedAt && toDateString(u.assignedAt),
-              validUntil: u.validUntil && toDateString(u.validUntil)
-            }))}
-            columns={columns}
-            onRowClick={({ id }) =>
-              Router.push(
-                join(
-                  URL,
-                  `/organizations/${orgId}/badges/${badgeId}/assign/${id}`
-                )
+        <Table
+          rows={users.map((u) => ({
+            ...u,
+            assignedAt: u.assignedAt && toDateString(u.assignedAt),
+            validUntil: u.validUntil && toDateString(u.validUntil)
+          }))}
+          emptyPlaceHolder='No members have this badge assigned. Badges can be assigned via user profile actions.'
+          columns={columns}
+          onRowClick={({ id }) =>
+            Router.push(
+              join(
+                URL,
+                `/organizations/${orgId}/badges/${badgeId}/assign/${id}`
               )
-            }
-          />
-        )}
+            )
+          }
+        />
       </section>
     )
   }
