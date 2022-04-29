@@ -312,7 +312,6 @@ export default class Organization extends Component {
     let profileActions = []
 
     if (this.state.modalIsOpen && isUserOwner) {
-      console.log('here')
       const profileId = parseInt(this.state.profileMeta.id)
       const isProfileManager = contains(profileId, managerIds)
       const isProfileOwner = contains(profileId, ownerIds)
