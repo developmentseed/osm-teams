@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import getConfig from 'next/config'
+import join from 'url-join'
 import { map, prop, contains, reverse, assoc } from 'ramda'
 import Modal from 'react-modal'
 import dynamic from 'next/dynamic'
@@ -12,8 +14,11 @@ import AddMemberForm from '../components/add-member-form'
 import ProfileModal from '../components/profile-modal'
 import theme from '../styles/theme'
 
-import { getTeam, getTeamMembers, addMember, removeMember, joinTeam, assignModerator, removeModerator } from '../lib/teams-api'
+import { getTeam, getTeamMembers, addMember, removeMember, joinTeam, assignModerator, removeModerator,
+  getTeamJoinInvitations, createTeamJoinInvitation } from '../lib/teams-api'
 import { getTeamProfile, getUserOrgProfile, getUserTeamProfile } from '../lib/profiles-api'
+import { toast } from 'react-toastify'
+const { publicRuntimeConfig } = getConfig()
 
 const Map = dynamic(() => import('../components/team-map'), { ssr: false })
 
@@ -31,6 +36,7 @@ export default class Team extends Component {
     this.state = {
       profileInfo: [],
       profileUserId: '',
+      joinLink: null,
       loading: true,
       error: undefined
     }
@@ -40,6 +46,34 @@ export default class Team extends Component {
 
   async componentDidMount () {
     this.getTeam()
+    this.getTeamJoinLink()
+  }
+
+  async getTeamJoinLink () {
+    const { id } = this.props
+    try {
+      const invitations = await getTeamJoinInvitations(id)
+      console.log(publicRuntimeConfig)
+      if (invitations.length) {
+        this.setState({
+          joinLink: join(publicRuntimeConfig.APP_URL, 'teams', id, 'invitations', invitations[0].id)
+        })
+      }
+    } catch (e) {
+      console.error(e)
+      toast.error(e)
+    }
+  }
+
+  async createJoinLink () {
+    const { id } = this.props
+    try {
+      await createTeamJoinInvitation(id)
+      this.getTeamJoinLink()
+    } catch (e) {
+      console.error(e)
+      toast.error(e)
+    }
   }
 
   async getTeam () {
@@ -171,7 +205,7 @@ export default class Team extends Component {
   }
 
   render () {
-    const { team, error, teamProfile, teamMembers } = this.state
+    const { team, error, teamProfile, teamMembers, joinLink } = this.state
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -290,6 +324,14 @@ export default class Team extends Component {
             }
             <SectionHeader>Location</SectionHeader>
             { this.renderMap(team.location) }
+            { isUserModerator
+              ? <div style={{ marginTop: '1rem' }}>
+                <SectionHeader>Join Link</SectionHeader>
+                {joinLink ? <div>{joinLink}</div>
+                  : <Button onClick={() => this.createJoinLink()}>Create Join Link</Button>
+                }
+              </div>
+              : ''}
           </Card>
         </div>
         <div className='team__table'>
@@ -391,6 +433,7 @@ export default class Team extends Component {
 
             .team__table {
               grid-column: 1 / span 12;
+              padding-bottom: 2rem;
             }
           `}
         </style>
