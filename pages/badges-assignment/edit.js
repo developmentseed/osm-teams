@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import * as Yup from 'yup'
 import { Formik, Field, Form } from 'formik'
 import APIClient from '../../lib/api-client'
 import Button from '../../components/button'
@@ -7,6 +8,7 @@ import { toast } from 'react-toastify'
 import join from 'url-join'
 import Router from 'next/router'
 import getConfig from 'next/config'
+import { id } from 'date-fns/locale'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -39,13 +41,13 @@ function Section ({ children }) {
   )
 }
 
-export default class AssignBadge extends Component {
+export default class EditBadgeAssignment extends Component {
   static async getInitialProps ({ query }) {
     if (query) {
       return {
         orgId: query.id,
-        badgeId: query.badgeId,
-        userId: query.userId
+        badgeId: parseInt(query.badgeId),
+        userId: parseInt(query.userId)
       }
     }
   }
@@ -64,22 +66,26 @@ export default class AssignBadge extends Component {
   }
 
   async loadData () {
-    const { orgId, badgeId } = this.props
+    const { orgId, badgeId, userId } = this.props
 
     try {
       const org = await apiClient.get(`/organizations/${orgId}`)
-      let badge, badges
+      const badge = await apiClient.get(
+        `/organizations/${orgId}/badges/${badgeId}`
+      )
+      let assignment
+      if (badge && badge.users) {
+        assignment = badge.users.find((u) => u.id === parseInt(userId))
+      }
 
-      if (badgeId) {
-        badge = await apiClient.get(`/organizations/${orgId}/badges/${badgeId}`)
-      } else {
-        badges = await apiClient.get(`/organizations/${orgId}/badges`)
+      if (!assignment) {
+        throw Error('Badge assignment not found.')
       }
 
       this.setState({
         org,
         badge,
-        badges
+        assignment
       })
     } catch (error) {
       console.error(error)
@@ -99,8 +105,8 @@ export default class AssignBadge extends Component {
       return <div>Loading...</div>
     }
 
-    const { orgId, userId } = this.props
-    const { badges, badge, user } = this.state
+    const { orgId, userId, badgeId } = this.props
+    const { badge, assignment } = this.state
 
     return (
       <>
@@ -111,66 +117,57 @@ export default class AssignBadge extends Component {
           <Formik
             initialValues={{
               assignedAt:
-                (user && user.assignedAt && user.assignedAt.substring(0, 10)) ||
+                (assignment &&
+                  assignment.assignedAt &&
+                  assignment.assignedAt.substring(0, 10)) ||
                 format(Date.now(), 'yyyy-MM-dd'),
               validUntil:
-                (user && user.validUntil && user.validUntil.substring(0, 10)) ||
+                (assignment &&
+                  assignment.validUntil &&
+                  assignment.validUntil.substring(0, 10)) ||
                 ''
             }}
-            onSubmit={async ({ assignedAt, validUntil, badgeId }) => {
+            validationSchema={Yup.object().shape({
+              assignedAt: Yup.date().required(
+                'Please select an assignment date.'
+              ),
+              validUntil: Yup.date().when(
+                'assignedAt',
+                (assignedAt, schema) =>
+                  assignedAt &&
+                  schema.min(
+                    assignedAt,
+                    'End date must be after the start date.'
+                  )
+              )
+            })}
+            onSubmit={async ({ assignedAt, validUntil }) => {
               try {
                 const payload = {
                   assigned_at: assignedAt,
                   valid_until: validUntil !== '' ? validUntil : null
                 }
 
-                if (!user) {
-                  await apiClient.post(
-                    `/organizations/${orgId}/badges/${badgeId}/assign/${userId}`,
-                    payload
-                  )
-                  Router.push(
-                    join(
-                      URL,
-                      `/organizations/${orgId}/badges/${badgeId}/assign/${userId}`
-                    )
-                  )
-                } else {
-                  await apiClient.patch(
-                    `/organizations/${orgId}/member/${userId}/badge/${badgeId}`,
-                    payload
-                  )
-                  toast.info('Badge updated successfully.')
-                }
+                await apiClient.patch(
+                  `/organizations/${orgId}/member/${userId}/badge/${badgeId}`,
+                  payload
+                )
+                toast.info('Badge updated successfully.')
                 this.loadData()
               } catch (error) {
                 console.log(error)
                 toast.error(`Unexpected error, please try again later.`)
               }
             }}
-            render={({ isSubmitting, values }) => {
+            render={({ isSubmitting, values, errors, touched }) => {
               return (
                 <Form>
                   <div className='page__heading'>
                     <h2>User: {userId} (OSM id)</h2>
                   </div>
-                  {badge ? (
-                    <div className='page__heading'>
-                      <h2>Badge: {badge && badge.name}</h2>
-                    </div>
-                  ) : (
-                    <div className='form-control form-control__vertical'>
-                      <label htmlFor='badgeId'>Badge:</label>
-                      <Field as='select' name='badgeId'>
-                        <option value=''>Select a badge</option>
-                        {badges.map((b) => (
-                          <option key={b.id} value={b.id}>
-                            {b.name}
-                          </option>
-                        ))}
-                      </Field>
-                    </div>
-                  )}
+                  <div className='page__heading'>
+                    <h2>Badge: {badge && badge.name}</h2>
+                  </div>
                   <div className='form-control form-control__vertical'>
                     <label htmlFor='assignedAt'>Assigned At (required)</label>
                     <Field
@@ -178,6 +175,9 @@ export default class AssignBadge extends Component {
                       type='date'
                       value={values.assignedAt}
                     />
+                    {errors.assignedAt && (
+                      <div className='form--error'>{errors.assignedAt}</div>
+                    )}
                   </div>
                   <div className='form-control form-control__vertical'>
                     <label htmlFor='validUntil'>Valid Until</label>
@@ -186,6 +186,9 @@ export default class AssignBadge extends Component {
                       type='date'
                       value={values.validUntil}
                     />
+                    {errors.validUntil && (
+                      <div className='form--error'>{errors.validUntil}</div>
+                    )}
                   </div>
                   <ButtonWrapper>
                     <Button
