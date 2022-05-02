@@ -43,6 +43,10 @@ const permissions = mergeAll([
   organizationPermissions
 ])
 
+function isApiRequest ({ path }) {
+  return path.indexOf('/api') === 0
+}
+
 /**
  * Check if a user has a specific permission
  *
@@ -159,7 +163,11 @@ function check (ability) {
       if (allowed) {
         next()
       } else {
-        res.boom.unauthorized('Forbidden')
+        if (isApiRequest(req)) {
+          res.boom.unauthorized('Forbidden')
+        } else {
+          next(new Error('Forbidden'))
+        }
       }
     } catch (e) {
       console.error('error checking permission', e)
