@@ -282,7 +282,7 @@ export default class Team extends Component {
       <article className='inner page team'>
         <div className='page__heading'>
           <h1>{team.name}</h1>
-          { isMember ? <Button variant='primary' href={`/teams/${team.id}/profile`}>Add Your Profile</Button> : ' '}
+          { isMember ? <Button variant='primary' href={`/teams/${team.id}/profile`}>Edit Your Profile</Button> : ' '}
         </div>
         <div className='team__details'>
           <Card>
