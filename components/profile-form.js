@@ -9,7 +9,7 @@ import { getOrgMemberAttributes, getTeamMemberAttributes, getMyProfile, setMyPro
 import { getOrg } from '../lib/org-api'
 import { getTeam } from '../lib/teams-api'
 import Button from '../components/button'
-import { propOr } from 'ramda'
+import { propOr, prop } from 'ramda'
 
 function GenderSelectField (props) {
   const [field, meta, { setValue, setTouched }] = useField(props.name)
@@ -144,8 +144,7 @@ export default class ProfileForm extends Component {
   }
 
   render () {
-
-    let { memberAttributes, orgAttributes, profileValues, returnUrl, consentChecked, loading } = this.state
+    let { memberAttributes, orgAttributes, org, team, profileValues, returnUrl, consentChecked, loading } = this.state
     profileValues = profileValues || {}
 
     if (loading) {
@@ -209,7 +208,7 @@ export default class ProfileForm extends Component {
 
     return (
       <article className='inner page'>
-        <h1>Add Your Details!</h1>
+        <h1>Edit your profile details</h1>
         <Formik
           enableReinitialize
           validateOnBlur
