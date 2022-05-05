@@ -17,6 +17,7 @@ import theme from '../styles/theme'
 import { getTeam, getTeamMembers, addMember, removeMember, joinTeam, assignModerator, removeModerator,
   getTeamJoinInvitations, createTeamJoinInvitation } from '../lib/teams-api'
 import { getTeamProfile, getUserOrgProfile, getUserTeamProfile } from '../lib/profiles-api'
+import { getOrgStaff } from '../lib/org-api'
 import { toast } from 'react-toastify'
 const { publicRuntimeConfig } = getConfig()
 
@@ -53,7 +54,6 @@ export default class Team extends Component {
     const { id } = this.props
     try {
       const invitations = await getTeamJoinInvitations(id)
-      console.log(publicRuntimeConfig)
       if (invitations.length) {
         this.setState({
           joinLink: join(publicRuntimeConfig.APP_URL, 'teams', id, 'invitations', invitations[0].id)
@@ -84,10 +84,18 @@ export default class Team extends Component {
       let teamProfile = []
       teamMembers = await getTeamMembers(id)
       teamProfile = await getTeamProfile(id)
+
+      let orgOwners = []
+      if (team.org) {
+        // Get organization owners
+        const { owners } = await getOrgStaff(team.org.organization_id)
+        orgOwners = owners.map((owner) => parseInt(owner.id))
+      }
       this.setState({
         team,
         teamProfile,
         teamMembers,
+        orgOwners,
         loading: false
       })
     } catch (e) {
@@ -205,7 +213,7 @@ export default class Team extends Component {
   }
 
   render () {
-    const { team, error, teamProfile, teamMembers, joinLink } = this.state
+    const { team, error, teamProfile, teamMembers, orgOwners, joinLink } = this.state
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -236,7 +244,7 @@ export default class Team extends Component {
     const moderators = map(prop('osm_id'), teamMembers.moderators)
 
     // TODO: moderators is an array of ints while members are an array of strings. fix this.
-    const isUserModerator = contains(parseInt(userId), moderators)
+    const isUserModerator = contains(parseInt(userId), moderators) || contains(parseInt(userId), orgOwners)
     const isMember = contains(userId, members)
 
     const columns = [
