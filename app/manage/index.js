@@ -151,7 +151,7 @@ function manageRouter (nextApp) {
   router.put('/api/organizations/:id/removeManager/:osmId', can('organization:edit'), removeManager)
 
   router.post('/api/organizations/:id/teams', can('organization:create-team'), createOrgTeam)
-  router.get('/api/organizations/:id/teams', getOrgTeams)
+  router.get('/api/organizations/:id/teams', can('organization:view-members'), getOrgTeams)
 
   /**
    * Manage organization badges
