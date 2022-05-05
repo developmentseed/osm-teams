@@ -30,9 +30,21 @@ function checkRequiredProperties (requiredProperties, object) {
   })
 }
 
+/**
+ * Converts a date to the browser locale string
+ *
+ * @param {Number or String} timestamp
+ * @returns
+ */
+function toDateString (timestamp) {
+  const dateFormat = new Intl.DateTimeFormat(navigator.language).format
+  return dateFormat(new Date(timestamp))
+}
+
 module.exports = {
   unpack,
   ValidationError,
   PropertyRequiredError,
-  checkRequiredProperties
+  checkRequiredProperties,
+  toDateString
 }

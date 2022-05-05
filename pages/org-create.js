@@ -15,7 +15,7 @@ export default class OrgCreate extends Component {
             try {
               const org = await createOrg(values)
               actions.setSubmitting(false)
-              Router.push(join(publicRuntimeConfig.APP_URL, `organization/${org.id}`))
+              Router.push(join(publicRuntimeConfig.APP_URL, `organizations/${org.id}`))
             } catch (e) {
               console.error(e)
               actions.setSubmitting(false)

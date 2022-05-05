@@ -1,3 +1,6 @@
+// Set server timezone to UTC to avoid issues with date parsing
+process.env.TZ = 'UTC'
+
 const path = require('path')
 const express = require('express')
 const bodyParser = require('body-parser')

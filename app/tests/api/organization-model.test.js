@@ -1,27 +1,20 @@
-const path = require('path')
 const test = require('ava')
 const { prop, map, contains } = require('ramda')
 const db = require('../../db')
 const organization = require('../../lib/organization')
 const team = require('../../lib/team')
-
-const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
+const { resetDb } = require('../utils')
 
 test.before(async () => {
   const conn = await db()
-  await conn.migrate.latest({ directory: migrationsDirectory })
+
+  await resetDb(conn)
 
   // seed
   await conn('users').insert({ id: 1 })
   await conn('users').insert({ id: 2 })
   await conn('users').insert({ id: 3 })
   await conn('users').insert({ id: 4 })
-})
-
-test.after.always(async () => {
-  const conn = await db()
-  await conn.migrate.rollback({ directory: migrationsDirectory })
-  conn.destroy()
 })
 
 /**
