@@ -11,10 +11,14 @@ const db = require('../../db')
  * @returns {boolean} can the request go through?
  */
 async function clients (uid) {
-  let conn = await db()
-  const [user] = await conn('users').where('id', uid)
-  if (user) {
-    return true
+  try {
+    let conn = await db()
+    const [user] = await conn('users').where('id', uid)
+    if (user) {
+      return true
+    }
+  } catch (error) {
+    throw Error('Forbidden')
   }
 }
 
