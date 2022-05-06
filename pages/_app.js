@@ -27,7 +27,7 @@ class OSMHydra extends App {
 
   render () {
     const { Component, pageProps, userData } = this.props
-    let bannerContent = <Fragment><span style={{ backgroundColor: '#FF6341', color: 'white', padding: '0.2rem' }}>beta</span> - please do not rely on the current API or site for production applications. Provide your <a href='https://forms.gle/mQQX37FcvfVMoiCW7' style={{ borderBottom: 'solid 1px #384A9E' }}>feedback</a> here.</Fragment>
+    let bannerContent 
     let { uid, username, picture } = userData
 
     // store the userdata in localstorage if in browser
