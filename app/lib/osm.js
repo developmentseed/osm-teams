@@ -85,7 +85,7 @@ function openstreetmap (req, res) {
         hydra.acceptLoginRequest(challenge, {
           subject: user.id,
           remember: true,
-          remember_for: 9999
+          remember_for: 0
         }).then(response => {
           if (response.redirect_to) {
             return res.redirect(response.redirect_to)
