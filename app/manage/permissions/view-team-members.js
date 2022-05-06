@@ -1,4 +1,5 @@
-const { isPublic, isMember } = require('../../lib/team')
+const { isPublic, isMember, associatedOrg } = require('../../lib/team')
+const { isOwner } = require('../../lib/organization')
 
 /**
  * team:view-members
@@ -15,7 +16,11 @@ async function viewTeamMembers (uid, { id }) {
   if (publicTeam) return publicTeam
 
   try {
-    return await isMember(id, uid)
+    const org = await associatedOrg(id)
+    const ownerOfTeam = org && (await isOwner(org.organization_id, uid))
+
+    // You can view the members if you're part of the team, or in case of an org team if you're the owner
+    return ownerOfTeam || await isMember(id, uid)
   } catch (e) {
     return false
   }
