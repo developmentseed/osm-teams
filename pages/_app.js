@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import App, { Container } from 'next/app'
 import Head from 'next/head'
 import Sidebar from '../components/sidebar'
@@ -27,7 +27,7 @@ class OSMHydra extends App {
 
   render () {
     const { Component, pageProps, userData } = this.props
-    let bannerContent 
+    let bannerContent
     let { uid, username, picture } = userData
 
     // store the userdata in localstorage if in browser
