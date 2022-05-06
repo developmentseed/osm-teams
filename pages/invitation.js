@@ -85,6 +85,12 @@ export default class Invitation extends Component {
     }
 
     if (!team) return null
+    const userId = this.props.user.uid
+    if (!userId) {
+      return <article className='inner page'>
+        You are not logged in. Sign in and come back to this link.
+      </article>
+    }
     return (
       <article className='inner page'>
         You have been invited to join <b>{team.name}</b>
