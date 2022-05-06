@@ -58,4 +58,3 @@ services:
         - PGDATA=/opt/postgres/data
     volumes:
         - ./docker-data/test-db:/opt/postgres/data    
-
