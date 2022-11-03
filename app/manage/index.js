@@ -1,12 +1,10 @@
 const router = require('express-promise-router')()
-const expressPino = require('express-pino-logger')
 const { path } = require('ramda')
 
 const { getClients, createClient, deleteClient } = require('./client')
 const { login, loginAccept, logout } = require('./login')
 const { can } = require('./permissions')
 const sessionMiddleware = require('./sessions')
-const logger = require('../lib/logger')
 const {
   addMember,
   assignModerator,
@@ -79,12 +77,6 @@ const teamModel = require('../lib/team')
  * @param {Object} nextApp the NextJS Server
  */
 function manageRouter (nextApp) {
-  if (process.env.NODE_ENV !== 'test') {
-    router.use('/api', expressPino({
-      logger: logger.child({ module: 'manage' })
-    }))
-  }
-
   router.use(sessionMiddleware)
 
   /**
