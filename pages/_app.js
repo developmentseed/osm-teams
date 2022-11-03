@@ -51,14 +51,6 @@ class OSMHydra extends App {
       <>
         <Head>
           <title>OSM Teams</title>
-          <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Inconsolata:400,700|Work+Sans:400,700&display=swap' />
-          <link rel='stylesheet' href='https://unpkg.com/leaflet@1.5.1/dist/leaflet.css'
-            integrity='sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=='
-            crossOrigin='' />
-          <link rel='stylesheet' href='https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css' />
-          <link rel='stylesheet' href='https://unpkg.com/react-toastify@8.2.0/dist/ReactToastify.min.css' />
-          <link rel='shortcut icon' href='/static/favicon.ico' />
-          <link rel='icon' type='image/png' href='/static/favicon.png' />
           <meta name='viewport' content='width=device-width, initial-scale=1' />
           <meta charSet='utf-8f-8' />
         </Head>

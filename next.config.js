@@ -22,8 +22,5 @@ module.exports = {
   publicRuntimeConfig: {
     APP_URL: process.env.APP_URL || 'http://localhost:8989',
     OSM_NAME: process.env.OSM_NAME || 'OSM'
-  },
-  onDemandEntries: {
-    websocketPort: 3007
   }
 }
