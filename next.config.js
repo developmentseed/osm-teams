@@ -1,14 +1,14 @@
 require('dotenv').config()
 
-const path = require('path')
-const Dotenv = require('dotenv-webpack')
-
 module.exports = {
   assetPrefix: process.env.APP_URL || 'http://localhost:8989',
   serverRuntimeConfig: {
     NODE_ENV: process.env.NODE_ENV || 'development',
     OSM_DOMAIN: process.env.OSM_DOMAIN || 'https://www.openstreetmap.org',
-    OSM_API: process.env.OSM_API || process.env.OSM_DOMAIN || 'https://www.openstreetmap.org',
+    OSM_API:
+      process.env.OSM_API ||
+      process.env.OSM_DOMAIN ||
+      'https://www.openstreetmap.org',
     OSM_HYDRA_ID: process.env.OSM_HYDRA_ID || 'manage',
     OSM_HYDRA_SECRET: process.env.OSM_HYDRA_SECRET || 'manage-secret',
     OSM_CONSUMER_KEY: process.env.OSM_CONSUMER_KEY,
@@ -25,25 +25,5 @@ module.exports = {
   },
   onDemandEntries: {
     websocketPort: 3007
-  },
-  webpack: (config, { isServer }) => {
-    config.plugins = config.plugins || []
-
-    if (isServer) {
-      // Possible drivers for knex - IGNORE
-      config.externals.push(/m[sy]sql|oracle|pg-.+|sqlite\d?/i)
-    }
-
-    config.plugins = [
-      ...config.plugins,
-
-      // Read the .env file
-      new Dotenv({
-        path: path.join(__dirname, '.env'),
-        systemvars: true
-      })
-    ]
-
-    return config
   }
 }
