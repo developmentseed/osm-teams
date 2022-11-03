@@ -1,5 +1,5 @@
 import React from 'react'
-import App, { Container } from 'next/app'
+import App from 'next/app'
 import Head from 'next/head'
 import Sidebar from '../components/sidebar'
 import Layout from '../components/layout.js'
@@ -48,7 +48,7 @@ class OSMHydra extends App {
     }
 
     return (
-      <Container>
+      <>
         <Head>
           <title>OSM Teams</title>
           <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Inconsolata:400,700|Work+Sans:400,700&display=swap' />
@@ -69,7 +69,7 @@ class OSMHydra extends App {
         </Layout>
         <Button href='https://forms.gle/mQQX37FcvfVMoiCW7' variant='danger' id='feedback'>Feedback</Button>
         <ToastContainer position='bottom-right' />
-      </Container>
+      </>
     )
   }
 }
