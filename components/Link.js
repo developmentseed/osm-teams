@@ -29,7 +29,7 @@ const ActiveLink = ({ router, children, ...props }) => {
 
   delete props.activeClassName
 
-  return <Link {...props} href={newHref} as={newAs}>{React.cloneElement(child, { className })}</Link>
+  return <Link legacyBehavior {...props} href={newHref} as={newAs}>{React.cloneElement(child, { className })}</Link>
 }
 
 export default withRouter(ActiveLink)
