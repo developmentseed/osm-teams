@@ -25,7 +25,8 @@
     "lint": "devseed-standard",
     "lintfix": "devseed-standard --fix",
     "build": "next build",
-    "start": "NODE_ENV=production node app/index.js"
+    "start": "NODE_ENV=production node app/index.js",
+    "postinstall": "yarn run next telemetry disable"
   },
   "browserify": {
     "transform": [
