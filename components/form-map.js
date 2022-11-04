@@ -4,22 +4,22 @@ import { reverse } from 'ramda'
 import Geocoder from 'leaflet-control-geocoder'
 
 export default class FormMap extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.map = React.createRef()
     this.state = {
-      zoom: 15
+      zoom: 15,
     }
   }
 
-  setZoom (zoom) {
+  setZoom(zoom) {
     this.setState({ zoom })
   }
 
-  componentDidMount () {
+  componentDidMount() {
     if (this.map && !this.geocoder) {
       this.geocoder = new Geocoder({
-        defaultMarkGeocode: false
+        defaultMarkGeocode: false,
       })
 
       this.geocoder.on('markgeocode', (e) => {
@@ -31,8 +31,10 @@ export default class FormMap extends Component {
     }
   }
 
-  render () {
-    let centerGeojson = this.props.value || '{ "type": "Point", "coordinates": [-73.968056,40.749444] }'
+  render() {
+    let centerGeojson =
+      this.props.value ||
+      '{ "type": "Point", "coordinates": [-73.968056,40.749444] }'
     let center = reverse(JSON.parse(centerGeojson).coordinates)
 
     return (

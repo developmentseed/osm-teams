@@ -10,8 +10,9 @@ const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
  *
  * @param {object} t - ava test context
  */
-async function createOrg (t) {
-  const res = await t.context.agent.post('/api/organizations')
+async function createOrg(t) {
+  const res = await t.context.agent
+    .post('/api/organizations')
     .send({ name: 'permissions org' })
     .set('Authorization', `Bearer user100`)
 
@@ -22,8 +23,9 @@ async function createOrg (t) {
  * Helper function to destroy an org from the context
  * @param {object} t - ava test context
  */
-async function destroyOrg (t) {
-  return t.context.agent.delete(`/api/organizations/${t.context.org.id}`)
+async function destroyOrg(t) {
+  return t.context.agent
+    .delete(`/api/organizations/${t.context.org.id}`)
     .send({ name: 'permissions org' })
     .set('Authorization', `Bearer user100`)
 }
@@ -32,7 +34,7 @@ async function destroyOrg (t) {
  * Function to initialize test contexts for permissions
  * @param {Object} t - ava test context
  */
-async function initializeContext (t) {
+async function initializeContext(t) {
   const conn = await db()
   await conn.migrate.latest({ directory: migrationsDirectory })
 
@@ -44,17 +46,17 @@ async function initializeContext (t) {
   let introspectStub = sinon.stub(hydra, 'introspect')
   introspectStub.withArgs('user100').returns({
     active: true,
-    sub: '100'
+    sub: '100',
   })
 
   introspectStub.withArgs('user101').returns({
     active: true,
-    sub: '101'
+    sub: '101',
   })
 
   introspectStub.withArgs('user102').returns({
     active: true,
-    sub: '102'
+    sub: '102',
   })
 
   introspectStub.withArgs('invalidToken').returns({ active: false })
@@ -66,5 +68,5 @@ async function initializeContext (t) {
 module.exports = {
   initializeContext,
   createOrg,
-  destroyOrg
+  destroyOrg,
 }

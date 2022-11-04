@@ -1,5 +1,5 @@
 exports.up = async (knex) => {
-  await knex.schema.createTable('users', table => {
+  await knex.schema.createTable('users', (table) => {
     table.integer('id').primary()
     table.json('profile')
     table.json('manageToken')
@@ -19,19 +19,31 @@ exports.up = async (knex) => {
 
   await knex.schema.createTable('moderator', (table) => {
     table.increments('id')
-    table.integer('team_id').references('id').inTable('team').onDelete('CASCADE')
+    table
+      .integer('team_id')
+      .references('id')
+      .inTable('team')
+      .onDelete('CASCADE')
     table.integer('osm_id')
   })
 
   await knex.schema.createTable('member', (table) => {
     table.increments('id')
-    table.integer('team_id').references('id').inTable('team').onDelete('CASCADE')
+    table
+      .integer('team_id')
+      .references('id')
+      .inTable('team')
+      .onDelete('CASCADE')
     table.integer('osm_id')
   })
 
   await knex.schema.createTable('join_request', (table) => {
     table.increments('id')
-    table.integer('team_id').references('id').inTable('team').onDelete('CASCADE')
+    table
+      .integer('team_id')
+      .references('id')
+      .inTable('team')
+      .onDelete('CASCADE')
     table.integer('osm_id')
   })
 }

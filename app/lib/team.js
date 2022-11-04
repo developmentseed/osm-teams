@@ -19,7 +19,7 @@ const teamAttributes = [
   'privacy',
   'require_join_request',
   'updated_at',
-  'created_at'
+  'created_at',
 ]
 
 /**
@@ -33,16 +33,20 @@ const teamAttributes = [
  *  - id: osm id
  *
  */
-async function resolveMemberNames (ids) {
+async function resolveMemberNames(ids) {
   try {
-    const resp = await request(join(serverRuntimeConfig.OSM_API, `/api/0.6/users?users=${ids.join(',')}`))
+    const resp = await request(
+      join(serverRuntimeConfig.OSM_API, `/api/0.6/users?users=${ids.join(',')}`)
+    )
     var parser = new xml2js.Parser()
 
     return new Promise((resolve, reject) => {
       parser.parseString(resp, (err, xml) => {
-        if (err) { reject(err) }
+        if (err) {
+          reject(err)
+        }
 
-        let users = xml.osm.user.map(user => {
+        let users = xml.osm.user.map((user) => {
           let img = prop('img', user)
           if (img) {
             img = img[0]['$'].href
@@ -50,7 +54,7 @@ async function resolveMemberNames (ids) {
           return {
             id: user['$'].id,
             name: user['$'].display_name,
-            img
+            img,
           }
         })
 
@@ -64,24 +68,28 @@ async function resolveMemberNames (ids) {
 }
 
 /**
-* Get a team
-*
-* @param {int} id - team id
-* @return {promise}
-**/
-async function get (id) {
+ * Get a team
+ *
+ * @param {int} id - team id
+ * @return {promise}
+ **/
+async function get(id) {
   const conn = await db()
   const st = knexPostgis(conn)
-  return unpack(conn('team').select(...teamAttributes, st.asGeoJSON('location')).where('id', id))
+  return unpack(
+    conn('team')
+      .select(...teamAttributes, st.asGeoJSON('location'))
+      .where('id', id)
+  )
 }
 
 /**
-* Get a team's members
-*
-* @param {int} id - team id
-* @return {promise}
-**/
-async function getMembers (id) {
+ * Get a team's members
+ *
+ * @param {int} id - team id
+ * @return {promise}
+ **/
+async function getMembers(id) {
   const conn = await db()
   return conn('member').where('team_id', id)
 }
@@ -93,21 +101,21 @@ async function getMembers (id) {
  * @param {int} id - team Id
  * @returns {Promise[Array]} list of moderators
  */
-async function getModerators (id) {
+async function getModerators(id) {
   const conn = await db()
   return conn('moderator').where('team_id', id)
 }
 
 /**
-* Get all teams
-*
-* @param options
-* @param {int} options.osmId - filter by whether osmId is a member
-* @param {int} options.organizationId - filter by whether team belongs to organization
-* @param {Array[float]} options.bbox - filter for teams whose location is in bbox (xmin, ymin, xmax, ymax)
-* @return {Promise[Array]}
-**/
-async function list (options) {
+ * Get all teams
+ *
+ * @param options
+ * @param {int} options.osmId - filter by whether osmId is a member
+ * @param {int} options.organizationId - filter by whether team belongs to organization
+ * @param {Array[float]} options.bbox - filter for teams whose location is in bbox (xmin, ymin, xmax, ymax)
+ * @return {Promise[Array]}
+ **/
+async function list(options) {
   options = options || {}
   const { osmId, bbox, organizationId } = options
 
@@ -124,12 +132,16 @@ async function list (options) {
 
   if (organizationId) {
     query = query.whereIn('id', function () {
-      this.select('team_id').from('organization_team').where('organization_id', organizationId)
+      this.select('team_id')
+        .from('organization_team')
+        .where('organization_id', organizationId)
     })
   }
 
   if (bbox) {
-    query = query.where(st.boundingBoxContained('location', st.makeEnvelope(...bbox)))
+    query = query.where(
+      st.boundingBoxContained('location', st.makeEnvelope(...bbox))
+    )
   }
 
   return query
@@ -142,11 +154,9 @@ async function list (options) {
  * @returns {Promise<*>}
  * @async
  */
-async function listMembers (teamIds) {
+async function listMembers(teamIds) {
   const conn = await db()
-  return conn('member')
-    .select('team_id', 'osm_id')
-    .whereIn('team_id', teamIds)
+  return conn('member').select('team_id', 'osm_id').whereIn('team_id', teamIds)
 }
 
 /**
@@ -156,7 +166,7 @@ async function listMembers (teamIds) {
  * @returns {Promise<*>}
  * @async
  */
-async function listModerators (teamIds) {
+async function listModerators(teamIds) {
   const conn = await db()
   return conn('moderator')
     .select('team_id', 'osm_id')
@@ -169,43 +179,47 @@ async function listModerators (teamIds) {
  * @param {*} osmId osm user id to filter by
  * @returns {Promise[Array]}
  */
-async function listModeratedBy (osmId) {
+async function listModeratedBy(osmId) {
   const conn = await db()
   const st = knexPostgis(conn)
   const query = conn('team')
     .select(teamAttributes, st.asGeoJSON('location'))
-    .whereIn('id', subQuery => subQuery.select('team_id').from('moderator').where('osm_id', osmId))
+    .whereIn('id', (subQuery) =>
+      subQuery.select('team_id').from('moderator').where('osm_id', osmId)
+    )
   return query
 }
 
 /**
-* Create a team
-* Teams have to have moderators, so we give an osm id
-* as the second param
-*
-* @param {object} data - params for a team
-* @param {string} data.name - name of the team
-* @param {geojson?} data.location - lat/lon of team
-* @param {int} osmId - id of first moderator
-* @param {object=} trx - optional parameter for database connection to re-use connection in case of nested
-*   transactions. This is used when a team is created as part of an organization
-* @return {promise}
-**/
-async function create (data, osmId, trx) {
+ * Create a team
+ * Teams have to have moderators, so we give an osm id
+ * as the second param
+ *
+ * @param {object} data - params for a team
+ * @param {string} data.name - name of the team
+ * @param {geojson?} data.location - lat/lon of team
+ * @param {int} osmId - id of first moderator
+ * @param {object=} trx - optional parameter for database connection to re-use connection in case of nested
+ *   transactions. This is used when a team is created as part of an organization
+ * @return {promise}
+ **/
+async function create(data, osmId, trx) {
   if (!osmId) throw new Error('moderator osm id is required as second argument')
   if (!data.name) throw new Error('data.name property is required')
-  const conn = trx || await db()
+  const conn = trx || (await db())
   const st = knexPostgis(conn)
 
   // convert location to postgis geom
   if (data.location) {
     data = Object.assign(data, {
-      location: st.setSRID(st.geomFromGeoJSON(data.location), 4326)
+      location: st.setSRID(st.geomFromGeoJSON(data.location), 4326),
     })
   }
 
-  return conn.transaction(async trx => {
-    const [row] = await trx('team').insert(data).returning(['*', st.asGeoJSON('location')])
+  return conn.transaction(async (trx) => {
+    const [row] = await trx('team')
+      .insert(data)
+      .returning(['*', st.asGeoJSON('location')])
     await trx('member').insert({ team_id: row.id, osm_id: osmId })
     await trx('moderator').insert({ team_id: row.id, osm_id: osmId })
     return row
@@ -213,57 +227,62 @@ async function create (data, osmId, trx) {
 }
 
 /**
-* Update a team
-* @param {int} id - team id
-* @param {object} data - params for a team
-* @param {string} data.name - name of the team
-* @return {promise}
-**/
-async function update (id, data) {
+ * Update a team
+ * @param {int} id - team id
+ * @param {object} data - params for a team
+ * @param {string} data.name - name of the team
+ * @return {promise}
+ **/
+async function update(id, data) {
   const conn = await db()
   const st = knexPostgis(conn)
 
   // convert location to postgis geom
   if (data.location) {
     data = Object.assign(data, {
-      location: st.setSRID(st.geomFromGeoJSON(data.location), 4326)
+      location: st.setSRID(st.geomFromGeoJSON(data.location), 4326),
     })
   }
 
-  return unpack(conn('team').where('id', id).update(data).returning([...teamAttributes, st.asGeoJSON('location')]))
+  return unpack(
+    conn('team')
+      .where('id', id)
+      .update(data)
+      .returning([...teamAttributes, st.asGeoJSON('location')])
+  )
 }
 
 /**
-* Destroy a team and its members
-* @param {int} id - team id
-* @return {promise}
-**/
-async function destroy (id) {
+ * Destroy a team and its members
+ * @param {int} id - team id
+ * @return {promise}
+ **/
+async function destroy(id) {
   const conn = await db()
-  return conn.transaction(async trx => {
+  return conn.transaction(async (trx) => {
     await trx('team').where('id', id).del()
     await trx('member').where('team_id', id).del()
   })
 }
 
 /**
-* Add multiple osm users as team members
-* @param {int} teamId - team id
-* @param {array} osmIdsToAdd - array of integer osm ids to add
-* @param {array} osmIdsToRemove - array of integer osm ids to remove
-* @return {promise}
-**/
-async function updateMembers (teamId, osmIdsToAdd, osmIdstoRemove) {
+ * Add multiple osm users as team members
+ * @param {int} teamId - team id
+ * @param {array} osmIdsToAdd - array of integer osm ids to add
+ * @param {array} osmIdsToRemove - array of integer osm ids to remove
+ * @return {promise}
+ **/
+async function updateMembers(teamId, osmIdsToAdd, osmIdstoRemove) {
   const conn = await db()
 
   // Make sure we have integers
-  osmIdsToAdd = (osmIdsToAdd || []).map(x => parseInt(x))
-  osmIdstoRemove = (osmIdstoRemove || []).map(x => parseInt(x))
+  osmIdsToAdd = (osmIdsToAdd || []).map((x) => parseInt(x))
+  osmIdstoRemove = (osmIdstoRemove || []).map((x) => parseInt(x))
 
-  return conn.transaction(async trx => {
+  return conn.transaction(async (trx) => {
     if (osmIdsToAdd) {
       const members = await trx('member').where('team_id', teamId)
-      let dedupedOsmIdsToAdd = osmIdsToAdd.filter(osmId => {
+      let dedupedOsmIdsToAdd = osmIdsToAdd.filter((osmId) => {
         for (let i = 0; i < members.length; i++) {
           if (members[i].osm_id === osmId) {
             return false
@@ -271,32 +290,38 @@ async function updateMembers (teamId, osmIdsToAdd, osmIdstoRemove) {
         }
         return true
       })
-      const toAdd = dedupedOsmIdsToAdd.map(osmId => ({ team_id: teamId, osm_id: osmId }))
+      const toAdd = dedupedOsmIdsToAdd.map((osmId) => ({
+        team_id: teamId,
+        osm_id: osmId,
+      }))
       await trx.batchInsert('member', toAdd).returning('*')
     }
     if (osmIdstoRemove) {
-      await trx('member').where('team_id', teamId).andWhere('osm_id', 'in', osmIdstoRemove).del()
+      await trx('member')
+        .where('team_id', teamId)
+        .andWhere('osm_id', 'in', osmIdstoRemove)
+        .del()
     }
   })
 }
 
 /**
-* Add an osm user as a team member
-* @param {int} teamId - team id
-* @param {int} osmId - osm id
-* @return {promise}
-**/
-async function addMember (teamId, osmId) {
+ * Add an osm user as a team member
+ * @param {int} teamId - team id
+ * @param {int} osmId - osm id
+ * @return {promise}
+ **/
+async function addMember(teamId, osmId) {
   return updateMembers(teamId, [osmId], [])
 }
 
 /**
-* Remove an osm user as a team member. Removes moderator as side-effect when necessary.
-* @param {int} teamId - team id
-* @param {int} osmId - osm id
-* @return {promise}
-**/
-async function removeMember (teamId, osmId) {
+ * Remove an osm user as a team member. Removes moderator as side-effect when necessary.
+ * @param {int} teamId - team id
+ * @param {int} osmId - osm id
+ * @return {promise}
+ **/
+async function removeMember(teamId, osmId) {
   const isMod = await isModerator(teamId, osmId)
   if (isMod) {
     await removeModerator(teamId, osmId)
@@ -309,10 +334,12 @@ async function removeMember (teamId, osmId) {
  * @param {int} teamId - team id
  * @param {int} osmId - osm id
  */
-async function assignModerator (teamId, osmId) {
+async function assignModerator(teamId, osmId) {
   const conn = await db()
-  if (!await isMember(teamId, osmId)) {
-    throw new Error('cannot assign osmId to be moderator because they are not a team member yet')
+  if (!(await isMember(teamId, osmId))) {
+    throw new Error(
+      'cannot assign osmId to be moderator because they are not a team member yet'
+    )
   }
   return unpack(conn('moderator').insert({ team_id: teamId, osm_id: osmId }))
 }
@@ -323,7 +350,7 @@ async function assignModerator (teamId, osmId) {
  * @param {int} osmId - osm id
  * @throws {Error} if the osmId is the only remaining moderator for this team, or if osmId was not a moderator.
  */
-async function removeModerator (teamId, osmId) {
+async function removeModerator(teamId, osmId) {
   const table = 'moderator'
   const conn = await db()
   const moderatorRecord = conn(table).where({ team_id: teamId, osm_id: osmId })
@@ -336,7 +363,9 @@ async function removeModerator (teamId, osmId) {
   }
   const modCount = (await conn(table).where({ team_id: teamId })).length
   if (modCount === 1) {
-    throw new Error('cannot remove osmId because there must be at least one moderator')
+    throw new Error(
+      'cannot remove osmId because there must be at least one moderator'
+    )
   }
   await moderatorRecord.del()
 }
@@ -347,11 +376,14 @@ async function removeModerator (teamId, osmId) {
  * @param {int} osmId - osm id
  * @returns boolean
  */
-async function isModerator (teamId, osmId) {
+async function isModerator(teamId, osmId) {
   if (!teamId) throw new Error('team id is required as first argument')
   if (!osmId) throw new Error('osm id is required as second argument')
   const conn = await db()
-  const result = await conn('moderator').where({ team_id: teamId, osm_id: osmId })
+  const result = await conn('moderator').where({
+    team_id: teamId,
+    osm_id: osmId,
+  })
   return result.length > 0
 }
 
@@ -361,7 +393,7 @@ async function isModerator (teamId, osmId) {
  * @param {int} osmId - osm id
  * @returns boolean
  */
-async function isMember (teamId, osmId) {
+async function isMember(teamId, osmId) {
   if (!teamId) throw new Error('team id is required as first argument')
   if (!osmId) throw new Error('osm id is required as second argument')
   const conn = await db()
@@ -376,12 +408,14 @@ async function isMember (teamId, osmId) {
  * @param teamId - team id
  * @returns {Boolean} is the team public?
  */
-async function isPublic (teamId) {
+async function isPublic(teamId) {
   if (!teamId) throw new Error('team id is required as first argument')
   const conn = await db()
   const { privacy } = await unpack(
     conn('team')
-      .select('id', conn.raw(`
+      .select(
+        'id',
+        conn.raw(`
     case
     when (
       select teams_can_be_public from organization join organization_team on organization.id = organization_id where team_id = team.id
@@ -389,10 +423,11 @@ async function isPublic (teamId) {
     when privacy = 'private' then 'private'
     when privacy = 'public' then 'public'
     end privacy
-    `))
+    `)
+      )
       .where({ id: teamId })
   )
-  return (privacy === 'public')
+  return privacy === 'public'
 }
 
 /**
@@ -402,7 +437,7 @@ async function isPublic (teamId) {
  * @param teamId - team id
  * @returns {Object} organization id and name
  */
-async function associatedOrg (teamId) {
+async function associatedOrg(teamId) {
   if (!teamId) throw new Error('team id is required as first argument')
 
   const conn = await db()
@@ -414,12 +449,16 @@ async function associatedOrg (teamId) {
   )
 }
 
-async function isInvitationValid (teamId, invitationId) {
+async function isInvitationValid(teamId, invitationId) {
   if (!teamId) throw new Error('team id is required as first argument')
-  if (!invitationId) throw new Error('invitation id is required as second argument')
+  if (!invitationId)
+    throw new Error('invitation id is required as second argument')
 
   const conn = await db()
-  const invitations = await conn('invitations').where({ team_id: teamId, id: invitationId })
+  const invitations = await conn('invitations').where({
+    team_id: teamId,
+    id: invitationId,
+  })
 
   return !isEmpty(invitations)
 }
@@ -445,5 +484,5 @@ module.exports = {
   isPublic,
   isInvitationValid,
   resolveMemberNames,
-  associatedOrg
+  associatedOrg,
 }

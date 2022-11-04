@@ -1,13 +1,8 @@
 const path = require('path')
 
-const migrationsDirectory = path.join(
-  __dirname,
-  '..',
-  'db',
-  'migrations'
-)
+const migrationsDirectory = path.join(__dirname, '..', 'db', 'migrations')
 
-async function resetDb (db) {
+async function resetDb(db) {
   console.log('Dropping tables...')
   const pgres = await db.raw(`
       SELECT
@@ -28,5 +23,5 @@ async function resetDb (db) {
 }
 
 module.exports = {
-  resetDb
+  resetDb,
 }

@@ -14,9 +14,22 @@ import AddMemberForm from '../components/add-member-form'
 import ProfileModal from '../components/profile-modal'
 import theme from '../styles/theme'
 
-import { getTeam, getTeamMembers, addMember, removeMember, joinTeam, assignModerator, removeModerator,
-  getTeamJoinInvitations, createTeamJoinInvitation } from '../lib/teams-api'
-import { getTeamProfile, getUserOrgProfile, getUserTeamProfile } from '../lib/profiles-api'
+import {
+  getTeam,
+  getTeamMembers,
+  addMember,
+  removeMember,
+  joinTeam,
+  assignModerator,
+  removeModerator,
+  getTeamJoinInvitations,
+  createTeamJoinInvitation,
+} from '../lib/teams-api'
+import {
+  getTeamProfile,
+  getUserOrgProfile,
+  getUserTeamProfile,
+} from '../lib/profiles-api'
 import { getOrgStaff } from '../lib/org-api'
 import { toast } from 'react-toastify'
 const { publicRuntimeConfig } = getConfig()
@@ -24,39 +37,45 @@ const { publicRuntimeConfig } = getConfig()
 const Map = dynamic(() => import('../components/team-map'), { ssr: false })
 
 export default class Team extends Component {
-  static async getInitialProps ({ query }) {
+  static async getInitialProps({ query }) {
     if (query) {
       return {
-        id: query.id
+        id: query.id,
       }
     }
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       profileInfo: [],
       profileUserId: '',
       joinLink: null,
       loading: true,
-      error: undefined
+      error: undefined,
     }
 
     this.closeProfileModal = this.closeProfileModal.bind(this)
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     this.getTeam()
     this.getTeamJoinLink()
   }
 
-  async getTeamJoinLink () {
+  async getTeamJoinLink() {
     const { id } = this.props
     try {
       const invitations = await getTeamJoinInvitations(id)
       if (invitations.length) {
         this.setState({
-          joinLink: join(publicRuntimeConfig.APP_URL, 'teams', id, 'invitations', invitations[0].id)
+          joinLink: join(
+            publicRuntimeConfig.APP_URL,
+            'teams',
+            id,
+            'invitations',
+            invitations[0].id
+          ),
         })
       }
     } catch (e) {
@@ -65,7 +84,7 @@ export default class Team extends Component {
     }
   }
 
-  async createJoinLink () {
+  async createJoinLink() {
     const { id } = this.props
     try {
       await createTeamJoinInvitation(id)
@@ -76,7 +95,7 @@ export default class Team extends Component {
     }
   }
 
-  async getTeam () {
+  async getTeam() {
     const { id } = this.props
     try {
       let team = await getTeam(id)
@@ -96,50 +115,53 @@ export default class Team extends Component {
         teamProfile,
         teamMembers,
         orgOwners,
-        loading: false
+        loading: false,
       })
     } catch (e) {
       console.error(e)
       this.setState({
         error: e,
         team: null,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  async openProfileModal (user) {
+  async openProfileModal(user) {
     const { id } = this.props
     const { team } = this.state
 
     try {
       let profileInfo = await getUserTeamProfile(id, user.id)
       if (team.org) {
-        let userOrgProfile = await getUserOrgProfile(team.org.organization_id, user.id)
+        let userOrgProfile = await getUserOrgProfile(
+          team.org.organization_id,
+          user.id
+        )
         profileInfo = profileInfo.concat(userOrgProfile)
       }
       this.setState({
         profileInfo,
         profileMeta: user,
-        modalIsOpen: true
+        modalIsOpen: true,
       })
     } catch (e) {
       console.error(e)
       this.setState({
         error: e,
         team: null,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  async closeProfileModal () {
+  async closeProfileModal() {
     this.setState({
-      modalIsOpen: false
+      modalIsOpen: false,
     })
   }
 
-  async joinTeam () {
+  async joinTeam() {
     const { id, user } = this.props
     const osmId = user.uid
 
@@ -149,24 +171,22 @@ export default class Team extends Component {
     } catch (e) {
       console.error(e)
       this.setState({
-        error: e
+        error: e,
       })
     }
   }
 
-  renderMap (location) {
+  renderMap(location) {
     if (!location) {
       return <div>No location specified</div>
     }
     let centerGeojson = location
     let center = reverse(JSON.parse(centerGeojson).coordinates)
 
-    return (
-      <Map marker={{ center }} style={{ height: '200px' }} />
-    )
+    return <Map marker={{ center }} style={{ height: '200px' }} />
   }
 
-  async addModerator (osmId) {
+  async addModerator(osmId) {
     const { id } = this.props
     try {
       await assignModerator(id, osmId)
@@ -175,12 +195,12 @@ export default class Team extends Component {
       console.error(e)
       this.setState({
         error: e,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  async removeModerator (osmId) {
+  async removeModerator(osmId) {
     const { id } = this.props
     try {
       await removeModerator(id, osmId)
@@ -189,12 +209,12 @@ export default class Team extends Component {
       console.error(e)
       this.setState({
         error: e,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  async removeMember (osmId) {
+  async removeMember(osmId) {
     const { id } = this.props
     try {
       await removeMember(id, osmId)
@@ -207,13 +227,14 @@ export default class Team extends Component {
       this.setState({
         error: e,
         team: null,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  render () {
-    const { team, error, teamProfile, teamMembers, orgOwners, joinLink } = this.state
+  render() {
+    const { team, error, teamProfile, teamMembers, orgOwners, joinLink } =
+      this.state
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -244,17 +265,17 @@ export default class Team extends Component {
     const moderators = map(prop('osm_id'), teamMembers.moderators)
 
     // TODO: moderators is an array of ints while members are an array of strings. fix this.
-    const isUserModerator = contains(parseInt(userId), moderators) || contains(parseInt(userId), orgOwners)
+    const isUserModerator =
+      contains(parseInt(userId), moderators) ||
+      contains(parseInt(userId), orgOwners)
     const isMember = contains(userId, members)
 
-    const columns = [
-      { key: 'id' },
-      { key: 'name' },
-      { key: 'role' }
-    ]
+    const columns = [{ key: 'id' }, { key: 'name' }, { key: 'role' }]
 
-    let memberRows = teamMembers.members.map(member => {
-      const role = contains(parseInt(member.id), moderators) ? 'moderator' : 'member'
+    let memberRows = teamMembers.members.map((member) => {
+      const role = contains(parseInt(member.id), moderators)
+        ? 'moderator'
+        : 'member'
       return assoc('role', role, member)
     })
 
@@ -266,7 +287,7 @@ export default class Team extends Component {
           name: 'Remove team member',
           onClick: async () => {
             this.removeMember(this.state.profileMeta.id)
-          }
+          },
         })
       }
       if (!contains(parseInt(this.state.profileMeta.id), moderators)) {
@@ -274,14 +295,14 @@ export default class Team extends Component {
           name: 'Promote to moderator',
           onClick: async () => {
             this.addModerator(this.state.profileMeta.id)
-          }
+          },
         })
       } else {
         profileActions.push({
           name: 'Remove moderator',
           onClick: async () => {
             this.removeModerator(this.state.profileMeta.id)
-          }
+          },
         })
       }
     }
@@ -290,106 +311,139 @@ export default class Team extends Component {
       <article className='inner page team'>
         <div className='page__heading'>
           <h1>{team.name}</h1>
-          { isMember ? <Button variant='primary' href={`/teams/${team.id}/profile`}>Edit Your Profile</Button> : ' '}
+          {isMember ? (
+            <Button variant='primary' href={`/teams/${team.id}/profile`}>
+              Edit Your Profile
+            </Button>
+          ) : (
+            ' '
+          )}
         </div>
         <div className='team__details'>
           <Card>
             <div className='section-actions'>
               <SectionHeader>Team Details</SectionHeader>
-              {
-                isUserModerator
-                  ? <Button variant='small' href={`/teams/${team.id}/edit`}>Edit</Button>
-                  : ''
-              }
+              {isUserModerator ? (
+                <Button variant='small' href={`/teams/${team.id}/edit`}>
+                  Edit
+                </Button>
+              ) : (
+                ''
+              )}
             </div>
             <dl>
-              {team.bio ? <><dt>Bio: </dt><dd>{team.bio}</dd></> : ''}
-              {team.hashtag ? <><dt>Hashtag: </dt><dd>{team.hashtag}</dd></> : ''}
+              {team.bio ? (
+                <>
+                  <dt>Bio: </dt>
+                  <dd>{team.bio}</dd>
+                </>
+              ) : (
+                ''
+              )}
+              {team.hashtag ? (
+                <>
+                  <dt>Hashtag: </dt>
+                  <dd>{team.hashtag}</dd>
+                </>
+              ) : (
+                ''
+              )}
             </dl>
-            {
-              team.editing_policy && (
-                <a href={team.editing_policy} className='team__editing_policy'>Organized editing policy</a>
-              )
-            }
-            {
-              team.org ? <dl>
+            {team.editing_policy && (
+              <a href={team.editing_policy} className='team__editing_policy'>
+                Organized editing policy
+              </a>
+            )}
+            {team.org ? (
+              <dl>
                 <dt>Organization:</dt>
-                <dd><a href={`/organizations/${team.org.organization_id}`} >{team.org.name}</a></dd>
-                {
-                  teamProfile ? teamProfile.map(key => {
-                    if (key.value) {
-                      return (
-                        <>
-                          <dt>{key.name}:</dt>
-                          <dd>{key.value}</dd>
-                        </>
-                      )
-                    }
-                  }) : ''
-                }
+                <dd>
+                  <a href={`/organizations/${team.org.organization_id}`}>
+                    {team.org.name}
+                  </a>
+                </dd>
+                {teamProfile
+                  ? teamProfile.map((key) => {
+                      if (key.value) {
+                        return (
+                          <>
+                            <dt>{key.name}:</dt>
+                            <dd>{key.value}</dd>
+                          </>
+                        )
+                      }
+                    })
+                  : ''}
               </dl>
-                : ''
-            }
+            ) : (
+              ''
+            )}
             <SectionHeader>Location</SectionHeader>
-            { this.renderMap(team.location) }
-            { isUserModerator
-              ? <div style={{ marginTop: '1rem' }}>
+            {this.renderMap(team.location)}
+            {isUserModerator ? (
+              <div style={{ marginTop: '1rem' }}>
                 <SectionHeader>Join Link</SectionHeader>
-                {joinLink ? <div>{joinLink}</div>
-                  : <Button onClick={() => this.createJoinLink()}>Create Join Link</Button>
-                }
+                {joinLink ? (
+                  <div>{joinLink}</div>
+                ) : (
+                  <Button onClick={() => this.createJoinLink()}>
+                    Create Join Link
+                  </Button>
+                )}
               </div>
-              : ''}
+            ) : (
+              ''
+            )}
           </Card>
         </div>
         <div className='team__table'>
-          {
-            (memberRows.length > 0) ? (
-              <Section>
-                <div className='section-actions'>
-                  <SectionHeader>Team Members</SectionHeader>
-                  <div>
-                    {isUserModerator && (
-                      <AddMemberForm
-                        onSubmit={async ({ osmId }) => {
-                          await addMember(team.id, osmId)
-                          return this.getTeam()
-                        }}
-                      />
-                    )}
-                  </div>
+          {memberRows.length > 0 ? (
+            <Section>
+              <div className='section-actions'>
+                <SectionHeader>Team Members</SectionHeader>
+                <div>
+                  {isUserModerator && (
+                    <AddMemberForm
+                      onSubmit={async ({ osmId }) => {
+                        await addMember(team.id, osmId)
+                        return this.getTeam()
+                      }}
+                    />
+                  )}
                 </div>
-                <Table
-                  rows={memberRows}
-                  columns={columns}
-                  onRowClick={
-                    (row) => {
-                      this.openProfileModal(row)
-                    }
-                  }
-                />
-                <Modal style={{
+              </div>
+              <Table
+                rows={memberRows}
+                columns={columns}
+                onRowClick={(row) => {
+                  this.openProfileModal(row)
+                }}
+              />
+              <Modal
+                style={{
                   content: {
                     maxWidth: '400px',
                     maxHeight: '400px',
                     left: 'calc(50% - 200px)',
-                    top: 'calc(50% - 200px)'
+                    top: 'calc(50% - 200px)',
                   },
                   overlay: {
-                    zIndex: 10000
-                  }
-                }} isOpen={this.state.modalIsOpen}>
-                  <ProfileModal
-                    user={this.state.profileMeta}
-                    attributes={this.state.profileInfo}
-                    onClose={this.closeProfileModal}
-                    actions={profileActions}
-                  />
-                </Modal>
-              </Section>
-            )
-              : <div />
-          }
+                    zIndex: 10000,
+                  },
+                }}
+                isOpen={this.state.modalIsOpen}
+              >
+                <ProfileModal
+                  user={this.state.profileMeta}
+                  attributes={this.state.profileInfo}
+                  onClose={this.closeProfileModal}
+                  actions={profileActions}
+                />
+              </Modal>
+            </Section>
+          ) : (
+            <div />
+          )}
         </div>
         <style jsx>
           {`

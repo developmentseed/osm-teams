@@ -11,13 +11,13 @@ let colors = {
   dangerColor: '#d85d3f',
   successColor: '#216869',
   warningColor: '#ffc700',
-  infoColor: '#5860ff'
+  infoColor: '#5860ff',
 }
 
 colors = {
   ...colors,
   linkColor: colors.primaryColor,
-  baseColorLight: '#E1E1E1'
+  baseColorLight: '#E1E1E1',
   // baseAlphaColor: rgba(colors.baseColor, 0.08),
   // baseColorMed: tint(0.3, colors.baseColor),
   // primaryDark: shade(0.3, colors.primaryColor),
@@ -36,7 +36,7 @@ let typography = {
   baseFontBold: 700,
   baseFontWeight: 400,
   baseFontSize: '1rem',
-  baseLineHeight: 1.5
+  baseLineHeight: 1.5,
 }
 
 typography = {
@@ -44,19 +44,19 @@ typography = {
   headingFontFamily: typography.monoFontFamily,
   headingFontRegular: 400,
   headingFontBold: 700,
-  headingFontWeight: 700
+  headingFontWeight: 700,
 }
 
 let shape = {
   rounded: '0.25rem',
   ellipsoid: '320rem',
-  borderWidth: '1px'
+  borderWidth: '1px',
 }
 
 let layout = {
   globalSpacing: '1rem',
   rowMinWidth: '320px',
-  rowMaxWidth: '1180px'
+  rowMaxWidth: '1180px',
 }
 
 let mediaRanges = {
@@ -64,7 +64,7 @@ let mediaRanges = {
   small: '544px',
   medium: '768px',
   large: '992px',
-  xlarge: '1480px'
+  xlarge: '1480px',
 }
 
 const theme = {
@@ -72,7 +72,7 @@ const theme = {
   colors,
   typography,
   shape,
-  mediaRanges
+  mediaRanges,
 }
 
 export default theme

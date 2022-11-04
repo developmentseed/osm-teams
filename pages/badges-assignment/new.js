@@ -14,7 +14,7 @@ const URL = publicRuntimeConfig.APP_URL
 
 const apiClient = new APIClient()
 
-function ButtonWrapper ({ children }) {
+function ButtonWrapper({ children }) {
   return (
     <div>
       {children}
@@ -27,7 +27,7 @@ function ButtonWrapper ({ children }) {
   )
 }
 
-function Section ({ children }) {
+function Section({ children }) {
   return (
     <section>
       {children}
@@ -41,29 +41,29 @@ function Section ({ children }) {
 }
 
 export default class NewBadgeAssignment extends Component {
-  static async getInitialProps ({ query }) {
+  static async getInitialProps({ query }) {
     if (query) {
       return {
         orgId: query.id,
-        userId: query.userId
+        userId: query.userId,
       }
     }
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
-      badges: []
+      badges: [],
     }
 
     this.loadData = this.loadData.bind(this)
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     this.loadData()
   }
 
-  async loadData () {
+  async loadData() {
     const { orgId } = this.props
 
     try {
@@ -72,18 +72,18 @@ export default class NewBadgeAssignment extends Component {
       const badges = await apiClient.get(`/organizations/${orgId}/badges`)
       this.setState({
         org,
-        badges
+        badges,
       })
     } catch (error) {
       console.error(error)
       this.setState({
         error,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  renderPageInner () {
+  renderPageInner() {
     if (this.state.error) {
       return <div>An unexpected error occurred, please try again later.</div>
     }
@@ -103,7 +103,7 @@ export default class NewBadgeAssignment extends Component {
         <Section>
           <Formik
             initialValues={{
-              assignedAt: format(Date.now(), 'yyyy-MM-dd')
+              assignedAt: format(Date.now(), 'yyyy-MM-dd'),
             }}
             validationSchema={Yup.object().shape({
               badgeId: Yup.number()
@@ -120,7 +120,7 @@ export default class NewBadgeAssignment extends Component {
                     assignedAt,
                     'End date must be after the start date.'
                   )
-              )
+              ),
             })}
             onSubmit={async ({ assignedAt, validUntil, badgeId }) => {
               try {
@@ -128,7 +128,7 @@ export default class NewBadgeAssignment extends Component {
                   `/organizations/${orgId}/badges/${badgeId}/assign/${userId}`,
                   {
                     assigned_at: assignedAt,
-                    valid_until: validUntil
+                    valid_until: validUntil,
                   }
                 )
                 Router.push(
@@ -141,7 +141,9 @@ export default class NewBadgeAssignment extends Component {
                 console.log(error)
 
                 if (error.message === 'User is already assigned to badge.') {
-                  toast.error(`User is already assigned to this badge, please select a different one.`)
+                  toast.error(
+                    `User is already assigned to this badge, please select a different one.`
+                  )
                 } else {
                   toast.error(`Unexpected error, please try again later.`)
                 }
@@ -212,7 +214,7 @@ export default class NewBadgeAssignment extends Component {
     )
   }
 
-  render () {
+  render() {
     return <article className='inner page'>{this.renderPageInner()}</article>
   }
 }

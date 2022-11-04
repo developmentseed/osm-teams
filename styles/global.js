@@ -56,24 +56,26 @@ export default css`
   /* Typography
    ========================================================================== */
 
-   h1, h2, h3 {
-     font-family: ${theme.typography.headingFontFamily};
-     font-weight: ${theme.typography.baseFontWeight};
-     color: ${theme.colors.primaryColor};
-     margin-top: 0;
-   }
+  h1,
+  h2,
+  h3 {
+    font-family: ${theme.typography.headingFontFamily};
+    font-weight: ${theme.typography.baseFontWeight};
+    color: ${theme.colors.primaryColor};
+    margin-top: 0;
+  }
 
-   h1 {
-     font-size: 2.827rem;
-   }
+  h1 {
+    font-size: 2.827rem;
+  }
 
-   h2 {
-     font-size: 1.999rem;
-   }
+  h2 {
+    font-size: 1.999rem;
+  }
 
-   h3 {
-     font-size: 1.414rem;
-   }
+  h3 {
+    font-size: 1.414rem;
+  }
 
   /* Links
    ========================================================================== */
@@ -110,7 +112,7 @@ export default css`
     font-size: 0.875rem;
     margin-bottom: 0.5rem;
   }
-  
+
   /* Tether element */
   .tether-element {
     z-index: 1000;

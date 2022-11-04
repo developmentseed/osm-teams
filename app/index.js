@@ -32,7 +32,7 @@ app.use(boom())
 /**
  * Initialize subapps after nextJS initializes
  */
-async function init () {
+async function init() {
   await nextApp.prepare()
 
   /**
@@ -44,7 +44,11 @@ async function init () {
   /**
    * Docs endpoints
    */
-  app.use(['/api', '/api/docs'], swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+  app.use(
+    ['/api', '/api/docs'],
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocument)
+  )
 
   /**
    * Handle all other route GET with nextjs
@@ -71,7 +75,7 @@ async function init () {
 
 /* script run */
 if (require.main === module) {
-  init().then(app => {
+  init().then((app) => {
     app.listen(PORT, () => {
       console.log(`Starting server on port ${PORT}`)
     })

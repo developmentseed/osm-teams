@@ -13,10 +13,12 @@ const logger = require('../lib/logger')
  *
  * @param {Object} nextApp the NextJS Server
  */
-function oauthRouter (nextApp) {
-  router.use(expressPino({
-    logger: logger.child({ module: 'oauth' })
-  }))
+function oauthRouter(nextApp) {
+  router.use(
+    expressPino({
+      logger: logger.child({ module: 'oauth' }),
+    })
+  )
 
   /**
    * Redirecting to openstreetmp
@@ -29,9 +31,11 @@ function oauthRouter (nextApp) {
    */
   router.get('/login', getLogin(nextApp))
   router.get('/consent', getConsent(nextApp))
-  router.post('/consent',
+  router.post(
+    '/consent',
     bodyParser.urlencoded({ extended: false }),
-    postConsent(nextApp))
+    postConsent(nextApp)
+  )
 
   return router
 }

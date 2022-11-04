@@ -3,10 +3,7 @@ import theme from '../styles/theme'
 
 const Item = ({ item, children }) => {
   return (
-    <a
-      href={item.href}
-      as={item.as || item.href}
-    >
+    <a href={item.href} as={item.as || item.href}>
       {children(item)}
       <style jsx>
         {`
@@ -25,15 +22,12 @@ const Item = ({ item, children }) => {
   )
 }
 
-export default function List ({ items, children }) {
+export default function List({ items, children }) {
   return (
     <div>
       {items.map((item, index) => {
         return (
-          <Item
-            key={`list-item-${index}`}
-            item={item}
-          >
+          <Item key={`list-item-${index}`} item={item}>
             {children}
           </Item>
         )

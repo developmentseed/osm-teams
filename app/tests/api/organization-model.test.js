@@ -37,7 +37,7 @@ test('create an organization', async (t) => {
 /**
  * Test name requirement for organization creation
  */
-test('organization requires name', async t => {
+test('organization requires name', async (t) => {
   const user = 1
   const error = await t.throwsAsync(organization.create({}, user))
   t.is(error.message, 'data.name property is required')
@@ -46,7 +46,7 @@ test('organization requires name', async t => {
 /**
  * Test organization retrieval
  */
-test('get an organization', async t => {
+test('get an organization', async (t) => {
   // setup
   const name = 'get test'
   const user = 1
@@ -61,7 +61,7 @@ test('get an organization', async t => {
 /**
  * Test organization delete
  */
-test('destroy an organization', async t => {
+test('destroy an organization', async (t) => {
   // setup
   const name = 'destroy test'
   const user = 1
@@ -78,7 +78,7 @@ test('destroy an organization', async t => {
  * Test organization update
  * An organization can update its name and description
  */
-test('update an organization', async t => {
+test('update an organization', async (t) => {
   // setup
   const name = 'update test'
   const newName = 'update test - new name'
@@ -90,7 +90,9 @@ test('update an organization', async t => {
   t.is(updated.name, newName)
 
   // Make sure a name can't be nullable
-  const error = await t.throwsAsync(organization.update(created.id, { name: null }))
+  const error = await t.throwsAsync(
+    organization.update(created.id, { name: null })
+  )
   t.is(error.message, 'data.name property is required')
 })
 
@@ -98,7 +100,7 @@ test('update an organization', async t => {
  * Test adding an owner
  * - After adding an owner the number of owners increases by 1
  */
-test('add owners', async t => {
+test('add owners', async (t) => {
   // setup
   const name = 'add owners'
   const user = 1
@@ -125,7 +127,7 @@ test('add owners', async t => {
  * - Removing a user that is not an owner ignores request
  * - Trying to remove the last owner throws an error
  */
-test('remove owners', async t => {
+test('remove owners', async (t) => {
   // setup
   const name = 'remove owners'
   const user = 1
@@ -152,7 +154,10 @@ test('remove owners', async t => {
   // removing all owners throws an error
   await organization.removeOwner(created.id, user2)
   const error2 = await t.throwsAsync(organization.removeOwner(created.id, user))
-  t.is(error2.message, 'cannot remove owner because there must be at least one owner')
+  t.is(
+    error2.message,
+    'cannot remove owner because there must be at least one owner'
+  )
 })
 
 /**
@@ -160,7 +165,7 @@ test('remove owners', async t => {
  * There should be 2 managers because a creator of a team is automatically
  * assigned to be a manager
  */
-test('add managers', async t => {
+test('add managers', async (t) => {
   // setup
   const name = 'add managers'
   const user = 1
@@ -169,7 +174,10 @@ test('add managers', async t => {
   await organization.addManager(created.id, user2)
 
   // tests
-  const managers = map(prop('osm_id'), await organization.getManagers(created.id))
+  const managers = map(
+    prop('osm_id'),
+    await organization.getManagers(created.id)
+  )
   t.is(managers.length, 2)
   t.true(contains(user, managers))
   t.true(contains(user2, managers))
@@ -186,7 +194,7 @@ test('add managers', async t => {
  * - After adding and removing a manager the number of managers should remain the same
  * - Removing a user that is not a manager ignores request
  */
-test('remove managers', async t => {
+test('remove managers', async (t) => {
   // setup
   const name = 'remove managers'
   const user = 1
@@ -197,7 +205,10 @@ test('remove managers', async t => {
   await organization.removeManager(created.id, user2)
 
   // tests
-  const managers = map(prop('osm_id'), await organization.getManagers(created.id))
+  const managers = map(
+    prop('osm_id'),
+    await organization.getManagers(created.id)
+  )
   t.is(managers.length, 1)
   t.true(contains(user, managers))
   t.false(contains(user2, managers))
@@ -213,7 +224,7 @@ test('remove managers', async t => {
 /**
  * Test creating a team as part of an organization
  */
-test('create an organization team', async t => {
+test('create an organization team', async (t) => {
   // setup
   const orgName = 'organization team'
   const teamName = 'org team 1'

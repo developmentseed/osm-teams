@@ -23,10 +23,11 @@ test.afterEach(destroyOrg)
  * We check that user100 can create a team in the org
  *
  */
-test('org owner can create a team', async t => {
+test('org owner can create a team', async (t) => {
   const teamName = 'org owner can create a team - team'
 
-  let res2 = await t.context.agent.post(`/api/organizations/${t.context.org.id}/teams`)
+  let res2 = await t.context.agent
+    .post(`/api/organizations/${t.context.org.id}/teams`)
     .set('Authorization', 'Bearer user100')
     .send({ name: teamName })
 
@@ -39,15 +40,17 @@ test('org owner can create a team', async t => {
  * as a manager. We check that user101 can create a team in the org
  *
  */
-test('org manager can create a team', async t => {
+test('org manager can create a team', async (t) => {
   const teamName = 'org manager can create a team - team'
 
   // We create a manager role for user 101
-  await t.context.agent.put(`/api/organizations/${t.context.org.id}/addManager/101`)
+  await t.context.agent
+    .put(`/api/organizations/${t.context.org.id}/addManager/101`)
     .set('Authorization', 'Bearer user100')
     .expect(200)
 
-  let res2 = await t.context.agent.post(`/api/organizations/${t.context.org.id}/teams`)
+  let res2 = await t.context.agent
+    .post(`/api/organizations/${t.context.org.id}/teams`)
     .set('Authorization', 'Bearer user101')
     .send({ name: teamName })
 
@@ -59,10 +62,11 @@ test('org manager can create a team', async t => {
  * We create an org with the user100 user and check that a non
  *
  */
-test('non-org manager cannot create a team', async t => {
+test('non-org manager cannot create a team', async (t) => {
   const teamName = 'non-org manager cannot create a team - team'
 
-  let res2 = await t.context.agent.post(`/api/organizations/${t.context.org.id}/teams`)
+  let res2 = await t.context.agent
+    .post(`/api/organizations/${t.context.org.id}/teams`)
     .set('Authorization', 'Bearer user101')
     .send({ name: teamName })
 

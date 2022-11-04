@@ -11,7 +11,7 @@ const { isOwner } = require('../../lib/organization')
  * @param {int} params.id - organization id
  * @returns {Promise<boolean>}
  */
-async function editOrg (uid, { id }) {
+async function editOrg(uid, { id }) {
   return isOwner(id, uid)
 }
 

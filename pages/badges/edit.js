@@ -16,15 +16,15 @@ const URL = publicRuntimeConfig.APP_URL
 
 const apiClient = new APIClient()
 
-function validateName (value) {
+function validateName(value) {
   if (!value) return 'Name field is required'
 }
 
-function renderError (text) {
+function renderError(text) {
   return <div className='form--error'>{text}</div>
 }
 
-function ButtonWrapper ({ children }) {
+function ButtonWrapper({ children }) {
   return (
     <div>
       {children}
@@ -38,27 +38,27 @@ function ButtonWrapper ({ children }) {
 }
 
 export default class EditBadge extends Component {
-  static async getInitialProps ({ query }) {
+  static async getInitialProps({ query }) {
     if (query) {
       return {
         orgId: query.id,
-        badgeId: query.badgeId
+        badgeId: query.badgeId,
       }
     }
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {}
 
     this.loadData = this.loadData.bind(this)
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     this.loadData()
   }
 
-  async loadData () {
+  async loadData() {
     const { orgId, badgeId } = this.props
     try {
       const [org, badge, { members }, { managers, owners }] = await Promise.all(
@@ -66,7 +66,7 @@ export default class EditBadge extends Component {
           getOrg(orgId),
           apiClient.get(`/organizations/${orgId}/badges/${badgeId}`),
           apiClient.get(`/organizations/${orgId}/members`),
-          apiClient.get(`/organizations/${orgId}/staff`)
+          apiClient.get(`/organizations/${orgId}/staff`),
         ]
       )
 
@@ -75,23 +75,23 @@ export default class EditBadge extends Component {
       this.setState({
         org,
         badge,
-        assignablePeople
+        assignablePeople,
       })
     } catch (error) {
       console.error(error)
       this.setState({
         error,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  renderAssignedMembers ({ orgId, badgeId }) {
+  renderAssignedMembers({ orgId, badgeId }) {
     const columns = [
       { key: 'id', label: 'OSM ID' },
       { key: 'displayName', label: 'Display Name' },
       { key: 'assignedAt', label: 'Assigned At' },
-      { key: 'validUntil', label: 'Valid Until' }
+      { key: 'validUntil', label: 'Valid Until' },
     ]
 
     const { badge } = this.state
@@ -109,7 +109,7 @@ export default class EditBadge extends Component {
           rows={users.map((u) => ({
             ...u,
             assignedAt: u.assignedAt && toDateString(u.assignedAt),
-            validUntil: u.validUntil && toDateString(u.validUntil)
+            validUntil: u.validUntil && toDateString(u.validUntil),
           }))}
           emptyPlaceHolder='No members have this badge assigned. Badges can be assigned via user profile actions.'
           columns={columns}
@@ -126,7 +126,7 @@ export default class EditBadge extends Component {
     )
   }
 
-  render () {
+  render() {
     const self = this
 
     if (this.state.error) {
@@ -164,7 +164,7 @@ export default class EditBadge extends Component {
                   `/organizations/${orgId}/badges/${badgeId}`,
                   {
                     name,
-                    color
+                    color,
                   }
                 )
                 toast.success('Badge updated successfully.')
@@ -231,7 +231,7 @@ export default class EditBadge extends Component {
               <Button
                 onClick={() => {
                   this.setState({
-                    isDeleting: false
+                    isDeleting: false,
                   })
                 }}
               >
@@ -264,7 +264,7 @@ export default class EditBadge extends Component {
               value='Delete'
               onClick={async (e) => {
                 this.setState({
-                  isDeleting: true
+                  isDeleting: true,
                 })
               }}
             />

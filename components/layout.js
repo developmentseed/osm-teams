@@ -2,7 +2,7 @@ import React from 'react'
 // import globalStyles from '../styles/global.js'
 import theme from '../styles/theme'
 
-function Layout (props) {
+function Layout(props) {
   return (
     <div className='page-layout'>
       {props.children}
@@ -42,7 +42,7 @@ function Layout (props) {
           .page-layout {
             display: grid;
             position: relative;
-            grid-template-rows: 5rem 1fr ;
+            grid-template-rows: 5rem 1fr;
             grid-template-columns: 100%;
             grid-template-areas:
               'sidebar'
@@ -56,8 +56,7 @@ function Layout (props) {
             .page-layout {
               grid-template-columns: 4rem 1fr;
               grid-template-rows: 100%;
-              grid-template-areas:
-                'sidebar main'
+              grid-template-areas: 'sidebar main';
             }
           }
 
@@ -114,34 +113,36 @@ function Layout (props) {
           /* Typography
            ========================================================================== */
 
-           h1, h2, h3 {
-             font-family: ${theme.typography.headingFontFamily};
-             font-weight: ${theme.typography.baseFontWeight};
-             color: ${theme.colors.primaryColor};
-             margin-top: 0;
-             margin-bottom: 0;
-           }
+          h1,
+          h2,
+          h3 {
+            font-family: ${theme.typography.headingFontFamily};
+            font-weight: ${theme.typography.baseFontWeight};
+            color: ${theme.colors.primaryColor};
+            margin-top: 0;
+            margin-bottom: 0;
+          }
 
-           h1 {
-             font-size: 2.827rem;
-           }
+          h1 {
+            font-size: 2.827rem;
+          }
 
-           h2 {
-             font-size: 1.999rem;
-           }
+          h2 {
+            font-size: 1.999rem;
+          }
 
-           h3 {
-             font-size: 1.414rem;
-           }
+          h3 {
+            font-size: 1.414rem;
+          }
 
-           p {
-             margin: 0 0 ${theme.layout.globalSpacing} 0;
-           }
+          p {
+            margin: 0 0 ${theme.layout.globalSpacing} 0;
+          }
 
-           ::selection {
-             color: ${theme.colors.backgroundColor};
-             background-color: ${theme.colors.primaryColor};
-           }
+          ::selection {
+            color: ${theme.colors.backgroundColor};
+            background-color: ${theme.colors.primaryColor};
+          }
 
           /* Links
            ========================================================================== */
@@ -171,14 +172,14 @@ function Layout (props) {
 
           /* Forms
            ========================================================================== */
-           input,
-           label,
-           select,
-           button,
-           textarea{
-             font-size: 1rem;
-             font-family: ${theme.typography.baseFontFamily};
-           }
+          input,
+          label,
+          select,
+          button,
+          textarea {
+            font-size: 1rem;
+            font-family: ${theme.typography.baseFontFamily};
+          }
 
           .form-control {
             margin-bottom: 1rem;
@@ -203,10 +204,9 @@ function Layout (props) {
             padding: 0.5rem 1rem 0.5rem 0.25rem;
             margin-right: 1rem;
             border: 2px solid ${theme.colors.primaryColor};
-            
           }
-          
-          .form-control :global(input[type="color"]) {
+
+          .form-control :global(input[type='color']) {
             padding: 3px;
             height: 2.5rem;
           }

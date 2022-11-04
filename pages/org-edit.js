@@ -10,42 +10,42 @@ import theme from '../styles/theme'
 const { publicRuntimeConfig } = getConfig()
 
 export default class OrgEdit extends Component {
-  static async getInitialProps ({ query }) {
+  static async getInitialProps({ query }) {
     if (query) {
       return {
-        id: query.id
+        id: query.id,
       }
     }
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       loading: true,
       error: undefined,
-      deleteClickedOnce: false
+      deleteClickedOnce: false,
     }
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     const { id } = this.props
     try {
       let org = await getOrg(id)
       this.setState({
         org,
-        loading: false
+        loading: false,
       })
     } catch (e) {
       console.error(e)
       this.setState({
         error: e,
         team: null,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  async deleteOrg () {
+  async deleteOrg() {
     const { id } = this.props
     try {
       const res = await destroyOrg(id)
@@ -57,18 +57,18 @@ export default class OrgEdit extends Component {
     } catch (e) {
       console.error(e)
       this.setState({
-        error: e
+        error: e,
       })
     }
   }
 
-  renderDeleter () {
+  renderDeleter() {
     let section = (
       <Button
         variant='danger'
         onClick={() => {
           this.setState({
-            deleteClickedOnce: true
+            deleteClickedOnce: true,
           })
         }}
       >
@@ -82,7 +82,7 @@ export default class OrgEdit extends Component {
           <Button
             onClick={() => {
               this.setState({
-                deleteClickedOnce: false
+                deleteClickedOnce: false,
               })
             }}
           >
@@ -102,7 +102,7 @@ export default class OrgEdit extends Component {
     return section
   }
 
-  render () {
+  render() {
     const { org, error } = this.state
 
     if (error) {
@@ -130,12 +130,17 @@ export default class OrgEdit extends Component {
             <h1>Edit Org</h1>
           </div>
           <EditOrgForm
-            initialValues={pick(['name', 'description', 'privacy', 'teams_can_be_public'], org)}
+            initialValues={pick(
+              ['name', 'description', 'privacy', 'teams_can_be_public'],
+              org
+            )}
             onSubmit={async (values, actions) => {
               try {
                 await updateOrg(org.id, values)
                 actions.setSubmitting(false)
-                Router.push(join(publicRuntimeConfig.APP_URL, `/organizations/${org.id}`))
+                Router.push(
+                  join(publicRuntimeConfig.APP_URL, `/organizations/${org.id}`)
+                )
               } catch (e) {
                 console.error(e)
                 actions.setSubmitting(false)
@@ -150,20 +155,37 @@ export default class OrgEdit extends Component {
             <h2>Org Attributes</h2>
           </div>
           <div>
-            <span style={{ 'marginRight': '1rem' }}>
-              <Button variant='primary' href={`/organizations/${org.id}/edit-profiles`}>Edit Member Attributes</Button>
+            <span style={{ marginRight: '1rem' }}>
+              <Button
+                variant='primary'
+                href={`/organizations/${org.id}/edit-profiles`}
+              >
+                Edit Member Attributes
+              </Button>
             </span>
-            <span style={{ 'marginRight': '1rem' }}>
-              <Button variant='primary' href={`/organizations/${org.id}/edit-team-profiles`}>Edit Team Attributes</Button>
+            <span style={{ marginRight: '1rem' }}>
+              <Button
+                variant='primary'
+                href={`/organizations/${org.id}/edit-team-profiles`}
+              >
+                Edit Team Attributes
+              </Button>
             </span>
-            <Button variant='primary' href={`/organizations/${org.id}/edit-privacy-policy`}>Edit Privacy Policy</Button>
+            <Button
+              variant='primary'
+              href={`/organizations/${org.id}/edit-privacy-policy`}
+            >
+              Edit Privacy Policy
+            </Button>
           </div>
         </section>
         <section className='danger-zone'>
           <h2>Danger Zone 🎸</h2>
-          <p>Delete this org, org information and all memberships associated to this team</p>
-          { this.renderDeleter() }
-
+          <p>
+            Delete this org, org information and all memberships associated to
+            this team
+          </p>
+          {this.renderDeleter()}
         </section>
         <style jsx global>
           {`

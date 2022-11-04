@@ -6,7 +6,7 @@ const { map, prop } = require('ramda')
 /**
  * List organizations that a user is a member of
  */
-async function listMyOrgs (req, reply) {
+async function listMyOrgs(req, reply) {
   const { user_id } = reply.locals
   try {
     const orgs = await organization.listMyOrganizations(user_id)
@@ -22,7 +22,7 @@ async function listMyOrgs (req, reply) {
  * Uses the user id in the request and the body to forward
  * to the organization model
  */
-async function createOrg (req, reply) {
+async function createOrg(req, reply) {
   const { body } = req
   const { user_id } = reply.locals
 
@@ -39,7 +39,7 @@ async function createOrg (req, reply) {
  * Get an organization's metadata
  * Requires id of organization
  */
-async function getOrg (req, reply) {
+async function getOrg(req, reply) {
   const { id } = req.params
   const { user_id } = reply.locals
 
@@ -50,7 +50,7 @@ async function getOrg (req, reply) {
   try {
     let [data, isMemberOfOrg] = await Promise.all([
       organization.get(id),
-      organization.isMember(id, user_id)
+      organization.isMember(id, user_id),
     ])
     reply.send({ ...data, isMemberOfOrg })
   } catch (err) {
@@ -63,7 +63,7 @@ async function getOrg (req, reply) {
  * Get an organization's staff
  * Requires id of organization
  */
-async function getOrgStaff (req, reply) {
+async function getOrgStaff(req, reply) {
   const { id } = req.params
 
   if (!id) {
@@ -73,7 +73,7 @@ async function getOrgStaff (req, reply) {
   try {
     let [owners, managers] = await Promise.all([
       organization.getOwners(id),
-      organization.getManagers(id)
+      organization.getManagers(id),
     ])
     const ownerIds = map(prop('osm_id'), owners)
     const managerIds = map(prop('osm_id'), managers)
@@ -91,7 +91,7 @@ async function getOrgStaff (req, reply) {
   }
 }
 
-async function getOrgMembers (req, reply) {
+async function getOrgMembers(req, reply) {
   const { id } = req.params
 
   if (!id) {
@@ -118,7 +118,7 @@ async function getOrgMembers (req, reply) {
  * Update an organization
  * Requires the id of the organization to modify
  */
-async function updateOrg (req, reply) {
+async function updateOrg(req, reply) {
   const { id } = req.params
   const { body } = req
 
@@ -138,7 +138,7 @@ async function updateOrg (req, reply) {
 /**
  * Destroy an organization
  */
-async function destroyOrg (req, reply) {
+async function destroyOrg(req, reply) {
   const { id } = req.params
 
   if (!id) {
@@ -157,7 +157,7 @@ async function destroyOrg (req, reply) {
 /**
  * Add owner
  */
-async function addOwner (req, reply) {
+async function addOwner(req, reply) {
   const { id, osmId } = req.params
 
   if (!id) {
@@ -180,7 +180,7 @@ async function addOwner (req, reply) {
 /**
  * Remove owner
  */
-async function removeOwner (req, reply) {
+async function removeOwner(req, reply) {
   const { id, osmId } = req.params
 
   if (!id) {
@@ -203,7 +203,7 @@ async function removeOwner (req, reply) {
 /**
  * Add manager
  */
-async function addManager (req, reply) {
+async function addManager(req, reply) {
   const { id, osmId } = req.params
 
   if (!id) {
@@ -226,7 +226,7 @@ async function addManager (req, reply) {
 /**
  * Remove manager
  */
-async function removeManager (req, reply) {
+async function removeManager(req, reply) {
   const { id, osmId } = req.params
 
   if (!id) {
@@ -249,7 +249,7 @@ async function removeManager (req, reply) {
 /**
  * Create org team
  */
-async function createOrgTeam (req, reply) {
+async function createOrgTeam(req, reply) {
   const { id } = req.params
   const { body } = req
   const { user_id } = reply.locals
@@ -266,7 +266,7 @@ async function createOrgTeam (req, reply) {
 /**
  * List org teams
  */
-async function getOrgTeams (req, reply) {
+async function getOrgTeams(req, reply) {
   const { id } = req.params
   try {
     const data = await team.list({ organizationId: id })
@@ -291,5 +291,5 @@ module.exports = {
   getOrgTeams,
   listMyOrgs,
   getOrgStaff,
-  getOrgMembers
+  getOrgMembers,
 }

@@ -10,37 +10,37 @@ const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
 
 export default class Invitation extends Component {
-  static async getInitialProps ({ query }) {
+  static async getInitialProps({ query }) {
     if (query) {
       return {
         teamId: query.team_id,
         invitationId: query.invitation_id,
-        team: query.team
+        team: query.team,
       }
     }
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       invitationPending: true,
       invitationSuccess: false,
-      error: undefined
+      error: undefined,
     }
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     const { team } = this.props
     this.setState({
-      team
+      team,
     })
   }
 
-  async rejectInvitation () {
+  async rejectInvitation() {
     Router.push(URL)
   }
 
-  async acceptInvitation () {
+  async acceptInvitation() {
     const { teamId, invitationId } = this.props
     try {
       const res = await acceptTeamJoinInvitation(teamId, invitationId)
@@ -49,18 +49,18 @@ export default class Invitation extends Component {
       }
       this.setState({
         invitationSuccess: true,
-        invitationPending: false
+        invitationPending: false,
       })
     } catch (err) {
       console.error(err)
       toast.error('There was an error accepting this invitation')
       this.setState({
-        invitationPending: false
+        invitationPending: false,
       })
     }
   }
 
-  render () {
+  render() {
     const { team, error } = this.state
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -87,9 +87,11 @@ export default class Invitation extends Component {
     if (!team) return null
     const userId = this.props.user.uid
     if (!userId) {
-      return <article className='inner page'>
-        You are not logged in. Sign in and come back to this link.
-      </article>
+      return (
+        <article className='inner page'>
+          You are not logged in. Sign in and come back to this link.
+        </article>
+      )
     }
     return (
       <article className='inner page'>

@@ -11,7 +11,7 @@ const { isOwner } = require('../../lib/organization')
  * @param {Object} params request parameters
  * @returns {boolean} can the request go through?
  */
-async function viewTeamMembers (uid, { id }) {
+async function viewTeamMembers(uid, { id }) {
   const publicTeam = await isPublic(id)
   if (publicTeam) return publicTeam
 
@@ -20,7 +20,7 @@ async function viewTeamMembers (uid, { id }) {
     const ownerOfTeam = org && (await isOwner(org.organization_id, uid))
 
     // You can view the members if you're part of the team, or in case of an org team if you're the owner
-    return ownerOfTeam || await isMember(id, uid)
+    return ownerOfTeam || (await isMember(id, uid))
   } catch (e) {
     return false
   }

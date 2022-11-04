@@ -1,4 +1,3 @@
-
 exports.up = async function (knex) {
   try {
     await knex.raw('CREATE EXTENSION IF NOT EXISTS "postgis"')

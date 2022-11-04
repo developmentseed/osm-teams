@@ -6,40 +6,51 @@ import join from 'url-join'
 import getConfig from 'next/config'
 const { publicRuntimeConfig } = getConfig()
 
-function newClient ({ client_id, client_name, client_secret }) {
-  return <ul>
-    <li><label>client_id: </label>{client_id}</li>
-    <li><label>client_name: </label>{client_name}</li>
-    <li><label>client_secret: </label>{client_secret}</li>
-    <style jsx>
-      {`
-        ul {
-          padding: 0;
-        }
+function newClient({ client_id, client_name, client_secret }) {
+  return (
+    <ul>
+      <li>
+        <label>client_id: </label>
+        {client_id}
+      </li>
+      <li>
+        <label>client_name: </label>
+        {client_name}
+      </li>
+      <li>
+        <label>client_secret: </label>
+        {client_secret}
+      </li>
+      <style jsx>
+        {`
+          ul {
+            padding: 0;
+          }
 
-        li {
-          list-style: none;
-          font-family: ${theme.typography.headingFontFamily};
-        }
+          li {
+            list-style: none;
+            font-family: ${theme.typography.headingFontFamily};
+          }
 
-        label {
-          font-family: ${theme.typography.headingFontFamily};
-          font-weight: bold;
-        }
-      `}
-    </style>
-  </ul>
+          label {
+            font-family: ${theme.typography.headingFontFamily};
+            font-weight: bold;
+          }
+        `}
+      </style>
+    </ul>
+  )
 }
 
 class Clients extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       loading: true,
       error: undefined,
       redirectURI: '',
       clientName: '',
-      newClient: null
+      newClient: null,
     }
 
     this.getClients = this.getClients.bind(this)
@@ -50,7 +61,7 @@ class Clients extends Component {
     this.handleClientCallbackChange = this.handleClientCallbackChange.bind(this)
   }
 
-  async getClients () {
+  async getClients() {
     let res = await fetch(join(publicRuntimeConfig.APP_URL, '/api/clients'))
     if (res.status === 200) {
       return res.json()
@@ -59,17 +70,17 @@ class Clients extends Component {
     }
   }
 
-  async createClient (e) {
+  async createClient(e) {
     e.preventDefault()
     let res = await fetch(join(publicRuntimeConfig.APP_URL, '/api/clients'), {
       method: 'POST',
       body: JSON.stringify({
         client_name: this.state.clientName,
-        redirect_uris: [this.state.redirectURI]
+        redirect_uris: [this.state.redirectURI],
       }),
       headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      }
+        'Content-Type': 'application/json; charset=utf-8',
+      },
     })
     let newClient = {}
     if (res.status === 200) {
@@ -82,95 +93,104 @@ class Clients extends Component {
     await this.refreshClients()
   }
 
-  async deleteClient (id) {
-    await fetch(join(publicRuntimeConfig.APP_URL, `/api/clients/${id}`), { method: 'DELETE' })
+  async deleteClient(id) {
+    await fetch(join(publicRuntimeConfig.APP_URL, `/api/clients/${id}`), {
+      method: 'DELETE',
+    })
     await this.refreshClients()
   }
 
-  handleClientNameChange (e) {
+  handleClientNameChange(e) {
     this.setState({
-      clientName: e.target.value
+      clientName: e.target.value,
     })
   }
 
-  handleClientCallbackChange (e) {
+  handleClientCallbackChange(e) {
     this.setState({
-      redirectURI: e.target.value
+      redirectURI: e.target.value,
     })
   }
 
-  async refreshClients () {
+  async refreshClients() {
     try {
       let { clients } = await this.getClients()
       this.setState({
         clients,
-        loading: false
+        loading: false,
       })
     } catch (e) {
       console.error(e)
       this.setState({
         error: e,
         clients: [],
-        loading: false
+        loading: false,
       })
     }
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.refreshClients()
   }
 
-  render () {
+  render() {
     if (this.state.loading) return <div className='inner page'>Loading...</div>
-    if (this.state.error) return <div className='inner page'> {this.state.error.message} </div>
+    if (this.state.error)
+      return <div className='inner page'> {this.state.error.message} </div>
     let token = this.props.token || ''
 
     let clients = this.state.clients
     let clientSection = <p>No clients created</p>
     if (clients.length > 0) {
-      clientSection = (<ul>
-        {
-          clients.map(client => {
+      clientSection = (
+        <ul>
+          {clients.map((client) => {
             return (
               <li className='client-item' key={client.client_id}>
                 <div>
                   <span>{client.client_name}</span>
                   <div>({client.client_id})</div>
                 </div>
-                <Button size='small' variant='danger' onClick={() => this.deleteClient(client.client_id)}>Delete</Button>
+                <Button
+                  size='small'
+                  variant='danger'
+                  onClick={() => this.deleteClient(client.client_id)}
+                >
+                  Delete
+                </Button>
               </li>
             )
-          })
-        }
-        <style jsx>
-          {`
-            ul {
-              padding: 0;
-            }
-
-            .client-item {
-              list-style: none;
-              display: flex;
-              justify-content: space-between;
-              align-items: flex-start;
-              margin-bottom: ${theme.layout.globalSpacing};
-              font-family: ${theme.typography.headingFontFamily};
-              padding-bottom: ${theme.layout.globalSpacing};
-              border-bottom: 1px solid ${theme.colors.baseColorLight};
-            }
-
-            @media screen and (min-width: ${theme.mediaRanges.medium}) {
-              .client-item {
-                align-items: center;
+          })}
+          <style jsx>
+            {`
+              ul {
+                padding: 0;
               }
-            }
 
-            .client-item span {
-              font-weight: bold;
-            }
-          `}
-        </style>
-      </ul>)
+              .client-item {
+                list-style: none;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: ${theme.layout.globalSpacing};
+                font-family: ${theme.typography.headingFontFamily};
+                padding-bottom: ${theme.layout.globalSpacing};
+                border-bottom: 1px solid ${theme.colors.baseColorLight};
+              }
+
+              @media screen and (min-width: ${theme.mediaRanges.medium}) {
+                .client-item {
+                  align-items: center;
+                }
+              }
+
+              .client-item span {
+                font-weight: bold;
+              }
+            `}
+          </style>
+        </ul>
+      )
     }
 
     return (
@@ -184,7 +204,8 @@ class Clients extends Component {
           <form className='form-control' onSubmit={this.createClient}>
             <div className='form-control form-control__vertical'>
               <label>Name: </label>
-              <input type='text'
+              <input
+                type='text'
                 placeholder='My app'
                 required='true'
                 onChange={this.handleClientNameChange}
@@ -192,34 +213,37 @@ class Clients extends Component {
             </div>
             <div className='form-control form-control__vertical'>
               <label>Callback URL: </label>
-              <input type='url'
+              <input
+                type='url'
                 placeholder='https://myapp/callback'
                 required='true'
                 onChange={this.handleClientCallbackChange}
               />
             </div>
-            <Button variant='submit' type='submit' value='Add new app'>Add New App </Button>
+            <Button variant='submit' type='submit' value='Add new app'>
+              Add New App{' '}
+            </Button>
           </form>
         </section>
         <section className='clients__list'>
-          {
-            this.state.newClient
-              ? <section className='alert'>
-                <h3>Newly created client</h3>
-                <p>⚠️ Save this information, we won&apos;t show it again.</p>
-                {newClient(this.state.newClient)}
-              </section>
-              : <div />
-          }
+          {this.state.newClient ? (
+            <section className='alert'>
+              <h3>Newly created client</h3>
+              <p>⚠️ Save this information, we won&apos;t show it again.</p>
+              {newClient(this.state.newClient)}
+            </section>
+          ) : (
+            <div />
+          )}
           <Card>
             <h3>Your personal access token</h3>
             <p>
-              <textarea rows='4' cols='30'>{token}</textarea>
+              <textarea rows='4' cols='30'>
+                {token}
+              </textarea>
             </p>
             <h3>Your apps</h3>
-            {
-              clientSection
-            }
+            {clientSection}
           </Card>
         </section>
         <style jsx>
@@ -234,7 +258,6 @@ class Clients extends Component {
             .page__heading {
               grid-column: 1 / span 12;
               display: block;
-
             }
 
             .clients__new,

@@ -2,7 +2,7 @@ import React from 'react'
 import { Formik, Field, Form } from 'formik'
 import Button from './button'
 
-export default function AddMemberForm ({ onSubmit }) {
+export default function AddMemberForm({ onSubmit }) {
   return (
     <Formik
       initialValues={{ osmId: '' }}
@@ -31,7 +31,7 @@ export default function AddMemberForm ({ onSubmit }) {
               placeholder='OSM ID'
               value={values.osmId}
             />
-            { status && status.msg && <div>{status.msg}</div> }
+            {status && status.msg && <div>{status.msg}</div>}
             <Button type='submit' variant='submit' disabled={isSubmitting}>
               {addMemberText}
             </Button>

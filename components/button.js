@@ -23,9 +23,9 @@ const style = css`
     cursor: pointer;
     transition: all 0.2s ease;
     /* Default Colors */
-    background: #FFFFFF;
+    background: #ffffff;
     color: ${theme.colors.primaryColor};
-    box-shadow: 2px 2px #FFFFFF, 4px 4px ${theme.colors.primaryColor};
+    box-shadow: 2px 2px #ffffff, 4px 4px ${theme.colors.primaryColor};
     border: 2px solid ${theme.colors.primaryColor};
   }
 
@@ -34,15 +34,14 @@ const style = css`
   .button.submit:hover,
   .button.danger:hover {
     opacity: 0.68;
-    box-shadow: 0 0 ;
+    box-shadow: 0 0;
   }
 
   .button.primary {
-    color: #FFFFFF;
+    color: #ffffff;
     background: ${theme.colors.primaryColor};
     border: none;
-    box-shadow: 2px 2px #FFFFFF,
-                4px 4px ${theme.colors.primaryColor};
+    box-shadow: 2px 2px #ffffff, 4px 4px ${theme.colors.primaryColor};
   }
   .button.small {
     padding: 0.5rem ${theme.layout.globalSpacing};
@@ -54,7 +53,7 @@ const style = css`
   }
 
   .button.disabled {
-    backgroundColor: #777777;
+    backgroundcolor: #777777;
     border: 2px solid #555;
     color: ${theme.colors.baseColor};
     transition: none;
@@ -65,8 +64,7 @@ const style = css`
 
   .button.danger {
     color: ${theme.colors.baseColor};
-    box-shadow: 2px 2px #FFFFFF,
-                4px 4px ${theme.colors.secondaryColor};
+    box-shadow: 2px 2px #ffffff, 4px 4px ${theme.colors.secondaryColor};
     border-color: ${theme.colors.secondaryColor};
   }
 
@@ -75,17 +73,59 @@ const style = css`
   }
 `
 
-export default function Button ({ name, id, value, variant, type, disabled, href, onClick, children, size }) {
+export default function Button({
+  name,
+  id,
+  value,
+  variant,
+  type,
+  disabled,
+  href,
+  onClick,
+  children,
+  size,
+}) {
   let classes = [`button`, variant, size]
   if (disabled) classes.push('disabled')
   let classNames = classes.join(' ')
   if (type === 'submit') {
-    return <button type='submit' className={classNames} disabled={disabled} name={name} id={id} onClick={onClick} value='value'>{children || value}<style jsx>{style}</style></button>
+    return (
+      <button
+        type='submit'
+        className={classNames}
+        disabled={disabled}
+        name={name}
+        id={id}
+        onClick={onClick}
+        value='value'
+      >
+        {children || value}
+        <style jsx>{style}</style>
+      </button>
+    )
   }
   if (href) {
     let fullUrl
-    (href.startsWith('http')) ? (fullUrl = href) : (fullUrl = join(publicRuntimeConfig.APP_URL, href))
-    return <a href={fullUrl} className={classNames} disabled={disabled} name={name} id={id}>{children || value}<style jsx>{style}</style></a>
+    href.startsWith('http')
+      ? (fullUrl = href)
+      : (fullUrl = join(publicRuntimeConfig.APP_URL, href))
+    return (
+      <a
+        href={fullUrl}
+        className={classNames}
+        disabled={disabled}
+        name={name}
+        id={id}
+      >
+        {children || value}
+        <style jsx>{style}</style>
+      </a>
+    )
   }
-  return <div onClick={onClick} className={classNames} disabled={disabled}>{children}<style jsx>{style}</style></div>
+  return (
+    <div onClick={onClick} className={classNames} disabled={disabled}>
+      {children}
+      <style jsx>{style}</style>
+    </div>
+  )
 }

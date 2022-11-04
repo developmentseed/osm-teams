@@ -14,7 +14,7 @@ const URL = publicRuntimeConfig.APP_URL
 
 const apiClient = new APIClient()
 
-function ButtonWrapper ({ children }) {
+function ButtonWrapper({ children }) {
   return (
     <div>
       {children}
@@ -27,7 +27,7 @@ function ButtonWrapper ({ children }) {
   )
 }
 
-function Section ({ children }) {
+function Section({ children }) {
   return (
     <section>
       {children}
@@ -41,30 +41,30 @@ function Section ({ children }) {
 }
 
 export default class EditBadgeAssignment extends Component {
-  static async getInitialProps ({ query }) {
+  static async getInitialProps({ query }) {
     if (query) {
       return {
         orgId: query.id,
         badgeId: parseInt(query.badgeId),
-        userId: parseInt(query.userId)
+        userId: parseInt(query.userId),
       }
     }
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
-      isDeleting: false
+      isDeleting: false,
     }
 
     this.loadData = this.loadData.bind(this)
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     this.loadData()
   }
 
-  async loadData () {
+  async loadData() {
     const { orgId, badgeId, userId } = this.props
 
     try {
@@ -84,18 +84,18 @@ export default class EditBadgeAssignment extends Component {
       this.setState({
         org,
         badge,
-        assignment
+        assignment,
       })
     } catch (error) {
       console.error(error)
       this.setState({
         error,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  renderPageInner () {
+  renderPageInner() {
     if (this.state.error) {
       return <div>An unexpected error occurred, please try again later.</div>
     }
@@ -124,7 +124,7 @@ export default class EditBadgeAssignment extends Component {
                 (assignment &&
                   assignment.validUntil &&
                   assignment.validUntil.substring(0, 10)) ||
-                ''
+                '',
             }}
             validationSchema={Yup.object().shape({
               assignedAt: Yup.date().required(
@@ -138,13 +138,13 @@ export default class EditBadgeAssignment extends Component {
                     assignedAt,
                     'End date must be after the start date.'
                   )
-              )
+              ),
             })}
             onSubmit={async ({ assignedAt, validUntil }) => {
               try {
                 const payload = {
                   assigned_at: assignedAt,
-                  valid_until: validUntil !== '' ? validUntil : null
+                  valid_until: validUntil !== '' ? validUntil : null,
                 }
 
                 await apiClient.patch(
@@ -215,7 +215,7 @@ export default class EditBadgeAssignment extends Component {
                   <Button
                     onClick={() => {
                       this.setState({
-                        isDeleting: false
+                        isDeleting: false,
                       })
                     }}
                   >
@@ -248,7 +248,7 @@ export default class EditBadgeAssignment extends Component {
                   value='Unassign this badge'
                   onClick={async (e) => {
                     this.setState({
-                      isDeleting: true
+                      isDeleting: true,
                     })
                   }}
                 />
@@ -260,7 +260,7 @@ export default class EditBadgeAssignment extends Component {
     )
   }
 
-  render () {
+  render() {
     return <article className='inner page'>{this.renderPageInner()}</article>
   }
 }

@@ -3,15 +3,15 @@ const hydra = require('../../lib/hydra')
 const { mergeAll, isNil } = require('ramda')
 
 const metaPermissions = {
-  'public:authenticated': (uid) => (!isNil(uid)) // User needs to be authenticated
+  'public:authenticated': (uid) => !isNil(uid), // User needs to be authenticated
 }
 
 const userPermissions = {
-  'user:edit': require('./edit-user')
+  'user:edit': require('./edit-user'),
 }
 
 const keyPermissions = {
-  'key:edit': require('./edit-key')
+  'key:edit': require('./edit-key'),
 }
 
 const teamPermissions = {
@@ -19,19 +19,19 @@ const teamPermissions = {
   'team:view': require('./view-team'),
   'team:view-members': require('./view-team-members'),
   'team:join': require('./join-team'),
-  'team:member': require('./member-team')
+  'team:member': require('./member-team'),
 }
 
 const organizationPermissions = {
   'organization:edit': require('./edit-org'),
   'organization:create-team': require('./create-org-team'),
   'organization:member': require('./member-org'),
-  'organization:view-members': require('./view-org-members')
+  'organization:view-members': require('./view-org-members'),
 }
 
 const clientPermissions = {
-  'clients': require('./clients'),
-  'client:delete': require('./delete-client')
+  clients: require('./clients'),
+  'client:delete': require('./delete-client'),
 }
 
 const permissions = mergeAll([
@@ -40,10 +40,10 @@ const permissions = mergeAll([
   keyPermissions,
   teamPermissions,
   clientPermissions,
-  organizationPermissions
+  organizationPermissions,
 ])
 
-function isApiRequest ({ path }) {
+function isApiRequest({ path }) {
   return path.indexOf('/api') === 0
 }
 
@@ -54,7 +54,7 @@ function isApiRequest ({ path }) {
  * @param {Object} res Response object
  * @param {String} ability String representing a specific permission, for example: `team:create`
  */
-async function checkPermission (req, res, ability) {
+async function checkPermission(req, res, ability) {
   const locals = res.locals || {}
   return permissions[ability](locals.user_id, req.params)
 }
@@ -66,7 +66,7 @@ async function checkPermission (req, res, ability) {
  * @param {Object} req Request object
  * @return {String} token
  */
-async function getToken (req) {
+async function getToken(req) {
   let token
   if (req.session && req.session.user_id) {
     token = await getSessionToken(req)
@@ -82,7 +82,7 @@ async function getToken (req) {
  * @param {Object} req Request object
  * @return {String} token
  */
-async function getSessionToken (req) {
+async function getSessionToken(req) {
   try {
     let conn = await db()
     let [userTokens] = await conn('users').where('id', req.session.user_id)
@@ -98,9 +98,12 @@ async function getSessionToken (req) {
  * @param {Object} req Request object
  * @return {String} token
  */
-function getAuthHeaderToken (req) {
+function getAuthHeaderToken(req) {
   const [type, token] = req.headers.authorization.split(' ')
-  if (type !== 'Bearer') throw new Error('Authorization scheme not supported. Only Bearer scheme is supported')
+  if (type !== 'Bearer')
+    throw new Error(
+      'Authorization scheme not supported. Only Bearer scheme is supported'
+    )
   return token
 }
 
@@ -113,7 +116,7 @@ function getAuthHeaderToken (req) {
  * @param {Object} res Response object
  * @param {Function} next Express middleware next
  */
-async function acceptToken (token, res, next) {
+async function acceptToken(token, res, next) {
   let result = await hydra.introspect(token)
   if (result && result.active) {
     res.locals.user_id = result.sub
@@ -130,7 +133,7 @@ async function acceptToken (token, res, next) {
  * the accessToken validity with hydra. If there isn't a session,
  * it checks for an Authorization header with a valid access token
  */
-async function authenticate (req, res, next) {
+async function authenticate(req, res, next) {
   try {
     const token = await getToken(req)
 
@@ -149,7 +152,7 @@ async function authenticate (req, res, next) {
  * Given a permission, check if the user is allowed to perform the action
  * @param {string} ability the permission
  */
-function check (ability) {
+function check(ability) {
   return async function (req, res, next) {
     /**
      * Permissions decision function
@@ -193,5 +196,5 @@ module.exports = {
     return [authenticate, check(ability)]
   },
   authenticate,
-  check
+  check,
 }

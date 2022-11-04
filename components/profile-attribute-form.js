@@ -3,7 +3,7 @@ import { Formik, Field, Form } from 'formik'
 import { assoc } from 'ramda'
 import Button from './button'
 
-const validate = values => {
+const validate = (values) => {
   const errors = {}
   if (!values.name || values.name.length < 1) {
     errors.name = 'Required'
@@ -16,12 +16,17 @@ const defaultValues = {
   description: '',
   visibility: 'team',
   required: [],
-  key_type: 'text'
+  key_type: 'text',
 }
 
-export default function ProfileAttributeForm ({ onSubmit, initialValues = defaultValues, formType = 'team' }) {
+export default function ProfileAttributeForm({
+  onSubmit,
+  initialValues = defaultValues,
+  formType = 'team',
+}) {
   if (formType === 'org') {
-    initialValues['visibility'] = (initialValues['visibility'] === 'public') ? 'public' : 'org'
+    initialValues['visibility'] =
+      initialValues['visibility'] === 'public' ? 'public' : 'org'
   }
 
   return (
@@ -31,7 +36,11 @@ export default function ProfileAttributeForm ({ onSubmit, initialValues = defaul
       onSubmit={async (values, actions) => {
         actions.setSubmitting(true)
 
-        let data = assoc('required', (values.required.includes('required')), values)
+        let data = assoc(
+          'required',
+          values.required.includes('required'),
+          values
+        )
         try {
           await onSubmit(data)
           actions.setSubmitting(false)
@@ -46,16 +55,20 @@ export default function ProfileAttributeForm ({ onSubmit, initialValues = defaul
         const addAttributeText = `Submit ${isSubmitting ? ' 🕙' : ''}`
         let typeOption = <option value='team'>Team</option>
         if (formType === 'org') {
-          typeOption = <>
-            <option value='org'>Organization</option>
-            <option value='org_staff'>Organization Staff</option>
-          </>
+          typeOption = (
+            <>
+              <option value='org'>Organization</option>
+              <option value='org_staff'>Organization Staff</option>
+            </>
+          )
         }
 
         return (
           <Form>
             <div className='form-control form-control__vertical'>
-              <label htmlFor='name'>Name of attribute<span className='form--required'>*</span></label>
+              <label htmlFor='name'>
+                Name of attribute<span className='form--required'>*</span>
+              </label>
               <Field
                 type='text'
                 name='name'
@@ -63,7 +76,9 @@ export default function ProfileAttributeForm ({ onSubmit, initialValues = defaul
                 placeholder='Favorite Color'
                 value={values.name}
               />
-              {errors.name ? <div className='form--error'>{errors.name}</div> : null}
+              {errors.name ? (
+                <div className='form--error'>{errors.name}</div>
+              ) : null}
             </div>
             <div className='form-control form-control__vertical'>
               <label>Description of attribute:</label>
@@ -74,7 +89,6 @@ export default function ProfileAttributeForm ({ onSubmit, initialValues = defaul
                 placeholder='Describe the attribute'
                 value={values.description}
               />
-
             </div>
             <div className='form-control form-control__vertical'>
               <label>Visibility:</label>
@@ -110,7 +124,8 @@ export default function ProfileAttributeForm ({ onSubmit, initialValues = defaul
             </div>
 
             <div className='form-control'>
-              <label>Is this attribute required?
+              <label>
+                Is this attribute required?
                 <Field
                   type='checkbox'
                   name='required'

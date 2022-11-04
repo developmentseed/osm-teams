@@ -9,7 +9,9 @@ const keyName = 'member_team_id_osm_id_key'
 // creates unique constraint named "member_team_id_osm_id_key"
 exports.up = async (knex) => {
   try {
-    await knex.schema.alterTable(tableName, table => table.unique(columns, keyName))
+    await knex.schema.alterTable(tableName, (table) =>
+      table.unique(columns, keyName)
+    )
   } catch (e) {
     console.error(e)
   }
@@ -19,7 +21,9 @@ exports.up = async (knex) => {
 // drops the unique constraint.
 exports.down = async (knex) => {
   try {
-    await knex.schema.alterTable(tableName, table => table.dropUnique(columns, keyName))
+    await knex.schema.alterTable(tableName, (table) =>
+      table.dropUnique(columns, keyName)
+    )
   } catch (e) {
     console.error(e)
   }

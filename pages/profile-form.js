@@ -2,24 +2,24 @@ import React, { Component } from 'react'
 import ProfileForm from '../components/profile-form'
 
 export default class EditProfileForm extends Component {
-  static async getInitialProps ({ query }) {
+  static async getInitialProps({ query }) {
     if (query) {
       return {
         id: query.id,
-        formType: query.formType
+        formType: query.formType,
       }
     }
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       loading: true,
-      error: undefined
+      error: undefined,
     }
   }
 
-  render () {
+  render() {
     return <ProfileForm formType={this.props.formType} id={this.props.id} />
   }
 }

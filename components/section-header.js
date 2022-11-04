@@ -1,11 +1,12 @@
 import React from 'react'
 import theme from '../styles/theme'
 
-export default function SectionHeader ({ children }) {
+export default function SectionHeader({ children }) {
   return (
     <h3>
       {children}
-      <style jsx>{`
+      <style jsx>
+        {`
           h3 {
             color: ${theme.colors.primaryColor};
             font-family: ${theme.typography.headingFontFamily};

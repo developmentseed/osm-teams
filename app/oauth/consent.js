@@ -8,20 +8,21 @@ const db = require('../db')
 const { serverRuntimeConfig } = require('../../next.config')
 const { path } = require('ramda')
 
-async function idTokenExtraParams (sub) {
+async function idTokenExtraParams(sub) {
   const conn = await db()
   const [user] = await conn('users').where('id', sub)
   const { profile } = user
   const displayName = profile.displayName || sub
-  const picture = path(['_xml2json', 'user', 'img', '@', 'href'], profile) ||
+  const picture =
+    path(['_xml2json', 'user', 'img', '@', 'href'], profile) ||
     `https://www.gravatar.com/avatar/${sub}?d=identicon`
   return {
     preferred_username: displayName,
-    picture
+    picture,
   }
 }
 
-function getConsent (app) {
+function getConsent(app) {
   return async (req, res, next) => {
     const query = url.parse(req.url, true).query
     const challenge = query.consent_challenge
@@ -31,13 +32,16 @@ function getConsent (app) {
       let idToken = await idTokenExtraParams(consent.subject)
 
       // We can skip if skip is set to yes or if the requesting app is the management UI
-      if (consent.skip || consent.client.client_id === serverRuntimeConfig.OSM_HYDRA_ID) {
+      if (
+        consent.skip ||
+        consent.client.client_id === serverRuntimeConfig.OSM_HYDRA_ID
+      ) {
         let accept = await hydra.acceptConsentRequest(challenge, {
           grant_scope: consent.requested_scope,
           grant_access_token_audience: consent.requested_access_token_audience,
           session: {
-            id_token: idToken
-          }
+            id_token: idToken,
+          },
         })
 
         res.redirect(accept.redirect_to)
@@ -46,7 +50,7 @@ function getConsent (app) {
           challenge: challenge,
           requested_scope: consent.requested_scope,
           user: idToken.preferred_username,
-          client: consent.client
+          client: consent.client,
         })
       }
     } catch (e) {
@@ -59,14 +63,14 @@ function getConsent (app) {
  * Process the reply of the user, whether they
  * consent the client to access their information
  */
-function postConsent (app) {
+function postConsent(app) {
   return async (req, res, next) => {
     const challenge = req.body.challenge
     if (req.body.submit === 'Deny access') {
       try {
         let reject = await hydra.rejectConsentRequest(challenge, {
           error: 'access_denied',
-          error_description: 'The resource owner denied the request'
+          error_description: 'The resource owner denied the request',
         })
         res.redirect(reject.redirect_to)
       } catch (e) {
@@ -84,11 +88,11 @@ function postConsent (app) {
         let accept = await hydra.acceptConsentRequest(challenge, {
           grant_scope,
           session: {
-            id_token: idToken
+            id_token: idToken,
           },
           grant_access_token_audience: consent.requested_access_token_audience,
           remember: Boolean(req.body.remember),
-          remember_for: 3600
+          remember_for: 3600,
         })
         res.redirect(accept.redirect_to)
       } catch (e) {
@@ -101,5 +105,5 @@ function postConsent (app) {
 
 module.exports = {
   getConsent,
-  postConsent
+  postConsent,
 }

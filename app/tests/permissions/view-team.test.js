@@ -11,7 +11,10 @@ test.before(async (t) => {
   await initializeContext(t)
 
   t.context.publicTeam = await team.create({ name: 'public team' }, 100)
-  t.context.privateTeam = await team.create({ name: 'private team', privacy: 'private' }, 100)
+  t.context.privateTeam = await team.create(
+    { name: 'private team', privacy: 'private' },
+    100
+  )
 })
 
 test.after.always(async () => {
@@ -20,21 +23,22 @@ test.after.always(async () => {
   conn.destroy()
 })
 
-test('public teams are visible to unauthenticated users', async t => {
+test('public teams are visible to unauthenticated users', async (t) => {
   const team = t.context.publicTeam
   let res = await t.context.agent.get(`/api/teams/${team.id}`)
   t.is(res.status, 200)
 })
 
-test('private team metadata are visible to unauthenticated users', async t => {
+test('private team metadata are visible to unauthenticated users', async (t) => {
   const team = t.context.privateTeam
   let res = await t.context.agent.get(`/api/teams/${team.id}`)
   t.is(res.status, 200)
 })
 
-test('private team metadata are visible to team moderators', async t => {
+test('private team metadata are visible to team moderators', async (t) => {
   const team = t.context.privateTeam
-  let res = await t.context.agent.get(`/api/teams/${team.id}`)
+  let res = await t.context.agent
+    .get(`/api/teams/${team.id}`)
     .set('Authorization', `Bearer user100`)
   t.is(res.status, 200)
 })

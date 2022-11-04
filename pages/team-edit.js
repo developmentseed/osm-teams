@@ -11,24 +11,24 @@ import { getOrgTeamAttributes, getTeamProfile } from '../lib/profiles-api'
 const { publicRuntimeConfig } = getConfig()
 
 export default class TeamEdit extends Component {
-  static async getInitialProps ({ query }) {
+  static async getInitialProps({ query }) {
     if (query) {
       return {
-        id: query.id
+        id: query.id,
       }
     }
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       loading: true,
       error: undefined,
-      deleteClickedOnce: false
+      deleteClickedOnce: false,
     }
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     const { id } = this.props
     try {
       let team = await getTeam(id)
@@ -42,19 +42,19 @@ export default class TeamEdit extends Component {
         team,
         profileValues,
         teamAttributes,
-        loading: false
+        loading: false,
       })
     } catch (e) {
       console.error(e)
       this.setState({
         error: e,
         team: null,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  async deleteTeam () {
+  async deleteTeam() {
     const { id } = this.props
     try {
       const res = await destroyTeam(id)
@@ -66,18 +66,18 @@ export default class TeamEdit extends Component {
     } catch (e) {
       console.error(e)
       this.setState({
-        error: e
+        error: e,
       })
     }
   }
 
-  renderDeleter () {
+  renderDeleter() {
     let section = (
       <Button
         variant='danger'
         onClick={() => {
           this.setState({
-            deleteClickedOnce: true
+            deleteClickedOnce: true,
           })
         }}
       >
@@ -91,7 +91,7 @@ export default class TeamEdit extends Component {
           <Button
             onClick={() => {
               this.setState({
-                deleteClickedOnce: false
+                deleteClickedOnce: false,
               })
             }}
           >
@@ -111,7 +111,7 @@ export default class TeamEdit extends Component {
     return section
   }
 
-  render () {
+  render() {
     const { team, error, teamAttributes, profileValues } = this.state
 
     if (error) {
@@ -137,18 +137,30 @@ export default class TeamEdit extends Component {
         <section>
           <div className='page__heading'>
             <h1>Edit Team</h1>
-            <Button variant='primary' href={`/teams/${team.id}/edit-profiles`}>Edit Team Profiles</Button>
+            <Button variant='primary' href={`/teams/${team.id}/edit-profiles`}>
+              Edit Team Profiles
+            </Button>
           </div>
           <EditTeamForm
-            initialValues={pick(['name', 'bio', 'hashtag', 'editing_policy', 'location', 'privacy'], team)}
+            initialValues={pick(
+              [
+                'name',
+                'bio',
+                'hashtag',
+                'editing_policy',
+                'location',
+                'privacy',
+              ],
+              team
+            )}
             profileValues={profileValues}
             extraTags={teamAttributes}
             onSubmit={async (values, actions) => {
               try {
-                let tags = Object.keys(values.tags).map(key => {
+                let tags = Object.keys(values.tags).map((key) => {
                   return {
                     key_id: split('-', key)[1],
-                    value: values.tags[key]
+                    value: values.tags[key],
                   }
                 })
 
@@ -156,7 +168,9 @@ export default class TeamEdit extends Component {
 
                 await updateTeam(team.id, values)
                 actions.setSubmitting(false)
-                Router.push(join(publicRuntimeConfig.APP_URL, `/teams/${team.id}`))
+                Router.push(
+                  join(publicRuntimeConfig.APP_URL, `/teams/${team.id}`)
+                )
               } catch (e) {
                 console.error(e)
                 actions.setSubmitting(false)
@@ -168,9 +182,11 @@ export default class TeamEdit extends Component {
         </section>
         <section className='danger-zone'>
           <h2>Danger Zone 🎸</h2>
-          <p>Delete this team, team information and all memberships associated to this team</p>
-          { this.renderDeleter() }
-
+          <p>
+            Delete this team, team information and all memberships associated to
+            this team
+          </p>
+          {this.renderDeleter()}
         </section>
         <style jsx global>
           {`

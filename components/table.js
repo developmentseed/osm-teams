@@ -1,7 +1,7 @@
 import React from 'react'
 import theme from '../styles/theme'
 
-function TableHead ({ columns }) {
+function TableHead({ columns }) {
   return (
     <thead className=''>
       <tr className=''>
@@ -22,7 +22,7 @@ function TableHead ({ columns }) {
   )
 }
 
-function Row ({ columns, row, index, onRowClick }) {
+function Row({ columns, row, index, onRowClick }) {
   return (
     <tr
       onClick={() => {
@@ -30,20 +30,17 @@ function Row ({ columns, row, index, onRowClick }) {
       }}
     >
       {columns.map(({ key }) => {
-        const item = typeof row[key] === 'function' ? row[key](row, index, columns) : row[key]
-        return (
-          <td
-            key={`row-${index}-key-${key}`}
-          >
-            {item}
-          </td>
-        )
+        const item =
+          typeof row[key] === 'function'
+            ? row[key](row, index, columns)
+            : row[key]
+        return <td key={`row-${index}-key-${key}`}>{item}</td>
       })}
     </tr>
   )
 }
 
-function TableBody ({ columns, rows, onRowClick, emptyPlaceHolder }) {
+function TableBody({ columns, rows, onRowClick, emptyPlaceHolder }) {
   return (
     <tbody className='lh-copy'>
       {!rows || rows.length === 0 ? (
@@ -69,11 +66,16 @@ function TableBody ({ columns, rows, onRowClick, emptyPlaceHolder }) {
   )
 }
 
-export default function Table ({ columns, rows, onRowClick, emptyPlaceHolder }) {
+export default function Table({ columns, rows, onRowClick, emptyPlaceHolder }) {
   return (
     <table>
       <TableHead columns={columns} />
-      <TableBody columns={columns} rows={rows} onRowClick={onRowClick} emptyPlaceHolder={emptyPlaceHolder} />
+      <TableBody
+        columns={columns}
+        rows={rows}
+        onRowClick={onRowClick}
+        emptyPlaceHolder={emptyPlaceHolder}
+      />
       <style jsx global>
         {`
           table {
@@ -108,10 +110,11 @@ export default function Table ({ columns, rows, onRowClick, emptyPlaceHolder }) 
             ${onRowClick && 'cursor: pointer'}
           }
 
-          ${onRowClick && `tbody tr:hover {
+          ${onRowClick &&
+          `tbody tr:hover {
             background: ${theme.colors.primaryLite};
           }`}
-          `}
+        `}
       </style>
     </table>
   )

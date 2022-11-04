@@ -12,7 +12,7 @@ const { isOwner } = require('../../lib/organization')
  * @param {Object} params request parameters
  * @returns {Promise<boolean>} can the request go through?
  */
-async function updateTeam (uid, { id }) {
+async function updateTeam(uid, { id }) {
   // user has to be authenticated
   if (!uid) return false
 

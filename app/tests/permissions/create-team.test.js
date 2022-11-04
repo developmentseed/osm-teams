@@ -13,8 +13,9 @@ test.after.always(async () => {
   conn.destroy()
 })
 
-test('an authenticated user can create a team', async t => {
-  let res = await t.context.agent.post('/api/teams')
+test('an authenticated user can create a team', async (t) => {
+  let res = await t.context.agent
+    .post('/api/teams')
     .send({ name: 'road team 1' })
     .set('Authorization', 'Bearer user100')
     .expect(200)
@@ -22,8 +23,9 @@ test('an authenticated user can create a team', async t => {
   t.is(res.body.name, 'road team 1')
 })
 
-test('an unauthenticated user cannot create a team', async t => {
-  let res = await t.context.agent.post('/api/teams')
+test('an unauthenticated user cannot create a team', async (t) => {
+  let res = await t.context.agent
+    .post('/api/teams')
     .send({ name: 'road team 2' })
 
   t.is(res.status, 401)

@@ -5,13 +5,18 @@ import * as Yup from 'yup'
 import Router from 'next/router'
 import descriptionPopup from './description-popup'
 import { Formik, Field, useField, Form, ErrorMessage } from 'formik'
-import { getOrgMemberAttributes, getTeamMemberAttributes, getMyProfile, setMyProfile } from '../lib/profiles-api'
+import {
+  getOrgMemberAttributes,
+  getTeamMemberAttributes,
+  getMyProfile,
+  setMyProfile,
+} from '../lib/profiles-api'
 import { getOrg } from '../lib/org-api'
 import { getTeam } from '../lib/teams-api'
 import Button from '../components/button'
 import { propOr, prop } from 'ramda'
 
-function GenderSelectField (props) {
+function GenderSelectField(props) {
   const [field, meta, { setValue, setTouched }] = useField(props.name)
 
   const onChange = function (option) {
@@ -26,10 +31,10 @@ function GenderSelectField (props) {
     { value: 'non-binary', label: 'Non-Binary' },
     { value: 'female', label: 'Female' },
     { value: 'male', label: 'Male' },
-    { value: 'undisclosed', label: 'I prefer not to say' }
+    { value: 'undisclosed', label: 'I prefer not to say' },
   ]
 
-  function findOrCreate (fieldValue) {
+  function findOrCreate(fieldValue) {
     let found = options.find((option) => option.value === field.value)
     if (!fieldValue) {
       return null
@@ -45,45 +50,46 @@ function GenderSelectField (props) {
       ...provided,
       minWidth: '220px',
       width: '220px',
-      border: `2px solid ${theme.colors.primaryColor}`
+      border: `2px solid ${theme.colors.primaryColor}`,
     }),
     option: (provided) => ({
       ...provided,
       minWidth: '220px',
-      width: '220px'
-    })
-
+      width: '220px',
+    }),
   }
 
-  return <div>
-    <CreatableSelect
-      styles={styles}
-      isClearable
-      formatCreateLabel={(inputValue) => `Write in ${inputValue}`}
-      placeholder='Write or select'
-      defaultValue={findOrCreate(field.value)}
-      options={options}
-      onChange={onChange}
-      onBlur={setTouched}
-    />
-    {meta.touched && meta.error ? (
-      <div className='form--error'>
-        <ErrorMessage name={props.name} />
-      </div>
-    ) : null}
-  </div>
+  return (
+    <div>
+      <CreatableSelect
+        styles={styles}
+        isClearable
+        formatCreateLabel={(inputValue) => `Write in ${inputValue}`}
+        placeholder='Write or select'
+        defaultValue={findOrCreate(field.value)}
+        options={options}
+        onChange={onChange}
+        onBlur={setTouched}
+      />
+      {meta.touched && meta.error ? (
+        <div className='form--error'>
+          <ErrorMessage name={props.name} />
+        </div>
+      ) : null}
+    </div>
+  )
 }
 
 export default class ProfileForm extends Component {
-  static async getInitialProps ({ query }) {
+  static async getInitialProps({ query }) {
     if (query) {
       return {
-        id: query.id
+        id: query.id,
       }
     }
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       memberAttributes: [],
@@ -91,23 +97,23 @@ export default class ProfileForm extends Component {
       profileValues: {},
       consentChecked: true,
       loading: true,
-      error: undefined
+      error: undefined,
     }
 
     this.setConsentChecked = this.setConsentChecked.bind(this)
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     this.getProfileForm()
   }
 
-  setConsentChecked (checked) {
+  setConsentChecked(checked) {
     this.setState({
-      consentChecked: checked
+      consentChecked: checked,
     })
   }
 
-  async getProfileForm () {
+  async getProfileForm() {
     const { id } = this.props
     try {
       let memberAttributes = []
@@ -132,19 +138,28 @@ export default class ProfileForm extends Component {
         org,
         orgAttributes,
         profileValues,
-        loading: false
+        loading: false,
       })
     } catch (e) {
       console.error(e)
       this.setState({
         error: e,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  render () {
-    let { memberAttributes, orgAttributes, org, team, profileValues, returnUrl, consentChecked, loading } = this.state
+  render() {
+    let {
+      memberAttributes,
+      orgAttributes,
+      org,
+      team,
+      profileValues,
+      returnUrl,
+      consentChecked,
+      loading,
+    } = this.state
     profileValues = profileValues || {}
 
     if (loading) {
@@ -160,7 +175,7 @@ export default class ProfileForm extends Component {
 
     let schema = {}
 
-    allAttributes.forEach(attr => {
+    allAttributes.forEach((attr) => {
       // Set initial value from profileValues or to empty string
       initialValues[attr.id] = propOr('', attr.id, profileValues)
 
@@ -183,8 +198,12 @@ export default class ProfileForm extends Component {
           break
         }
         case 'tel': {
-          const phoneRegex = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
-          schema[attr.id] = Yup.string().matches(phoneRegex, 'Invalid phone number')
+          const phoneRegex =
+            /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+          schema[attr.id] = Yup.string().matches(
+            phoneRegex,
+            'Invalid phone number'
+          )
           break
         }
         case 'color': {
@@ -194,7 +213,9 @@ export default class ProfileForm extends Component {
         }
         default: {
           if (attr.required) {
-            schema[attr.id] = Yup.string().required('This is a required field').nullable()
+            schema[attr.id] = Yup.string()
+              .required('This is a required field')
+              .nullable()
           } else {
             schema[attr.id] = Yup.string().nullable()
           }
@@ -215,9 +236,9 @@ export default class ProfileForm extends Component {
           validationSchema={yupSchema}
           initialValues={initialValues}
           onSubmit={async (values, actions) => {
-            const data = Object.keys(values).map(key => ({
-              'key_id': key,
-              'value': values[key]
+            const data = Object.keys(values).map((key) => ({
+              key_id: key,
+              value: values[key],
             }))
             actions.setSubmitting(true)
             try {
@@ -234,81 +255,141 @@ export default class ProfileForm extends Component {
             const addProfileText = `Submit ${isSubmitting ? ' 🕙' : ''}`
             return (
               <Form>
-                {orgAttributes.length > 0
-                  ? <>
-                    <h2>Details for <b>{orgName}</b></h2>
-                    {orgAttributes.map(attribute => {
-                      return <div key={attribute.name} className='form-control form-control__vertical'>
-                        <label>{attribute.name}
-                          {attribute.required ? <span className='form--required'>*</span> : ''}
-                          {attribute.description ? descriptionPopup(attribute.description) : ''}
-                        </label>
-                        { attribute.key_type === 'gender'
-                          ? <label>Type in or select your gender from the drop-down.</label>
-                          : null
-                        }
-                        { attribute.key_type === 'gender'
-                          ? <GenderSelectField name={attribute.id} />
-                          : <>
-                            <Field
-                              type={attribute.key_type}
-                              name={attribute.id}
-                              required={attribute.required}
-                            />
-                            <div className='form--error'>
-                              <ErrorMessage name={attribute.id} />
-                            </div>
-                          </>
-                        }
-                      </div>
+                {orgAttributes.length > 0 ? (
+                  <>
+                    <h2>
+                      Details for <b>{orgName}</b>
+                    </h2>
+                    {orgAttributes.map((attribute) => {
+                      return (
+                        <div
+                          key={attribute.name}
+                          className='form-control form-control__vertical'
+                        >
+                          <label>
+                            {attribute.name}
+                            {attribute.required ? (
+                              <span className='form--required'>*</span>
+                            ) : (
+                              ''
+                            )}
+                            {attribute.description
+                              ? descriptionPopup(attribute.description)
+                              : ''}
+                          </label>
+                          {attribute.key_type === 'gender' ? (
+                            <label>
+                              Type in or select your gender from the drop-down.
+                            </label>
+                          ) : null}
+                          {attribute.key_type === 'gender' ? (
+                            <GenderSelectField name={attribute.id} />
+                          ) : (
+                            <>
+                              <Field
+                                type={attribute.key_type}
+                                name={attribute.id}
+                                required={attribute.required}
+                              />
+                              <div className='form--error'>
+                                <ErrorMessage name={attribute.id} />
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )
                     })}
                   </>
-                  : ''
-                }
-                <h2>Details for <b>{teamName}</b></h2>
-                { memberAttributes.length > 0 ? memberAttributes.map(attribute => {
-                  return <div key={attribute.name} className='form-control form-control__vertical'>
-                    <label>{attribute.name}
-                      {attribute.required ? <span className='form--required'>*</span> : ''}
-                      {attribute.description ? descriptionPopup(attribute.description) : ''}
-                    </label>
-                    {attribute.key_type === 'gender'
-                      ? <label>Type in or select your gender from the drop-down.</label>
-                      : null
-                    }
-                    {attribute.key_type === 'gender'
-                      ? <GenderSelectField name={attribute.id} />
-                      : <>
-                        <Field
-                          type={attribute.key_type}
-                          name={attribute.id}
-                          required={attribute.required}
-                        />
-                        <div className='form--error'>
-                          <ErrorMessage name={attribute.id} />
+                ) : (
+                  ''
+                )}
+                <h2>
+                  Details for <b>{teamName}</b>
+                </h2>
+                {memberAttributes.length > 0
+                  ? memberAttributes.map((attribute) => {
+                      return (
+                        <div
+                          key={attribute.name}
+                          className='form-control form-control__vertical'
+                        >
+                          <label>
+                            {attribute.name}
+                            {attribute.required ? (
+                              <span className='form--required'>*</span>
+                            ) : (
+                              ''
+                            )}
+                            {attribute.description
+                              ? descriptionPopup(attribute.description)
+                              : ''}
+                          </label>
+                          {attribute.key_type === 'gender' ? (
+                            <label>
+                              Type in or select your gender from the drop-down.
+                            </label>
+                          ) : null}
+                          {attribute.key_type === 'gender' ? (
+                            <GenderSelectField name={attribute.id} />
+                          ) : (
+                            <>
+                              <Field
+                                type={attribute.key_type}
+                                name={attribute.id}
+                                required={attribute.required}
+                              />
+                              <div className='form--error'>
+                                <ErrorMessage name={attribute.id} />
+                              </div>
+                            </>
+                          )}
                         </div>
-                      </>
-                    }
-                  </div>
-                })
-                  : 'No profile form to fill yet'
-                }
-                { org && org.privacy_policy
-                  ? <div>
+                      )
+                    })
+                  : 'No profile form to fill yet'}
+                {org && org.privacy_policy ? (
+                  <div>
                     <h2>Privacy Policy</h2>
-                    <div style={{ maxHeight: '100px', width: '80%', overflow: 'scroll', marginBottom: '1rem' }}>
+                    <div
+                      style={{
+                        maxHeight: '100px',
+                        width: '80%',
+                        overflow: 'scroll',
+                        marginBottom: '1rem',
+                      }}
+                    >
                       {org.privacy_policy.body}
                     </div>
-                    <div style={{ maxHeight: '100px', width: '80%', overflow: 'scroll' }}>
-                      <input type='checkbox' checked={consentChecked} onChange={e => this.setConsentChecked(e.target.checked)} />
+                    <div
+                      style={{
+                        maxHeight: '100px',
+                        width: '80%',
+                        overflow: 'scroll',
+                      }}
+                    >
+                      <input
+                        type='checkbox'
+                        checked={consentChecked}
+                        onChange={(e) =>
+                          this.setConsentChecked(e.target.checked)
+                        }
+                      />
                       {org.privacy_policy.consentText}
                     </div>
                   </div>
-                  : <div />
-                }
+                ) : (
+                  <div />
+                )}
                 {status && status.msg && <div>{status.msg}</div>}
-                <div style={{ marginTop: '1rem' }} className='form-control form-control__vertical'>
-                  <Button type='submit' variant='submit' disabled={!consentChecked || isSubmitting}>
+                <div
+                  style={{ marginTop: '1rem' }}
+                  className='form-control form-control__vertical'
+                >
+                  <Button
+                    type='submit'
+                    variant='submit'
+                    disabled={!consentChecked || isSubmitting}
+                  >
                     {addProfileText}
                   </Button>
                 </div>

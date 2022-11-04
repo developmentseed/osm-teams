@@ -11,11 +11,11 @@ const profile = require('../lib/profile')
 const isUrl = urlRegex({ exact: true })
 const getOsmId = prop('osm_id')
 
-async function listTeams (req, reply) {
+async function listTeams(req, reply) {
   const { osmId, bbox } = req.query
   let bounds = bbox
   if (bbox) {
-    bounds = bbox.split(',').map(num => parseFloat(num))
+    bounds = bbox.split(',').map((num) => parseFloat(num))
     if (bounds.length !== 4) {
       reply.boom.badRequest('error in bbox param')
     }
@@ -31,7 +31,7 @@ async function listTeams (req, reply) {
   }
 }
 
-async function listMyTeams (req, reply) {
+async function listMyTeams(req, reply) {
   const { user_id: osmId } = reply.locals
   try {
     const memberOfTeams = await team.list({ osmId })
@@ -39,7 +39,7 @@ async function listMyTeams (req, reply) {
     const result = {
       osmId,
       member: memberOfTeams,
-      moderator: moderatorOfTeams
+      moderator: moderatorOfTeams,
     }
     reply.send(result)
   } catch (err) {
@@ -47,7 +47,7 @@ async function listMyTeams (req, reply) {
   }
 }
 
-async function getTeam (req, reply) {
+async function getTeam(req, reply) {
   const { id } = req.params
 
   if (!id) {
@@ -69,7 +69,7 @@ async function getTeam (req, reply) {
   }
 }
 
-async function getTeamMembers (req, reply) {
+async function getTeamMembers(req, reply) {
   const { id } = req.params
 
   if (!id) {
@@ -77,18 +77,20 @@ async function getTeamMembers (req, reply) {
   }
 
   try {
-    const memberIds = map(getOsmId, (await team.getMembers(id)))
+    const memberIds = map(getOsmId, await team.getMembers(id))
     const members = await team.resolveMemberNames(memberIds)
     const moderators = await team.getModerators(id)
 
-    return reply.send(Object.assign({}, { teamId: id }, { members, moderators }))
+    return reply.send(
+      Object.assign({}, { teamId: id }, { members, moderators })
+    )
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
   }
 }
 
-async function createTeam (req, reply) {
+async function createTeam(req, reply) {
   const { body } = req
   const { user_id } = reply.locals
   if (body.editing_policy && !isUrl.test(body.editing_policy)) {
@@ -104,7 +106,7 @@ async function createTeam (req, reply) {
   }
 }
 
-async function updateTeam (req, reply) {
+async function updateTeam(req, reply) {
   const { id } = req.params
   const { body } = req
 
@@ -130,7 +132,7 @@ async function updateTeam (req, reply) {
   }
 }
 
-async function assignModerator (req, reply) {
+async function assignModerator(req, reply) {
   const { id: teamId, osmId } = req.params
 
   if (!teamId) {
@@ -138,7 +140,9 @@ async function assignModerator (req, reply) {
   }
 
   if (!osmId) {
-    return reply.boom.badRequest('osm id of member to promote to moderator is required')
+    return reply.boom.badRequest(
+      'osm id of member to promote to moderator is required'
+    )
   }
 
   try {
@@ -150,7 +154,7 @@ async function assignModerator (req, reply) {
   }
 }
 
-async function removeModerator (req, reply) {
+async function removeModerator(req, reply) {
   const { id: teamId, osmId } = req.params
 
   if (!teamId) {
@@ -158,7 +162,9 @@ async function removeModerator (req, reply) {
   }
 
   if (!osmId) {
-    return reply.boom.badRequest('osm id of member to demote from moderator is required')
+    return reply.boom.badRequest(
+      'osm id of member to demote from moderator is required'
+    )
   }
 
   try {
@@ -170,7 +176,7 @@ async function removeModerator (req, reply) {
   }
 }
 
-async function destroyTeam (req, reply) {
+async function destroyTeam(req, reply) {
   const { id } = req.params
 
   if (!id) {
@@ -186,7 +192,7 @@ async function destroyTeam (req, reply) {
   }
 }
 
-async function addMember (req, reply) {
+async function addMember(req, reply) {
   const { id, osmId } = req.params
 
   if (!id) {
@@ -206,7 +212,7 @@ async function addMember (req, reply) {
   }
 }
 
-async function updateMembers (req, reply) {
+async function updateMembers(req, reply) {
   const { id } = req.params
   const { add, remove } = req.body
 
@@ -237,7 +243,7 @@ async function updateMembers (req, reply) {
   }
 }
 
-async function removeMember (req, reply) {
+async function removeMember(req, reply) {
   const { id, osmId } = req.params
 
   if (!id) {
@@ -259,74 +265,88 @@ async function removeMember (req, reply) {
 
 const getJoinInvitations = routeWrapper({
   validate: {
-    params: yup.object({
-      id: yup.number().required().positive().integer()
-    }).required()
+    params: yup
+      .object({
+        id: yup.number().required().positive().integer(),
+      })
+      .required(),
   },
   handler: async function (req, reply) {
     try {
       const conn = await db()
       const invitations = await conn('invitations')
-        .select().where('team_id', req.params.id).orderBy('created_at', 'desc') // Most recent first
+        .select()
+        .where('team_id', req.params.id)
+        .orderBy('created_at', 'desc') // Most recent first
 
       reply.send(invitations)
     } catch (e) {
       console.error(e)
       reply.boom.badRequest(e.message)
     }
-  }
+  },
 })
 
 const createJoinInvitation = routeWrapper({
   validate: {
-    params: yup.object({
-      id: yup.number().required().positive().integer()
-    }).required()
+    params: yup
+      .object({
+        id: yup.number().required().positive().integer(),
+      })
+      .required(),
   },
   handler: async function (req, reply) {
     try {
       const conn = await db()
       const uuid = crypto.randomUUID()
-      const [invitation] = await conn('invitations').insert({
-        id: uuid,
-        team_id: req.params.id
-      }).returning('*')
+      const [invitation] = await conn('invitations')
+        .insert({
+          id: uuid,
+          team_id: req.params.id,
+        })
+        .returning('*')
       reply.send(invitation)
     } catch (err) {
       console.log(err)
       return reply.boom.badRequest(err.message)
     }
-  }
+  },
 })
 
 const deleteJoinInvitation = routeWrapper({
   validate: {
-    params: yup.object({
-      id: yup.number().required().positive().integer(),
-      uuid: yup.string().uuid().required()
-    }).required()
+    params: yup
+      .object({
+        id: yup.number().required().positive().integer(),
+        uuid: yup.string().uuid().required(),
+      })
+      .required(),
   },
   handler: async function (req, reply) {
     try {
       const conn = await db()
-      await conn('invitations').where({
-        team_id: req.params.id,
-        id: req.params.uuid
-      }).del()
+      await conn('invitations')
+        .where({
+          team_id: req.params.id,
+          id: req.params.uuid,
+        })
+        .del()
       reply.sendStatus(200)
     } catch (err) {
       console.log(err)
       return reply.boom.badRequest(err.message)
     }
-  }
+  },
 })
 
 const acceptJoinInvitation = routeWrapper({
   validate: {
-    params: yup.object({
-      id: yup.number().required().positive().integer(),
-      uuid: yup.string().uuid().required()
-    }).required()
+    params: yup
+      .object({
+        id: yup.number().required().positive().integer(),
+        uuid: yup.string().uuid().required(),
+      })
+      .required(),
   },
   handler: async (req, reply) => {
     const user = reply.locals.user_id
@@ -334,7 +354,7 @@ const acceptJoinInvitation = routeWrapper({
       const conn = await db()
       const [invitation] = await conn('invitations').where({
         team_id: req.params.id,
-        id: req.params.uuid
+        id: req.params.uuid,
       })
 
       // If this invitation doesn't exist, then it's not valid
@@ -348,10 +368,10 @@ const acceptJoinInvitation = routeWrapper({
       console.log(err)
       return reply.boom.badRequest(err.message)
     }
-  }
+  },
 })
 
-async function joinTeam (req, reply) {
+async function joinTeam(req, reply) {
   const { id } = req.params
   const osmId = reply.locals.user_id
 
@@ -389,5 +409,5 @@ module.exports = {
   getJoinInvitations,
   createJoinInvitation,
   deleteJoinInvitation,
-  acceptJoinInvitation
+  acceptJoinInvitation,
 }

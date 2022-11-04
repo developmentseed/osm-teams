@@ -6,7 +6,8 @@ if (!DATABASE_URL) {
     DATABASE_URL =
       'postgres://postgres:postgres@localhost:5433/osm-teams?sslmode=disable'
   } else if (process.env.NODE_ENV === 'test') {
-    DATABASE_URL = 'postgres://postgres:postgres@localhost:5434/osm-teams-test?sslmode=disable'
+    DATABASE_URL =
+      'postgres://postgres:postgres@localhost:5434/osm-teams-test?sslmode=disable'
   }
 }
 
@@ -16,43 +17,43 @@ module.exports = {
     connection: DATABASE_URL,
     pool: {
       min: 2,
-      max: 10
+      max: 10,
     },
     migrations: {
-      tableName: 'knex_migrations'
-    }
+      tableName: 'knex_migrations',
+    },
   },
   development: {
     client: 'postgresql',
     connection: DATABASE_URL,
     pool: {
       min: 2,
-      max: 10
+      max: 10,
     },
     migrations: {
-      tableName: 'knex_migrations'
-    }
+      tableName: 'knex_migrations',
+    },
   },
   staging: {
     client: 'postgresql',
     connection: DATABASE_URL,
     pool: {
       min: 2,
-      max: 10
+      max: 10,
     },
     migrations: {
-      tableName: 'knex_migrations'
-    }
+      tableName: 'knex_migrations',
+    },
   },
   production: {
     client: 'postgresql',
     connection: DATABASE_URL,
     pool: {
       min: 2,
-      max: 10
+      max: 10,
     },
     migrations: {
-      tableName: 'knex_migrations'
-    }
-  }
+      tableName: 'knex_migrations',
+    },
+  },
 }

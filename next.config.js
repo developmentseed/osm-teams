@@ -17,10 +17,10 @@ module.exports = {
     HYDRA_TOKEN_PATH: process.env.HYDRA_TOKEN_PATH || '/oauth2/token',
     HYDRA_AUTHZ_HOST: process.env.HYDRA_AUTHZ_HOST || 'http://localhost:4444',
     HYDRA_AUTHZ_PATH: process.env.HYDRA_AUTHZ_PATH || '/oauth2/auth',
-    HYDRA_ADMIN_HOST: process.env.HYDRA_ADMIN_HOST || 'http://localhost:4445'
+    HYDRA_ADMIN_HOST: process.env.HYDRA_ADMIN_HOST || 'http://localhost:4445',
   },
   publicRuntimeConfig: {
     APP_URL: process.env.APP_URL || 'http://localhost:8989',
-    OSM_NAME: process.env.OSM_NAME || 'OSM'
-  }
+    OSM_NAME: process.env.OSM_NAME || 'OSM',
+  },
 }

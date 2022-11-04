@@ -18,7 +18,7 @@ test.before(async () => {
   let introspectStub = sinon.stub(hydra, 'introspect')
   introspectStub.withArgs('validToken').returns({
     active: true,
-    sub: '100'
+    sub: '100',
   })
   introspectStub.withArgs('invalidToken').returns({ active: false })
 
@@ -35,14 +35,15 @@ test.after.always(async () => {
   conn.destroy()
 })
 
-test('an authenticated user can view their clients', async t => {
-  let res = await agent.get('/api/clients')
+test('an authenticated user can view their clients', async (t) => {
+  let res = await agent
+    .get('/api/clients')
     .set('Authorization', `Bearer validToken`)
 
   t.is(res.status, 200)
 })
 
-test('an unauthenticated user cannot view their clients', async t => {
+test('an unauthenticated user cannot view their clients', async (t) => {
   let res = await agent.get('/api/clients')
 
   t.is(res.status, 401)

@@ -7,7 +7,7 @@ import { createOrg } from '../lib/org-api'
 const { publicRuntimeConfig } = getConfig()
 
 export default class OrgCreate extends Component {
-  render () {
+  render() {
     return (
       <article className='inner page'>
         <EditOrgForm
@@ -15,15 +15,16 @@ export default class OrgCreate extends Component {
             try {
               const org = await createOrg(values)
               actions.setSubmitting(false)
-              Router.push(join(publicRuntimeConfig.APP_URL, `organizations/${org.id}`))
+              Router.push(
+                join(publicRuntimeConfig.APP_URL, `organizations/${org.id}`)
+              )
             } catch (e) {
               console.error(e)
               actions.setSubmitting(false)
               // set the form errors actions.setErrors(e)
               actions.setStatus(e.message)
             }
-          }
-          }
+          }}
         />
       </article>
     )

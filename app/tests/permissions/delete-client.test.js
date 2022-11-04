@@ -10,7 +10,7 @@ let agent
 test.before(async () => {
   const conn = await db()
   await conn.migrate.latest({ directory: migrationsDirectory })
-  await conn.schema.createTable('hydra_client', t => {
+  await conn.schema.createTable('hydra_client', (t) => {
     // schema at https://github.com/ory/hydra/blob/master/client/manager_sql.go
     t.string('id')
     t.string('owner')
@@ -24,11 +24,11 @@ test.before(async () => {
   let introspectStub = sinon.stub(hydra, 'introspect')
   introspectStub.withArgs('validToken').returns({
     active: true,
-    sub: '100'
+    sub: '100',
   })
   introspectStub.withArgs('differentUser').returns({
     active: true,
-    sub: '101'
+    sub: '101',
   })
   introspectStub.withArgs('invalidToken').returns({ active: false })
 
@@ -46,15 +46,17 @@ test.after.always(async () => {
   conn.destroy()
 })
 
-test('a user can delete a client they created', async t => {
-  let res = await agent.delete('/api/clients/999')
+test('a user can delete a client they created', async (t) => {
+  let res = await agent
+    .delete('/api/clients/999')
     .set('Authorization', 'Bearer validToken')
 
   t.is(res.status, 200)
 })
 
-test("a user can't delete a client they don't own", async t => {
-  let res = await agent.delete('/api/clients/998')
+test("a user can't delete a client they don't own", async (t) => {
+  let res = await agent
+    .delete('/api/clients/998')
     .set('Authorization', 'Bearer validToken')
 
   t.is(res.status, 401)

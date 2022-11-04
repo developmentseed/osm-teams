@@ -38,8 +38,9 @@ test.before(async () => {
 /**
  * Test create an organization
  */
-test('create an organization', async t => {
-  const res = await agent.post('/api/organizations')
+test('create an organization', async (t) => {
+  const res = await agent
+    .post('/api/organizations')
     .send({ name: 'create an organization' })
     .expect(200)
 
@@ -49,10 +50,8 @@ test('create an organization', async t => {
 /**
  * Test organization requires a name
  */
-test('organization requires name', async t => {
-  const res = await agent.post('/api/organizations')
-    .send({ })
-    .expect(400)
+test('organization requires name', async (t) => {
+  const res = await agent.post('/api/organizations').send({}).expect(400)
 
   t.is(res.body.message, 'data.name property is required')
 })
@@ -60,8 +59,9 @@ test('organization requires name', async t => {
 /**
  * Test get an organization
  */
-test('get organization', async t => {
-  const res = await agent.post('/api/organizations')
+test('get organization', async (t) => {
+  const res = await agent
+    .post('/api/organizations')
     .send({ name: 'get organization' })
     .expect(200)
 
@@ -73,8 +73,9 @@ test('get organization', async t => {
 /**
  * Test get an organization's staff
  */
-test('get organization staff', async t => {
-  const res = await agent.post('/api/organizations')
+test('get organization staff', async (t) => {
+  const res = await agent
+    .post('/api/organizations')
     .send({ name: 'get organization staff' })
     .expect(200)
 
@@ -87,12 +88,14 @@ test('get organization staff', async t => {
 /**
  * Test update organization
  */
-test('update organization', async t => {
-  const res = await agent.post('/api/organizations')
+test('update organization', async (t) => {
+  const res = await agent
+    .post('/api/organizations')
     .send({ name: 'update organization' })
     .expect(200)
 
-  const updated = await agent.put(`/api/organizations/${res.body.id}`)
+  const updated = await agent
+    .put(`/api/organizations/${res.body.id}`)
     .send({ name: 'update organization 2' })
     .expect(200)
 
@@ -102,13 +105,13 @@ test('update organization', async t => {
 /**
  * Test destroy organization
  */
-test('destroy organization', async t => {
-  const res = await agent.post('/api/organizations')
+test('destroy organization', async (t) => {
+  const res = await agent
+    .post('/api/organizations')
     .send({ name: 'update organization' })
     .expect(200)
 
-  await agent.delete(`/api/organizations/${res.body.id}`)
-    .expect(200)
+  await agent.delete(`/api/organizations/${res.body.id}`).expect(200)
 
   const org = await organization.get(res.body.id)
   t.falsy(org)
@@ -117,13 +120,13 @@ test('destroy organization', async t => {
 /**
  * Add owner
  */
-test('add owner', async t => {
-  const res = await agent.post('/api/organizations')
+test('add owner', async (t) => {
+  const res = await agent
+    .post('/api/organizations')
     .send({ name: 'add owner' })
     .expect(200)
 
-  await agent.put(`/api/organizations/${res.body.id}/addOwner/2`)
-    .expect(200)
+  await agent.put(`/api/organizations/${res.body.id}/addOwner/2`).expect(200)
 
   const owners = await organization.getOwners(res.body.id)
 
@@ -133,15 +136,15 @@ test('add owner', async t => {
 /**
  * Remove owner
  */
-test('remove owner', async t => {
-  const res = await agent.post('/api/organizations')
+test('remove owner', async (t) => {
+  const res = await agent
+    .post('/api/organizations')
     .send({ name: 'remove owner' })
     .expect(200)
 
   await organization.addOwner(res.body.id, 2)
 
-  await agent.put(`/api/organizations/${res.body.id}/removeOwner/2`)
-    .expect(200)
+  await agent.put(`/api/organizations/${res.body.id}/removeOwner/2`).expect(200)
 
   const owners = await organization.getOwners(res.body.id)
 
@@ -151,13 +154,13 @@ test('remove owner', async t => {
 /**
  * Add manager
  */
-test('add manager', async t => {
-  const res = await agent.post('/api/organizations')
+test('add manager', async (t) => {
+  const res = await agent
+    .post('/api/organizations')
     .send({ name: 'add manager' })
     .expect(200)
 
-  await agent.put(`/api/organizations/${res.body.id}/addManager/2`)
-    .expect(200)
+  await agent.put(`/api/organizations/${res.body.id}/addManager/2`).expect(200)
 
   const owners = await organization.getManagers(res.body.id)
 
@@ -167,14 +170,16 @@ test('add manager', async t => {
 /**
  * Remove manager
  */
-test('remove manager', async t => {
-  const res = await agent.post('/api/organizations')
+test('remove manager', async (t) => {
+  const res = await agent
+    .post('/api/organizations')
     .send({ name: 'remove manager' })
     .expect(200)
 
   await organization.addManager(res.body.id, 2)
 
-  await agent.put(`/api/organizations/${res.body.id}/removeManager/2`)
+  await agent
+    .put(`/api/organizations/${res.body.id}/removeManager/2`)
     .expect(200)
 
   const owners = await organization.getManagers(res.body.id)
@@ -185,13 +190,15 @@ test('remove manager', async t => {
 /**
  * Create org team
  */
-test('create an on org team', async t => {
+test('create an on org team', async (t) => {
   const teamName = 'create org team - team 1'
-  const res = await agent.post('/api/organizations')
+  const res = await agent
+    .post('/api/organizations')
     .send({ name: 'create org team' })
     .expect(200)
 
-  await agent.post(`/api/organizations/${res.body.id}/teams`)
+  await agent
+    .post(`/api/organizations/${res.body.id}/teams`)
     .send({ name: teamName })
     .expect(200)
 
@@ -202,10 +209,11 @@ test('create an on org team', async t => {
 /**
  * Get org teams
  */
-test('get org teams', async t => {
+test('get org teams', async (t) => {
   const teamName1 = 'get org team - team 1'
   const teamName2 = 'get org team - team 2'
-  const res = await agent.post('/api/organizations')
+  const res = await agent
+    .post('/api/organizations')
     .send({ name: 'get org team' })
     .expect(200)
 
@@ -214,7 +222,7 @@ test('get org teams', async t => {
 
   const orgTeams = await agent.get(`/api/organizations/${res.body.id}/teams`)
   t.is(orgTeams.body.length, 2)
-  orgTeams.body.forEach(item => {
+  orgTeams.body.forEach((item) => {
     t.truthy(item.name)
     t.truthy(item.id)
     t.truthy(item.members.length)

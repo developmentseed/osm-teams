@@ -10,13 +10,17 @@ const knexConfig = connections[process.env.NODE_ENV]
 /**
  * Configure the session
  */
-const SESSION_SECRET = serverRuntimeConfig.SESSION_SECRET || 'super-secret-sessions'
+const SESSION_SECRET =
+  serverRuntimeConfig.SESSION_SECRET || 'super-secret-sessions'
 let sessionConfig = {
   name: 'osm-teams.sid',
   secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
-  store: new SessionStore({ knex: knex(knexConfig), tableName: 'app_sessions' })
+  store: new SessionStore({
+    knex: knex(knexConfig),
+    tableName: 'app_sessions',
+  }),
 }
 
 /**
@@ -24,7 +28,7 @@ let sessionConfig = {
  *
  * @param {jwt} decoded the decoded jwt token
  */
-function assertAlive (decoded) {
+function assertAlive(decoded) {
   const now = Date.now().valueOf() / 1000
   if (typeof decoded.exp !== 'undefined' && decoded.exp < now) {
     return false
@@ -39,7 +43,7 @@ function assertAlive (decoded) {
  * After we've logged in, we should have a jwt token in the session
  * We attach the information from the jwt token to the session
  */
-function attachUser () {
+function attachUser() {
   return function (req, res, next) {
     if (req.session) {
       if (req.session.idToken) {

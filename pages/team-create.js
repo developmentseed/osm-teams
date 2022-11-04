@@ -8,14 +8,14 @@ import EditTeamForm from '../components/edit-team-form'
 const { publicRuntimeConfig } = getConfig()
 
 export default class TeamCreate extends Component {
-  static async getInitialProps ({ query }) {
+  static async getInitialProps({ query }) {
     if (query) {
       return {
-        staff: query.staff
+        staff: query.staff,
       }
     }
   }
-  render () {
+  render() {
     return (
       <article className='inner page'>
         <EditTeamForm
@@ -26,12 +26,17 @@ export default class TeamCreate extends Component {
             try {
               let team
               if (values.organization) {
-                team = await createOrgTeam(values.organization, dissoc('organization', values))
+                team = await createOrgTeam(
+                  values.organization,
+                  dissoc('organization', values)
+                )
               } else {
                 team = await createTeam(values)
               }
               actions.setSubmitting(false)
-              Router.push(join(publicRuntimeConfig.APP_URL, `/teams/${team.id}`))
+              Router.push(
+                join(publicRuntimeConfig.APP_URL, `/teams/${team.id}`)
+              )
             } catch (e) {
               console.error(e)
               actions.setSubmitting(false)

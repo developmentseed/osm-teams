@@ -8,14 +8,14 @@ import Button from '../components/button'
 import { ToastContainer } from 'react-toastify'
 
 class OSMHydra extends App {
-  static async getInitialProps ({ Component, ctx }) {
+  static async getInitialProps({ Component, ctx }) {
     let pageProps = {}
 
     if (Component.getInitialProps) {
       pageProps = await Component.getInitialProps(ctx)
     }
 
-    let userData = { }
+    let userData = {}
     if (ctx.req && ctx.req.session) {
       userData.uid = ctx.req.session.user_id
       userData.username = ctx.req.session.user
@@ -25,7 +25,7 @@ class OSMHydra extends App {
     return { pageProps, userData }
   }
 
-  render () {
+  render() {
     const { Component, pageProps, userData } = this.props
     let bannerContent
     let { uid, username, picture } = userData
@@ -54,12 +54,24 @@ class OSMHydra extends App {
           <meta name='viewport' content='width=device-width, initial-scale=1' />
           <meta charSet='utf-8f-8' />
         </Head>
-        { (bannerContent) ? <PageBanner content={bannerContent} variant='warning' /> : '' }
+        {bannerContent ? (
+          <PageBanner content={bannerContent} variant='warning' />
+        ) : (
+          ''
+        )}
         <Layout>
           <Sidebar {...{ uid, picture, username }} />
-          <Component {...Object.assign({ user: { uid, username, picture } }, pageProps)} />
+          <Component
+            {...Object.assign({ user: { uid, username, picture } }, pageProps)}
+          />
         </Layout>
-        <Button href='https://forms.gle/mQQX37FcvfVMoiCW7' variant='danger' id='feedback'>Feedback</Button>
+        <Button
+          href='https://forms.gle/mQQX37FcvfVMoiCW7'
+          variant='danger'
+          id='feedback'
+        >
+          Feedback
+        </Button>
         <ToastContainer position='bottom-right' />
       </>
     )

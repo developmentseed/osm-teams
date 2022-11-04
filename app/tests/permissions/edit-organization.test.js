@@ -23,9 +23,10 @@ test.afterEach(destroyOrg)
  * see if they can edit the organization
  *
  */
-test('org owner can update an org', async t => {
+test('org owner can update an org', async (t) => {
   const orgName2 = 'org owner can update an org - org 2'
-  const res2 = await t.context.agent.put(`/api/organizations/${t.context.org.id}`)
+  const res2 = await t.context.agent
+    .put(`/api/organizations/${t.context.org.id}`)
     .set('Authorization', `Bearer user100`)
     .send({ name: orgName2 })
 
@@ -37,15 +38,17 @@ test('org owner can update an org', async t => {
  * We now add a manager and see if they can edit the organization
  *
  */
-test('org manager cannot update an org', async t => {
+test('org manager cannot update an org', async (t) => {
   const orgName2 = 'org manager cannot update an org - org 2'
 
   // We create a manager role for user 101
-  await t.context.agent.post(`/api/organizations/${t.context.org.id}/addManager/101`)
+  await t.context.agent
+    .post(`/api/organizations/${t.context.org.id}/addManager/101`)
     .set('Authorization', `Bearer user100`)
     .expect(200)
 
-  const res3 = await t.context.agent.put(`/api/organizations/${t.context.org.id}`)
+  const res3 = await t.context.agent
+    .put(`/api/organizations/${t.context.org.id}`)
     .set('Authorization', `Bearer user101`)
     .send({ name: orgName2 })
 
@@ -57,10 +60,11 @@ test('org manager cannot update an org', async t => {
  * We create an org and see if a user without a role can update it
  *
  */
-test('no-role user cannot update an org', async t => {
+test('no-role user cannot update an org', async (t) => {
   const orgName2 = 'no-role user cannot update an org - org 2'
 
-  const res2 = await t.context.agent.put(`/api/organizations/${t.context.org.id}`)
+  const res2 = await t.context.agent
+    .put(`/api/organizations/${t.context.org.id}`)
     .set('Authorization', `Bearer user101`)
     .send({ name: orgName2 })
 

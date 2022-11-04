@@ -11,13 +11,16 @@ const manageId = serverRuntimeConfig.OSM_HYDRA_ID
  * @param {*} req
  * @param {*} res
  */
-async function getClients (req, res) {
-  const { session: { user_id } } = req
+async function getClients(req, res) {
+  const {
+    session: { user_id },
+  } = req
   let clients = await hydra.getClients()
 
   // Remove first party client from list & exclude clients the user does not own
-  let filteredClients = clients
-    .filter(c => c.client_id !== manageId && c.owner === user_id)
+  let filteredClients = clients.filter(
+    (c) => c.client_id !== manageId && c.owner === user_id
+  )
 
   return res.send({ clients: filteredClients })
 }
@@ -28,7 +31,7 @@ async function getClients (req, res) {
  * @param {*} req
  * @param {*} res
  */
-async function createClient (req, res) {
+async function createClient(req, res) {
   let toCreate = Object.assign({}, req.body)
   toCreate['scope'] = 'openid offline'
   toCreate['response_types'] = ['code', 'id_token']
@@ -43,12 +46,12 @@ async function createClient (req, res) {
  * @param {*} req
  * @param {*} res
  */
-function deleteClient (req, res) {
+function deleteClient(req, res) {
   hydra.deleteClient(req.params.id).then(() => res.sendStatus(200))
 }
 
 module.exports = {
   getClients,
   createClient,
-  deleteClient
+  deleteClient,
 }

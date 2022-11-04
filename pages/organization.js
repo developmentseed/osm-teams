@@ -1,6 +1,14 @@
 import React, { Component } from 'react'
 import Router from 'next/router'
-import { getOrg, getOrgStaff, getMembers, addManager, removeManager, addOwner, removeOwner } from '../lib/org-api'
+import {
+  getOrg,
+  getOrgStaff,
+  getMembers,
+  addManager,
+  removeManager,
+  addOwner,
+  removeOwner,
+} from '../lib/org-api'
 import { getUserOrgProfile } from '../lib/profiles-api'
 import Card from '../components/card'
 import Section from '../components/section'
@@ -22,7 +30,7 @@ const URL = publicRuntimeConfig.APP_URL
 
 const apiClient = new APIClient()
 
-export function SectionWrapper (props) {
+export function SectionWrapper(props) {
   return (
     <div>
       {props.children}
@@ -37,16 +45,16 @@ export function SectionWrapper (props) {
   )
 }
 export default class Organization extends Component {
-  static async getInitialProps ({ query }) {
+  static async getInitialProps({ query }) {
     if (query) {
       return {
         id: query.id,
-        isMemberOfOrg: query.isMemberOfOrg
+        isMemberOfOrg: query.isMemberOfOrg,
       }
     }
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       profileInfo: [],
@@ -56,7 +64,7 @@ export default class Organization extends Component {
       owners: [],
       page: 0,
       loading: true,
-      error: undefined
+      error: undefined,
     }
 
     this.closeProfileModal = this.closeProfileModal.bind(this)
@@ -64,14 +72,14 @@ export default class Organization extends Component {
     this.getBadges = this.getBadges.bind(this)
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     await this.getOrg()
     await this.getOrgStaff()
     await this.getBadges()
     return this.getMembers(0)
   }
 
-  async openProfileModal (user) {
+  async openProfileModal(user) {
     const { id } = this.props
 
     try {
@@ -87,31 +95,31 @@ export default class Organization extends Component {
         profileInfo,
         profileMeta: user,
         profileBadges,
-        modalIsOpen: true
+        modalIsOpen: true,
       })
     } catch (e) {
       console.error(e)
       this.setState({
         error: e,
         team: null,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  async closeProfileModal () {
+  async closeProfileModal() {
     this.setState({
-      modalIsOpen: false
+      modalIsOpen: false,
     })
   }
 
-  async getOrgStaff () {
+  async getOrgStaff() {
     const { id } = this.props
     try {
       let { managers, owners } = await getOrgStaff(id)
       this.setState({
         managers,
-        owners
+        owners,
       })
     } catch (e) {
       console.error(e)
@@ -119,67 +127,63 @@ export default class Organization extends Component {
         error: e,
         managers: [],
         owners: [],
-        loading: false
+        loading: false,
       })
     }
   }
 
-  async getMembers (currentPage) {
+  async getMembers(currentPage) {
     const { id } = this.props
     try {
       let { members, page } = await getMembers(id, currentPage)
       this.setState({
         members,
         page: Number(page),
-        loading: false
+        loading: false,
       })
     } catch (e) {
       console.error(e)
       this.setState({
         error: e,
         org: null,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  async getNextPage () {
+  async getNextPage() {
     this.setState({ loading: true })
     await this.getMembers(this.state.page + 1)
   }
 
-  async getPrevPage () {
+  async getPrevPage() {
     this.setState({ loading: true })
     await this.getMembers(this.state.page - 1)
   }
 
-  async getOrg () {
+  async getOrg() {
     const { id } = this.props
     try {
       let org = await getOrg(id)
       this.setState({
-        org
+        org,
       })
     } catch (e) {
       console.error(e)
       this.setState({
         error: e,
         org: null,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  renderStaff (owners, managers) {
-    const columns = [
-      { key: 'id' },
-      { key: 'name' },
-      { key: 'role' }
-    ]
+  renderStaff(owners, managers) {
+    const columns = [{ key: 'id' }, { key: 'name' }, { key: 'role' }]
     const ownerRows = owners.map(assoc('role', 'owner'))
     const managerRows = managers.map(assoc('role', 'manager'))
     let allRows = ownerRows
-    managerRows.forEach(row => {
+    managerRows.forEach((row) => {
       if (!find(propEq('id', row.id))(ownerRows)) {
         ownerRows.push(row)
       }
@@ -197,12 +201,12 @@ export default class Organization extends Component {
     )
   }
 
-  async getBadges () {
+  async getBadges() {
     try {
       const { id: orgId } = this.props
       const badges = await apiClient.get(`/organizations/${orgId}/badges`)
       this.setState({
-        badges
+        badges,
       })
     } catch (e) {
       if (e.statusCode === 401) {
@@ -213,7 +217,7 @@ export default class Organization extends Component {
     }
   }
 
-  renderBadges () {
+  renderBadges() {
     const { id: orgId } = this.props
     const columns = [{ key: 'name' }, { key: 'color' }]
 
@@ -228,9 +232,7 @@ export default class Organization extends Component {
               <Button
                 variant='primary small'
                 onClick={() =>
-                  Router.push(
-                    join(URL, `/organizations/${orgId}/badges/add`)
-                  )
+                  Router.push(join(URL, `/organizations/${orgId}/badges/add`))
                 }
               >
                 Add
@@ -239,27 +241,27 @@ export default class Organization extends Component {
           </div>
         </Section>
         {this.state.badges && (
-          <Table rows={(this.state.badges || []).map((row) => {
-            return {
-              ...row,
-              color: () => <SvgSquare color={row.color} />
+          <Table
+            rows={(this.state.badges || []).map((row) => {
+              return {
+                ...row,
+                color: () => <SvgSquare color={row.color} />,
+              }
+            })}
+            columns={columns}
+            onRowClick={({ id: badgeId }) =>
+              Router.push(
+                join(URL, `/organizations/${orgId}/badges/${badgeId}`)
+              )
             }
-          })} columns={columns} onRowClick={
-            ({ id: badgeId }) => Router.push(
-              join(URL, `/organizations/${orgId}/badges/${badgeId}`)
-            )
-
-          } />
+          />
         )}
       </SectionWrapper>
     ) : null
   }
 
-  renderMembers (memberRows) {
-    const columns = [
-      { key: 'id' },
-      { key: 'name' }
-    ]
+  renderMembers(memberRows) {
+    const columns = [{ key: 'id' }, { key: 'name' }]
     return (
       <Table
         rows={memberRows}
@@ -274,7 +276,7 @@ export default class Organization extends Component {
     )
   }
 
-  render () {
+  render() {
     const { org, members, managers, owners, error } = this.state
     if (!org) return null
 
@@ -284,7 +286,7 @@ export default class Organization extends Component {
     const isUserOwner = contains(userId, ownerIds)
     const disabledLabel = !this.state.loading ? 'primary' : 'disabled'
 
-    const isOrgPublic = (org.privacy === 'public')
+    const isOrgPublic = org.privacy === 'public'
     const isMemberOfOrg = org.isMemberOfOrg
 
     if (error) {
@@ -321,7 +323,7 @@ export default class Organization extends Component {
           onClick: async () => {
             await removeOwner(org.id, profileId)
             this.getOrg()
-          }
+          },
         })
       }
       if (profileId !== userId && isProfileManager) {
@@ -331,14 +333,14 @@ export default class Organization extends Component {
             onClick: async () => {
               await addOwner(org.id, profileId)
               this.getOrg()
-            }
+            },
           })
           profileActions.push({
             name: 'Remove manager',
             onClick: async () => {
               await removeManager(org.id, profileId)
               this.getOrg()
-            }
+            },
           })
         }
       }
@@ -348,7 +350,7 @@ export default class Organization extends Component {
         onClick: () =>
           Router.push(
             join(URL, `/organizations/${org.id}/badges/assign/${profileId}`)
-          )
+          ),
       })
     }
 
@@ -361,7 +363,13 @@ export default class Organization extends Component {
           <Card>
             <div className='section-actions'>
               <SectionHeader>Org Details</SectionHeader>
-              {isUserOwner ? <Button variant='small' href={`/organizations/${org.id}/edit`}>Edit</Button> : ''}
+              {isUserOwner ? (
+                <Button variant='small' href={`/organizations/${org.id}/edit`}>
+                  Edit
+                </Button>
+              ) : (
+                ''
+              )}
             </div>
             <dl>
               <dt>Bio: </dt>
@@ -369,7 +377,7 @@ export default class Organization extends Component {
             </dl>
           </Card>
         </div>
-        {(isOrgPublic || isMemberOfOrg) ? (
+        {isOrgPublic || isMemberOfOrg ? (
           <div className='team__table'>
             <Section>
               <div className='section-actions'>
@@ -388,35 +396,58 @@ export default class Organization extends Component {
             </Section>
             {this.renderStaff(owners, managers)}
           </div>
-        ) : <div />}
-        {(isOrgPublic || isMemberOfOrg) ? (
+        ) : (
+          <div />
+        )}
+        {isOrgPublic || isMemberOfOrg ? (
           <div className='team__table'>
             <Section>
               <div className='section-actions'>
                 <SectionHeader>Organization Members</SectionHeader>
                 <div>
-                  <span style={{ 'marginRight': '1rem' }}>
-                    {this.state.page > 0 ? <Button onClick={() => this.getPrevPage()} disabled={this.state.loading} variant={`${disabledLabel} small`}>Back</Button> : ''}
+                  <span style={{ marginRight: '1rem' }}>
+                    {this.state.page > 0 ? (
+                      <Button
+                        onClick={() => this.getPrevPage()}
+                        disabled={this.state.loading}
+                        variant={`${disabledLabel} small`}
+                      >
+                        Back
+                      </Button>
+                    ) : (
+                      ''
+                    )}
                   </span>
-                  <Button onClick={() => this.getNextPage()} disabled={this.state.loading} variant={`${disabledLabel} small`}>Next</Button>
+                  <Button
+                    onClick={() => this.getNextPage()}
+                    disabled={this.state.loading}
+                    variant={`${disabledLabel} small`}
+                  >
+                    Next
+                  </Button>
                 </div>
               </div>
             </Section>
             {this.renderMembers(members)}
           </div>
-        ) : <div />}
+        ) : (
+          <div />
+        )}
         {this.renderBadges()}
-        <Modal style={{
-          content: {
-            maxWidth: '400px',
-            maxHeight: '400px',
-            left: 'calc(50% - 200px)',
-            top: 'calc(50% - 200px)'
-          },
-          overlay: {
-            zIndex: 10000
-          }
-        }} isOpen={this.state.modalIsOpen}>
+        <Modal
+          style={{
+            content: {
+              maxWidth: '400px',
+              maxHeight: '400px',
+              left: 'calc(50% - 200px)',
+              top: 'calc(50% - 200px)',
+            },
+            overlay: {
+              zIndex: 10000,
+            },
+          }}
+          isOpen={this.state.modalIsOpen}
+        >
           <ProfileModal
             user={this.state.profileMeta}
             badges={this.state.profileBadges}

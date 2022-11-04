@@ -41,42 +41,70 @@ test.before(async () => {
 /**
  * Get a team user profile with correct visibility
  */
-test('get team user profile within an org', async t => {
+test('get team user profile within an org', async (t) => {
   // Create org and team
   const org1 = await org.create({ name: 'org user profile test' }, 1)
-  const team1 = await org.createOrgTeam(org1.id, {
-    name: 'org1 team test1'
-  }, 1)
+  const team1 = await org.createOrgTeam(
+    org1.id,
+    {
+      name: 'org1 team test1',
+    },
+    1
+  )
 
   // Add user 2 to team 1
   await team.addMember(team1.id, 2)
 
-  const team2 = await org.createOrgTeam(org1.id, {
-    name: 'org1 team test2'
-  }, 2)
+  const team2 = await org.createOrgTeam(
+    org1.id,
+    {
+      name: 'org1 team test2',
+    },
+    2
+  )
 
   // Add some profile keys
-  const org1Keys = await profile.addProfileKeys([
-    { name: 'test org key 1', visibility: 'org', profileType: 'user' },
-    { name: 'test org key 2', visibility: 'team', profileType: 'user' },
-    { name: 'test org key 3', visibility: 'public', profileType: 'user' }
-  ], 'org', org1.id)
+  const org1Keys = await profile.addProfileKeys(
+    [
+      { name: 'test org key 1', visibility: 'org', profileType: 'user' },
+      { name: 'test org key 2', visibility: 'team', profileType: 'user' },
+      { name: 'test org key 3', visibility: 'public', profileType: 'user' },
+    ],
+    'org',
+    org1.id
+  )
 
-  const team1Keys = await profile.addProfileKeys([
-    { name: 'test same team key 1', visibility: 'org', profileType: 'user' },
-    { name: 'test same team key 2', visibility: 'team', profileType: 'user' },
-    { name: 'test same team key 3', visibility: 'public', profileType: 'user' }
-  ], 'team', team1.id)
-  const team2Keys = await profile.addProfileKeys([
-    { name: 'test diff team key 1', visibility: 'org', profileType: 'user' },
-    { name: 'test diff team key 2', visibility: 'team', profileType: 'user' },
-    { name: 'test diff team key 3', visibility: 'public', profileType: 'user' }
-  ], 'team', team2.id)
+  const team1Keys = await profile.addProfileKeys(
+    [
+      { name: 'test same team key 1', visibility: 'org', profileType: 'user' },
+      { name: 'test same team key 2', visibility: 'team', profileType: 'user' },
+      {
+        name: 'test same team key 3',
+        visibility: 'public',
+        profileType: 'user',
+      },
+    ],
+    'team',
+    team1.id
+  )
+  const team2Keys = await profile.addProfileKeys(
+    [
+      { name: 'test diff team key 1', visibility: 'org', profileType: 'user' },
+      { name: 'test diff team key 2', visibility: 'team', profileType: 'user' },
+      {
+        name: 'test diff team key 3',
+        visibility: 'public',
+        profileType: 'user',
+      },
+    ],
+    'team',
+    team2.id
+  )
 
   const keys = concat(org1Keys, concat(team1Keys, team2Keys))
-  const values = keys.map(key => ({
+  const values = keys.map((key) => ({
     key_id: key.id,
-    value: key.name
+    value: key.name,
   }))
 
   // Await profile values for user 2
@@ -101,10 +129,11 @@ test('get team user profile within an org', async t => {
   t.is(Object.keys(res2.body).length, team2Keys.length)
 })
 
-test('create profile keys for org', async t => {
+test('create profile keys for org', async (t) => {
   const name = 'create profile keys for org'
   const org1 = await org.create({ name: 'create profile keys for org' }, 1)
-  await agent.post(`/api/profiles/keys/organizations/${org1.id}`)
+  await agent
+    .post(`/api/profiles/keys/organizations/${org1.id}`)
     .send([{ name, visibility: 'org' }])
     .expect(200)
 
@@ -115,10 +144,14 @@ test('create profile keys for org', async t => {
   t.true(includes('org', keyProfileTypes))
 })
 
-test('create profile keys for org team', async t => {
+test('create profile keys for org team', async (t) => {
   const name = 'create profile keys for org teams'
-  const org1 = await org.create({ name: 'create profile keys for org teams' }, 1)
-  await agent.post(`/api/profiles/keys/organizations/${org1.id}/teams`)
+  const org1 = await org.create(
+    { name: 'create profile keys for org teams' },
+    1
+  )
+  await agent
+    .post(`/api/profiles/keys/organizations/${org1.id}/teams`)
     .send([{ name, visibility: 'org' }])
     .expect(200)
 
@@ -129,10 +162,14 @@ test('create profile keys for org team', async t => {
   t.true(includes('team', keyProfileTypes))
 })
 
-test('create profile keys for org users', async t => {
+test('create profile keys for org users', async (t) => {
   const name = 'create profile keys for org users'
-  const org1 = await org.create({ name: 'create profile keys for org users' }, 1)
-  await agent.post(`/api/profiles/keys/organizations/${org1.id}/users`)
+  const org1 = await org.create(
+    { name: 'create profile keys for org users' },
+    1
+  )
+  await agent
+    .post(`/api/profiles/keys/organizations/${org1.id}/users`)
     .send([{ name, visibility: 'org' }])
     .expect(200)
 
@@ -143,10 +180,11 @@ test('create profile keys for org users', async t => {
   t.true(includes('user', keyProfileTypes))
 })
 
-test('create profile keys for teams', async t => {
+test('create profile keys for teams', async (t) => {
   const name = 'create profile keys for team'
   const team1 = await team.create({ name: 'create profile keys for team' }, 1)
-  await agent.post(`/api/profiles/keys/teams/${team1.id}`)
+  await agent
+    .post(`/api/profiles/keys/teams/${team1.id}`)
     .send([{ name, visibility: 'team' }])
     .expect(200)
 
@@ -157,10 +195,14 @@ test('create profile keys for teams', async t => {
   t.true(includes('team', keyProfileTypes))
 })
 
-test('create profile keys for teams users', async t => {
+test('create profile keys for teams users', async (t) => {
   const name = 'create profile keys for team users'
-  const team1 = await team.create({ name: 'create profile keys for team users' }, 1)
-  await agent.post(`/api/profiles/keys/teams/${team1.id}/users`)
+  const team1 = await team.create(
+    { name: 'create profile keys for team users' },
+    1
+  )
+  await agent
+    .post(`/api/profiles/keys/teams/${team1.id}/users`)
     .send([{ name, visibility: 'team' }])
     .expect(200)
 
@@ -171,18 +213,20 @@ test('create profile keys for teams users', async t => {
   t.true(includes('user', keyProfileTypes))
 })
 
-test('set profile for user 1', async t => {
+test('set profile for user 1', async (t) => {
   const name = 'set profile for a user'
   const team1 = await team.create({ name: 'set profile for a user' }, 1)
-  await agent.post(`/api/profiles/keys/teams/${team1.id}/users`)
+  await agent
+    .post(`/api/profiles/keys/teams/${team1.id}/users`)
     .send([{ name, visibility: 'team' }])
     .expect(200)
 
   const keys = await profile.getProfileKeysForOwner('team', team1.id, 'user')
   const keyId = find(propEq('name', name), keys).id
 
-  await agent.post('/api/my/profiles')
-    .send([{ 'key_id': keyId, value: 'success' }])
+  await agent
+    .post('/api/my/profiles')
+    .send([{ key_id: keyId, value: 'success' }])
     .expect(200)
 
   const data = await profile.getProfile('user', 1)

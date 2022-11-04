@@ -10,7 +10,7 @@ const db = require('../../db')
  * @param {Object} params request parameters
  * @returns {boolean} can the request go through?
  */
-async function clients (uid) {
+async function clients(uid) {
   try {
     let conn = await db()
     const [user] = await conn('users').where('id', uid)

@@ -14,15 +14,15 @@ const URL = publicRuntimeConfig.APP_URL
 
 const apiClient = new APIClient()
 
-function validateName (value) {
+function validateName(value) {
   if (!value) return 'Name field is required'
 }
 
-function renderError (text) {
+function renderError(text) {
   return <div className='form--error'>{text}</div>
 }
 
-function ButtonWrapper ({ children }) {
+function ButtonWrapper({ children }) {
   return (
     <div>
       {children}
@@ -36,42 +36,42 @@ function ButtonWrapper ({ children }) {
 }
 
 export default class AddBadge extends Component {
-  static async getInitialProps ({ query }) {
+  static async getInitialProps({ query }) {
     if (query) {
       return {
-        orgId: query.id
+        orgId: query.id,
       }
     }
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {}
 
     this.getOrg = this.getOrg.bind(this)
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     this.getOrg()
   }
 
-  async getOrg () {
+  async getOrg() {
     try {
       let org = await getOrg(this.props.orgId)
       this.setState({
-        org
+        org,
       })
     } catch (e) {
       console.error(e)
       this.setState({
         error: e,
         org: null,
-        loading: false
+        loading: false,
       })
     }
   }
 
-  render () {
+  render() {
     const { orgId } = this.props
 
     if (!this.state.org) {
@@ -99,21 +99,19 @@ export default class AddBadge extends Component {
               try {
                 await apiClient.post(`/organizations/${orgId}/badges`, {
                   name,
-                  color
+                  color,
                 })
                 Router.push(join(URL, `/organizations/${orgId}`))
               } catch (error) {
                 console.log(error)
-                toast.error(`There was an error creating badge '${name}'. Please try again later.`)
+                toast.error(
+                  `There was an error creating badge '${name}'. Please try again later.`
+                )
               } finally {
                 actions.setSubmitting(false)
               }
             }}
-            render={({
-              isSubmitting,
-              values,
-              errors
-            }) => {
+            render={({ isSubmitting, values, errors }) => {
               return (
                 <Form>
                   <div className='form-control form-control__vertical'>
@@ -150,9 +148,7 @@ export default class AddBadge extends Component {
                     <Button
                       variant='disable small'
                       onClick={() => {
-                        Router.push(
-                          join(URL, `/organizations/${orgId}`)
-                        )
+                        Router.push(join(URL, `/organizations/${orgId}`))
                       }}
                       type='submit'
                       value='cancel'
