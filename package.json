@@ -25,7 +25,7 @@
     "lint": "next lint",
     "build": "next build",
     "start": "NODE_ENV=production node app/index.js",
-    "postinstall": "yarn run next telemetry disable"
+    "postinstall": "yarn run next telemetry disable > /dev/null"
   },
   "browserify": {
     "transform": [
