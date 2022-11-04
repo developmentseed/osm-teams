@@ -46,7 +46,7 @@ services:
      - HYDRA_TOKEN_HOST=http://hydra:4444
      - HYDRA_AUTHZ_HOST=http://localhost:4444
     ports:
-    - 8989:8989
+    - 3000:3000
     env_file:
       .env
     restart: always

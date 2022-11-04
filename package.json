@@ -19,7 +19,7 @@
     "docs:validate": "swagger-cli validate docs/api.yml",
     "docs:api": "swagger-markdown -i docs/api.yml -o docs/api.md",
     "docs": "npm run docs:validate && npm run docs:api",
-    "dev": "NODE_ENV=development nodemon --watch app app/index.js",
+    "dev": "next dev",
     "migrate": "knex migrate:latest",
     "test": "NODE_ENV=test nyc ava tests/**/*.test.js -c 1 --serial --verbose",
     "lint": "next lint",

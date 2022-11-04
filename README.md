@@ -48,7 +48,7 @@ docker-compose exec hydra hydra clients create --endpoint http://localhost:4445 
   --response-types code,id_token \
   --grant-types refresh_token,authorization_code \
   --scope openid,offline,clients \
-  --callbacks http://localhost:8989/login/accept
+  --callbacks http://localhost:3000/login/accept
 ```
 
 Install Node.js the required version (see [.nvmrc](.nvmrc) file):
@@ -68,7 +68,7 @@ Start development server:
     yarn dev
 
 <!-- markdownlint-disable MD034 -->
-✨ You can now login to the app at http://localhost:8989
+✨ You can now login to the app at http://localhost:3000
 <!-- markdownlint-enable MD034 -->
 
 ## Acknowledgments
