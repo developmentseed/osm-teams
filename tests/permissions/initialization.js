@@ -62,7 +62,9 @@ async function initializeContext(t) {
   introspectStub.withArgs('invalidToken').returns({ active: false })
 
   // Initialize context objects
-  t.context.agent = require('supertest').agent(await require('../../app/index')())
+  t.context.agent = require('supertest').agent(
+    await require('../../app/index')()
+  )
 }
 
 module.exports = {

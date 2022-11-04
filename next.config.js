@@ -23,4 +23,15 @@ module.exports = {
     APP_URL: process.env.APP_URL || 'http://localhost:8989',
     OSM_NAME: process.env.OSM_NAME || 'OSM',
   },
+  eslint: {
+    dirs: [
+      'app',
+      'pages',
+      'components',
+      'lib',
+      'tests',
+      'migrations',
+      'styles',
+    ],
+  },
 }
