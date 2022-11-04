@@ -5,7 +5,7 @@ const { initializeContext } = require('./initialization')
 
 const team = require('../../lib/team')
 
-const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
+const { migrationsDirectory } = require('../utils')
 
 test.before(async (t) => {
   await initializeContext(t)

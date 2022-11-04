@@ -4,7 +4,7 @@ const path = require('path')
 const hydra = require('../../lib/hydra')
 const sinon = require('sinon')
 
-const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
+const { migrationsDirectory } = require('../utils')
 
 let agent
 test.before(async () => {

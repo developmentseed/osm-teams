@@ -2,7 +2,7 @@ const db = require('../../db')
 const sinon = require('sinon')
 const hydra = require('../../lib/hydra')
 const path = require('path')
-const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
+const { migrationsDirectory } = require('../utils')
 
 /**
  * Helper function to create an org

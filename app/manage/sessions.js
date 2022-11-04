@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const session = require('express-session')
 const SessionStore = require('connect-session-knex')(session)
 const knex = require('knex')
-const connections = require('../db/knexfile')
+const connections = require('../../knexfile')
 
 const { serverRuntimeConfig } = require('../../next.config')
 const knexConfig = connections[process.env.NODE_ENV]

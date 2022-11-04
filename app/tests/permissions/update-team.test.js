@@ -3,7 +3,7 @@ const db = require('../../db')
 const path = require('path')
 const { initializeContext } = require('./initialization')
 
-const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
+const { migrationsDirectory } = require('../utils')
 
 test.before(initializeContext)
 
