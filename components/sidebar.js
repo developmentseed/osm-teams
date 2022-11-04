@@ -4,6 +4,7 @@ import getConfig from 'next/config'
 import Router, { withRouter } from 'next/router'
 import theme from '../styles/theme'
 import Link from '../components/Link'
+import NextLink from 'next/link'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -44,37 +45,51 @@ class Sidebar extends Component {
     return (
       <div className='page__sidebar'>
         <div className='page__headline'>
-          <h1 className='page__title'><a href='/' title='Visit the home page'><img src={join(URL, '/static/TeamsLogo_reverse.svg')} /></a></h1>
+          <h1 className='page__title'>
+            <NextLink href='/' title='Visit the home page'>
+              <img src={join(URL, '/static/TeamsLogo_reverse.svg')} />
+            </NextLink>
+          </h1>
         </div>
         <nav role='navigation'>
           <ul className='global-menu'>
             <li>
               <NavLink href='/teams'>
-                <a className='global-menu__link global-menu__link--explore' title='Explore all Teams'>
+                <a
+                  className='global-menu__link global-menu__link--explore'
+                  title='Explore all Teams'
+                >
                   <span>Explore Teams</span>
                 </a>
               </NavLink>
             </li>
-            {
-              uid ? additionalMenuItems : <Fragment />
-            }
+            {uid ? additionalMenuItems : <Fragment />}
             <li>
               <NavLink href='/developers'>
-                <a className='global-menu__link global-menu__link--developers' title='Visit Developers Page'>
+                <a
+                  className='global-menu__link global-menu__link--developers'
+                  title='Visit Developers Page'
+                >
                   <span>Developer guide</span>
                 </a>
               </NavLink>
             </li>
           </ul>
-          {
-            uid
-              ? <a className='global-menu__link login danger' onClick={() => {
+          {uid ? (
+            <a
+              className='global-menu__link login danger'
+              onClick={() => {
                 window.sessionStorage.clear()
                 Router.push('/logout')
-              }
-              }>Log Out</a>
-              : <a className='global-menu__link login' href={join(URL, '/login')}>Sign in</a>
-          }
+              }}
+            >
+              Log Out
+            </a>
+          ) : (
+            <a className='global-menu__link login' href={join(URL, '/login')}>
+              Sign in
+            </a>
+          )}
         </nav>
         <style jsx global>
           {`
@@ -160,7 +175,7 @@ class Sidebar extends Component {
               line-height: 2.5rem;
             }
             .global-menu__link:active {
-              background-color: rgba(244,244,244,0.1);
+              background-color: rgba(244, 244, 244, 0.1);
             }
 
             .global-menu__link--make {
@@ -236,7 +251,7 @@ class Sidebar extends Component {
 
               .global-menu > li {
                 margin-bottom: 1.5rem;
-                margin-right: 0
+                margin-right: 0;
               }
             }
             @media screen and (min-width: ${theme.mediaRanges.large}) {

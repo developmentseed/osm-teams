@@ -3,13 +3,14 @@ import join from 'url-join'
 import getConfig from 'next/config'
 import theme from '../styles/theme'
 const { publicRuntimeConfig } = getConfig()
+import Link from 'next/link'
 
 export default function Header ({ uid, username, picture }) {
   return (
     <header className='header'>
       <div className='inner'>
         <i className='fas fa-bars header__men' />
-        <h1 className='header__page-title hidden'><a href='/'>Teams</a></h1>
+        <h1 className='header__page-title hidden'><Link href='/'>Teams</Link></h1>
         {
           uid
             ? <a href='#' className='user__heading'>

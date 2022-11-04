@@ -175,7 +175,7 @@ export default class TeamEditProfile extends Component {
             this.state.isAdding
               ? <>
                 <h2>Add an attribute</h2>
-                <p>Add an attribute to your team member's profile</p>
+                <p>Add an attribute to your team member&apos;s profile</p>
                 <ProfileAttributeForm
                   onSubmit={async (attributes) => {
                     await addTeamMemberAttributes(teamId, attributes)

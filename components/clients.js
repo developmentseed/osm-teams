@@ -206,7 +206,7 @@ class Clients extends Component {
             this.state.newClient
               ? <section className='alert'>
                 <h3>Newly created client</h3>
-                <p>⚠️ Save this information, we won't show it again.</p>
+                <p>⚠️ Save this information, we won&apos;t show it again.</p>
                 {newClient(this.state.newClient)}
               </section>
               : <div />

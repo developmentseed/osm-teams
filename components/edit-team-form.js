@@ -86,7 +86,7 @@ export default function EditTeamForm ({ initialValues, onSubmit, staff, isCreate
             <div className='form-control form-control__vertical'>
               <label htmlFor='editing_policy'>Organized Editing Policy</label>
               <Field type='url' name='editing_policy' placeholder='https://' validate={validateUrl} />
-              <small className='pt1'>URL to your team's editing policy if you have one (include http/https)</small>
+              <small className='pt1'>URL to your team&apos;s editing policy if you have one (include http/https)</small>
               {errors.editing_policy && renderError(errors.editing_policy)}
             </div>
             <div className='form-control form-control__vertical'>
@@ -104,7 +104,7 @@ export default function EditTeamForm ({ initialValues, onSubmit, staff, isCreate
                   <Field as='select' name='organization'>
                     <option value=''>No organization</option>
                     {uniqueOrgs.map(({ organization_id, name }) => {
-                      return <option value={organization_id}>{name}</option>
+                      return <option key={organization_id} value={organization_id}>{name}</option>
                     }
                     )}
                   </Field>

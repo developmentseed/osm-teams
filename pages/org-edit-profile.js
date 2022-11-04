@@ -176,7 +176,7 @@ export default class OrgEditProfile extends Component {
             this.state.isAdding
               ? <>
                 <h2>Add an attribute</h2>
-                <p>Add an attribute to your org member's profile</p>
+                <p>Add an attribute to your org member&apos;s profile</p>
                 <ProfileAttributeForm
                   formType='org'
                   onSubmit={async (attributes) => {

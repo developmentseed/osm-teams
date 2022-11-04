@@ -52,7 +52,7 @@ function renderBadges (badges) {
   return (
     <table>
       {badges.map((b) => (
-        <tr>
+        <tr key={b.color}>
           <td>
             <SvgSquare color={b.color} />
           </td>

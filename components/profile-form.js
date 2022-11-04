@@ -238,7 +238,7 @@ export default class ProfileForm extends Component {
                   ? <>
                     <h2>Details for <b>{orgName}</b></h2>
                     {orgAttributes.map(attribute => {
-                      return <div className='form-control form-control__vertical'>
+                      return <div key={attribute.name} className='form-control form-control__vertical'>
                         <label>{attribute.name}
                           {attribute.required ? <span className='form--required'>*</span> : ''}
                           {attribute.description ? descriptionPopup(attribute.description) : ''}
@@ -267,7 +267,7 @@ export default class ProfileForm extends Component {
                 }
                 <h2>Details for <b>{teamName}</b></h2>
                 { memberAttributes.length > 0 ? memberAttributes.map(attribute => {
-                  return <div className='form-control form-control__vertical'>
+                  return <div key={attribute.name} className='form-control form-control__vertical'>
                     <label>{attribute.name}
                       {attribute.required ? <span className='form--required'>*</span> : ''}
                       {attribute.description ? descriptionPopup(attribute.description) : ''}
