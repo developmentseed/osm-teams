@@ -1,8 +1,8 @@
 const test = require('ava')
 const sinon = require('sinon')
 
-const db = require('../../db')
-const hydra = require('../../lib/hydra')
+const db = require('../../lib/db')
+const hydra = require('../../app/lib/hydra')
 
 const { resetDb } = require('../utils')
 
@@ -49,7 +49,7 @@ test.before(async () => {
   await resetDb(dbClient)
 
   console.log('Starting server...')
-  app = await require('../../index')()
+  app = await require('../../app/index')()
 
   // Create user agents
   console.log('Creating agents...')

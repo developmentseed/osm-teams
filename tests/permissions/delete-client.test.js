@@ -1,7 +1,7 @@
 const test = require('ava')
-const db = require('../../db')
+const db = require('../../lib/db')
 const path = require('path')
-const hydra = require('../../lib/hydra')
+const hydra = require('../../app/lib/hydra')
 const sinon = require('sinon')
 
 const { migrationsDirectory } = require('../utils')
@@ -36,7 +36,7 @@ test.before(async () => {
   let deleteClientStub = sinon.stub(hydra, 'deleteClient')
   deleteClientStub.returns(Promise.resolve(true))
 
-  agent = require('supertest').agent(await require('../../index')())
+  agent = require('supertest').agent(await require('../../app/index')())
 })
 
 test.after.always(async () => {

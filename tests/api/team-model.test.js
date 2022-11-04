@@ -1,6 +1,6 @@
 const test = require('ava')
-const db = require('../../db')
-const team = require('../../lib/team')
+const db = require('../../lib/db');
+const team = require('../../app/lib/team')
 const { prop } = require('ramda')
 const { resetDb } = require('../utils')
 

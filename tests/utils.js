@@ -1,6 +1,6 @@
 const path = require('path')
 
-const migrationsDirectory = path.join(__dirname, '..', '..', 'migrations')
+const migrationsDirectory = path.join(__dirname, '..', 'migrations')
 
 async function resetDb(db) {
   console.log('Dropping tables...')

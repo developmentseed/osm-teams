@@ -1,11 +1,11 @@
 const test = require('ava')
 const sinon = require('sinon')
 
-const db = require('../../db')
-const team = require('../../lib/team')
-const org = require('../../lib/organization')
-const permissions = require('../../manage/permissions')
-const profile = require('../../lib/profile')
+const db = require('../../lib/db')
+const team = require('../../app/lib/team')
+const org = require('../../app/lib/organization')
+const permissions = require('../../app/manage/permissions')
+const profile = require('../../app/lib/profile')
 const { resetDb } = require('../utils')
 
 const { prop, concat, includes, propEq, find } = require('ramda')
@@ -35,7 +35,7 @@ test.before(async () => {
   sinon.stub(permissions, 'authenticate').callsFake(middleware)
   sinon.stub(permissions, 'check').callsFake(middleware)
 
-  agent = require('supertest').agent(await require('../../index')())
+  agent = require('supertest').agent(await require('../../app/index')())
 })
 
 /**

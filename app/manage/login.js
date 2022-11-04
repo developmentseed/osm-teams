@@ -3,7 +3,7 @@ const {
   publicRuntimeConfig,
 } = require('../../next.config')
 const jwt = require('jsonwebtoken')
-const db = require('../db')
+const db = require('../../lib/db')
 
 const credentials = {
   client: {

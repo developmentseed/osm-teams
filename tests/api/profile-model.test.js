@@ -1,11 +1,14 @@
 const { range, map, contains, prop, propEq, find, includes } = require('ramda')
 const test = require('ava')
-const db = require('../../db')
-const organization = require('../../lib/organization')
-const team = require('../../lib/team')
-const profile = require('../../lib/profile')
+const db = require('../../lib/db')
+const organization = require('../../app/lib/organization')
+const team = require('../../app/lib/team')
+const profile = require('../../app/lib/profile')
 const { resetDb } = require('../utils')
-const { ValidationError, PropertyRequiredError } = require('../../lib/utils')
+const {
+  ValidationError,
+  PropertyRequiredError,
+} = require('../../app/lib/utils')
 
 test.before(async () => {
   const conn = await db()

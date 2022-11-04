@@ -1,6 +1,6 @@
-const db = require('../../db')
+const db = require('../../lib/db')
 const sinon = require('sinon')
-const hydra = require('../../lib/hydra')
+const hydra = require('../../app/lib/hydra')
 const path = require('path')
 const { migrationsDirectory } = require('../utils')
 
@@ -62,7 +62,7 @@ async function initializeContext(t) {
   introspectStub.withArgs('invalidToken').returns({ active: false })
 
   // Initialize context objects
-  t.context.agent = require('supertest').agent(await require('../../index')())
+  t.context.agent = require('supertest').agent(await require('../../app/index')())
 }
 
 module.exports = {

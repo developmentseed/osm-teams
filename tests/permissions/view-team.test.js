@@ -1,9 +1,9 @@
 const test = require('ava')
-const db = require('../../db')
+const db = require('../../lib/db')
 const path = require('path')
 const { initializeContext } = require('./initialization')
 
-const team = require('../../lib/team')
+const team = require('../../app/lib/team')
 
 const { migrationsDirectory } = require('../utils')
 
@@ -23,22 +23,22 @@ test.after.always(async () => {
   conn.destroy()
 })
 
-test('public team members are visible to unauthenticated users', async (t) => {
+test('public teams are visible to unauthenticated users', async (t) => {
   const team = t.context.publicTeam
-  let res = await t.context.agent.get(`/api/teams/${team.id}/members`)
+  let res = await t.context.agent.get(`/api/teams/${team.id}`)
   t.is(res.status, 200)
 })
 
-test('private team members are not visible to unauthenticated users', async (t) => {
+test('private team metadata are visible to unauthenticated users', async (t) => {
   const team = t.context.privateTeam
-  let res = await t.context.agent.get(`/api/teams/${team.id}/members`)
-  t.is(res.status, 401)
+  let res = await t.context.agent.get(`/api/teams/${team.id}`)
+  t.is(res.status, 200)
 })
 
-test('private team members are visible to team moderators', async (t) => {
+test('private team metadata are visible to team moderators', async (t) => {
   const team = t.context.privateTeam
   let res = await t.context.agent
-    .get(`/api/teams/${team.id}/members`)
+    .get(`/api/teams/${team.id}`)
     .set('Authorization', `Bearer user100`)
   t.is(res.status, 200)
 })

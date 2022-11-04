@@ -1,11 +1,11 @@
 const test = require('ava')
 const sinon = require('sinon')
 
-const db = require('../../db')
+const db = require('../../lib/db')
 const { resetDb } = require('../utils')
-const team = require('../../lib/team')
-const organization = require('../../lib/organization')
-const permissions = require('../../manage/permissions')
+const team = require('../../app/lib/team')
+const organization = require('../../app/lib/organization')
+const permissions = require('../../app/manage/permissions')
 
 let agent
 
@@ -32,7 +32,7 @@ test.before(async () => {
   sinon.stub(permissions, 'authenticate').callsFake(middleware)
   sinon.stub(permissions, 'check').callsFake(middleware)
 
-  agent = require('supertest').agent(await require('../../index')())
+  agent = require('supertest').agent(await require('../../app/index')())
 })
 
 /**

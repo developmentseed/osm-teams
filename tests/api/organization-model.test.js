@@ -1,8 +1,8 @@
 const test = require('ava')
 const { prop, map, contains } = require('ramda')
-const db = require('../../db')
-const organization = require('../../lib/organization')
-const team = require('../../lib/team')
+const db = require('../../lib/db')
+const organization = require('../../app/lib/organization')
+const team = require('../../app/lib/team')
 const { resetDb } = require('../utils')
 
 test.before(async () => {

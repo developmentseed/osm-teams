@@ -1,4 +1,4 @@
-const db = require('../db')
+const db = require('../../lib/db')
 const knexPostgis = require('knex-postgis')
 const join = require('url-join')
 const xml2js = require('xml2js')

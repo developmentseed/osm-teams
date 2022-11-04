@@ -2,9 +2,9 @@ const test = require('ava')
 const sinon = require('sinon')
 const { any } = require('ramda')
 
-const db = require('../../db')
-const team = require('../../lib/team')
-const permissions = require('../../manage/permissions')
+const db = require('../../lib/db')
+const team = require('../../app/lib/team')
+const permissions = require('../../app/manage/permissions')
 const { resetDb } = require('../utils')
 
 let agent
@@ -35,7 +35,7 @@ test.before(async () => {
     return ids.map((id) => ({ id, name: 'fake name' }))
   })
 
-  agent = require('supertest').agent(await require('../../index')())
+  agent = require('supertest').agent(await require('../../app/index')())
 })
 
 test('create a team', async (t) => {

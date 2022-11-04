@@ -1,9 +1,9 @@
 const test = require('ava')
-const db = require('../../db')
+const db = require('../../lib/db')
 const path = require('path')
 const { initializeContext } = require('./initialization')
 
-const team = require('../../lib/team')
+const team = require('../../app/lib/team')
 
 const { migrationsDirectory } = require('../utils')
 

@@ -4,7 +4,7 @@
 
 const hydra = require('../lib/hydra')
 const url = require('url')
-const db = require('../db')
+const db = require('../../lib/db')
 const { serverRuntimeConfig } = require('../../next.config')
 const { path } = require('ramda')
 
