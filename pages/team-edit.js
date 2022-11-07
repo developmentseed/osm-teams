@@ -7,7 +7,7 @@ import getConfig from 'next/config'
 import EditTeamForm from '../components/edit-team-form'
 import Button from '../components/button'
 import theme from '../styles/theme'
-import { getOrgTeamAttributes, getTeamProfile } from '../lib/profiles-api'
+import { getTeamAttributes, getTeamProfile } from '../lib/profiles-api'
 const { publicRuntimeConfig } = getConfig()
 
 export default class TeamEdit extends Component {
@@ -32,12 +32,9 @@ export default class TeamEdit extends Component {
     const { id } = this.props
     try {
       let team = await getTeam(id)
-      let teamAttributes = []
+      let teamAttributes = await getTeamAttributes(id)
       let profileValues = []
       profileValues = await getTeamProfile(id)
-      if (team.org) {
-        teamAttributes = await getOrgTeamAttributes(team.org.organization_id)
-      }
       this.setState({
         team,
         profileValues,
