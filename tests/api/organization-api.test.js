@@ -1,7 +1,7 @@
 const test = require('ava')
 const sinon = require('sinon')
 
-const db = require('../../lib/db')
+const db = require('../../src/lib/db')
 const { resetDb } = require('../utils')
 const team = require('../../app/lib/team')
 const organization = require('../../app/lib/organization')

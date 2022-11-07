@@ -1,5 +1,5 @@
 const team = require('../lib/team')
-const db = require('../../lib/db')
+const db = require('../../src/lib/db')
 const yup = require('yup')
 const crypto = require('crypto')
 const { routeWrapper } = require('./utils')

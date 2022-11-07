@@ -1,6 +1,6 @@
 const { range, map, contains, prop, propEq, find, includes } = require('ramda')
 const test = require('ava')
-const db = require('../../lib/db')
+const db = require('../../src/lib/db')
 const organization = require('../../app/lib/organization')
 const team = require('../../app/lib/team')
 const profile = require('../../app/lib/profile')

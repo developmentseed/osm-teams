@@ -2,7 +2,7 @@ const test = require('ava')
 const sinon = require('sinon')
 const { any } = require('ramda')
 
-const db = require('../../lib/db')
+const db = require('../../src/lib/db')
 const team = require('../../app/lib/team')
 const permissions = require('../../app/manage/permissions')
 const { resetDb } = require('../utils')

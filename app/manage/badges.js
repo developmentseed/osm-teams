@@ -1,4 +1,4 @@
-const db = require('../../lib/db')
+const db = require('../../src/lib/db')
 const yup = require('yup')
 const organization = require('../lib/organization')
 const profile = require('../lib/profile')

@@ -1,7 +1,7 @@
 const test = require('ava')
 const sinon = require('sinon')
 
-const db = require('../../lib/db')
+const db = require('../../src/lib/db')
 const hydra = require('../../app/lib/hydra')
 
 const { resetDb } = require('../utils')

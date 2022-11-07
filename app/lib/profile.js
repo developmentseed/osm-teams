@@ -1,4 +1,4 @@
-const db = require('../../lib/db')
+const db = require('../../src/lib/db')
 const {
   unpack,
   ValidationError,
