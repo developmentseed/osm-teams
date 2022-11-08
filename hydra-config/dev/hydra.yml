@@ -5,9 +5,9 @@ serve:
 urls:
   self:
     issuer: http://localhost:4444
-  consent: http://localhost:8989/oauth/consent
-  login: http://localhost:8989/oauth/login
-  logout: http://localhost:8989/oauth/logout
+  consent: http://localhost:3000/auth/consent
+  login: http://localhost:3000/auth/signin
+  logout: http://localhost:3000/auth/signout
 
 secrets:
   system:

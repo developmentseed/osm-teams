@@ -99,7 +99,10 @@ class Sidebar extends Component {
               Log Out
             </a>
           ) : (
-            <a className='global-menu__link login' href={join(URL, '/login')}>
+            <a
+              className='global-menu__link login'
+              href={join(URL, '/auth/signin')}
+            >
               Sign in
             </a>
           )}

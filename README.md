@@ -39,16 +39,16 @@ Start Hydra and PostgreSQL with Docker:
 
     docker-compose -f compose.dev.yml up --build
 
-On a separate terminal, create the [first-party](https://auth0.com/docs/applications/concepts/app-types-first-third-party) "manage" app:
+On a separate terminal, create the [first-party](https://auth0.com/docs/applications/concepts/app-types-first-third-party) "osm-teams" app:
 
 ```bash
 docker-compose exec hydra hydra clients create --endpoint http://localhost:4445 \
-  --id manage \
-  --secret manage-secret \
+  --id osm-teams \
+  --secret osm-teams-secret \
   --response-types code,id_token \
   --grant-types refresh_token,authorization_code \
   --scope openid,offline,clients \
-  --callbacks http://localhost:3000/login/accept
+  --callbacks http://localhost:3000/api/auth/callback/openstreetmap
 ```
 
 Install Node.js the required version (see [.nvmrc](.nvmrc) file):
