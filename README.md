@@ -23,9 +23,9 @@ Install requirements:
 - [nvm](https://github.com/creationix/nvm)
 - [Docker](https://www.docker.com)
 
-Visit your [OpenStreetMap settings](https://www.openstreetmap.org/account/edit) page and register an OAuth1 Client App:
+Visit your [OpenStreetMap settings](https://www.openstreetmap.org/account/edit) page and [register an OAuth 2 app](https://www.openstreetmap.org/oauth2/applications) :
 
-![OSM Client App](oauth1-osm-client-app.png "OAuth1 page at OSM Website")
+![OSM Client App](oauth2-osm-client-app.png "OAuth 2 page at OSM Website")
 
 Create an `.env` file by copying `.env.sample` and replacing the values as needed. `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` are values available at the OAuth app page on openstreetmap.org. The .env file should contain:
 
@@ -38,18 +38,6 @@ Create an `.env` file by copying `.env.sample` and replacing the values as neede
 Start Hydra and PostgreSQL with Docker:
 
     docker-compose -f compose.dev.yml up --build
-
-On a separate terminal, create the [first-party](https://auth0.com/docs/applications/concepts/app-types-first-third-party) "manage" app:
-
-```bash
-docker-compose exec hydra hydra clients create --endpoint http://localhost:4445 \
-  --id manage \
-  --secret manage-secret \
-  --response-types code,id_token \
-  --grant-types refresh_token,authorization_code \
-  --scope openid,offline,clients \
-  --callbacks http://localhost:3000/login/accept
-```
 
 Install Node.js the required version (see [.nvmrc](.nvmrc) file):
 
