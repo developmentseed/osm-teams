@@ -1,16 +1,21 @@
 import NextAuth from 'next-auth'
 
 export const authOptions = {
-  debug: true,
   providers: [
     {
       id: 'openstreetmap',
       name: 'openstreetmap',
-      clientId: 'osm-teams',
-      clientSecret: 'osm-teams-secret',
+      clientId: process.env.OSM_CONSUMER_KEY,
+      clientSecret: process.env.OSM_CONSUMER_SECRET,
       type: 'oauth',
-      authorization: 'http://localhost:4444/oauth2/auth',
-      token: 'http://localhost:4444/oauth2/token',
+      authorization: {
+        url: 'https://www.openstreetmap.org/oauth2/authorize',
+        params: {
+          scope: 'read_prefs',
+        },
+      },
+      token: 'https://www.openstreetmap.org/oauth2/token',
+      userinfo: 'https://api.openstreetmap.org/api/0.6/user/details.json',
       profile({ user }) {
         return {
           id: user?.id,
@@ -23,7 +28,7 @@ export const authOptions = {
   pages: {
     signIn: '/auth/signin',
     signOut: '/auth/signout',
-    error: '/auth/error', // Error code passed in query string as ?error=
+    error: '/auth/error',
   },
 }
 

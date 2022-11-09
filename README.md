@@ -68,7 +68,7 @@ Start development server:
     yarn dev
 
 <!-- markdownlint-disable MD034 -->
-✨ You can now login to the app at http://localhost:3000
+✨ You can now login to the app at http://127.0.0.1:3000
 <!-- markdownlint-enable MD034 -->
 
 ## Acknowledgments

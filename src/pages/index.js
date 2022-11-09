@@ -4,7 +4,7 @@ import Router from 'next/router'
 import join from 'url-join'
 import getConfig from 'next/config'
 import theme from '../styles/theme'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -18,7 +18,7 @@ const title = String.raw`
 `
 
 export default function Home() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
 
   return (
     <main>
@@ -33,7 +33,7 @@ export default function Home() {
             OpenStreetMap applications, or build your team here. It’s not safe
             to map alone.
           </p>
-          {session ? (
+          {status === 'authenticated' ? (
             <div className='welcome__user'>
               <h2>Welcome, {session.user.username}!</h2>
               <ul className='welcome__user--actions'>
@@ -67,13 +67,7 @@ export default function Home() {
                   </a>
                 </li>
               </ul>
-              <Button
-                variant='danger'
-                onClick={() => {
-                  window.sessionStorage.clear()
-                  Router.push('/logout')
-                }}
-              >
+              <Button variant='danger' onClick={signOut}>
                 Logout
               </Button>
             </div>
