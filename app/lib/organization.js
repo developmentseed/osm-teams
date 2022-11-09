@@ -266,6 +266,20 @@ async function isMemberOrStaff (organizationId, osmId) {
 }
 
 /**
+ * Checks if an osmId is a moderator of any team inside the org
+ * @param {int} organizationId - organization id
+ * @param {int} osmId - id of member we are testing
+ */
+async function isOrgTeamModerator (organizationId, osmId) {
+  if (!organizationId) throw new PropertyRequiredError('organization id')
+  if (!osmId) throw new PropertyRequiredError('osm id')
+  const conn = await db()
+  const subquery = conn('organization_team').select('team_id').where('organization_id', organizationId)
+  const isModeratorOfAny = await conn('moderator').whereIn('team_id', subquery).debug()
+  return isModeratorOfAny.length > 0
+}
+
+/**
  * Checks if the osm user is an owner of a team
  * @param {int} organizationId - organization id
  * @param {int} osmId - osm id
@@ -350,6 +364,7 @@ module.exports = {
   isOwner,
   isManager,
   isMember,
+  isOrgTeamModerator,
   createOrgTeam,
   listMyOrganizations,
   getOrgStaff,
