@@ -4,7 +4,7 @@ import Router from 'next/router'
 import join from 'url-join'
 import getConfig from 'next/config'
 import theme from '../styles/theme'
-import { useSession, signOut } from 'next-auth/react'
+import { useSession, signOut, signIn } from 'next-auth/react'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -72,7 +72,7 @@ export default function Home() {
               </Button>
             </div>
           ) : (
-            <Button href='/login'>Sign in →</Button>
+            <Button onClick={() => signIn('openstreetmap')}>Sign in →</Button>
           )}
         </div>
         <div className='map-bg' />
