@@ -8,8 +8,8 @@ module.exports = {
       process.env.OSM_API ||
       process.env.OSM_DOMAIN ||
       'https://www.openstreetmap.org',
-    OSM_HYDRA_ID: process.env.OSM_HYDRA_ID || 'osm-teams',
-    OSM_HYDRA_SECRET: process.env.OSM_HYDRA_SECRET || 'osm-teams-secret',
+    OSM_HYDRA_ID: process.env.OSM_HYDRA_ID || 'manage',
+    OSM_HYDRA_SECRET: process.env.OSM_HYDRA_SECRET || 'manage-secret',
     OSM_CONSUMER_KEY: process.env.OSM_CONSUMER_KEY,
     OSM_CONSUMER_SECRET: process.env.OSM_CONSUMER_SECRET,
     HYDRA_TOKEN_HOST: process.env.HYDRA_TOKEN_HOST || 'http://localhost:4444',
