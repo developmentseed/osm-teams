@@ -16,8 +16,6 @@ const oauthRouter = require('./oauth')
 const dev = process.env.NODE_ENV !== 'production'
 const PORT = process.env.PORT || 8989
 
-const swaggerDocument = YAML.load(path.join(__dirname, '..', '/docs/api.yml'))
-
 const nextApp = next({ dev })
 const app = express()
 
