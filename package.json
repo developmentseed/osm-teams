@@ -16,9 +16,8 @@
   },
   "license": "MIT",
   "scripts": {
-    "docs:validate": "swagger-cli validate docs/api.yml",
-    "docs:api": "swagger-markdown -i docs/api.yml -o docs/api.md",
-    "docs": "npm run docs:validate && npm run docs:api",
+    "docs:generate": "yarn next-swagger-doc-cli next-swagger-doc.json",
+    "docs:validate": "yarn docs:generate && swagger-cli validate public/swagger.json",
     "dev": "next dev",
     "migrate": "knex migrate:latest",
     "test": "NODE_ENV=test nyc ava tests/**/*.test.js -c 1 --serial --verbose",
@@ -61,6 +60,7 @@
     "leaflet": "^1.7.1",
     "leaflet-control-geocoder": "^1.13.0",
     "next": "^13.0.1",
+    "next-swagger-doc": "^0.3.6",
     "node-fetch": "^2.6.7",
     "passport-light": "^1.0.1",
     "passport-oauth": "^1.0.0",
@@ -85,7 +85,7 @@
     "sinon": "^7.5.0",
     "sqlite3": "^5.1.2",
     "supertest": "^4.0.2",
-    "swagger-ui-express": "^4.3.0",
+    "swagger-ui-react": "^4.15.5",
     "url-join": "^4.0.0",
     "url-parse": "^1.5.9",
     "url-regex": "^5.0.0",
@@ -106,7 +106,6 @@
     "eslint-plugin-prettier": "^4.2.1",
     "nodemon": "^1.19.4",
     "nyc": "^15.1.0",
-    "prettier": "2.7.1",
-    "swagger-markdown": "^1.4.6"
+    "prettier": "2.7.1"
   }
 }

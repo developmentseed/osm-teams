@@ -1,0 +1,8 @@
+{
+  "apiFolder": "src/pages/api",
+  "schemaFolders": ["models"],
+  "definition": {
+    "openapi": "3.0.0",
+    "info": { "title": "OSM Teams API Docs", "version": "2.0.0" }
+  }
+}
