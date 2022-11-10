@@ -8,7 +8,6 @@ const compression = require('compression')
 const boom = require('express-boom')
 const next = require('next')
 const YAML = require('yamljs')
-const swaggerUi = require('swagger-ui-express')
 const cors = require('cors')
 
 const manageRouter = require('./manage')
@@ -40,15 +39,6 @@ async function init() {
    */
   app.use('/', cors(), manageRouter(nextApp))
   app.use('/oauth', oauthRouter(nextApp))
-
-  /**
-   * Docs endpoints
-   */
-  app.use(
-    ['/api', '/api/docs'],
-    swaggerUi.serve,
-    swaggerUi.setup(swaggerDocument)
-  )
 
   /**
    * Handle all other route GET with nextjs
