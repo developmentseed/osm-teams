@@ -221,7 +221,7 @@ function manageRouter (nextApp) {
   router.get('/api/profiles/keys/organizations/:id', can('organization:edit'), getProfileKeys('org', 'org'))
   router.post('/api/profiles/keys/organizations/:id', can('organization:edit'), createProfileKeys('org', 'org'))
 
-  router.get('/api/profiles/keys/organizations/:id/teams', can('organization:edit'), getProfileKeys('org', 'team'))
+  router.get('/api/profiles/keys/organizations/:id/teams', can('organization:view-team-keys'), getProfileKeys('org', 'team'))
   router.post('/api/profiles/keys/organizations/:id/teams', can('organization:edit'), createProfileKeys('org', 'team'))
 
   router.get('/api/profiles/keys/organizations/:id/users', can('organization:member'), getProfileKeys('org', 'user'))

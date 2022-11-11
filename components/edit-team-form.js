@@ -29,7 +29,7 @@ function renderErrors (errors) {
   })
 }
 
-export default function EditTeamForm ({ initialValues, onSubmit, staff, isCreateForm, extraTags = [], profileValues }) {
+export default function EditTeamForm ({ initialValues, onSubmit, staff, isCreateForm, orgTeamTags = [], teamTags = [], profileValues }) {
   if (profileValues) {
     initialValues.tags = {}
     profileValues.forEach(({ id, value }) => {
@@ -42,14 +42,34 @@ export default function EditTeamForm ({ initialValues, onSubmit, staff, isCreate
       onSubmit={onSubmit}
       render={({ status, isSubmitting, submitForm, values, errors, setFieldValue, setErrors, setStatus }) => {
         let uniqueOrgs
-        let extraFields
+        let extraOrgTeamFields = []
+        let extraTeamFields = []
         if (staff && isCreateForm) {
           uniqueOrgs = uniqBy(prop('organization_id'), staff.map(({ name, organization_id }) => {
             return { name, organization_id }
           }))
         }
-        if (extraTags.length > 0) {
-          extraFields = extraTags.map(({ id, name, required, description }) => {
+        if (orgTeamTags.length > 0) {
+          extraOrgTeamFields = orgTeamTags.map(({ id, name, required, description }) => {
+            return (
+              <div className='form-control form-control__vertical' key={`extra-tag-${id}`}>
+                <label htmlFor={`extra-tag-${id}`}>{name}
+                  {required ? <span className='form--required'>*</span> : ''}
+                  {description ? descriptionPopup(description) : ''}
+                </label>
+                <Field
+                  type='text'
+                  name={`tags.key-${id}`}
+                  required={required}
+                  value={values.tags[`key-${id}`]}
+                />
+              </div>
+            )
+          })
+        }
+
+        if (teamTags.length > 0) {
+          extraTeamFields = teamTags.map(({ id, name, required, description }) => {
             return (
               <div className='form-control form-control__vertical' key={`extra-tag-${id}`}>
                 <label htmlFor={`extra-tag-${id}`}>{name}
@@ -112,10 +132,17 @@ export default function EditTeamForm ({ initialValues, onSubmit, staff, isCreate
               )
               : ''
             }
-            {extraTags.length > 0
+            {extraOrgTeamFields.length > 0
               ? <>
                 <h2>Org Attributes</h2>
-                {extraFields}
+                {extraOrgTeamFields}
+              </>
+              : ''
+            }
+            {extraTeamFields.length > 0
+              ? <>
+                <h2>Other Team Attributes</h2>
+                {extraTeamFields}
               </>
               : ''
             }
