@@ -92,7 +92,7 @@ async function getTeamMembers(req, reply) {
 
 async function createTeam(req, reply) {
   const { body } = req
-  const { user_id } = reply.locals
+  const { user_id } = req.session
   if (body.editing_policy && !isUrl.test(body.editing_policy)) {
     return reply.boom.badRequest('editing_policy must be a valid url')
   }

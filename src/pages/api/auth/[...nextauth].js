@@ -18,13 +18,21 @@ export const authOptions = {
       userinfo: 'https://api.openstreetmap.org/api/0.6/user/details.json',
       profile({ user }) {
         return {
-          id: user?.id,
-          name: user?.display_name,
-          image: user?.img?.href,
+          id: user.id,
+          name: user.display_name,
+          image: user.img?.href,
         }
       },
     },
   ],
+  callbacks: {
+    async session({ session, token, user }) {
+      // Add user id to session
+      const userId = parseInt(token.sub)
+      session.user_id = userId
+      return session
+    },
+  },
 }
 
 export default NextAuth(authOptions)

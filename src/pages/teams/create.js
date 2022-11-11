@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import join from 'url-join'
 import Router from 'next/router'
-import { createTeam, createOrgTeam } from '../lib/teams-api'
+import { createTeam, createOrgTeam } from '../../lib/teams-api'
 import { dissoc } from 'ramda'
 import getConfig from 'next/config'
-import EditTeamForm from '../components/edit-team-form'
+import EditTeamForm from '../../components/edit-team-form'
 const { publicRuntimeConfig } = getConfig()
 
 export default class TeamCreate extends Component {
