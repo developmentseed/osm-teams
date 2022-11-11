@@ -122,8 +122,11 @@ async function updateTeam (req, reply) {
       await profile.setProfile(tags, 'team', id)
     }
     const teamData = dissoc('tags', body)
-    const data = await team.update(id, teamData)
-    reply.send(data)
+    let updatedTeam = {}
+    if (teamData) {
+      updatedTeam = await team.update(id, teamData)
+    }
+    reply.send(updatedTeam)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
