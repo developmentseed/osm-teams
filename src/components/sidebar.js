@@ -22,6 +22,8 @@ const NavLink = withRouter(({ children, router, href }) => {
 export default function Sidebar({ uid }) {
   const { status } = useSession()
 
+  const isAuthenticated = status === 'authenticated'
+
   const additionalMenuItems = (
     <Fragment>
       <li>
@@ -77,7 +79,7 @@ export default function Sidebar({ uid }) {
               </a>
             </NavLink>
           </li>
-          {uid ? additionalMenuItems : <Fragment />}
+          {isAuthenticated ? additionalMenuItems : <Fragment />}
           <li>
             <NavLink href='/developers'>
               <a
@@ -89,7 +91,7 @@ export default function Sidebar({ uid }) {
             </NavLink>
           </li>
         </ul>
-        {status === 'authenticated' ? (
+        {isAuthenticated ? (
           <Button onClick={signOut}>Log Out</Button>
         ) : (
           <Button onClick={() => signIn('openstreetmap')}>Sign in</Button>
