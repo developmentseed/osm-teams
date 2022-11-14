@@ -71,6 +71,16 @@ Start development server:
 ✨ You can now login to the app at http://localhost:3000
 <!-- markdownlint-enable MD034 -->
 
+## API
+
+The API docs can be accessed at http://localhost:3000/docs/api.
+
+All API routes should include descriptions in [OpenAPI 3.0 format](https://swagger.io/specification).
+
+Run the following command to validate the API docs:
+
+    yarn docs:validate
+
 ## Acknowledgments
 
 - This app is based off of [OSM/Hydra](https://github.com/kamicut/osmhydra)
