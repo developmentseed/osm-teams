@@ -283,7 +283,7 @@ class Team extends Component {
     let profileActions = []
 
     if (this.state.modalIsOpen && isUserModerator) {
-      if (this.state.profileMeta.id !== this.props.user.uid) {
+      if (this.state.profileMeta.id !== userId) {
         profileActions.push({
           name: 'Remove team member',
           onClick: async () => {

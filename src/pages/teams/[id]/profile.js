@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import ProfileForm from '../components/profile-form'
+import ProfileForm from '../../../components/profile-form'
 
 export default class EditProfileForm extends Component {
   static async getInitialProps({ query }) {
