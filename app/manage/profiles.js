@@ -16,75 +16,70 @@ async function getUserOrgProfile(req, reply) {
     throw Boom.badRequest('osmId is required parameter')
   }
 
-  try {
-    const values = await profile.getProfile('user', osmId)
-    const tags = prop('tags', values)
-    if (!values || !tags) {
-      throw Boom.notFound()
-    }
-
-    let visibleKeys = []
-    let orgKeys = []
-    let requesterIsMemberOfOrg = false
-    let requesterIsManagerOfOrg = false
-    let requesterIsOwnerOfOrg = false
-
-    // Get org keys & visibility
-    orgKeys = await profile.getProfileKeysForOwner('org', orgId, 'user')
-
-    if (requesterId === osmId) {
-      const allIds = orgKeys.map(prop('id'))
-      const allValues = pick(allIds, tags)
-      const keysToSend = orgKeys.map((key) => {
-        return assoc('value', allValues[key.id], key)
-      })
-      return reply.send(keysToSend)
-    } else {
-      requesterIsMemberOfOrg = await org.isMember(orgId, requesterId)
-      requesterIsManagerOfOrg = await org.isManager(orgId, requesterId)
-      requesterIsOwnerOfOrg = await org.isOwner(orgId, requesterId)
-
-      // Get visible keys
-      orgKeys.forEach((key) => {
-        const { visibility } = key
-        switch (visibility) {
-          case 'public': {
-            visibleKeys.push(key)
-            break
-          }
-          case 'org_staff': {
-            if (requesterIsOwnerOfOrg || requesterIsManagerOfOrg) {
-              visibleKeys.push(key)
-            }
-            break
-          }
-          case 'org': {
-            if (
-              requesterIsMemberOfOrg ||
-              requesterIsOwnerOfOrg ||
-              requesterIsManagerOfOrg
-            ) {
-              visibleKeys.push(key)
-            }
-            break
-          }
-        }
-      })
-    }
-
-    // Get values for keys
-    const visibleKeyIds = visibleKeys.map(prop('id'))
-    const visibleValues = pick(visibleKeyIds, tags)
-
-    const keysToSend = visibleKeys.map((key) => {
-      return assoc('value', visibleValues[key.id], key)
-    })
-
-    return reply.send(keysToSend)
-  } catch (err) {
-    console.error(err)
-    throw Boom.badImplementation()
+  const values = await profile.getProfile('user', osmId)
+  const tags = prop('tags', values)
+  if (!values || !tags) {
+    throw Boom.notFound()
   }
+
+  let visibleKeys = []
+  let orgKeys = []
+  let requesterIsMemberOfOrg = false
+  let requesterIsManagerOfOrg = false
+  let requesterIsOwnerOfOrg = false
+
+  // Get org keys & visibility
+  orgKeys = await profile.getProfileKeysForOwner('org', orgId, 'user')
+
+  if (requesterId === osmId) {
+    const allIds = orgKeys.map(prop('id'))
+    const allValues = pick(allIds, tags)
+    const keysToSend = orgKeys.map((key) => {
+      return assoc('value', allValues[key.id], key)
+    })
+    return reply.send(keysToSend)
+  } else {
+    requesterIsMemberOfOrg = await org.isMember(orgId, requesterId)
+    requesterIsManagerOfOrg = await org.isManager(orgId, requesterId)
+    requesterIsOwnerOfOrg = await org.isOwner(orgId, requesterId)
+
+    // Get visible keys
+    orgKeys.forEach((key) => {
+      const { visibility } = key
+      switch (visibility) {
+        case 'public': {
+          visibleKeys.push(key)
+          break
+        }
+        case 'org_staff': {
+          if (requesterIsOwnerOfOrg || requesterIsManagerOfOrg) {
+            visibleKeys.push(key)
+          }
+          break
+        }
+        case 'org': {
+          if (
+            requesterIsMemberOfOrg ||
+            requesterIsOwnerOfOrg ||
+            requesterIsManagerOfOrg
+          ) {
+            visibleKeys.push(key)
+          }
+          break
+        }
+      }
+    })
+  }
+
+  // Get values for keys
+  const visibleKeyIds = visibleKeys.map(prop('id'))
+  const visibleValues = pick(visibleKeyIds, tags)
+
+  const keysToSend = visibleKeys.map((key) => {
+    return assoc('value', visibleValues[key.id], key)
+  })
+
+  return reply.send(keysToSend)
 }
 
 /**

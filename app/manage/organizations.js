@@ -2,6 +2,7 @@ const organization = require('../lib/organization')
 const team = require('../lib/team')
 const { teamsMembersModeratorsHelper } = require('./utils')
 const { map, prop } = require('ramda')
+const Boom = require('@hapi/boom')
 
 /**
  * List organizations that a user is a member of
@@ -44,19 +45,14 @@ async function getOrg(req, reply) {
   const { user_id } = req.session
 
   if (!id) {
-    return reply.boom.badRequest('organization id is required')
+    throw Boom.badRequest('organization id is required')
   }
 
-  try {
-    let [data, isMemberOfOrg] = await Promise.all([
-      organization.get(id),
-      organization.isMember(id, user_id),
-    ])
-    reply.send({ ...data, isMemberOfOrg })
-  } catch (err) {
-    console.log(err)
-    return reply.boom.badRequest(err.message)
-  }
+  let [data, isMemberOfOrg] = await Promise.all([
+    organization.get(id),
+    organization.isMember(id, user_id),
+  ])
+  reply.send({ ...data, isMemberOfOrg })
 }
 
 /**
