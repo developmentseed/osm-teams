@@ -3,23 +3,24 @@ const team = require('../lib/team')
 const org = require('../lib/organization')
 const { pick, prop, assoc } = require('ramda')
 const { ValidationError, PropertyRequiredError } = require('../lib/utils')
+const Boom = require('@hapi/boom')
 
 /**
  * Gets a user profile in an org
  */
 async function getUserOrgProfile(req, reply) {
   const { osmId, id: orgId } = req.params
-  const { user_id: requesterId } = reply.locals
+  const { user_id: requesterId } = req.session
 
   if (!osmId) {
-    return reply.boom.badRequest('osmId is required parameter')
+    throw Boom.badRequest('osmId is required parameter')
   }
 
   try {
     const values = await profile.getProfile('user', osmId)
     const tags = prop('tags', values)
     if (!values || !tags) {
-      return reply.sendStatus(404)
+      throw Boom.notFound()
     }
 
     let visibleKeys = []
@@ -43,7 +44,7 @@ async function getUserOrgProfile(req, reply) {
       requesterIsManagerOfOrg = await org.isManager(orgId, requesterId)
       requesterIsOwnerOfOrg = await org.isOwner(orgId, requesterId)
 
-      // Get visibile keys
+      // Get visible keys
       orgKeys.forEach((key) => {
         const { visibility } = key
         switch (visibility) {
@@ -82,7 +83,7 @@ async function getUserOrgProfile(req, reply) {
     return reply.send(keysToSend)
   } catch (err) {
     console.error(err)
-    return reply.boom.badImplementation()
+    throw Boom.badImplementation()
   }
 }
 
@@ -91,7 +92,7 @@ async function getUserOrgProfile(req, reply) {
  */
 async function getTeamProfile(req, reply) {
   const { id: teamId } = req.params
-  const { user_id: requesterId } = reply.locals
+  const { user_id: requesterId } = req.session
 
   if (!teamId) {
     reply.boom.badRequest('teamId is required parameter')
@@ -108,14 +109,14 @@ async function getTeamProfile(req, reply) {
     const values = await profile.getProfile('team', teamId)
     const tags = prop('tags', values)
     if (!values || !tags) {
-      return reply.sendStatus(404)
+      throw Boom.notFound()
     }
 
     // Get org keys & visibility
     const associatedOrg = await team.associatedOrg(teamId) // Is the team part of an organization?
 
     if (!associatedOrg) {
-      return reply.sendStatus(404)
+      throw Boom.notFound()
     }
 
     const isUserModerator = await team.isModerator(teamId, requesterId)
@@ -149,7 +150,7 @@ async function getTeamProfile(req, reply) {
       return reply.send(keysToSend)
     }
 
-    // Get visibile keys
+    // Get visible keys
     teamKeys.forEach((key) => {
       const { visibility } = key
       switch (visibility) {
@@ -187,9 +188,8 @@ async function getTeamProfile(req, reply) {
     })
 
     return reply.send(keysToSend)
-  } catch (err) {
-    console.error(err)
-    return reply.boom.badImplementation()
+  } catch (error) {
+    throw Boom.badImplementation()
   }
 }
 
@@ -198,10 +198,10 @@ async function getTeamProfile(req, reply) {
  */
 async function getUserTeamProfile(req, reply) {
   const { osmId, id: teamId } = req.params
-  const { user_id: requesterId } = reply.locals
+  const { user_id: requesterId } = req.session
 
   if (!osmId) {
-    return reply.boom.badRequest('osmId is required parameter')
+    throw Boom.badRequest('osmId is required parameter')
   }
 
   try {
@@ -214,7 +214,7 @@ async function getUserTeamProfile(req, reply) {
     const values = await profile.getProfile('user', osmId)
     const tags = prop('tags', values)
     if (!values || !tags) {
-      return reply.sendStatus(404)
+      throw Boom.notFound()
     }
 
     // Get team attributes
@@ -243,7 +243,7 @@ async function getUserTeamProfile(req, reply) {
       return reply.send(keysToSend)
     }
 
-    // Get visibile keys
+    // Get visible keys
     teamKeys.forEach((key) => {
       const { visibility } = key
       switch (visibility) {
@@ -277,7 +277,7 @@ async function getUserTeamProfile(req, reply) {
     return reply.send(keysToSend)
   } catch (err) {
     console.error(err)
-    return reply.boom.badImplementation()
+    throw Boom.badImplementation()
   }
 }
 
@@ -290,7 +290,7 @@ function createProfileKeys(ownerType, profileType) {
     const { body } = req
 
     if (!id) {
-      return reply.boom.badRequest('id is required parameter')
+      throw Boom.badRequest('id is required parameter')
     }
 
     try {
@@ -315,9 +315,9 @@ function createProfileKeys(ownerType, profileType) {
         err instanceof ValidationError ||
         err instanceof PropertyRequiredError
       ) {
-        return reply.boom.badRequest(err)
+        throw Boom.badRequest(err)
       }
-      return reply.boom.badImplementation()
+      throw Boom.badImplementation()
     }
   }
 }
@@ -330,7 +330,7 @@ async function modifyProfileKey(req, reply) {
   const { body } = req
 
   if (!id) {
-    return reply.boom.badRequest('id is required parameter')
+    throw Boom.badRequest('id is required parameter')
   }
 
   try {
@@ -342,9 +342,9 @@ async function modifyProfileKey(req, reply) {
       err instanceof ValidationError ||
       err instanceof PropertyRequiredError
     ) {
-      return reply.boom.badRequest(err)
+      throw Boom.badRequest(err)
     }
-    return reply.boom.badImplementation()
+    throw Boom.badImplementation()
   }
 }
 
@@ -355,7 +355,7 @@ async function deleteProfileKey(req, reply) {
   const { id } = req.params
 
   if (!id) {
-    return reply.boom.badRequest('id is required parameter')
+    throw Boom.badRequest('id is required parameter')
   }
 
   try {
@@ -367,9 +367,9 @@ async function deleteProfileKey(req, reply) {
       err instanceof ValidationError ||
       err instanceof PropertyRequiredError
     ) {
-      return reply.boom.badRequest(err)
+      throw Boom.badRequest(err)
     }
-    return reply.boom.badImplementation()
+    throw Boom.badImplementation()
   }
 }
 
@@ -381,7 +381,7 @@ function getProfileKeys(ownerType, profileType) {
     const { id } = req.params
 
     if (!id) {
-      return reply.boom.badRequest('id is required parameter')
+      throw Boom.badRequest('id is required parameter')
     }
 
     try {
@@ -397,9 +397,9 @@ function getProfileKeys(ownerType, profileType) {
         err instanceof ValidationError ||
         err instanceof PropertyRequiredError
       ) {
-        return reply.boom.badRequest(err)
+        throw Boom.badRequest(err)
       }
-      return reply.boom.badImplementation()
+      throw Boom.badImplementation()
     }
   }
 }
@@ -416,7 +416,7 @@ function setProfile(profileType) {
     const { body } = req
 
     if (!id) {
-      return reply.boom.badRequest('id is required parameter')
+      throw Boom.badRequest('id is required parameter')
     }
 
     try {
@@ -424,7 +424,7 @@ function setProfile(profileType) {
       reply.sendStatus(200)
     } catch (err) {
       console.error(err)
-      return reply.boom.badImplementation()
+      throw Boom.badImplementation()
     }
   }
 }
@@ -433,25 +433,25 @@ function setProfile(profileType) {
  * Get a user's profile
  */
 async function getMyProfile(req, reply) {
-  const { user_id } = reply.locals
+  const { user_id } = req.session
   try {
     const data = await profile.getProfile('user', user_id)
     return reply.send(data)
   } catch (err) {
     console.error(err)
-    return reply.boom.badImplementation()
+    throw Boom.badImplementation()
   }
 }
 
 async function setMyProfile(req, reply) {
-  const { user_id } = reply.locals
+  const { user_id } = req.session
   const { body } = req
   try {
     await profile.setProfile(body, 'user', user_id)
     return reply.sendStatus(200)
   } catch (err) {
     console.error(err)
-    return reply.boom.badImplementation()
+    throw Boom.badImplementation()
   }
 }
 

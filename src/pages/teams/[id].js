@@ -4,6 +4,8 @@ import join from 'url-join'
 import { map, prop, contains, reverse, assoc } from 'ramda'
 import Modal from 'react-modal'
 import dynamic from 'next/dynamic'
+import { getSession } from 'next-auth/react'
+import { withRouter } from 'next/router'
 
 import Card from '../../components/card'
 import Section from '../../components/section'
@@ -36,13 +38,9 @@ const { publicRuntimeConfig } = getConfig()
 
 const Map = dynamic(() => import('../../components/team-map'), { ssr: false })
 
-export default class Team extends Component {
-  static async getInitialProps({ query }) {
-    if (query) {
-      return {
-        id: query.id,
-      }
-    }
+class Team extends Component {
+  static getInitialProps({ query }) {
+    return { id: query.id }
   }
 
   constructor(props) {
@@ -50,6 +48,7 @@ export default class Team extends Component {
     this.state = {
       profileInfo: [],
       profileUserId: '',
+      session: getSession(),
       joinLink: null,
       loading: true,
       error: undefined,
@@ -260,7 +259,7 @@ export default class Team extends Component {
 
     if (!team) return null
 
-    const userId = this.props.user.uid
+    const userId = this.state.session.user_id
     const members = map(prop('id'), teamMembers.members)
     const moderators = map(prop('osm_id'), teamMembers.moderators)
 
@@ -503,3 +502,5 @@ export default class Team extends Component {
     )
   }
 }
+
+export default withRouter(Team)
