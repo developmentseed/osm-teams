@@ -2,16 +2,16 @@ import React, { Component } from 'react'
 import { assoc, isEmpty } from 'ramda'
 import Popup from 'reactjs-popup'
 
-import ProfileAttributeForm from '../components/profile-attribute-form'
-import Button from '../components/button'
-import Table from '../components/table'
+import ProfileAttributeForm from '../../../components/profile-attribute-form'
+import Button from '../../../components/button'
+import Table from '../../../components/table'
 import {
   addTeamMemberAttributes,
   getTeamMemberAttributes,
   modifyAttribute,
   deleteAttribute,
-} from '../lib/profiles-api'
-import theme from '../styles/theme'
+} from '../../../lib/profiles-api'
+import theme from '../../../styles/theme'
 
 export default class TeamEditProfile extends Component {
   static async getInitialProps({ query }) {
