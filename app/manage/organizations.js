@@ -7,7 +7,7 @@ const { map, prop } = require('ramda')
  * List organizations that a user is a member of
  */
 async function listMyOrgs(req, reply) {
-  const { user_id } = reply.locals
+  const { user_id } = req.session
   try {
     const orgs = await organization.listMyOrganizations(user_id)
     reply.send(orgs)
@@ -24,7 +24,7 @@ async function listMyOrgs(req, reply) {
  */
 async function createOrg(req, reply) {
   const { body } = req
-  const { user_id } = reply.locals
+  const { user_id } = req.session
 
   try {
     const data = await organization.create(body, user_id)
@@ -41,7 +41,7 @@ async function createOrg(req, reply) {
  */
 async function getOrg(req, reply) {
   const { id } = req.params
-  const { user_id } = reply.locals
+  const { user_id } = req.session
 
   if (!id) {
     return reply.boom.badRequest('organization id is required')
@@ -252,7 +252,7 @@ async function removeManager(req, reply) {
 async function createOrgTeam(req, reply) {
   const { id } = req.params
   const { body } = req
-  const { user_id } = reply.locals
+  const { user_id } = req.session
 
   try {
     const data = await organization.createOrgTeam(id, body, user_id)

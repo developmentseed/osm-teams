@@ -32,7 +32,7 @@ async function listTeams(req, reply) {
 }
 
 async function listMyTeams(req, reply) {
-  const { user_id: osmId } = reply.locals
+  const { user_id: osmId } = req.session
   try {
     const memberOfTeams = await team.list({ osmId })
     const moderatorOfTeams = await team.listModeratedBy(osmId)
@@ -349,7 +349,7 @@ const acceptJoinInvitation = routeWrapper({
       .required(),
   },
   handler: async (req, reply) => {
-    const user = reply.locals.user_id
+    const user = req.session.user_id
     try {
       const conn = await db()
       const [invitation] = await conn('invitations').where({
@@ -373,7 +373,7 @@ const acceptJoinInvitation = routeWrapper({
 
 async function joinTeam(req, reply) {
   const { id } = req.params
-  const osmId = reply.locals.user_id
+  const osmId = req.session.user_id
 
   if (!id) {
     return reply.boom.badRequest('team id is required')
