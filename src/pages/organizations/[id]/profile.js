@@ -6,7 +6,7 @@ export default class EditProfileForm extends Component {
     if (query) {
       return {
         id: query.id,
-        formType: 'team',
+        formType: 'org',
       }
     }
   }
