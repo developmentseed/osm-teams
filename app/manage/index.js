@@ -372,7 +372,7 @@ function manageRouter(handler) {
   //   )
 
   //   if (!isInvitationValid) {
-  //     return res.sendStatus(404)
+  //     return res.status(404)
   //   }
 
   //   const teamData = await teamModel.get(req.params.id)

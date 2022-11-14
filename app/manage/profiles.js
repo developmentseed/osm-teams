@@ -322,7 +322,7 @@ async function modifyProfileKey(req, reply) {
 
   try {
     await profile.modifyProfileKey(id, body)
-    return reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.error(err)
     if (
@@ -347,7 +347,7 @@ async function deleteProfileKey(req, reply) {
 
   try {
     await profile.deleteProfileKey(id)
-    return reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.error(err)
     if (
@@ -408,7 +408,7 @@ function setProfile(profileType) {
 
     try {
       await profile.setProfile(body, profileType, id)
-      reply.sendStatus(200)
+      reply.status(200)
     } catch (err) {
       console.error(err)
       throw Boom.badImplementation()
@@ -435,7 +435,7 @@ async function setMyProfile(req, reply) {
   const { body } = req
   try {
     await profile.setProfile(body, 'user', user_id)
-    return reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.error(err)
     throw Boom.badImplementation()

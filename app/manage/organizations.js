@@ -143,7 +143,7 @@ async function destroyOrg(req, reply) {
 
   try {
     await organization.destroy(id)
-    reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -166,7 +166,7 @@ async function addOwner(req, reply) {
 
   try {
     await organization.addOwner(id, Number(osmId))
-    reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -189,7 +189,7 @@ async function removeOwner(req, reply) {
 
   try {
     await organization.removeOwner(id, Number(osmId))
-    reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -212,7 +212,7 @@ async function addManager(req, reply) {
 
   try {
     await organization.addManager(id, Number(osmId))
-    reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -235,7 +235,7 @@ async function removeManager(req, reply) {
 
   try {
     await organization.removeManager(id, Number(osmId))
-    reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)

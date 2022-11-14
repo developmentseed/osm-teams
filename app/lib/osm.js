@@ -130,7 +130,7 @@ function openstreetmap(req, res) {
       }
     },
     pass: function () {
-      res.sendStatus(401)
+      return res.status(401)
     },
     fail: function (challenge, status) {
       res.status(status).send(challenge)
