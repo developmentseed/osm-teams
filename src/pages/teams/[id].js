@@ -5,14 +5,14 @@ import { map, prop, contains, reverse, assoc } from 'ramda'
 import Modal from 'react-modal'
 import dynamic from 'next/dynamic'
 
-import Card from '../components/card'
-import Section from '../components/section'
-import SectionHeader from '../components/section-header'
-import Button from '../components/button'
-import Table from '../components/table'
-import AddMemberForm from '../components/add-member-form'
-import ProfileModal from '../components/profile-modal'
-import theme from '../styles/theme'
+import Card from '../../components/card'
+import Section from '../../components/section'
+import SectionHeader from '../../components/section-header'
+import Button from '../../components/button'
+import Table from '../../components/table'
+import AddMemberForm from '../../components/add-member-form'
+import ProfileModal from '../../components/profile-modal'
+import theme from '../../styles/theme'
 
 import {
   getTeam,
@@ -24,17 +24,17 @@ import {
   removeModerator,
   getTeamJoinInvitations,
   createTeamJoinInvitation,
-} from '../lib/teams-api'
+} from '../../lib/teams-api'
 import {
   getTeamProfile,
   getUserOrgProfile,
   getUserTeamProfile,
-} from '../lib/profiles-api'
-import { getOrgStaff } from '../lib/org-api'
+} from '../../lib/profiles-api'
+import { getOrgStaff } from '../../lib/org-api'
 import { toast } from 'react-toastify'
 const { publicRuntimeConfig } = getConfig()
 
-const Map = dynamic(() => import('../components/team-map'), { ssr: false })
+const Map = dynamic(() => import('../../components/team-map'), { ssr: false })
 
 export default class Team extends Component {
   static async getInitialProps({ query }) {
