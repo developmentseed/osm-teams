@@ -320,169 +320,169 @@ function manageRouter(handler) {
     setProfile('org')
   )
 
-  /**
-   * Page renders
-   */
-  handler.get('/clients', can('clients'), async (req, res) => {
-    const { manageToken } = await getUserManageToken(res.locals.user_id)
-    const access_token = manageToken.access_token
-    return nextApp.render(req, res, '/clients', { access_token })
-  })
+  // /**
+  //  * Page renders
+  //  */
+  // handler.get('/clients', can('clients'), async (req, res) => {
+  //   const { manageToken } = await getUserManageToken(res.locals.user_id)
+  //   const access_token = manageToken.access_token
+  //   return nextApp.render(req, res, '/clients', { access_token })
+  // })
 
-  handler.get('/profile', can('clients'), (req, res) => {
-    return nextApp.render(req, res, '/profile')
-  })
+  // handler.get('/profile', can('clients'), (req, res) => {
+  //   return nextApp.render(req, res, '/profile')
+  // })
 
-  handler.get(
-    '/teams/create',
-    can('public:authenticated'),
-    async (req, res) => {
-      const staff = await orgModel.getOrgStaff({
-        osmId: Number(res.locals.user_id),
-      })
-      return nextApp.render(req, res, '/team-create', { staff })
-    }
-  )
+  // handler.get(
+  //   '/teams/create',
+  //   can('public:authenticated'),
+  //   async (req, res) => {
+  //     const staff = await orgModel.getOrgStaff({
+  //       osmId: Number(res.locals.user_id),
+  //     })
+  //     return nextApp.render(req, res, '/team-create', { staff })
+  //   }
+  // )
 
-  handler.get('/teams/:id', can('team:view'), async (req, res) => {
-    return nextApp.render(req, res, '/team', { id: req.params.id })
-  })
+  // handler.get('/teams/:id', can('team:view'), async (req, res) => {
+  //   return nextApp.render(req, res, '/team', { id: req.params.id })
+  // })
 
-  handler.get('/teams/:id/edit', can('team:edit'), (req, res) => {
-    return nextApp.render(req, res, '/team-edit', { id: req.params.id })
-  })
+  // handler.get('/teams/:id/edit', can('team:edit'), (req, res) => {
+  //   return nextApp.render(req, res, '/team-edit', { id: req.params.id })
+  // })
 
-  handler.get('/teams/:id/edit-profiles', can('team:edit'), (req, res) => {
-    return nextApp.render(req, res, '/team-edit-profile', { id: req.params.id })
-  })
+  // handler.get('/teams/:id/edit-profiles', can('team:edit'), (req, res) => {
+  //   return nextApp.render(req, res, '/team-edit-profile', { id: req.params.id })
+  // })
 
-  handler.get('/teams/:id/profile', can('team:member'), (req, res) => {
-    return nextApp.render(req, res, '/profile-form', {
-      id: req.params.id,
-      formType: 'team',
-    })
-  })
+  // handler.get('/teams/:id/profile', can('team:member'), (req, res) => {
+  //   return nextApp.render(req, res, '/profile-form', {
+  //     id: req.params.id,
+  //     formType: 'team',
+  //   })
+  // })
 
-  handler.get('/teams/:id/invitations/:uuid', async (req, res) => {
-    const teamId = req.params.id
-    const invitationId = req.params.uuid
-    const isInvitationValid = await teamModel.isInvitationValid(
-      teamId,
-      invitationId
-    )
+  // handler.get('/teams/:id/invitations/:uuid', async (req, res) => {
+  //   const teamId = req.params.id
+  //   const invitationId = req.params.uuid
+  //   const isInvitationValid = await teamModel.isInvitationValid(
+  //     teamId,
+  //     invitationId
+  //   )
 
-    if (!isInvitationValid) {
-      return res.sendStatus(404)
-    }
+  //   if (!isInvitationValid) {
+  //     return res.sendStatus(404)
+  //   }
 
-    const teamData = await teamModel.get(req.params.id)
-    return nextApp.render(req, res, '/invitation', {
-      team_id: req.params.id,
-      invitation_id: req.params.uuid,
-      team: teamData,
-    })
-  })
+  //   const teamData = await teamModel.get(req.params.id)
+  //   return nextApp.render(req, res, '/invitation', {
+  //     team_id: req.params.id,
+  //     invitation_id: req.params.uuid,
+  //     team: teamData,
+  //   })
+  // })
 
-  handler.get(
-    '/organizations/create',
-    can('public:authenticated'),
-    (req, res) => {
-      return nextApp.render(req, res, '/org-create')
-    }
-  )
+  // handler.get(
+  //   '/organizations/create',
+  //   can('public:authenticated'),
+  //   (req, res) => {
+  //     return nextApp.render(req, res, '/org-create')
+  //   }
+  // )
 
-  handler.get(
-    '/organizations/:id',
-    can('public:authenticated'),
-    async (req, res) => {
-      return nextApp.render(req, res, '/organization', { id: req.params.id })
-    }
-  )
+  // handler.get(
+  //   '/organizations/:id',
+  //   can('public:authenticated'),
+  //   async (req, res) => {
+  //     return nextApp.render(req, res, '/organization', { id: req.params.id })
+  //   }
+  // )
 
-  handler.get(
-    '/organizations/:id/edit',
-    can('organization:edit'),
-    (req, res) => {
-      return nextApp.render(req, res, '/org-edit', { id: req.params.id })
-    }
-  )
+  // handler.get(
+  //   '/organizations/:id/edit',
+  //   can('organization:edit'),
+  //   (req, res) => {
+  //     return nextApp.render(req, res, '/org-edit', { id: req.params.id })
+  //   }
+  // )
 
-  handler.get(
-    '/organizations/:id/edit-profiles',
-    can('organization:edit'),
-    (req, res) => {
-      return nextApp.render(req, res, '/org-edit-profile', {
-        id: req.params.id,
-      })
-    }
-  )
+  // handler.get(
+  //   '/organizations/:id/edit-profiles',
+  //   can('organization:edit'),
+  //   (req, res) => {
+  //     return nextApp.render(req, res, '/org-edit-profile', {
+  //       id: req.params.id,
+  //     })
+  //   }
+  // )
 
-  handler.get(
-    '/organizations/:id/edit-privacy-policy',
-    can('organization:edit'),
-    (req, res) => {
-      return nextApp.render(req, res, '/org-edit-privacy-policy', {
-        id: req.params.id,
-      })
-    }
-  )
+  // handler.get(
+  //   '/organizations/:id/edit-privacy-policy',
+  //   can('organization:edit'),
+  //   (req, res) => {
+  //     return nextApp.render(req, res, '/org-edit-privacy-policy', {
+  //       id: req.params.id,
+  //     })
+  //   }
+  // )
 
-  handler.get(
-    '/organizations/:id/profile',
-    can('organization:member'),
-    (req, res) => {
-      return nextApp.render(req, res, '/profile-form', {
-        id: req.params.id,
-        formType: 'org',
-      })
-    }
-  )
+  // handler.get(
+  //   '/organizations/:id/profile',
+  //   can('organization:member'),
+  //   (req, res) => {
+  //     return nextApp.render(req, res, '/profile-form', {
+  //       id: req.params.id,
+  //       formType: 'org',
+  //     })
+  //   }
+  // )
 
-  handler.get(
-    '/organizations/:id/edit-team-profiles',
-    can('organization:edit'),
-    (req, res) => {
-      return nextApp.render(req, res, '/org-edit-team-profile', {
-        id: req.params.id,
-      })
-    }
-  )
+  // handler.get(
+  //   '/organizations/:id/edit-team-profiles',
+  //   can('organization:edit'),
+  //   (req, res) => {
+  //     return nextApp.render(req, res, '/org-edit-team-profile', {
+  //       id: req.params.id,
+  //     })
+  //   }
+  // )
 
-  /**
-   * Badge pages
-   * */
-  handler.get(
-    '/organizations/:id/badges/add',
-    can('organization:edit'),
-    (req, res) => {
-      return nextApp.render(req, res, '/badges/add', { id: req.params.id })
-    }
-  )
-  handler.get(
-    '/organizations/:id/badges/:badgeId',
-    can('organization:edit'),
-    (req, res) => {
-      return nextApp.render(req, res, '/badges/edit', {
-        id: req.params.id,
-        badgeId: req.params.badgeId,
-      })
-    }
-  )
+  // /**
+  //  * Badge pages
+  //  * */
+  // handler.get(
+  //   '/organizations/:id/badges/add',
+  //   can('organization:edit'),
+  //   (req, res) => {
+  //     return nextApp.render(req, res, '/badges/add', { id: req.params.id })
+  //   }
+  // )
+  // handler.get(
+  //   '/organizations/:id/badges/:badgeId',
+  //   can('organization:edit'),
+  //   (req, res) => {
+  //     return nextApp.render(req, res, '/badges/edit', {
+  //       id: req.params.id,
+  //       badgeId: req.params.badgeId,
+  //     })
+  //   }
+  // )
 
-  // New badge assignment
-  handler.get(
-    '/organizations/:id/badges/assign/:userId',
-    can('organization:edit'),
-    (req, res) => nextApp.render(req, res, '/badges-assignment/new', req.params)
-  )
+  // // New badge assignment
+  // handler.get(
+  //   '/organizations/:id/badges/assign/:userId',
+  //   can('organization:edit'),
+  //   (req, res) => nextApp.render(req, res, '/badges-assignment/new', req.params)
+  // )
 
-  // Edit badge assignment
-  handler.get(
-    '/organizations/:id/badges/:badgeId/assign/:userId',
-    can('organization:edit'),
-    (req, res) =>
-      nextApp.render(req, res, '/badges-assignment/edit', req.params)
-  )
+  // // Edit badge assignment
+  // handler.get(
+  //   '/organizations/:id/badges/:badgeId/assign/:userId',
+  //   can('organization:edit'),
+  //   (req, res) =>
+  //     nextApp.render(req, res, '/badges-assignment/edit', req.params)
+  // )
 }
 
 module.exports = manageRouter
