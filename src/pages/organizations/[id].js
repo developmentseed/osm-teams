@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Router from 'next/router'
+import Router, { withRouter } from 'next/router'
 import {
   getOrg,
   getOrgStaff,
@@ -24,6 +24,7 @@ import { assoc, propEq, find, contains, prop, map } from 'ramda'
 import APIClient from '../../lib/api-client'
 import getConfig from 'next/config'
 import join from 'url-join'
+import { getSession } from 'next-auth/react'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -44,7 +45,7 @@ export function SectionWrapper(props) {
     </div>
   )
 }
-export default class Organization extends Component {
+class Organization extends Component {
   static async getInitialProps({ query }) {
     if (query) {
       return {
@@ -57,6 +58,7 @@ export default class Organization extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      session: getSession(),
       profileInfo: [],
       profileUserId: '',
       members: [],
@@ -280,7 +282,7 @@ export default class Organization extends Component {
     const { org, members, managers, owners, error } = this.state
     if (!org) return null
 
-    const userId = parseInt(this.props.user.uid)
+    const userId = parseInt(this.state.session.user_id)
     const ownerIds = map(parseInt, map(prop('id'), owners))
     const managerIds = map(parseInt, map(prop('id'), managers))
     const isUserOwner = contains(userId, ownerIds)
@@ -513,3 +515,5 @@ export default class Organization extends Component {
     )
   }
 }
+
+export default withRouter(Organization)
