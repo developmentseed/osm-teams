@@ -2,12 +2,12 @@ import React, { Component, Fragment } from 'react'
 import join from 'url-join'
 import Router from 'next/router'
 import { pick, split } from 'ramda'
-import { getTeam, updateTeam, destroyTeam } from '../lib/teams-api'
+import { getTeam, updateTeam, destroyTeam } from '../../../lib/teams-api'
 import getConfig from 'next/config'
-import EditTeamForm from '../components/edit-team-form'
-import Button from '../components/button'
-import theme from '../styles/theme'
-import { getOrgTeamAttributes, getTeamProfile } from '../lib/profiles-api'
+import EditTeamForm from '../../../components/edit-team-form'
+import Button from '../../../components/button'
+import theme from '../../../styles/theme'
+import { getOrgTeamAttributes, getTeamProfile } from '../../../lib/profiles-api'
 const { publicRuntimeConfig } = getConfig()
 
 export default class TeamEdit extends Component {

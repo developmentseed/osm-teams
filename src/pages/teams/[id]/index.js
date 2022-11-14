@@ -7,14 +7,14 @@ import dynamic from 'next/dynamic'
 import { getSession } from 'next-auth/react'
 import { withRouter } from 'next/router'
 
-import Card from '../../components/card'
-import Section from '../../components/section'
-import SectionHeader from '../../components/section-header'
-import Button from '../../components/button'
-import Table from '../../components/table'
-import AddMemberForm from '../../components/add-member-form'
-import ProfileModal from '../../components/profile-modal'
-import theme from '../../styles/theme'
+import Card from '../../../components/card'
+import Section from '../../../components/section'
+import SectionHeader from '../../../components/section-header'
+import Button from '../../../components/button'
+import Table from '../../../components/table'
+import AddMemberForm from '../../../components/add-member-form'
+import ProfileModal from '../../../components/profile-modal'
+import theme from '../../../styles/theme'
 
 import {
   getTeam,
@@ -26,17 +26,19 @@ import {
   removeModerator,
   getTeamJoinInvitations,
   createTeamJoinInvitation,
-} from '../../lib/teams-api'
+} from '../../../lib/teams-api'
 import {
   getTeamProfile,
   getUserOrgProfile,
   getUserTeamProfile,
-} from '../../lib/profiles-api'
-import { getOrgStaff } from '../../lib/org-api'
+} from '../../../lib/profiles-api'
+import { getOrgStaff } from '../../../lib/org-api'
 import { toast } from 'react-toastify'
 const { publicRuntimeConfig } = getConfig()
 
-const Map = dynamic(() => import('../../components/team-map'), { ssr: false })
+const Map = dynamic(() => import('../../../components/team-map'), {
+  ssr: false,
+})
 
 class Team extends Component {
   static getInitialProps({ query }) {
@@ -48,7 +50,6 @@ class Team extends Component {
     this.state = {
       profileInfo: [],
       profileUserId: '',
-      session: getSession(),
       joinLink: null,
       loading: true,
       error: undefined,
@@ -60,6 +61,7 @@ class Team extends Component {
   async componentDidMount() {
     this.getTeam()
     this.getTeamJoinLink()
+    this.setState({ session: await getSession() })
   }
 
   async getTeamJoinLink() {
@@ -259,7 +261,7 @@ class Team extends Component {
 
     if (!team) return null
 
-    const userId = this.state.session.user_id
+    const userId = this.state.session?.user_id
     const members = map(prop('id'), teamMembers.members)
     const moderators = map(prop('osm_id'), teamMembers.moderators)
 
