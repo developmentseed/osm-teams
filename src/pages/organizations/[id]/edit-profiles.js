@@ -2,18 +2,18 @@ import React, { Component } from 'react'
 import { assoc, isEmpty } from 'ramda'
 import Popup from 'reactjs-popup'
 
-import ProfileAttributeForm from '../components/profile-attribute-form'
-import Button from '../components/button'
-import Table from '../components/table'
+import ProfileAttributeForm from '../../../components/profile-attribute-form'
+import Button from '../../../components/button'
+import Table from '../../../components/table'
 import {
-  addOrgTeamAttributes,
-  getOrgTeamAttributes,
+  addOrgMemberAttributes,
+  getOrgMemberAttributes,
   modifyAttribute,
   deleteAttribute,
-} from '../lib/profiles-api'
-import theme from '../styles/theme'
+} from '../../../lib/profiles-api'
+import theme from '../../../styles/theme'
 
-export default class OrgEditTeamProfile extends Component {
+export default class OrgEditProfile extends Component {
   static async getInitialProps({ query }) {
     if (query) {
       return {
@@ -104,10 +104,10 @@ export default class OrgEditTeamProfile extends Component {
   async getAttributes() {
     const { id } = this.props
     try {
-      let teamAttributes = await getOrgTeamAttributes(id)
+      let memberAttributes = await getOrgMemberAttributes(id)
       this.setState({
         orgId: id,
-        teamAttributes,
+        memberAttributes,
         loading: false,
       })
     } catch (e) {
@@ -115,14 +115,14 @@ export default class OrgEditTeamProfile extends Component {
       this.setState({
         error: e,
         orgId: null,
-        teamAttributes: [],
+        memberAttributes: [],
         loading: false,
       })
     }
   }
 
   render() {
-    const { teamAttributes, orgId } = this.state
+    const { memberAttributes, orgId } = this.state
     const columns = [
       { key: 'name' },
       { key: 'description' },
@@ -133,8 +133,8 @@ export default class OrgEditTeamProfile extends Component {
     ]
 
     let rows = []
-    if (teamAttributes) {
-      rows = teamAttributes.map((attribute) => {
+    if (memberAttributes) {
+      rows = memberAttributes.map((attribute) => {
         let newAttribute = assoc('actions', this.renderActions, attribute)
         newAttribute.required = attribute.required.toString()
         return newAttribute
@@ -160,10 +160,10 @@ export default class OrgEditTeamProfile extends Component {
         <section>
           <h2>Current Attributes</h2>
           <p>
-            Teams of your organization will be able to add these attributes to
+            Members of your organization will be able to add these attributes to
             their profile.
           </p>
-          {teamAttributes && isEmpty(teamAttributes) ? (
+          {memberAttributes && isEmpty(memberAttributes) ? (
             "You haven't added any attributes yet!"
           ) : (
             <Table rows={rows} columns={columns} />
@@ -194,7 +194,7 @@ export default class OrgEditTeamProfile extends Component {
               <ProfileAttributeForm
                 formType='org'
                 onSubmit={async (attributes) => {
-                  await addOrgTeamAttributes(orgId, attributes)
+                  await addOrgMemberAttributes(orgId, attributes)
                   this.setState({ isAdding: false })
                   return this.getAttributes()
                 }}

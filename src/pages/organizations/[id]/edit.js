@@ -2,11 +2,11 @@ import React, { Component, Fragment } from 'react'
 import join from 'url-join'
 import Router from 'next/router'
 import { pick } from 'ramda'
-import { getOrg, updateOrg, destroyOrg } from '../lib/org-api'
+import { getOrg, updateOrg, destroyOrg } from '../../../lib/org-api'
 import getConfig from 'next/config'
-import EditOrgForm from '../components/edit-org-form'
-import Button from '../components/button'
-import theme from '../styles/theme'
+import EditOrgForm from '../../../components/edit-org-form'
+import Button from '../../../components/button'
+import theme from '../../../styles/theme'
 const { publicRuntimeConfig } = getConfig()
 
 export default class OrgEdit extends Component {

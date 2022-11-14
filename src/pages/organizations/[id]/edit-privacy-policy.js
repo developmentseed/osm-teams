@@ -3,8 +3,8 @@ import join from 'url-join'
 import { prop } from 'ramda'
 import getConfig from 'next/config'
 import Router from 'next/router'
-import { getOrg, updateOrgPrivacyPolicy } from '../lib/org-api'
-import PrivacyPolicyForm from '../components/privacy-policy-form'
+import { getOrg, updateOrgPrivacyPolicy } from '../../../lib/org-api'
+import PrivacyPolicyForm from '../../../components/privacy-policy-form'
 const { publicRuntimeConfig } = getConfig()
 
 export default class OrgPrivacyPolicy extends Component {
@@ -57,7 +57,7 @@ export default class OrgPrivacyPolicy extends Component {
     if (!orgId) return null
 
     const defaultValues = {
-      body: 'OSM Teams has the ability to collect additional information on registered users of OpenStreetMap. Exactly which types of information is collected is determined by Organization and/or Team moderators. OSM Teams will never sell or share user information directly from the database. The use of any information submitted by a member of a team or organization is at the full discretion of the team or organization moderator.',
+      body: 'OSM Teams has the ability to collect additional information on registered users of OpenStreetMap. Exactly which types of information are collected is determined by Organization and/or Team moderators. OSM Teams will never sell or share user information directly from the database. The use of any information submitted by a member of a team or organization is at the full discretion of the team or organization moderator.',
       consentText:
         'I understand the associated risks of using and entering my information on OSM Teams.',
     }

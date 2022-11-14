@@ -8,20 +8,20 @@ import {
   removeManager,
   addOwner,
   removeOwner,
-} from '../../lib/org-api'
-import { getUserOrgProfile } from '../../lib/profiles-api'
-import Card from '../../components/card'
-import Section from '../../components/section'
-import SectionHeader from '../../components/section-header'
-import Table from '../../components/table'
-import theme from '../../styles/theme'
-import AddMemberForm from '../../components/add-member-form'
-import SvgSquare from '../../components/svg-square'
-import Button from '../../components/button'
+} from '../../../lib/org-api'
+import { getUserOrgProfile } from '../../../lib/profiles-api'
+import Card from '../../../components/card'
+import Section from '../../../components/section'
+import SectionHeader from '../../../components/section-header'
+import Table from '../../../components/table'
+import theme from '../../../styles/theme'
+import AddMemberForm from '../../../components/add-member-form'
+import SvgSquare from '../../../components/svg-square'
+import Button from '../../../components/button'
 import Modal from 'react-modal'
-import ProfileModal from '../../components/profile-modal'
+import ProfileModal from '../../../components/profile-modal'
 import { assoc, propEq, find, contains, prop, map } from 'ramda'
-import APIClient from '../../lib/api-client'
+import APIClient from '../../../lib/api-client'
 import getConfig from 'next/config'
 import join from 'url-join'
 import { getSession } from 'next-auth/react'
@@ -58,7 +58,6 @@ class Organization extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      session: getSession(),
       profileInfo: [],
       profileUserId: '',
       members: [],
@@ -75,6 +74,7 @@ class Organization extends Component {
   }
 
   async componentDidMount() {
+    this.setState({ session: await getSession() })
     await this.getOrg()
     await this.getOrgStaff()
     await this.getBadges()
