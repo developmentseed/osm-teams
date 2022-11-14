@@ -98,99 +98,96 @@ async function getTeamProfile(req, reply) {
     reply.boom.badRequest('teamId is required parameter')
   }
 
-  try {
-    let visibleKeys = []
-    let teamKeys = []
-    let requesterIsMemberOfTeam = false
-    let requesterIsMemberOfOrg = false
-    let requesterIsManagerOfOrg = false
-    let requesterIsOwnerOfOrg = false
+  // try {
+  let visibleKeys = []
+  let teamKeys = []
+  let requesterIsMemberOfTeam = false
+  let requesterIsMemberOfOrg = false
+  let requesterIsManagerOfOrg = false
+  let requesterIsOwnerOfOrg = false
 
-    const values = await profile.getProfile('team', teamId)
-    const tags = prop('tags', values)
-    if (!values || !tags) {
-      throw Boom.notFound()
-    }
-
-    // Get org keys & visibility
-    const associatedOrg = await team.associatedOrg(teamId) // Is the team part of an organization?
-
-    if (!associatedOrg) {
-      throw Boom.notFound()
-    }
-
-    const isUserModerator = await team.isModerator(teamId, requesterId)
-
-    // Get team attributes from org
-    teamKeys = await profile.getProfileKeysForOwner(
-      'org',
-      associatedOrg.organization_id,
-      'team'
-    )
-    requesterIsMemberOfTeam = await team.isMember(teamId, requesterId) // Is the requester part of this team?
-    requesterIsMemberOfOrg = await org.isMemberOrStaff(
-      associatedOrg.organization_id,
-      requesterId
-    )
-    requesterIsManagerOfOrg = await org.isManager(
-      associatedOrg.organization_id,
-      requesterId
-    )
-    requesterIsOwnerOfOrg = await org.isOwner(
-      associatedOrg.organization_id,
-      requesterId
-    )
-
-    if (isUserModerator || requesterIsOwnerOfOrg) {
-      const allIds = teamKeys.map(prop('id'))
-      const allValues = pick(allIds, tags)
-      const keysToSend = teamKeys.map((key) => {
-        return assoc('value', allValues[key.id], key)
-      })
-      return reply.send(keysToSend)
-    }
-
-    // Get visible keys
-    teamKeys.forEach((key) => {
-      const { visibility } = key
-      switch (visibility) {
-        case 'public': {
-          visibleKeys.push(key)
-          break
-        }
-        case 'team': {
-          if (requesterIsMemberOfTeam) {
-            visibleKeys.push(key)
-          }
-          break
-        }
-        case 'org_staff': {
-          if (requesterIsOwnerOfOrg || requesterIsManagerOfOrg) {
-            visibleKeys.push(key)
-          }
-          break
-        }
-        case 'org': {
-          if (requesterIsMemberOfOrg) {
-            visibleKeys.push(key)
-          }
-          break
-        }
-      }
-    })
-
-    // Get values for keys
-    const visibleKeyIds = visibleKeys.map(prop('id'))
-    const visibleValues = pick(visibleKeyIds, tags)
-
-    const keysToSend = visibleKeys.map((key) => {
-      return assoc('value', visibleValues[key.id], key)
-    })
-
-    return reply.send(keysToSend)
-  } catch (error) {
-    throw Boom.badImplementation()
+  const values = await profile.getProfile('team', teamId)
+  const tags = prop('tags', values)
+  if (!values || !tags) {
+    throw Boom.notFound()
   }
+
+  // Get org keys & visibility
+  const associatedOrg = await team.associatedOrg(teamId) // Is the team part of an organization?
+
+  if (!associatedOrg) {
+    throw Boom.notFound()
+  }
+
+  const isUserModerator = await team.isModerator(teamId, requesterId)
+
+  // Get team attributes from org
+  teamKeys = await profile.getProfileKeysForOwner(
+    'org',
+    associatedOrg.organization_id,
+    'team'
+  )
+  requesterIsMemberOfTeam = await team.isMember(teamId, requesterId) // Is the requester part of this team?
+  requesterIsMemberOfOrg = await org.isMemberOrStaff(
+    associatedOrg.organization_id,
+    requesterId
+  )
+  requesterIsManagerOfOrg = await org.isManager(
+    associatedOrg.organization_id,
+    requesterId
+  )
+  requesterIsOwnerOfOrg = await org.isOwner(
+    associatedOrg.organization_id,
+    requesterId
+  )
+
+  if (isUserModerator || requesterIsOwnerOfOrg) {
+    const allIds = teamKeys.map(prop('id'))
+    const allValues = pick(allIds, tags)
+    const keysToSend = teamKeys.map((key) => {
+      return assoc('value', allValues[key.id], key)
+    })
+    return reply.send(keysToSend)
+  }
+
+  // Get visible keys
+  teamKeys.forEach((key) => {
+    const { visibility } = key
+    switch (visibility) {
+      case 'public': {
+        visibleKeys.push(key)
+        break
+      }
+      case 'team': {
+        if (requesterIsMemberOfTeam) {
+          visibleKeys.push(key)
+        }
+        break
+      }
+      case 'org_staff': {
+        if (requesterIsOwnerOfOrg || requesterIsManagerOfOrg) {
+          visibleKeys.push(key)
+        }
+        break
+      }
+      case 'org': {
+        if (requesterIsMemberOfOrg) {
+          visibleKeys.push(key)
+        }
+        break
+      }
+    }
+  })
+
+  // Get values for keys
+  const visibleKeyIds = visibleKeys.map(prop('id'))
+  const visibleValues = pick(visibleKeyIds, tags)
+
+  const keysToSend = visibleKeys.map((key) => {
+    return assoc('value', visibleValues[key.id], key)
+  })
+
+  return reply.send(keysToSend)
 }
 
 /**
@@ -204,81 +201,76 @@ async function getUserTeamProfile(req, reply) {
     throw Boom.badRequest('osmId is required parameter')
   }
 
-  try {
-    let visibleKeys = []
-    let teamKeys = []
-    let requesterIsMemberOfTeam = false
-    let requesterIsMemberOfOrg = false
-    let requesterIsOwnerOfOrg = false
+  let visibleKeys = []
+  let teamKeys = []
+  let requesterIsMemberOfTeam = false
+  let requesterIsMemberOfOrg = false
+  let requesterIsOwnerOfOrg = false
 
-    const values = await profile.getProfile('user', osmId)
-    const tags = prop('tags', values)
-    if (!values || !tags) {
-      throw Boom.notFound()
-    }
-
-    // Get team attributes
-    teamKeys = await profile.getProfileKeysForOwner('team', teamId, 'user')
-    requesterIsMemberOfTeam = await team.isMember(teamId, requesterId) // Is the requester part of this team?
-
-    // Get org keys & visibility
-    const associatedOrg = await team.associatedOrg(teamId) // Is the team part of an organization?
-    if (associatedOrg) {
-      requesterIsMemberOfOrg = await org.isMember(
-        associatedOrg.organization_id,
-        requesterId
-      )
-      requesterIsOwnerOfOrg = await org.isOwner(
-        associatedOrg.organization_id,
-        requesterId
-      )
-    }
-
-    if (requesterIsOwnerOfOrg) {
-      const allIds = teamKeys.map(prop('id'))
-      const allValues = pick(allIds, tags)
-      const keysToSend = teamKeys.map((key) => {
-        return assoc('value', allValues[key.id], key)
-      })
-      return reply.send(keysToSend)
-    }
-
-    // Get visible keys
-    teamKeys.forEach((key) => {
-      const { visibility } = key
-      switch (visibility) {
-        case 'public': {
-          visibleKeys.push(key)
-          break
-        }
-        case 'team': {
-          if (requesterIsMemberOfTeam) {
-            visibleKeys.push(key)
-          }
-          break
-        }
-        case 'org': {
-          if (requesterIsMemberOfOrg) {
-            visibleKeys.push(key)
-          }
-          break
-        }
-      }
-    })
-
-    // Get values for keys
-    const visibleKeyIds = visibleKeys.map(prop('id'))
-    const visibleValues = pick(visibleKeyIds, tags)
-
-    const keysToSend = visibleKeys.map((key) => {
-      return assoc('value', visibleValues[key.id], key)
-    })
-
-    return reply.send(keysToSend)
-  } catch (err) {
-    console.error(err)
-    throw Boom.badImplementation()
+  const values = await profile.getProfile('user', osmId)
+  const tags = prop('tags', values)
+  if (!values || !tags) {
+    throw Boom.notFound()
   }
+
+  // Get team attributes
+  teamKeys = await profile.getProfileKeysForOwner('team', teamId, 'user')
+  requesterIsMemberOfTeam = await team.isMember(teamId, requesterId) // Is the requester part of this team?
+
+  // Get org keys & visibility
+  const associatedOrg = await team.associatedOrg(teamId) // Is the team part of an organization?
+  if (associatedOrg) {
+    requesterIsMemberOfOrg = await org.isMember(
+      associatedOrg.organization_id,
+      requesterId
+    )
+    requesterIsOwnerOfOrg = await org.isOwner(
+      associatedOrg.organization_id,
+      requesterId
+    )
+  }
+
+  if (requesterIsOwnerOfOrg) {
+    const allIds = teamKeys.map(prop('id'))
+    const allValues = pick(allIds, tags)
+    const keysToSend = teamKeys.map((key) => {
+      return assoc('value', allValues[key.id], key)
+    })
+    return reply.send(keysToSend)
+  }
+
+  // Get visible keys
+  teamKeys.forEach((key) => {
+    const { visibility } = key
+    switch (visibility) {
+      case 'public': {
+        visibleKeys.push(key)
+        break
+      }
+      case 'team': {
+        if (requesterIsMemberOfTeam) {
+          visibleKeys.push(key)
+        }
+        break
+      }
+      case 'org': {
+        if (requesterIsMemberOfOrg) {
+          visibleKeys.push(key)
+        }
+        break
+      }
+    }
+  })
+
+  // Get values for keys
+  const visibleKeyIds = visibleKeys.map(prop('id'))
+  const visibleValues = pick(visibleKeyIds, tags)
+
+  const keysToSend = visibleKeys.map((key) => {
+    return assoc('value', visibleValues[key.id], key)
+  })
+
+  return reply.send(keysToSend)
 }
 
 /**
