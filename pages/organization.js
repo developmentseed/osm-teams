@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Router from 'next/router'
 import { getOrg, getOrgStaff, getMembers, addManager, removeManager, addOwner, removeOwner } from '../lib/org-api'
 import { getUserOrgProfile } from '../lib/profiles-api'
 import Card from '../components/card'
@@ -7,11 +8,34 @@ import SectionHeader from '../components/section-header'
 import Table from '../components/table'
 import theme from '../styles/theme'
 import AddMemberForm from '../components/add-member-form'
+import SvgSquare from '../components/svg-square'
 import Button from '../components/button'
 import Modal from 'react-modal'
 import ProfileModal from '../components/profile-modal'
 import { assoc, propEq, find, contains, prop, map } from 'ramda'
+import APIClient from '../lib/api-client'
+import getConfig from 'next/config'
+import join from 'url-join'
 
+const { publicRuntimeConfig } = getConfig()
+const URL = publicRuntimeConfig.APP_URL
+
+const apiClient = new APIClient()
+
+export function SectionWrapper (props) {
+  return (
+    <div>
+      {props.children}
+      <style jsx>
+        {`
+          div {
+            grid-column: 1 / span 12;
+          }
+        `}
+      </style>
+    </div>
+  )
+}
 export default class Organization extends Component {
   static async getInitialProps ({ query }) {
     if (query) {
@@ -36,11 +60,14 @@ export default class Organization extends Component {
     }
 
     this.closeProfileModal = this.closeProfileModal.bind(this)
+    this.renderBadges = this.renderBadges.bind(this)
+    this.getBadges = this.getBadges.bind(this)
   }
 
   async componentDidMount () {
     await this.getOrg()
     await this.getOrgStaff()
+    await this.getBadges()
     return this.getMembers(0)
   }
 
@@ -48,10 +75,18 @@ export default class Organization extends Component {
     const { id } = this.props
 
     try {
+      // Fetch profile attributes
       const profileInfo = await getUserOrgProfile(id, user.id)
+
+      // Fetch badges for this organization
+      const profileBadges = (
+        await apiClient.get(`/user/${user.id}/badges`)
+      ).badges.filter((b) => b.organization_id === parseInt(id))
+
       this.setState({
         profileInfo,
         profileMeta: user,
+        profileBadges,
         modalIsOpen: true
       })
     } catch (e) {
@@ -150,13 +185,74 @@ export default class Organization extends Component {
       }
     })
 
-    return <Table
-      rows={allRows}
-      columns={columns}
-      onRowClick={
-        (row) => this.openProfileModal(row)
+    return (
+      <Table
+        rows={allRows}
+        columns={columns}
+        emptyPlaceHolder={
+          this.state.loading ? 'Loading...' : 'This organization has no staff.'
+        }
+        onRowClick={(row) => this.openProfileModal(row)}
+      />
+    )
+  }
+
+  async getBadges () {
+    try {
+      const { id: orgId } = this.props
+      const badges = await apiClient.get(`/organizations/${orgId}/badges`)
+      this.setState({
+        badges
+      })
+    } catch (e) {
+      if (e.statusCode === 401) {
+        console.log("User doesn't have access to organization badges.")
+      } else {
+        console.error(e)
       }
-    />
+    }
+  }
+
+  renderBadges () {
+    const { id: orgId } = this.props
+    const columns = [{ key: 'name' }, { key: 'color' }]
+
+    // Do not render section if badges list cannot be fetched. This might happen
+    // on network error but also when the user doesn't have privileges.
+    return this.state.badges ? (
+      <SectionWrapper>
+        <Section>
+          <div className='section-actions'>
+            <SectionHeader>Badges</SectionHeader>
+            <div>
+              <Button
+                variant='primary small'
+                onClick={() =>
+                  Router.push(
+                    join(URL, `/organizations/${orgId}/badges/add`)
+                  )
+                }
+              >
+                Add
+              </Button>
+            </div>
+          </div>
+        </Section>
+        {this.state.badges && (
+          <Table rows={(this.state.badges || []).map((row) => {
+            return {
+              ...row,
+              color: () => <SvgSquare color={row.color} />
+            }
+          })} columns={columns} onRowClick={
+            ({ id: badgeId }) => Router.push(
+              join(URL, `/organizations/${orgId}/badges/${badgeId}`)
+            )
+
+          } />
+        )}
+      </SectionWrapper>
+    ) : null
   }
 
   renderMembers (memberRows) {
@@ -164,13 +260,18 @@ export default class Organization extends Component {
       { key: 'id' },
       { key: 'name' }
     ]
-    return <Table
-      rows={memberRows}
-      columns={columns}
-      onRowClick={
-        (row) => this.openProfileModal(row)
-      }
-    />
+    return (
+      <Table
+        rows={memberRows}
+        columns={columns}
+        emptyPlaceHolder={
+          this.state.loading
+            ? 'Loading...'
+            : 'This organization has no members.'
+        }
+        onRowClick={(row) => this.openProfileModal(row)}
+      />
+    )
   }
 
   render () {
@@ -241,6 +342,14 @@ export default class Organization extends Component {
           })
         }
       }
+
+      profileActions.push({
+        name: 'Assign a Badge',
+        onClick: () =>
+          Router.push(
+            join(URL, `/organizations/${org.id}/badges/assign/${profileId}`)
+          )
+      })
     }
 
     return (
@@ -293,9 +402,10 @@ export default class Organization extends Component {
                 </div>
               </div>
             </Section>
-            {!this.state.loading ? this.renderMembers(members) : 'Loading...'}
+            {this.renderMembers(members)}
           </div>
         ) : <div />}
+        {this.renderBadges()}
         <Modal style={{
           content: {
             maxWidth: '400px',
@@ -309,6 +419,7 @@ export default class Organization extends Component {
         }} isOpen={this.state.modalIsOpen}>
           <ProfileModal
             user={this.state.profileMeta}
+            badges={this.state.profileBadges}
             attributes={this.state.profileInfo}
             onClose={this.closeProfileModal}
             actions={profileActions}

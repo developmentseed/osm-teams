@@ -1,10 +1,11 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import App, { Container } from 'next/app'
 import Head from 'next/head'
 import Sidebar from '../components/sidebar'
 import Layout from '../components/layout.js'
 import PageBanner from '../components/banner'
 import Button from '../components/button'
+import { ToastContainer } from 'react-toastify'
 
 class OSMHydra extends App {
   static async getInitialProps ({ Component, ctx }) {
@@ -26,7 +27,7 @@ class OSMHydra extends App {
 
   render () {
     const { Component, pageProps, userData } = this.props
-    let bannerContent = <Fragment><span style={{ backgroundColor: '#FF6341', color: 'white', padding: '0.2rem' }}>beta</span> - please do not rely on the current API or site for production applications. Provide your <a href='https://forms.gle/mQQX37FcvfVMoiCW7' style={{ borderBottom: 'solid 1px #384A9E' }}>feedback</a> here.</Fragment>
+    let bannerContent
     let { uid, username, picture } = userData
 
     // store the userdata in localstorage if in browser
@@ -55,6 +56,7 @@ class OSMHydra extends App {
             integrity='sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=='
             crossOrigin='' />
           <link rel='stylesheet' href='https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css' />
+          <link rel='stylesheet' href='https://unpkg.com/react-toastify@8.2.0/dist/ReactToastify.min.css' />
           <link rel='shortcut icon' href='/static/favicon.ico' />
           <link rel='icon' type='image/png' href='/static/favicon.png' />
           <meta name='viewport' content='width=device-width, initial-scale=1' />
@@ -66,6 +68,7 @@ class OSMHydra extends App {
           <Component {...Object.assign({ user: { uid, username, picture } }, pageProps)} />
         </Layout>
         <Button href='https://forms.gle/mQQX37FcvfVMoiCW7' variant='danger' id='feedback'>Feedback</Button>
+        <ToastContainer position='bottom-right' />
       </Container>
     )
   }

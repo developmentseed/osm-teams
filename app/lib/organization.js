@@ -1,6 +1,6 @@
 const db = require('../db')
 const team = require('./team')
-const { map, prop, includes } = require('ramda')
+const { map, prop, includes, has, isNil } = require('ramda')
 const { unpack, PropertyRequiredError } = require('./utils')
 
 // Organization attributes (without profile)
@@ -10,6 +10,7 @@ const orgAttributes = [
   'description',
   'privacy',
   'teams_can_be_public',
+  'privacy_policy',
   'created_at',
   'updated_at'
 ]
@@ -113,9 +114,10 @@ async function destroy (id) {
  * @return {promise}
  */
 async function update (id, data) {
-  if (!data.name) throw new Error('data.name property is required')
-
   const conn = await db()
+  if (has('name', data) && isNil(prop('name', data))) {
+    throw new Error('data.name property is required')
+  }
   return unpack(conn('organization').where('id', id).update(data).returning(orgAttributes))
 }
 
@@ -264,6 +266,20 @@ async function isMemberOrStaff (organizationId, osmId) {
 }
 
 /**
+ * Checks if an osmId is a moderator of any team inside the org
+ * @param {int} organizationId - organization id
+ * @param {int} osmId - id of member we are testing
+ */
+async function isOrgTeamModerator (organizationId, osmId) {
+  if (!organizationId) throw new PropertyRequiredError('organization id')
+  if (!osmId) throw new PropertyRequiredError('osm id')
+  const conn = await db()
+  const subquery = conn('organization_team').select('team_id').where('organization_id', organizationId)
+  const isModeratorOfAny = await conn('moderator').whereIn('team_id', subquery).debug()
+  return isModeratorOfAny.length > 0
+}
+
+/**
  * Checks if the osm user is an owner of a team
  * @param {int} organizationId - organization id
  * @param {int} osmId - osm id
@@ -348,6 +364,7 @@ module.exports = {
   isOwner,
   isManager,
   isMember,
+  isOrgTeamModerator,
   createOrgTeam,
   listMyOrganizations,
   getOrgStaff,

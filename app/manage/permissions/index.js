@@ -26,7 +26,8 @@ const organizationPermissions = {
   'organization:edit': require('./edit-org'),
   'organization:create-team': require('./create-org-team'),
   'organization:member': require('./member-org'),
-  'organization:view-members': require('./view-org-members')
+  'organization:view-members': require('./view-org-members'),
+  'organization:view-team-keys': require('./view-org-team-keys')
 }
 
 const clientPermissions = {
@@ -42,6 +43,10 @@ const permissions = mergeAll([
   clientPermissions,
   organizationPermissions
 ])
+
+function isApiRequest ({ path }) {
+  return path.indexOf('/api') === 0
+}
 
 /**
  * Check if a user has a specific permission
@@ -159,18 +164,27 @@ function check (ability) {
       if (allowed) {
         next()
       } else {
-        res.boom.unauthorized('Forbidden')
+        if (isApiRequest(req)) {
+          res.boom.unauthorized('Forbidden')
+        } else {
+          next(new Error('Forbidden'))
+        }
       }
     } catch (e) {
       console.error('error checking permission', e)
-      // An error occurred checking the permissions
-      // if user id is missing it's an authentication problem
-      if (e.message.includes('osm id is required')) {
-        return res.boom.unauthorized('Forbidden')
-      }
 
-      // otherwise it could be the resource not existing, we send 404
-      res.boom.notFound('Could not find resource')
+      if (isApiRequest(req)) {
+        // Handle API request errors
+        if (e.message.includes('osm id is required')) {
+          return res.boom.unauthorized('Forbidden')
+        }
+
+        // otherwise it could be the resource not existing, we send 404
+        res.boom.notFound('Could not find resource')
+      } else {
+        // This should be web page errors, which are handled at app/index.js#L60
+        next(new Error('Forbidden'))
+      }
     }
   }
 }

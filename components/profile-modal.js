@@ -3,6 +3,7 @@ import { isEmpty } from 'ramda'
 import theme from '../styles/theme'
 import Popup from 'reactjs-popup'
 import Button from './button'
+import SvgSquare from '../components/svg-square'
 
 function renderActions (actions) {
   return (
@@ -43,7 +44,32 @@ function renderActions (actions) {
   )
 }
 
-export default function ProfileModal ({ user, attributes, onClose, actions }) {
+function renderBadges (badges) {
+  if (!badges || badges.length === 0) {
+    return null
+  }
+
+  return (
+    <table>
+      {badges.map((b) => (
+        <tr>
+          <td>
+            <SvgSquare color={b.color} />
+          </td>
+          <td>{b.name}</td>
+        </tr>
+      ))}
+    </table>
+  )
+}
+
+export default function ProfileModal ({
+  user,
+  attributes,
+  badges,
+  onClose,
+  actions
+}) {
   actions = actions || []
   let profileContent = <dl>User does not have a profile</dl>
   if (!isEmpty(attributes)) {
@@ -87,13 +113,18 @@ export default function ProfileModal ({ user, attributes, onClose, actions }) {
   `}</style>
     </>
   }
-  return <article className='modal__details'>
-    { user.img ? <img src={user.img} /> : '' }
-    <h2 style={{ display: 'flex', 'justifyContent': 'space-between' }}>
-      <span>{user.name}</span>
-      {!isEmpty(actions) && renderActions(actions)}
-    </h2>
-    {profileContent}
-    <Button size='small' onClick={() => onClose()}>close</Button>
-  </article>
+  return (
+    <article className='modal__details'>
+      {user.img ? <img src={user.img} /> : ''}
+      <h2 style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <span>{user.name}</span>
+        {!isEmpty(actions) && renderActions(actions)}
+      </h2>
+      {profileContent}
+      {renderBadges(badges)}
+      <Button size='small' onClick={() => onClose()}>
+        close
+      </Button>
+    </article>
+  )
 }

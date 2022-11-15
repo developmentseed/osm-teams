@@ -57,6 +57,10 @@ const style = css`
     backgroundColor: #777777;
     border: 2px solid #555;
     color: ${theme.colors.baseColor};
+    transition: none;
+    opacity: 0.68;
+    box-shadow: 0 0;
+    cursor: not-allowed;
   }
 
   .button.danger {
@@ -72,13 +76,16 @@ const style = css`
 `
 
 export default function Button ({ name, id, value, variant, type, disabled, href, onClick, children, size }) {
+  let classes = [`button`, variant, size]
+  if (disabled) classes.push('disabled')
+  let classNames = classes.join(' ')
   if (type === 'submit') {
-    return <button type='submit' className={[`button`, variant, size].join(' ')} disabled={disabled} name={name} id={id} onClick={onClick} value='value'>{children || value}<style jsx>{style}</style></button>
+    return <button type='submit' className={classNames} disabled={disabled} name={name} id={id} onClick={onClick} value='value'>{children || value}<style jsx>{style}</style></button>
   }
   if (href) {
     let fullUrl
     (href.startsWith('http')) ? (fullUrl = href) : (fullUrl = join(publicRuntimeConfig.APP_URL, href))
-    return <a href={fullUrl} className={[`button`, variant, size].join(' ')} disabled={disabled} name={name} id={id}>{children}<style jsx>{style}</style></a>
+    return <a href={fullUrl} className={classNames} disabled={disabled} name={name} id={id}>{children || value}<style jsx>{style}</style></a>
   }
-  return <div onClick={onClick} className={[`button`, variant, size].join(' ')} disabled={disabled}>{children}<style jsx>{style}</style></div>
+  return <div onClick={onClick} className={classNames} disabled={disabled}>{children}<style jsx>{style}</style></div>
 }

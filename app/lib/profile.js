@@ -254,6 +254,25 @@ async function getUserManageToken (id) {
   return unpack(conn('users').select('manageToken').where('id', id).debug())
 }
 
+async function getUserBadges (id) {
+  const conn = await db()
+  return conn('user_badges')
+    .select([
+      'id',
+      'assigned_at',
+      'valid_until',
+      'organization_id',
+      'name',
+      'color'
+    ])
+    .leftJoin(
+      'organization_badge',
+      'user_badges.badge_id',
+      'organization_badge.id'
+    )
+    .where('user_badges.user_id', id)
+}
+
 module.exports = {
   addProfileKeys,
   modifyProfileKey,
@@ -263,5 +282,6 @@ module.exports = {
   setProfile,
   getProfile,
   getTableForProfileType,
-  getUserManageToken
+  getUserManageToken,
+  getUserBadges
 }

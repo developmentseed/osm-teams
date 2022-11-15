@@ -121,6 +121,7 @@ export default class OrgEditTeamProfile extends Component {
       { key: 'name' },
       { key: 'description' },
       { key: 'visibility' },
+      { key: 'key_type', label: 'type' },
       { key: 'required' },
       { key: 'actions' }
     ]
@@ -214,5 +215,5 @@ export default class OrgEditTeamProfile extends Component {
         </section>
       </article>
     )
-  }Team
+  }
 }

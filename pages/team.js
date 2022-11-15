@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import getConfig from 'next/config'
+import join from 'url-join'
 import { map, prop, contains, reverse, assoc } from 'ramda'
 import Modal from 'react-modal'
 import dynamic from 'next/dynamic'
@@ -12,8 +14,12 @@ import AddMemberForm from '../components/add-member-form'
 import ProfileModal from '../components/profile-modal'
 import theme from '../styles/theme'
 
-import { getTeam, getTeamMembers, addMember, removeMember, joinTeam, assignModerator, removeModerator } from '../lib/teams-api'
+import { getTeam, getTeamMembers, addMember, removeMember, joinTeam, assignModerator, removeModerator,
+  getTeamJoinInvitations, createTeamJoinInvitation } from '../lib/teams-api'
 import { getTeamProfile, getUserOrgProfile, getUserTeamProfile } from '../lib/profiles-api'
+import { getOrgStaff } from '../lib/org-api'
+import { toast } from 'react-toastify'
+const { publicRuntimeConfig } = getConfig()
 
 const Map = dynamic(() => import('../components/team-map'), { ssr: false })
 
@@ -31,6 +37,7 @@ export default class Team extends Component {
     this.state = {
       profileInfo: [],
       profileUserId: '',
+      joinLink: null,
       loading: true,
       error: undefined
     }
@@ -40,6 +47,33 @@ export default class Team extends Component {
 
   async componentDidMount () {
     this.getTeam()
+    this.getTeamJoinLink()
+  }
+
+  async getTeamJoinLink () {
+    const { id } = this.props
+    try {
+      const invitations = await getTeamJoinInvitations(id)
+      if (invitations.length) {
+        this.setState({
+          joinLink: join(publicRuntimeConfig.APP_URL, 'teams', id, 'invitations', invitations[0].id)
+        })
+      }
+    } catch (e) {
+      console.error(e)
+      toast.error(e)
+    }
+  }
+
+  async createJoinLink () {
+    const { id } = this.props
+    try {
+      await createTeamJoinInvitation(id)
+      this.getTeamJoinLink()
+    } catch (e) {
+      console.error(e)
+      toast.error(e)
+    }
   }
 
   async getTeam () {
@@ -50,10 +84,18 @@ export default class Team extends Component {
       let teamProfile = []
       teamMembers = await getTeamMembers(id)
       teamProfile = await getTeamProfile(id)
+
+      let orgOwners = []
+      if (team.org) {
+        // Get organization owners
+        const { owners } = await getOrgStaff(team.org.organization_id)
+        orgOwners = owners.map((owner) => parseInt(owner.id))
+      }
       this.setState({
         team,
         teamProfile,
         teamMembers,
+        orgOwners,
         loading: false
       })
     } catch (e) {
@@ -171,7 +213,7 @@ export default class Team extends Component {
   }
 
   render () {
-    const { team, error, teamProfile, teamMembers } = this.state
+    const { team, error, teamProfile, teamMembers, orgOwners, joinLink } = this.state
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -202,7 +244,7 @@ export default class Team extends Component {
     const moderators = map(prop('osm_id'), teamMembers.moderators)
 
     // TODO: moderators is an array of ints while members are an array of strings. fix this.
-    const isUserModerator = contains(parseInt(userId), moderators)
+    const isUserModerator = contains(parseInt(userId), moderators) || contains(parseInt(userId), orgOwners)
     const isMember = contains(userId, members)
 
     const columns = [
@@ -248,7 +290,7 @@ export default class Team extends Component {
       <article className='inner page team'>
         <div className='page__heading'>
           <h1>{team.name}</h1>
-          { isMember ? <Button variant='primary' href={`/teams/${team.id}/profile`}>Add Your Profile</Button> : ' '}
+          { isMember ? <Button variant='primary' href={`/teams/${team.id}/profile`}>Edit Your Profile</Button> : ' '}
         </div>
         <div className='team__details'>
           <Card>
@@ -290,6 +332,14 @@ export default class Team extends Component {
             }
             <SectionHeader>Location</SectionHeader>
             { this.renderMap(team.location) }
+            { isUserModerator
+              ? <div style={{ marginTop: '1rem' }}>
+                <SectionHeader>Join Link</SectionHeader>
+                {joinLink ? <div>{joinLink}</div>
+                  : <Button onClick={() => this.createJoinLink()}>Create Join Link</Button>
+                }
+              </div>
+              : ''}
           </Card>
         </div>
         <div className='team__table'>
@@ -391,6 +441,7 @@ export default class Team extends Component {
 
             .team__table {
               grid-column: 1 / span 12;
+              padding-bottom: 2rem;
             }
           `}
         </style>

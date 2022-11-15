@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
-import Modal from 'react-modal'
 import Router from 'next/router'
 import join from 'url-join'
 import getConfig from 'next/config'
-import Button from '../components/button'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Table from '../components/table'
@@ -127,10 +125,7 @@ export default class Profile extends Component {
     return (
       <div className='inner page'>
         <div className='page__heading'>
-          <h1>Profile</h1>
-          <div>
-            <Button variant='primary' onClick={() => this.openCreateModal()} >Create</Button>
-          </div>
+          <h1>Teams & Organizations</h1>
         </div>
         {
           hasOrgs
@@ -145,37 +140,6 @@ export default class Profile extends Component {
           <SectionHeader>Your Teams</SectionHeader>
           {this.renderTeams()}
         </Section>
-        <Modal style={{
-          content: {
-            maxWidth: '400px',
-            maxHeight: '400px',
-            left: 'calc(50% - 200px)',
-            top: 'calc(50% - 200px)'
-          },
-          overlay: {
-            zIndex: 10000
-          }
-        }} isOpen={this.state.isModalOpen}>
-          <ul>
-            <Button variant='primary fixed-size' href='/teams/create' >Create team</Button>
-            <Button variant='primary fixed-size' href='/organizations/create' >Create Org</Button>
-          </ul>
-          <style jsx>{`
-          ul {
-            width: 300px;
-            height: 300px;
-            margin: auto;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-          }
-          ul li {
-            margin-left: auto;
-            margin-right: auto;
-          }
-        `}
-          </style>
-        </Modal>
       </div>
     )
   }

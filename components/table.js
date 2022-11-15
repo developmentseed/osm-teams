@@ -13,7 +13,7 @@ function TableHead ({ columns }) {
                 column.onClick && column.onClick()
               }}
             >
-              {column.key}
+              {column.label || column.key}
             </th>
           )
         })}
@@ -43,10 +43,16 @@ function Row ({ columns, row, index, onRowClick }) {
   )
 }
 
-function TableBody ({ columns, rows, onRowClick }) {
+function TableBody ({ columns, rows, onRowClick, emptyPlaceHolder }) {
   return (
     <tbody className='lh-copy'>
-      {
+      {!rows || rows.length === 0 ? (
+        <tr>
+          <td key='empty-row' colSpan={columns.length}>
+            {emptyPlaceHolder || 'No data available.'}
+          </td>
+        </tr>
+      ) : (
         rows.map((row, index) => {
           return (
             <Row
@@ -58,19 +64,16 @@ function TableBody ({ columns, rows, onRowClick }) {
             />
           )
         })
-      }
+      )}
     </tbody>
   )
 }
 
-export default function Table ({ columns, rows, onRowClick }) {
-  if (!rows || !columns) {
-    return <div />
-  }
+export default function Table ({ columns, rows, onRowClick, emptyPlaceHolder }) {
   return (
     <table>
       <TableHead columns={columns} />
-      <TableBody columns={columns} rows={rows} onRowClick={onRowClick} />
+      <TableBody columns={columns} rows={rows} onRowClick={onRowClick} emptyPlaceHolder={emptyPlaceHolder} />
       <style jsx global>
         {`
           table {
@@ -102,12 +105,12 @@ export default function Table ({ columns, rows, onRowClick }) {
 
           tbody tr {
             background: #fff;
-            cursor: pointer;
+            ${onRowClick && 'cursor: pointer'}
           }
 
-          tbody tr:hover {
+          ${onRowClick && `tbody tr:hover {
             background: ${theme.colors.primaryLite};
-          }
+          }`}
           `}
       </style>
     </table>

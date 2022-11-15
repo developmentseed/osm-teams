@@ -1,7 +1,20 @@
 {
   "name": "osm-teams",
-  "version": "0.2.0",
+  "version": "1.7.0",
   "description": "Teams for OpenStreetMap!",
+  "homepage": "https://mapping.team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/developmentseed/osm-teams.git"
+  },
+  "bugs": {
+    "url": "https://github.com/developmentseed/osm-teams/issues"
+  },
+  "author": {
+    "name": "Development Seed",
+    "url": "https://developmentseed.org"
+  },
+  "license": "MIT",
   "scripts": {
     "docs:validate": "swagger-cli validate docs/api.yml",
     "docs:api": "swagger-markdown -i docs/api.yml -o docs/api.md",
@@ -12,8 +25,7 @@
     "lint": "devseed-standard",
     "lintfix": "devseed-standard --fix",
     "build": "next build",
-    "start": "NODE_ENV=production node app/index.js",
-    "sandbox": "budo sandbox/index.js --dir sandbox/ --live"
+    "start": "NODE_ENV=production node app/index.js"
   },
   "browserify": {
     "transform": [
@@ -35,6 +47,7 @@
     "connect-session-knex": "^2.1.1",
     "cors": "^2.8.5",
     "csurf": "^1.11.0",
+    "date-fns": "^2.28.0",
     "dotenv": "^6.2.0",
     "dotenv-webpack": "^1.8.0",
     "express": "^4.17.2",
@@ -49,7 +62,7 @@
     "leaflet": "^1.7.1",
     "leaflet-control-geocoder": "^1.13.0",
     "next": "^8.0.1",
-    "node-fetch": "^2.6.6",
+    "node-fetch": "^2.6.7",
     "passport-light": "^1.0.1",
     "passport-oauth": "^1.0.0",
     "passport-openstreetmap": "^0.1.2",
@@ -63,6 +76,8 @@
     "react-dom": "^16.14.0",
     "react-leaflet": "^2.8.0",
     "react-modal": "^3.14.4",
+    "react-select": "^5.2.2",
+    "react-toastify": "^8.2.0",
     "reactjs-popup": "^1.5.0",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
@@ -73,10 +88,11 @@
     "supertest": "^4.0.2",
     "swagger-ui-express": "^4.3.0",
     "url-join": "^4.0.0",
-    "url-parse": "^1.5.4",
+    "url-parse": "^1.5.9",
     "url-regex": "^5.0.0",
     "xml2js": "^0.4.23",
-    "yamljs": "^0.3.0"
+    "yamljs": "^0.3.0",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "^4.0.4",
@@ -85,7 +101,6 @@
     "@babel/preset-react": "^7.16.7",
     "ava": "^3.15.0",
     "babelify": "^10.0.0",
-    "budo": "^11.6.4",
     "devseed-standard": "^1.1.0",
     "nodemon": "^1.19.4",
     "nyc": "^15.1.0",

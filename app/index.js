@@ -1,3 +1,6 @@
+// Set server timezone to UTC to avoid issues with date parsing
+process.env.TZ = 'UTC'
+
 const path = require('path')
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -55,6 +58,9 @@ async function init () {
    * Error handler
    */
   app.use(function (err, req, res, next) {
+    if (err.message === 'Forbidden') {
+      return nextApp.render(req, res, '/uh-oh')
+    }
     res.status(err.status || 500)
     console.error('error', err)
     res.boom.internal('An internal error occurred.')

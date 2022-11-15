@@ -15,14 +15,14 @@ const defaultValues = {
   name: '',
   description: '',
   visibility: 'team',
-  required: []
+  required: [],
+  key_type: 'text'
 }
 
 export default function ProfileAttributeForm ({ onSubmit, initialValues = defaultValues, formType = 'team' }) {
   if (formType === 'org') {
     initialValues['visibility'] = (initialValues['visibility'] === 'public') ? 'public' : 'org'
   }
-  console.log(initialValues)
 
   return (
     <Formik
@@ -87,6 +87,25 @@ export default function ProfileAttributeForm ({ onSubmit, initialValues = defaul
               >
                 {typeOption}
                 <option value='public'>Public</option>
+              </Field>
+            </div>
+            <div className='form-control form-control__vertical'>
+              <label>Type:</label>
+              <Field
+                as='select'
+                type='text'
+                name='key_type'
+                id='key_type'
+                value={values.key_type}
+              >
+                <option value='text'>Text</option>
+                <option value='number'>Number</option>
+                <option value='email'>Email</option>
+                <option value='url'>URL</option>
+                <option value='date'>Date</option>
+                <option value='tel'>Telephone</option>
+                <option value='color'>Color</option>
+                <option value='gender'>Gender</option>
               </Field>
             </div>
 
