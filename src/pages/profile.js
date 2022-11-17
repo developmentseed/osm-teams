@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Router from 'next/router'
 import join from 'url-join'
+import { getSession } from 'next-auth/react'
 import getConfig from 'next/config'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
@@ -30,27 +31,16 @@ export default class Profile extends Component {
     })
   }
 
-  async refreshProfileInfo() {
-    try {
-      let teams = await getTeams({ osmId: this.props.user.uid })
-      let orgs = await getMyOrgs({ osmId: this.props.user.id })
-      this.setState({
-        teams,
-        orgs,
-        loading: false,
-      })
-    } catch (e) {
-      console.error(e)
-      this.setState({
-        error: e,
-        teams: [],
-        loading: false,
-      })
-    }
-  }
-
-  componentDidMount() {
-    this.refreshProfileInfo()
+  async componentDidMount() {
+    const session = await getSession()
+    let teams = await getTeams({ osmId: session?.user_id })
+    let orgs = await getMyOrgs({ osmId: session?.user_id })
+    this.setState({
+      session,
+      teams,
+      orgs,
+      loading: false,
+    })
   }
 
   renderTeams() {

@@ -2,18 +2,18 @@ import React, { Component } from 'react'
 import { assoc, isEmpty } from 'ramda'
 import Popup from 'reactjs-popup'
 
-import ProfileAttributeForm from '../components/profile-attribute-form'
-import Button from '../components/button'
-import Table from '../components/table'
+import ProfileAttributeForm from '../../../components/profile-attribute-form'
+import Button from '../../../components/button'
+import Table from '../../../components/table'
 import {
-  addTeamMemberAttributes,
-  getTeamMemberAttributes,
+  addOrgMemberAttributes,
+  getOrgMemberAttributes,
   modifyAttribute,
   deleteAttribute,
-} from '../lib/profiles-api'
-import theme from '../styles/theme'
+} from '../../../lib/profiles-api'
+import theme from '../../../styles/theme'
 
-export default class TeamEditProfile extends Component {
+export default class OrgEditProfile extends Component {
   static async getInitialProps({ query }) {
     if (query) {
       return {
@@ -104,9 +104,9 @@ export default class TeamEditProfile extends Component {
   async getAttributes() {
     const { id } = this.props
     try {
-      let memberAttributes = await getTeamMemberAttributes(id)
+      let memberAttributes = await getOrgMemberAttributes(id)
       this.setState({
-        teamId: id,
+        orgId: id,
         memberAttributes,
         loading: false,
       })
@@ -114,7 +114,7 @@ export default class TeamEditProfile extends Component {
       console.error(e)
       this.setState({
         error: e,
-        teamId: null,
+        orgId: null,
         memberAttributes: [],
         loading: false,
       })
@@ -122,12 +122,12 @@ export default class TeamEditProfile extends Component {
   }
 
   render() {
-    const { memberAttributes, teamId } = this.state
+    const { memberAttributes, orgId } = this.state
     const columns = [
       { key: 'name' },
       { key: 'description' },
       { key: 'visibility' },
-      { key: 'key_type', header: 'type' },
+      { key: 'key_type', label: 'type' },
       { key: 'required' },
       { key: 'actions' },
     ]
@@ -160,8 +160,8 @@ export default class TeamEditProfile extends Component {
         <section>
           <h2>Current Attributes</h2>
           <p>
-            Members of your team will be able to add these attributes to their
-            profile.
+            Members of your organization will be able to add these attributes to
+            their profile.
           </p>
           {memberAttributes && isEmpty(memberAttributes) ? (
             "You haven't added any attributes yet!"
@@ -174,6 +174,7 @@ export default class TeamEditProfile extends Component {
             <>
               <h2>Modify attribute</h2>
               <ProfileAttributeForm
+                formType='org'
                 initialValues={this.state.rowToModify}
                 onSubmit={async (attribute) => {
                   await modifyAttribute(attribute.id, attribute)
@@ -189,10 +190,11 @@ export default class TeamEditProfile extends Component {
           {this.state.isAdding ? (
             <>
               <h2>Add an attribute</h2>
-              <p>Add an attribute to your team member&apos;s profile</p>
+              <p>Add an attribute to your org member&apos;s profile</p>
               <ProfileAttributeForm
+                formType='org'
                 onSubmit={async (attributes) => {
-                  await addTeamMemberAttributes(teamId, attributes)
+                  await addOrgMemberAttributes(orgId, attributes)
                   this.setState({ isAdding: false })
                   return this.getAttributes()
                 }}

@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import join from 'url-join'
 import Router from 'next/router'
 import getConfig from 'next/config'
-import EditOrgForm from '../components/edit-org-form'
-import { createOrg } from '../lib/org-api'
+import EditOrgForm from '../../components/edit-org-form'
+import { createOrg } from '../../lib/org-api'
 const { publicRuntimeConfig } = getConfig()
 
 export default class OrgCreate extends Component {

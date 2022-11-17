@@ -1,3 +1,4 @@
+const Boom = require('boom')
 const db = require('../../../src/lib/db')
 const hydra = require('../../lib/hydra')
 const { mergeAll, isNil } = require('ramda')
@@ -43,10 +44,6 @@ const permissions = mergeAll([
   organizationPermissions,
 ])
 
-function isApiRequest({ path }) {
-  return path.indexOf('/api') === 0
-}
-
 /**
  * Check if a user has a specific permission
  *
@@ -55,8 +52,7 @@ function isApiRequest({ path }) {
  * @param {String} ability String representing a specific permission, for example: `team:create`
  */
 async function checkPermission(req, res, ability) {
-  const locals = res.locals || {}
-  return permissions[ability](locals.user_id, req.params)
+  return permissions[ability](req.session?.user_id, req.params)
 }
 
 /**
@@ -160,41 +156,19 @@ function check(ability) {
      * @param {Object} params request parameters
      * @returns {boolean} can the request go through?
      */
-    try {
-      let allowed = await checkPermission(req, res, ability)
+    let allowed = await checkPermission(req, res, ability)
 
-      if (allowed) {
-        next()
-      } else {
-        if (isApiRequest(req)) {
-          res.boom.unauthorized('Forbidden')
-        } else {
-          next(new Error('Forbidden'))
-        }
-      }
-    } catch (e) {
-      console.error('error checking permission', e)
-
-      if (isApiRequest(req)) {
-        // Handle API request errors
-        if (e.message.includes('osm id is required')) {
-          return res.boom.unauthorized('Forbidden')
-        }
-
-        // otherwise it could be the resource not existing, we send 404
-        res.boom.notFound('Could not find resource')
-      } else {
-        // This should be web page errors, which are handled at app/index.js#L60
-        next(new Error('Forbidden'))
-      }
+    if (allowed) {
+      next()
+    } else {
+      throw Boom.unauthorized('Forbidden')
     }
   }
 }
 
 module.exports = {
   can: (ability) => {
-    return [authenticate, check(ability)]
+    return [check(ability)]
   },
-  authenticate,
   check,
 }

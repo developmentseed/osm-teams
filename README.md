@@ -13,9 +13,6 @@
   </a>
   </div>
 
-Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
-<!-- markdownlint-enable MD034 -->
-
 ## Development
 
 Install requirements:
@@ -23,21 +20,20 @@ Install requirements:
 - [nvm](https://github.com/creationix/nvm)
 - [Docker](https://www.docker.com)
 
-Visit your [OpenStreetMap settings](https://www.openstreetmap.org/account/edit) page and [register an OAuth 2 app](https://www.openstreetmap.org/oauth2/applications) :
+Visit your [OpenStreetMap settings](https://www.openstreetmap.org/account/edit) page and [register an OAuth2 app](https://www.openstreetmap.org/oauth2/applications) :
 
 ![OSM Client App](oauth2-osm-client-app.png "OAuth 2 page at OSM Website")
 
-Create an `.env` file by copying `.env.sample` and replacing the values as needed. `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` are values available at the OAuth app page on openstreetmap.org. The .env file should contain:
+Create an `.env` file and add environment variables `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` obtained at OAuth2 page at OpenStreetMap website. The .env file should be like the following:
 
     ```bash
-    OSM_CONSUMER_KEY=<osm-teams-app>
-    OSM_CONSUMER_SECRET=<osm-teams-app-secret>
-    DSN=postgres://postgres@dev-db/osm-teams?sslmode=disable
+    OSM_CONSUMER_KEY=<osm-oauth2-client-id>
+    OSM_CONSUMER_SECRET=<osm-oauth2-client-secret>
     ```
 
-Start Hydra and PostgreSQL with Docker:
+Start development and test databases with Docker:
 
-    docker-compose -f compose.dev.yml up --build
+    docker-compose up --build
 
 Install Node.js the required version (see [.nvmrc](.nvmrc) file):
 
@@ -62,3 +58,7 @@ Start development server:
 ## Acknowledgments
 
 - This app is based off of [OSM/Hydra](https://github.com/kamicut/osmhydra)
+
+## LICENSE
+
+[MIT](LICENSE)

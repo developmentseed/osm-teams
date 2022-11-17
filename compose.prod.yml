@@ -1,9 +1,0 @@
-version: '3.7'
-
-services:
-  hydra:
-    volumes:
-      -
-        type: bind
-        source: ./hydra-config/prod
-        target: /etc/config/hydra

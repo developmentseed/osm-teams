@@ -4,15 +4,17 @@ import join from 'url-join'
 import { map, prop, contains, reverse, assoc } from 'ramda'
 import Modal from 'react-modal'
 import dynamic from 'next/dynamic'
+import { getSession } from 'next-auth/react'
+import { withRouter } from 'next/router'
 
-import Card from '../components/card'
-import Section from '../components/section'
-import SectionHeader from '../components/section-header'
-import Button from '../components/button'
-import Table from '../components/table'
-import AddMemberForm from '../components/add-member-form'
-import ProfileModal from '../components/profile-modal'
-import theme from '../styles/theme'
+import Card from '../../../components/card'
+import Section from '../../../components/section'
+import SectionHeader from '../../../components/section-header'
+import Button from '../../../components/button'
+import Table from '../../../components/table'
+import AddMemberForm from '../../../components/add-member-form'
+import ProfileModal from '../../../components/profile-modal'
+import theme from '../../../styles/theme'
 
 import {
   getTeam,
@@ -24,25 +26,23 @@ import {
   removeModerator,
   getTeamJoinInvitations,
   createTeamJoinInvitation,
-} from '../lib/teams-api'
+} from '../../../lib/teams-api'
 import {
   getTeamProfile,
   getUserOrgProfile,
   getUserTeamProfile,
-} from '../lib/profiles-api'
-import { getOrgStaff } from '../lib/org-api'
+} from '../../../lib/profiles-api'
+import { getOrgStaff } from '../../../lib/org-api'
 import { toast } from 'react-toastify'
 const { publicRuntimeConfig } = getConfig()
 
-const Map = dynamic(() => import('../components/team-map'), { ssr: false })
+const Map = dynamic(() => import('../../../components/team-map'), {
+  ssr: false,
+})
 
-export default class Team extends Component {
-  static async getInitialProps({ query }) {
-    if (query) {
-      return {
-        id: query.id,
-      }
-    }
+class Team extends Component {
+  static getInitialProps({ query }) {
+    return { id: query.id }
   }
 
   constructor(props) {
@@ -61,6 +61,7 @@ export default class Team extends Component {
   async componentDidMount() {
     this.getTeam()
     this.getTeamJoinLink()
+    this.setState({ session: await getSession() })
   }
 
   async getTeamJoinLink() {
@@ -260,7 +261,7 @@ export default class Team extends Component {
 
     if (!team) return null
 
-    const userId = this.props.user.uid
+    const userId = this.state.session?.user_id
     const members = map(prop('id'), teamMembers.members)
     const moderators = map(prop('osm_id'), teamMembers.moderators)
 
@@ -282,7 +283,7 @@ export default class Team extends Component {
     let profileActions = []
 
     if (this.state.modalIsOpen && isUserModerator) {
-      if (this.state.profileMeta.id !== this.props.user.uid) {
+      if (this.state.profileMeta.id !== userId) {
         profileActions.push({
           name: 'Remove team member',
           onClick: async () => {
@@ -503,3 +504,5 @@ export default class Team extends Component {
     )
   }
 }
+
+export default withRouter(Team)

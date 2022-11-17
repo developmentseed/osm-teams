@@ -1,15 +1,16 @@
 import React, { Component, Fragment } from 'react'
 import join from 'url-join'
 import Router from 'next/router'
-import { pick } from 'ramda'
-import { getOrg, updateOrg, destroyOrg } from '../lib/org-api'
+import { pick, split } from 'ramda'
+import { getTeam, updateTeam, destroyTeam } from '../../../lib/teams-api'
 import getConfig from 'next/config'
-import EditOrgForm from '../components/edit-org-form'
-import Button from '../components/button'
-import theme from '../styles/theme'
+import EditTeamForm from '../../../components/edit-team-form'
+import Button from '../../../components/button'
+import theme from '../../../styles/theme'
+import { getOrgTeamAttributes, getTeamProfile } from '../../../lib/profiles-api'
 const { publicRuntimeConfig } = getConfig()
 
-export default class OrgEdit extends Component {
+export default class TeamEdit extends Component {
   static async getInitialProps({ query }) {
     if (query) {
       return {
@@ -30,9 +31,17 @@ export default class OrgEdit extends Component {
   async componentDidMount() {
     const { id } = this.props
     try {
-      let org = await getOrg(id)
+      let team = await getTeam(id)
+      let teamAttributes = []
+      let profileValues = []
+      profileValues = await getTeamProfile(id)
+      if (team.org) {
+        teamAttributes = await getOrgTeamAttributes(team.org.organization_id)
+      }
       this.setState({
-        org,
+        team,
+        profileValues,
+        teamAttributes,
         loading: false,
       })
     } catch (e) {
@@ -45,12 +54,12 @@ export default class OrgEdit extends Component {
     }
   }
 
-  async deleteOrg() {
+  async deleteTeam() {
     const { id } = this.props
     try {
-      const res = await destroyOrg(id)
+      const res = await destroyTeam(id)
       if (res.ok) {
-        Router.push(join(publicRuntimeConfig.APP_URL, `/profile`))
+        Router.push(join(publicRuntimeConfig.APP_URL, `/teams`))
       } else {
         throw new Error('Could not delete team')
       }
@@ -72,7 +81,7 @@ export default class OrgEdit extends Component {
           })
         }}
       >
-        Delete this organization
+        Delete this team
       </Button>
     )
 
@@ -91,10 +100,10 @@ export default class OrgEdit extends Component {
           <Button
             variant='danger'
             onClick={() => {
-              this.deleteOrg()
+              this.deleteTeam()
             }}
           >
-            Really delete this team organization?
+            Really delete this team?
           </Button>
         </Fragment>
       )
@@ -103,43 +112,64 @@ export default class OrgEdit extends Component {
   }
 
   render() {
-    const { org, error } = this.state
+    const { team, error, teamAttributes, profileValues } = this.state
 
     if (error) {
       if (error.status >= 400 && error.status < 500) {
         return (
           <article className='inner'>
-            <h1>Org not found</h1>
+            <h1>Team not found</h1>
           </article>
         )
       } else if (error.status >= 500) {
         return (
           <article className='inner'>
-            <h1>Error fetching org</h1>
+            <h1>Error fetching team</h1>
           </article>
         )
       }
     }
 
-    if (!org) return null
+    if (!team) return null
 
     return (
       <article className='inner page'>
         <section>
           <div className='page__heading'>
-            <h1>Edit Org</h1>
+            <h1>Edit Team</h1>
+            <Button variant='primary' href={`/teams/${team.id}/edit-profiles`}>
+              Edit Team Profiles
+            </Button>
           </div>
-          <EditOrgForm
+          <EditTeamForm
             initialValues={pick(
-              ['name', 'description', 'privacy', 'teams_can_be_public'],
-              org
+              [
+                'name',
+                'bio',
+                'hashtag',
+                'editing_policy',
+                'location',
+                'privacy',
+              ],
+              team
             )}
+            profileValues={profileValues}
+            extraTags={teamAttributes}
             onSubmit={async (values, actions) => {
               try {
-                await updateOrg(org.id, values)
+                let tags = Object.keys(values.tags).map((key) => {
+                  return {
+                    key_id: split('-', key)[1],
+                    value: values.tags[key],
+                  }
+                })
+
+                values.tags = tags
+
+                await updateTeam(team.id, values)
                 actions.setSubmitting(false)
                 Router.push(
-                  join(publicRuntimeConfig.APP_URL, `/organizations/${org.id}`)
+                  join(publicRuntimeConfig.APP_URL, `/teams/${team.id}`)
                 )
               } catch (e) {
                 console.error(e)
@@ -150,39 +180,10 @@ export default class OrgEdit extends Component {
             }}
           />
         </section>
-        <section>
-          <div className='page__heading'>
-            <h2>Org Attributes</h2>
-          </div>
-          <div>
-            <span style={{ marginRight: '1rem' }}>
-              <Button
-                variant='primary'
-                href={`/organizations/${org.id}/edit-profiles`}
-              >
-                Edit Member Attributes
-              </Button>
-            </span>
-            <span style={{ marginRight: '1rem' }}>
-              <Button
-                variant='primary'
-                href={`/organizations/${org.id}/edit-team-profiles`}
-              >
-                Edit Team Attributes
-              </Button>
-            </span>
-            <Button
-              variant='primary'
-              href={`/organizations/${org.id}/edit-privacy-policy`}
-            >
-              Edit Privacy Policy
-            </Button>
-          </div>
-        </section>
         <section className='danger-zone'>
           <h2>Danger Zone 🎸</h2>
           <p>
-            Delete this org, org information and all memberships associated to
+            Delete this team, team information and all memberships associated to
             this team
           </p>
           {this.renderDeleter()}
