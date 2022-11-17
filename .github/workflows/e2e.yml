@@ -46,8 +46,7 @@ jobs:
         run: docker-compose up --build -d test-db
 
       - name: Migrate database
-        # run: yarn migrate:test
-        run: while ! yarn migrate:test; do echo Waiting for test database; sleep 10; done
+        run: for i in {1..6}; do yarn migrate:test && break || sleep 10; done # retries up to 6 times every 10 s if db is not available
 
       - name: Run tests
         run: yarn e2e
