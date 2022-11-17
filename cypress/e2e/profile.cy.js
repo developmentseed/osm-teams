@@ -4,7 +4,7 @@ describe('Profile page', () => {
     display_name: 'User 1',
   }
 
-  it('Can load', () => {
+  it('Can load when logged in', () => {
     cy.login(user)
     cy.visit('/profile')
   })

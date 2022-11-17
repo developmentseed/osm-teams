@@ -17,7 +17,9 @@
   "license": "MIT",
   "scripts": {
     "cy:open": "cypress open",
+    "cy:run": "cypress run",
     "e2e:dev": "NODE_ENV=test start-server-and-test dev http://127.0.0.1:3000/api cy:open",
+    "e2e": "NODE_ENV=test start-server-and-test dev http://127.0.0.1:3000/api cy:run",
     "docs:validate": "swagger-cli validate docs/api.yml",
     "docs:api": "swagger-markdown -i docs/api.yml -o docs/api.md",
     "docs": "npm run docs:validate && npm run docs:api",
