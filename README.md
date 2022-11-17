@@ -44,6 +44,10 @@ Start development server:
 
 ## Testing
 
+Migrate `test-db` database:
+
+    yarn migrate:test
+
 This project uses Cypress for end-to-end testing. To run once:
 
     yarn e2e
