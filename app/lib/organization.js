@@ -320,12 +320,16 @@ async function isMemberOrStaff(organizationId, osmId) {
  * @param {int} organizationId - organization id
  * @param {int} osmId - id of member we are testing
  */
-async function isOrgTeamModerator (organizationId, osmId) {
+async function isOrgTeamModerator(organizationId, osmId) {
   if (!organizationId) throw new PropertyRequiredError('organization id')
   if (!osmId) throw new PropertyRequiredError('osm id')
   const conn = await db()
-  const subquery = conn('organization_team').select('team_id').where('organization_id', organizationId)
-  const isModeratorOfAny = await conn('moderator').whereIn('team_id', subquery).debug()
+  const subquery = conn('organization_team')
+    .select('team_id')
+    .where('organization_id', organizationId)
+  const isModeratorOfAny = await conn('moderator')
+    .whereIn('team_id', subquery)
+    .debug()
   return isModeratorOfAny.length > 0
 }
 
