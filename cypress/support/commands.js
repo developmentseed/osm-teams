@@ -1,10 +1,10 @@
 import hkdf from '@panva/hkdf'
-import { EncryptJWT, JWTPayload } from 'jose'
+import { EncryptJWT } from 'jose'
 
 /**
- * The login command helps creating a valid session without following the full
- * authentication workflow in the specs. This is based on the approach proposed
- * here: https://github.com/nextauthjs/next-auth/discussions/2053#discussioncomment-2225544
+ * The login command creates a valid session from a user object. This is based
+ * on the approach proposed here:
+ * https://github.com/nextauthjs/next-auth/discussions/2053#discussioncomment-2225544
  */
 
 // Function logic derived from https://github.com/nextauthjs/next-auth/blob/5c1826a8d1f8d8c2d26959d12375704b0a693bfc/packages/next-auth/src/jwt/index.ts#L113-L121

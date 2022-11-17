@@ -1,9 +1,0 @@
-{
-  "user": {
-    "name": "Morty Smith",
-    "email": "test@example.com",
-    "image": "/path/to/your/mock/user.jpg"
-  },
-  "expires": "3000-01-01T00:00:00.000Z",
-  "accessToken": "abcdefghijklmnopqrst"
-}
