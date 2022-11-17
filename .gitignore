@@ -3,7 +3,6 @@ node_modules
 tmp
 *.log*
 .next
-*.env
 .vscode
 *.db
 # ignore node_modules symlink
