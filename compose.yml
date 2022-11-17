@@ -1,59 +1,28 @@
 version: '3.7'
 
 services:
-  hydra:
-    image: oryd/hydra:v1.9.2
+  dev-db:
+    platform: linux/amd64
+    image: mdillon/postgis:9.6-alpine
+    restart: 'always'
     ports:
-    - 4444:4444
-    - 4445:4445
-    - 5555:5555
-    command:
-      serve -c /etc/config/hydra/hydra.yml all --dangerous-force-http
-    volumes:
-      -
-        type: bind
-        source: ./hydra-config/dev
-        target: /etc/config/hydra
-    env_file:
-      .env
-    depends_on:
-      - hydra-migrate
-    restart: always
-    networks:
-      - intranet
-  
-  hydra-migrate:
-    image: oryd/hydra:v1.9.2
-    command:
-      migrate -c /etc/config/hydra/hydra.yml sql -e --yes
-    volumes:
-      -
-        type: bind
-        source: ./hydra-config/dev
-        target: /etc/config/hydra
-    env_file:
-      .env
-    restart: on-failure
-    networks:
-      - intranet
-  
-  teams: 
-    build: .
-    depends_on:
-    - hydra
+      - 5433:5432
     environment:
-     - HYDRA_ADMIN_HOST=http://hydra:4445
-     - HYDRA_TOKEN_HOST=http://hydra:4444
-     - HYDRA_AUTHZ_HOST=http://localhost:4444
-    ports:
-    - 3000:3000
-    env_file:
-      .env
-    restart: always
-    command:
-      sh -c "npm run migrate && npm start"
-    networks:
-      - intranet
+      - ALLOW_IP_RANGE=0.0.0.0/0
+      - POSTGRES_DB=osm-teams
+      - PGDATA=/opt/postgres/data
+    volumes:
+      - ./docker-data/dev-db:/opt/postgres/data
 
-networks:
-  intranet:
+  test-db:
+    platform: linux/amd64
+    image: mdillon/postgis:9.6-alpine
+    restart: 'always'
+    ports:
+      - 5434:5432
+    environment:
+      - ALLOW_IP_RANGE=0.0.0.0/0
+      - POSTGRES_DB=osm-teams-test
+      - PGDATA=/opt/postgres/data
+    volumes:
+      - ./docker-data/test-db:/opt/postgres/data
