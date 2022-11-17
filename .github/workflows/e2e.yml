@@ -42,5 +42,8 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install
 
+      - name: Migrate database
+        run: yarn migrate:test
+
       - name: Run tests
         run: yarn e2e
