@@ -55,6 +55,16 @@ Start development server:
 ✨ You can now login to the app at http://127.0.0.1:3000
 <!-- markdownlint-enable MD034 -->
 
+## Testing
+
+This project Cypress for end-to-end testing. To run once:
+
+    yarn e2e
+
+To open Cypress dashboard for interactive development:
+
+    yarn e2e:dev
+
 ## Acknowledgments
 
 - This app is based off of [OSM/Hydra](https://github.com/kamicut/osmhydra)
