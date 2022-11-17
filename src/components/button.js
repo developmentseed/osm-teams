@@ -84,8 +84,9 @@ export default function Button({
   onClick,
   children,
   size,
+  className,
 }) {
-  let classes = [`button`, variant, size]
+  let classes = [`button`, variant, size, className]
   if (disabled) classes.push('disabled')
   let classNames = classes.join(' ')
   if (type === 'submit') {
