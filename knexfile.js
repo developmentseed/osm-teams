@@ -1,4 +1,11 @@
-let DATABASE_URL = process.env.DSN || process.env.DATABASE_URL
+const { loadEnvConfig } = require('@next/env')
+
+// Load configuration from env files using Next.js
+const projectDir = process.cwd()
+loadEnvConfig(projectDir)
+
+// Get database connection
+const DATABASE_URL = process.env.DATABASE_URL
 
 module.exports = {
   test: {

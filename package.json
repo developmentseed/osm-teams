@@ -16,6 +16,8 @@
   },
   "license": "MIT",
   "scripts": {
+    "cy:open": "cypress open",
+    "e2e:dev": "NODE_ENV=test start-server-and-test dev http://127.0.0.1:3000/api cy:open",
     "docs:validate": "swagger-cli validate docs/api.yml",
     "docs:api": "swagger-markdown -i docs/api.yml -o docs/api.md",
     "docs": "npm run docs:validate && npm run docs:api",
@@ -103,13 +105,17 @@
     "@babel/preset-react": "^7.16.7",
     "ava": "^3.15.0",
     "babelify": "^10.0.0",
+    "cypress": "^11.1.0",
+    "@panva/hkdf": "^1.0.1",
     "eslint": "8.26.0",
     "eslint-config-next": "13.0.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "jose": "^4.11.0",
     "nodemon": "^1.19.4",
     "nyc": "^15.1.0",
     "prettier": "2.7.1",
+    "start-server-and-test": "^1.14.0",
     "swagger-markdown": "^1.4.6"
   }
 }
