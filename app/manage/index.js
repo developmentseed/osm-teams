@@ -257,7 +257,7 @@ function manageRouter(handler) {
 
   handler.get(
     '/api/profiles/keys/organizations/:id/teams',
-    can('organization:edit'),
+    can('organization:view-team-keys'),
     getProfileKeys('org', 'team')
   )
   handler.post(

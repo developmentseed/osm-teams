@@ -71,6 +71,28 @@ export async function getOrgTeamAttributes(id) {
 }
 
 /**
+ * getTeamAttributess
+ * Get attributes for team attributes
+ *
+ * @returns {Array[Object]} - list of team details
+ */
+export async function getTeamAttributes (id) {
+  let res = await fetch(join(URL, 'keys', 'teams', `${id}`), {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (res.status === 200) {
+    return res.json()
+  } else {
+    const err = new Error('could not retrieve team member attributes')
+    err.status = res.status
+    throw err
+  }
+}
+
+/**
  * modifyAttribute
  * Modify attribute given a profile key
  *

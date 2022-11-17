@@ -4,10 +4,14 @@ import Router from 'next/router'
 import { pick, split } from 'ramda'
 import { getTeam, updateTeam, destroyTeam } from '../../../lib/teams-api'
 import getConfig from 'next/config'
-import EditTeamForm from '../../../components/edit-team-form'
-import Button from '../../../components/button'
-import theme from '../../../styles/theme'
-import { getOrgTeamAttributes, getTeamProfile } from '../../../lib/profiles-api'
+import EditTeamForm from '../components/edit-team-form'
+import Button from '../components/button'
+import theme from '../styles/theme'
+import {
+  getOrgTeamAttributes,
+  getTeamAttributes,
+  getTeamProfile,
+} from '../lib/profiles-api'
 const { publicRuntimeConfig } = getConfig()
 
 export default class TeamEdit extends Component {
@@ -32,16 +36,18 @@ export default class TeamEdit extends Component {
     const { id } = this.props
     try {
       let team = await getTeam(id)
-      let teamAttributes = []
+      let teamAttributes = (await getTeamAttributes(id)) || []
+      let orgTeamAttributes = []
       let profileValues = []
       profileValues = await getTeamProfile(id)
       if (team.org) {
-        teamAttributes = await getOrgTeamAttributes(team.org.organization_id)
+        orgTeamAttributes = await getOrgTeamAttributes(team.org.organization_id)
       }
       this.setState({
         team,
         profileValues,
         teamAttributes,
+        orgTeamAttributes,
         loading: false,
       })
     } catch (e) {
@@ -112,7 +118,8 @@ export default class TeamEdit extends Component {
   }
 
   render() {
-    const { team, error, teamAttributes, profileValues } = this.state
+    const { team, error, teamAttributes, orgTeamAttributes, profileValues } =
+      this.state
 
     if (error) {
       if (error.status >= 400 && error.status < 500) {
@@ -154,7 +161,8 @@ export default class TeamEdit extends Component {
               team
             )}
             profileValues={profileValues}
-            extraTags={teamAttributes}
+            teamTags={teamAttributes}
+            orgTeamTags={orgTeamAttributes}
             onSubmit={async (values, actions) => {
               try {
                 let tags = Object.keys(values.tags).map((key) => {

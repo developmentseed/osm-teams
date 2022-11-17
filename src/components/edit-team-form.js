@@ -34,7 +34,8 @@ export default function EditTeamForm({
   onSubmit,
   staff,
   isCreateForm,
-  extraTags = [],
+  orgTeamTags = [],
+  teamTags = [],
   profileValues,
 }) {
   if (profileValues) {
@@ -58,7 +59,8 @@ export default function EditTeamForm({
         setStatus,
       }) => {
         let uniqueOrgs
-        let extraFields
+        let extraOrgTeamFields = []
+        let extraTeamFields = []
         if (staff && isCreateForm) {
           uniqueOrgs = uniqBy(
             prop('organization_id'),
@@ -67,27 +69,54 @@ export default function EditTeamForm({
             })
           )
         }
-        if (extraTags.length > 0) {
-          extraFields = extraTags.map(({ id, name, required, description }) => {
-            return (
-              <div
-                className='form-control form-control__vertical'
-                key={`extra-tag-${id}`}
-              >
-                <label htmlFor={`extra-tag-${id}`}>
-                  {name}
-                  {required ? <span className='form--required'>*</span> : ''}
-                  {description ? descriptionPopup(description) : ''}
-                </label>
-                <Field
-                  type='text'
-                  name={`tags.key-${id}`}
-                  required={required}
-                  value={values.tags[`key-${id}`]}
-                />
-              </div>
-            )
-          })
+        if (orgTeamTags.length > 0) {
+          extraOrgTeamFields = orgTeamTags.map(
+            ({ id, name, required, description }) => {
+              return (
+                <div
+                  className='form-control form-control__vertical'
+                  key={`extra-tag-${id}`}
+                >
+                  <label htmlFor={`extra-tag-${id}`}>
+                    {name}
+                    {required ? <span className='form--required'>*</span> : ''}
+                    {description ? descriptionPopup(description) : ''}
+                  </label>
+                  <Field
+                    type='text'
+                    name={`tags.key-${id}`}
+                    required={required}
+                    value={values.tags[`key-${id}`]}
+                  />
+                </div>
+              )
+            }
+          )
+        }
+
+        if (teamTags.length > 0) {
+          extraTeamFields = teamTags.map(
+            ({ id, name, required, description }) => {
+              return (
+                <div
+                  className='form-control form-control__vertical'
+                  key={`extra-tag-${id}`}
+                >
+                  <label htmlFor={`extra-tag-${id}`}>
+                    {name}
+                    {required ? <span className='form--required'>*</span> : ''}
+                    {description ? descriptionPopup(description) : ''}
+                  </label>
+                  <Field
+                    type='text'
+                    name={`tags.key-${id}`}
+                    required={required}
+                    value={values.tags[`key-${id}`]}
+                  />
+                </div>
+              )
+            }
+          )
         }
 
         return (
@@ -156,10 +185,18 @@ export default function EditTeamForm({
             ) : (
               ''
             )}
-            {extraTags.length > 0 ? (
+            {extraOrgTeamFields.length > 0 ? (
               <>
                 <h2>Org Attributes</h2>
-                {extraFields}
+                {extraOrgTeamFields}
+              </>
+            ) : (
+              ''
+            )}
+            {extraTeamFields.length > 0 ? (
+              <>
+                <h2>Other Team Attributes</h2>
+                {extraTeamFields}
               </>
             ) : (
               ''
