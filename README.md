@@ -24,7 +24,7 @@ Visit your [OpenStreetMap settings](https://www.openstreetmap.org/account/edit) 
 
 ![OSM Client App](oauth2-osm-client-app.png "OAuth 2 page at OSM Website")
 
-Create an `.env` file and add environment variables `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` obtained at OAuth2 page at OpenStreetMap website. The .env file should be like the following:
+Create an `.env.local` file and add environment variables `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` obtained at OAuth2 page at OpenStreetMap website. The `.env.local` file should be like the following:
 
     ```bash
     OSM_CONSUMER_KEY=<osm-oauth2-client-id>
