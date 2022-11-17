@@ -37,7 +37,7 @@ function openstreetmap(req, res) {
       `${OSM_API}/api/0.6/user/details`,
       token,
       tokenSecret,
-      function (err, body, res) {
+      function (err, body) {
         if (err) {
           return done(
             new InternalOAuthError('failed to fetch user profile', err)
@@ -103,7 +103,7 @@ function openstreetmap(req, res) {
 
   passport.authenticate(strategy, {
     req: req,
-    redirect: function (url, status) {
+    redirect: function (url) {
       res.redirect(url)
     },
     success: function (user) {

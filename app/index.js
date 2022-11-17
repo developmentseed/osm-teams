@@ -1,13 +1,11 @@
 // Set server timezone to UTC to avoid issues with date parsing
 process.env.TZ = 'UTC'
 
-const path = require('path')
 const express = require('express')
 const bodyParser = require('body-parser')
 const compression = require('compression')
 const boom = require('express-boom')
 const next = require('next')
-const YAML = require('yamljs')
 const cors = require('cors')
 
 const manageRouter = require('./manage')
@@ -49,7 +47,7 @@ async function init() {
   /**
    * Error handler
    */
-  app.use(function (err, req, res, next) {
+  app.use(function (err, req, res) {
     if (err.message === 'Forbidden') {
       return nextApp.render(req, res, '/uh-oh')
     }

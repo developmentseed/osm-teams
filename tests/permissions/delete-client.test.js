@@ -1,6 +1,5 @@
 const test = require('ava')
 const db = require('../../src/lib/db')
-const path = require('path')
 const hydra = require('../../app/lib/hydra')
 const sinon = require('sinon')
 

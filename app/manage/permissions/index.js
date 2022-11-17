@@ -1,6 +1,4 @@
 const Boom = require('boom')
-const db = require('../../../src/lib/db')
-const hydra = require('../../lib/hydra')
 const { mergeAll, isNil } = require('ramda')
 
 const metaPermissions = {
@@ -53,95 +51,6 @@ const permissions = mergeAll([
  */
 async function checkPermission(req, res, ability) {
   return permissions[ability](req.session?.user_id, req.params)
-}
-
-/**
- * Get token from authorization header or session
- * depending on the request
- *
- * @param {Object} req Request object
- * @return {String} token
- */
-async function getToken(req) {
-  let token
-  if (req.session && req.session.user_id) {
-    token = await getSessionToken(req)
-  } else if (req.headers.authorization) {
-    token = getAuthHeaderToken(req)
-  }
-  return token
-}
-
-/**
- * Get token from the session
- *
- * @param {Object} req Request object
- * @return {String} token
- */
-async function getSessionToken(req) {
-  try {
-    let conn = await db()
-    let [userTokens] = await conn('users').where('id', req.session.user_id)
-    return userTokens.manageToken.access_token
-  } catch (err) {
-    throw err
-  }
-}
-
-/**
- * Get token from the authorization header
- *
- * @param {Object} req Request object
- * @return {String} token
- */
-function getAuthHeaderToken(req) {
-  const [type, token] = req.headers.authorization.split(' ')
-  if (type !== 'Bearer')
-    throw new Error(
-      'Authorization scheme not supported. Only Bearer scheme is supported'
-    )
-  return token
-}
-
-/**
- * Takes an access token
- * If it's valid, set the user id in the response object res.locals and forward to the next
- * middleware. If it's not valid, send a 401
- *
- * @param {String} token Access Token
- * @param {Object} res Response object
- * @param {Function} next Express middleware next
- */
-async function acceptToken(token, res, next) {
-  let result = await hydra.introspect(token)
-  if (result && result.active) {
-    res.locals.user_id = result.sub
-    return next()
-  } else {
-    // Delete this accessToken ?
-    return res.boom.unauthorized('Expired token')
-  }
-}
-
-/**
- * Routes with `authenticate` middleware first check the session for the user,
- * Get the associated accessToken from the database, and check for
- * the accessToken validity with hydra. If there isn't a session,
- * it checks for an Authorization header with a valid access token
- */
-async function authenticate(req, res, next) {
-  try {
-    const token = await getToken(req)
-
-    // if token exists, move to next middleware to check permissions
-    if (token) return acceptToken(token, res, next)
-
-    // if no token, check ability in next middleware to see if user has access anyway in the case of public resources
-    return next()
-  } catch (e) {
-    console.log('error getting token', e)
-    return res.boom.unauthorized('Forbidden')
-  }
 }
 
 /**

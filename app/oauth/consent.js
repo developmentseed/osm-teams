@@ -63,7 +63,7 @@ function getConsent(app) {
  * Process the reply of the user, whether they
  * consent the client to access their information
  */
-function postConsent(app) {
+function postConsent() {
   return async (req, res, next) => {
     const challenge = req.body.challenge
     if (req.body.submit === 'Deny access') {

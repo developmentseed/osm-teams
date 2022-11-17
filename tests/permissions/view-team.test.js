@@ -1,6 +1,5 @@
 const test = require('ava')
 const db = require('../../src/lib/db')
-const path = require('path')
 const { initializeContext } = require('./initialization')
 
 const team = require('../../app/lib/team')

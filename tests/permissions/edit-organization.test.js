@@ -1,6 +1,5 @@
 const test = require('ava')
 const db = require('../../src/lib/db')
-const path = require('path')
 const { initializeContext, createOrg, destroyOrg } = require('./initialization')
 
 const { migrationsDirectory } = require('../utils')

@@ -1,7 +1,6 @@
 const db = require('../../src/lib/db')
 const sinon = require('sinon')
 const hydra = require('../../app/lib/hydra')
-const path = require('path')
 const { migrationsDirectory } = require('../utils')
 
 /**
