@@ -19,8 +19,13 @@
     "docs:update-version": "node -p \"JSON.stringify({'apiFolder': 'src/pages/api','schemaFolders': ['models'],'definition': {'openapi': '3.0.0','info': {'title': 'OSM Teams API Docs','version': require('./package.json').version}}}, null, 2)\" > next-swagger-doc.json",
     "docs:generate": "yarn next-swagger-doc-cli next-swagger-doc.json",
     "docs:validate": "yarn docs:update-version && yarn docs:generate && swagger-cli validate public/swagger.json",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "e2e:dev": "NODE_ENV=test start-server-and-test dev http://127.0.0.1:3000/api cy:open",
+    "e2e": "NODE_ENV=test start-server-and-test dev http://127.0.0.1:3000/api cy:run",
     "dev": "next dev",
     "migrate": "knex migrate:latest",
+    "migrate:test": "NODE_ENV=test knex migrate:latest",
     "test": "NODE_ENV=test nyc ava tests/**/*.test.js -c 1 --serial --verbose",
     "lint": "next lint",
     "build": "next build",
@@ -104,12 +109,16 @@
     "@babel/preset-react": "^7.16.7",
     "ava": "^3.15.0",
     "babelify": "^10.0.0",
+    "cypress": "^11.1.0",
+    "@panva/hkdf": "^1.0.1",
     "eslint": "8.26.0",
     "eslint-config-next": "13.0.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "jose": "^4.11.0",
     "nodemon": "^1.19.4",
     "nyc": "^15.1.0",
-    "prettier": "2.7.1"
+    "prettier": "2.7.1",
+    "start-server-and-test": "^1.14.0"
   }
 }

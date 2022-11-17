@@ -14,3 +14,4 @@ hydra-config/prod/prod.yml
 coverage
 docker-data/*
 public/swagger.json
+.env*.local

@@ -1,17 +1,4 @@
-# osm-teams 🤝
-
-<div>
-  <a href="https://circleci.com/gh/developmentseed/osm-teams">
-    <img src="https://circleci.com/gh/developmentseed/osm-teams.png" />
-  </a>
-  <a href="https://standardjs.com">
-    <img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square"
-      alt="Standard" />
-  </a>
-  <a href="http://validator.swagger.io/validator/debug?url=https://raw.githubusercontent.com/developmentseed/osm-teams/master/docs/api.yml">
-    <img src="http://validator.swagger.io/validator?url=https://raw.githubusercontent.com/developmentseed/osm-teams/master/docs/api.yml">
-  </a>
-  </div>
+# OSM Teams 🤝
 
 ## Development
 
@@ -24,7 +11,7 @@ Visit your [OpenStreetMap settings](https://www.openstreetmap.org/account/edit) 
 
 ![OSM Client App](oauth2-osm-client-app.png "OAuth 2 page at OSM Website")
 
-Create an `.env` file and add environment variables `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` obtained at OAuth2 page at OpenStreetMap website. The .env file should be like the following:
+Create an `.env.local` file and add environment variables `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` obtained at OAuth2 page at OpenStreetMap website. The `.env.local` file should be like the following:
 
     ```bash
     OSM_CONSUMER_KEY=<osm-oauth2-client-id>
@@ -55,9 +42,23 @@ Start development server:
 ✨ You can now login to the app at http://127.0.0.1:3000
 <!-- markdownlint-enable MD034 -->
 
+## Testing
+
+Migrate `test-db` database:
+
+    yarn migrate:test
+
+This project uses Cypress for end-to-end testing. To run once:
+
+    yarn e2e
+
+To open Cypress dashboard for interactive development:
+
+    yarn e2e:dev
+
 ## API
 
-The API docs can be accessed at http://localhost:3000/docs/api.
+The API docs can be accessed at <http://localhost:3000/docs/api>.
 
 All API routes should include descriptions in [OpenAPI 3.0 format](https://swagger.io/specification).
 
