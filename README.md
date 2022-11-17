@@ -7,16 +7,21 @@ Install requirements:
 - [nvm](https://github.com/creationix/nvm)
 - [Docker](https://www.docker.com)
 
-Visit your [OpenStreetMap settings](https://www.openstreetmap.org/account/edit) page and [register an OAuth2 app](https://www.openstreetmap.org/oauth2/applications) :
+Visit your [OpenStreetMap settings](https://www.openstreetmap.org/account/edit) page and [register an OAuth2 app](https://www.openstreetmap.org/oauth2/applications) with the following settings:
+
+- Name: `OSM Teams Dev` (or another name of your preference)
+- Redirect URIs: `http://127.0.0.1:3000/api/auth/callback/openstreetmap`
+- Confidential application: `false`
+- Permissions: `Read user preferences` only
+
+Example:
 
 ![OSM Client App](oauth2-osm-client-app.png "OAuth 2 page at OSM Website")
 
 Create an `.env.local` file and add environment variables `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` obtained at OAuth2 page at OpenStreetMap website. The `.env.local` file should be like the following:
 
-    ```bash
     OSM_CONSUMER_KEY=<osm-oauth2-client-id>
     OSM_CONSUMER_SECRET=<osm-oauth2-client-secret>
-    ```
 
 Start development and test databases with Docker:
 
@@ -58,7 +63,7 @@ To open Cypress dashboard for interactive development:
 
 ## API
 
-The API docs can be accessed at <http://localhost:3000/docs/api>.
+The API docs can be accessed at <http://127.0.0.1:3000/docs/api>.
 
 All API routes should include descriptions in [OpenAPI 3.0 format](https://swagger.io/specification).
 
