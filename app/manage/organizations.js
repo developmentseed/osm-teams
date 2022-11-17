@@ -2,12 +2,13 @@ const organization = require('../lib/organization')
 const team = require('../lib/team')
 const { teamsMembersModeratorsHelper } = require('./utils')
 const { map, prop } = require('ramda')
+const Boom = require('@hapi/boom')
 
 /**
  * List organizations that a user is a member of
  */
 async function listMyOrgs(req, reply) {
-  const { user_id } = reply.locals
+  const { user_id } = req.session
   try {
     const orgs = await organization.listMyOrganizations(user_id)
     reply.send(orgs)
@@ -24,7 +25,7 @@ async function listMyOrgs(req, reply) {
  */
 async function createOrg(req, reply) {
   const { body } = req
-  const { user_id } = reply.locals
+  const { user_id } = req.session
 
   try {
     const data = await organization.create(body, user_id)
@@ -41,22 +42,17 @@ async function createOrg(req, reply) {
  */
 async function getOrg(req, reply) {
   const { id } = req.params
-  const { user_id } = reply.locals
+  const { user_id } = req.session
 
   if (!id) {
-    return reply.boom.badRequest('organization id is required')
+    throw Boom.badRequest('organization id is required')
   }
 
-  try {
-    let [data, isMemberOfOrg] = await Promise.all([
-      organization.get(id),
-      organization.isMember(id, user_id),
-    ])
-    reply.send({ ...data, isMemberOfOrg })
-  } catch (err) {
-    console.log(err)
-    return reply.boom.badRequest(err.message)
-  }
+  let [data, isMemberOfOrg] = await Promise.all([
+    organization.get(id),
+    organization.isMember(id, user_id),
+  ])
+  reply.send({ ...data, isMemberOfOrg })
 }
 
 /**
@@ -147,7 +143,7 @@ async function destroyOrg(req, reply) {
 
   try {
     await organization.destroy(id)
-    reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -170,7 +166,7 @@ async function addOwner(req, reply) {
 
   try {
     await organization.addOwner(id, Number(osmId))
-    reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -193,7 +189,7 @@ async function removeOwner(req, reply) {
 
   try {
     await organization.removeOwner(id, Number(osmId))
-    reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -216,7 +212,7 @@ async function addManager(req, reply) {
 
   try {
     await organization.addManager(id, Number(osmId))
-    reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -239,7 +235,7 @@ async function removeManager(req, reply) {
 
   try {
     await organization.removeManager(id, Number(osmId))
-    reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -252,7 +248,7 @@ async function removeManager(req, reply) {
 async function createOrgTeam(req, reply) {
   const { id } = req.params
   const { body } = req
-  const { user_id } = reply.locals
+  const { user_id } = req.session
 
   try {
     const data = await organization.createOrgTeam(id, body, user_id)

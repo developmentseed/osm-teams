@@ -4,6 +4,7 @@ import Router from 'next/router'
 import join from 'url-join'
 import getConfig from 'next/config'
 import theme from '../styles/theme'
+import { useSession, signOut, signIn } from 'next-auth/react'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -16,85 +17,68 @@ const title = String.raw`
 \____//____/_/  /_/    /_/ /_____/_/  |_/_/  /_//____/
 `
 
-class Home extends Component {
-  static async getInitialProps({ query }) {
-    if (query.user) {
-      return {
-        user: {
-          username: query.user,
-        },
-      }
-    }
-  }
+export default function Home() {
+  const { data: session, status } = useSession()
 
-  render() {
-    return (
-      <main>
-        <section className='inner page welcome'>
-          <div className='card'>
-            <h1 className='welcome__intro'>
-              <pre>{title}</pre>
-            </h1>
-            <p>
-              Create teams of {publicRuntimeConfig.OSM_NAME} users and import
-              them into your apps. Making maps better, together. Enable teams in
-              OpenStreetMap applications, or build your team here. It’s not safe
-              to map alone.
-            </p>
-            {this.props.user.username ? (
-              <div className='welcome__user'>
-                <h2>Welcome, {this.props.user.username}!</h2>
-                <ul className='welcome__user--actions'>
-                  <li>
-                    <a
-                      href={join(publicRuntimeConfig.APP_URL, '/teams/create')}
-                    >
-                      Create New Team
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href={join(publicRuntimeConfig.APP_URL, '/teams')}
-                      className=''
-                    >
-                      All Teams
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href={join(publicRuntimeConfig.APP_URL, '/profile')}
-                      className=''
-                    >
-                      Profile
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href={join(publicRuntimeConfig.APP_URL, '/clients')}
-                      className=''
-                    >
-                      Connected Apps
-                    </a>
-                  </li>
-                </ul>
-                <Button
-                  variant='danger'
-                  onClick={() => {
-                    window.sessionStorage.clear()
-                    Router.push('/logout')
-                  }}
-                >
-                  Logout
-                </Button>
-              </div>
-            ) : (
-              <Button href='/login'>Sign in →</Button>
-            )}
-          </div>
-          <div className='map-bg' />
-        </section>
-        <style jsx>
-          {`
+  return (
+    <main>
+      <section className='inner page welcome'>
+        <div className='card'>
+          <h1 className='welcome__intro'>
+            <pre>{title}</pre>
+          </h1>
+          <p>
+            Create teams of {publicRuntimeConfig.OSM_NAME} users and import them
+            into your apps. Making maps better, together. Enable teams in
+            OpenStreetMap applications, or build your team here. It’s not safe
+            to map alone.
+          </p>
+          {status === 'authenticated' ? (
+            <div className='welcome__user'>
+              <h2>Welcome, {session.user.username}!</h2>
+              <ul className='welcome__user--actions'>
+                <li>
+                  <a href={join(publicRuntimeConfig.APP_URL, '/teams/create')}>
+                    Create New Team
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={join(publicRuntimeConfig.APP_URL, '/teams')}
+                    className=''
+                  >
+                    All Teams
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={join(publicRuntimeConfig.APP_URL, '/profile')}
+                    className=''
+                  >
+                    Profile
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={join(publicRuntimeConfig.APP_URL, '/clients')}
+                    className=''
+                  >
+                    Connected Apps
+                  </a>
+                </li>
+              </ul>
+              <Button variant='danger' onClick={signOut}>
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <Button onClick={() => signIn('openstreetmap')}>Sign in →</Button>
+          )}
+        </div>
+        <div className='map-bg' />
+      </section>
+      <style jsx>
+        {`
             main {
               background: ${theme.colors.primaryDark};
               background-image: radial-gradient(white 5%, transparent 0);
@@ -255,10 +239,7 @@ class Home extends Component {
               }
             }
           `}
-        </style>
-      </main>
-    )
-  }
+      </style>
+    </main>
+  )
 }
-
-export default Home

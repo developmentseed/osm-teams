@@ -41,6 +41,7 @@
     ]
   },
   "dependencies": {
+    "@hapi/boom": "^10.0.0",
     "body-parser": "^1.19.1",
     "chance": "^1.1.8",
     "compression": "^1.7.3",
@@ -62,6 +63,8 @@
     "leaflet-control-geocoder": "^1.13.0",
     "next": "^13.0.1",
     "next-swagger-doc": "^0.3.6",
+    "next-auth": "^4.16.4",
+    "next-connect": "^0.13.0",
     "node-fetch": "^2.6.7",
     "passport-light": "^1.0.1",
     "passport-oauth": "^1.0.0",

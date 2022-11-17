@@ -19,7 +19,7 @@ module.exports = {
     HYDRA_ADMIN_HOST: process.env.HYDRA_ADMIN_HOST || 'http://localhost:4445',
   },
   publicRuntimeConfig: {
-    APP_URL: process.env.APP_URL || 'http://localhost:3000',
+    APP_URL: process.env.APP_URL || 'http://127.0.0.1:3000',
     OSM_NAME: process.env.OSM_NAME || 'OSM',
   },
   eslint: {

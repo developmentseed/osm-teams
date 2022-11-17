@@ -32,7 +32,7 @@ async function listTeams(req, reply) {
 }
 
 async function listMyTeams(req, reply) {
-  const { user_id: osmId } = reply.locals
+  const { user_id: osmId } = req.session
   try {
     const memberOfTeams = await team.list({ osmId })
     const moderatorOfTeams = await team.listModeratedBy(osmId)
@@ -92,7 +92,7 @@ async function getTeamMembers(req, reply) {
 
 async function createTeam(req, reply) {
   const { body } = req
-  const { user_id } = reply.locals
+  const { user_id } = req.session
   if (body.editing_policy && !isUrl.test(body.editing_policy)) {
     return reply.boom.badRequest('editing_policy must be a valid url')
   }
@@ -185,7 +185,7 @@ async function destroyTeam(req, reply) {
 
   try {
     await team.destroy(id)
-    reply.sendStatus(200)
+    reply.status(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -205,7 +205,7 @@ async function addMember(req, reply) {
 
   try {
     await team.addMember(id, osmId)
-    return reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -236,7 +236,7 @@ async function updateMembers(req, reply) {
     await team.resolveMemberNames(members)
 
     await team.updateMembers(id, add, remove)
-    return reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.error(err)
     return reply.boom.badRequest(err.message)
@@ -256,7 +256,7 @@ async function removeMember(req, reply) {
 
   try {
     await team.removeMember(id, osmId)
-    return reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)
@@ -331,7 +331,7 @@ const deleteJoinInvitation = routeWrapper({
           id: req.params.uuid,
         })
         .del()
-      reply.sendStatus(200)
+      reply.status(200)
     } catch (err) {
       console.log(err)
       return reply.boom.badRequest(err.message)
@@ -349,7 +349,7 @@ const acceptJoinInvitation = routeWrapper({
       .required(),
   },
   handler: async (req, reply) => {
-    const user = reply.locals.user_id
+    const user = req.session.user_id
     try {
       const conn = await db()
       const [invitation] = await conn('invitations').where({
@@ -359,10 +359,10 @@ const acceptJoinInvitation = routeWrapper({
 
       // If this invitation doesn't exist, then it's not valid
       if (!invitation) {
-        return reply.sendStatus(404)
+        return reply.status(404)
       } else {
         team.addMember(req.params.id, user)
-        return reply.sendStatus(200)
+        return reply.status(200)
       }
     } catch (err) {
       console.log(err)
@@ -373,7 +373,7 @@ const acceptJoinInvitation = routeWrapper({
 
 async function joinTeam(req, reply) {
   const { id } = req.params
-  const osmId = reply.locals.user_id
+  const osmId = req.session.user_id
 
   if (!id) {
     return reply.boom.badRequest('team id is required')
@@ -385,7 +385,7 @@ async function joinTeam(req, reply) {
 
   try {
     await team.addMember(id, osmId)
-    return reply.sendStatus(200)
+    return reply.status(200)
   } catch (err) {
     console.log(err)
     return reply.boom.badRequest(err.message)

@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import * as Yup from 'yup'
 import { Formik, Field, Form } from 'formik'
-import APIClient from '../../lib/api-client'
-import Button from '../../../components/button'
+import APIClient from '../../../../../../lib/api-client'
+import Button from '../../../../../../components/button'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import join from 'url-join'
@@ -40,12 +40,13 @@ function Section({ children }) {
   )
 }
 
-export default class NewBadgeAssignment extends Component {
+export default class EditBadgeAssignment extends Component {
   static async getInitialProps({ query }) {
     if (query) {
       return {
         orgId: query.id,
-        userId: query.userId,
+        badgeId: parseInt(query.badgeId),
+        userId: parseInt(query.userId),
       }
     }
   }
@@ -53,7 +54,7 @@ export default class NewBadgeAssignment extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      badges: [],
+      isDeleting: false,
     }
 
     this.loadData = this.loadData.bind(this)
@@ -64,15 +65,26 @@ export default class NewBadgeAssignment extends Component {
   }
 
   async loadData() {
-    const { orgId } = this.props
+    const { orgId, badgeId, userId } = this.props
 
     try {
-      // Fetch data and apply to state
       const org = await apiClient.get(`/organizations/${orgId}`)
-      const badges = await apiClient.get(`/organizations/${orgId}/badges`)
+      const badge = await apiClient.get(
+        `/organizations/${orgId}/badges/${badgeId}`
+      )
+      let assignment
+      if (badge && badge.users) {
+        assignment = badge.users.find((u) => u.id === parseInt(userId))
+      }
+
+      if (!assignment) {
+        throw Error('Badge assignment not found.')
+      }
+
       this.setState({
         org,
-        badges,
+        badge,
+        assignment,
       })
     } catch (error) {
       console.error(error)
@@ -92,8 +104,8 @@ export default class NewBadgeAssignment extends Component {
       return <div>Loading...</div>
     }
 
-    const { orgId, userId } = this.props
-    const { badges } = this.state
+    const { orgId, userId, badgeId } = this.props
+    const { badge, assignment } = this.state
 
     return (
       <>
@@ -103,12 +115,18 @@ export default class NewBadgeAssignment extends Component {
         <Section>
           <Formik
             initialValues={{
-              assignedAt: format(Date.now(), 'yyyy-MM-dd'),
+              assignedAt:
+                (assignment &&
+                  assignment.assignedAt &&
+                  assignment.assignedAt.substring(0, 10)) ||
+                format(Date.now(), 'yyyy-MM-dd'),
+              validUntil:
+                (assignment &&
+                  assignment.validUntil &&
+                  assignment.validUntil.substring(0, 10)) ||
+                '',
             }}
             validationSchema={Yup.object().shape({
-              badgeId: Yup.number()
-                .oneOf(badges.map((b) => b.id))
-                .required('Please select a badge.'),
               assignedAt: Yup.date().required(
                 'Please select an assignment date.'
               ),
@@ -122,53 +140,32 @@ export default class NewBadgeAssignment extends Component {
                   )
               ),
             })}
-            onSubmit={async ({ assignedAt, validUntil, badgeId }) => {
+            onSubmit={async ({ assignedAt, validUntil }) => {
               try {
-                await apiClient.post(
-                  `/organizations/${orgId}/badges/${badgeId}/assign/${userId}`,
-                  {
-                    assigned_at: assignedAt,
-                    valid_until: validUntil,
-                  }
+                const payload = {
+                  assigned_at: assignedAt,
+                  valid_until: validUntil !== '' ? validUntil : null,
+                }
+
+                await apiClient.patch(
+                  `/organizations/${orgId}/member/${userId}/badge/${badgeId}`,
+                  payload
                 )
-                Router.push(
-                  join(
-                    URL,
-                    `/organizations/${orgId}/badges/${badgeId}/assign/${userId}`
-                  )
-                )
+                toast.info('Badge updated successfully.')
+                this.loadData()
               } catch (error) {
                 console.log(error)
-
-                if (error.message === 'User is already assigned to badge.') {
-                  toast.error(
-                    `User is already assigned to this badge, please select a different one.`
-                  )
-                } else {
-                  toast.error(`Unexpected error, please try again later.`)
-                }
+                toast.error(`Unexpected error, please try again later.`)
               }
             }}
-            render={({ isSubmitting, values, errors, touched }) => {
+            render={({ isSubmitting, values, errors }) => {
               return (
                 <Form>
                   <div className='page__heading'>
                     <h2>User: {userId} (OSM id)</h2>
                   </div>
-
-                  <div className='form-control form-control__vertical'>
-                    <label htmlFor='badgeId'>Badge:</label>
-                    <Field as='select' name='badgeId'>
-                      <option value=''>Select a badge</option>
-                      {badges.map((b) => (
-                        <option key={b.id} value={b.id}>
-                          {b.name}
-                        </option>
-                      ))}
-                    </Field>
-                    {errors.badgeId && (
-                      <div className='form--error'>{errors.badgeId}</div>
-                    )}
+                  <div className='page__heading'>
+                    <h2>Badge: {badge && badge.name}</h2>
                   </div>
                   <div className='form-control form-control__vertical'>
                     <label htmlFor='assignedAt'>Assigned At (required)</label>
@@ -197,7 +194,7 @@ export default class NewBadgeAssignment extends Component {
                       disabled={isSubmitting}
                       variant='primary'
                       type='submit'
-                      value='Assign'
+                      value={badge ? 'Update' : 'Assign'}
                     />
                     <Button
                       variant='small'
@@ -210,6 +207,55 @@ export default class NewBadgeAssignment extends Component {
             }}
           />
         </Section>
+        {badge && (
+          <Section>
+            <div>
+              {this.state.isDeleting ? (
+                <>
+                  <Button
+                    onClick={() => {
+                      this.setState({
+                        isDeleting: false,
+                      })
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant='danger'
+                    onClick={async (e) => {
+                      e.preventDefault()
+                      try {
+                        await apiClient.delete(
+                          `/organizations/${orgId}/member/${userId}/badge/${badge.id}`
+                        )
+                        Router.push(join(URL, `/organizations/${orgId}`))
+                      } catch (error) {
+                        toast.error(
+                          `There was an error unassigning the badge. Please try again later.`
+                        )
+                        console.log(error)
+                      }
+                    }}
+                  >
+                    Confirm Unassign
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant='danger'
+                  type='submit'
+                  value='Unassign this badge'
+                  onClick={async (e) => {
+                    this.setState({
+                      isDeleting: true,
+                    })
+                  }}
+                />
+              )}
+            </div>
+          </Section>
+        )}
       </>
     )
   }

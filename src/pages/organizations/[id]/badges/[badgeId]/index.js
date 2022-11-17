@@ -1,15 +1,15 @@
 import React, { Component } from 'react'
 import join from 'url-join'
 import { Formik, Field, Form } from 'formik'
-import APIClient from '../../lib/api-client'
-import { getOrg } from '../../lib/org-api'
-import Button from '../../components/button'
+import APIClient from '../../../../../lib/api-client'
+import { getOrg } from '../../../../../lib/org-api'
+import Button from '../../../../../components/button'
 import Router from 'next/router'
 import getConfig from 'next/config'
 import { toast } from 'react-toastify'
-import theme from '../../styles/theme'
-import Table from '../../components/table'
-import { toDateString } from '../../app/lib/utils'
+import theme from '../../../../../styles/theme'
+import Table from '../../../../../components/table'
+import { toDateString } from '../../../../../lib/utils'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -41,7 +41,7 @@ export default class EditBadge extends Component {
   static async getInitialProps({ query }) {
     if (query) {
       return {
-        orgId: query.id,
+        orgId: query.badgeId,
         badgeId: query.badgeId,
       }
     }

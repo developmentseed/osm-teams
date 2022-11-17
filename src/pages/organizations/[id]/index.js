@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Router from 'next/router'
+import Router, { withRouter } from 'next/router'
 import {
   getOrg,
   getOrgStaff,
@@ -8,22 +8,23 @@ import {
   removeManager,
   addOwner,
   removeOwner,
-} from '../lib/org-api'
-import { getUserOrgProfile } from '../lib/profiles-api'
-import Card from '../components/card'
-import Section from '../components/section'
-import SectionHeader from '../components/section-header'
-import Table from '../components/table'
-import theme from '../styles/theme'
-import AddMemberForm from '../components/add-member-form'
-import SvgSquare from '../components/svg-square'
-import Button from '../components/button'
+} from '../../../lib/org-api'
+import { getUserOrgProfile } from '../../../lib/profiles-api'
+import Card from '../../../components/card'
+import Section from '../../../components/section'
+import SectionHeader from '../../../components/section-header'
+import Table from '../../../components/table'
+import theme from '../../../styles/theme'
+import AddMemberForm from '../../../components/add-member-form'
+import SvgSquare from '../../../components/svg-square'
+import Button from '../../../components/button'
 import Modal from 'react-modal'
-import ProfileModal from '../components/profile-modal'
+import ProfileModal from '../../../components/profile-modal'
 import { assoc, propEq, find, contains, prop, map } from 'ramda'
-import APIClient from '../lib/api-client'
+import APIClient from '../../../lib/api-client'
 import getConfig from 'next/config'
 import join from 'url-join'
+import { getSession } from 'next-auth/react'
 
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
@@ -44,7 +45,7 @@ export function SectionWrapper(props) {
     </div>
   )
 }
-export default class Organization extends Component {
+class Organization extends Component {
   static async getInitialProps({ query }) {
     if (query) {
       return {
@@ -73,6 +74,7 @@ export default class Organization extends Component {
   }
 
   async componentDidMount() {
+    this.setState({ session: await getSession() })
     await this.getOrg()
     await this.getOrgStaff()
     await this.getBadges()
@@ -280,7 +282,7 @@ export default class Organization extends Component {
     const { org, members, managers, owners, error } = this.state
     if (!org) return null
 
-    const userId = parseInt(this.props.user.uid)
+    const userId = parseInt(this.state.session.user_id)
     const ownerIds = map(parseInt, map(prop('id'), owners))
     const managerIds = map(parseInt, map(prop('id'), managers))
     const isUserOwner = contains(userId, ownerIds)
@@ -513,3 +515,5 @@ export default class Organization extends Component {
     )
   }
 }
+
+export default withRouter(Organization)

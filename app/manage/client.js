@@ -47,7 +47,7 @@ async function createClient(req, res) {
  * @param {*} res
  */
 function deleteClient(req, res) {
-  hydra.deleteClient(req.params.id).then(() => res.sendStatus(200))
+  hydra.deleteClient(req.params.id).then(() => res.status(200))
 }
 
 module.exports = {
