@@ -39,9 +39,6 @@ jobs:
       - name: Lint
         run: yarn lint
 
-      - name: Docker Cleanup
-        run: docker-compose kill        
-
       - name: Docker - Pull
         run: docker-compose pull
 
@@ -49,7 +46,8 @@ jobs:
         run: docker-compose up --build -d test-db
 
       - name: Migrate database
-        run: yarn migrate:test
+        # run: yarn migrate:test
+        run: for i in {1..3}; do yarn migrate:test; sleep 10; done
 
       - name: Run tests
         run: yarn e2e
