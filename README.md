@@ -1,17 +1,4 @@
-# osm-teams 🤝
-
-<div>
-  <a href="https://circleci.com/gh/developmentseed/osm-teams">
-    <img src="https://circleci.com/gh/developmentseed/osm-teams.png" />
-  </a>
-  <a href="https://standardjs.com">
-    <img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square"
-      alt="Standard" />
-  </a>
-  <a href="http://validator.swagger.io/validator/debug?url=https://raw.githubusercontent.com/developmentseed/osm-teams/master/docs/api.yml">
-    <img src="http://validator.swagger.io/validator?url=https://raw.githubusercontent.com/developmentseed/osm-teams/master/docs/api.yml">
-  </a>
-  </div>
+# OSM Teams 🤝
 
 ## Development
 
@@ -57,7 +44,7 @@ Start development server:
 
 ## Testing
 
-This project Cypress for end-to-end testing. To run once:
+This project uses Cypress for end-to-end testing. To run once:
 
     yarn e2e
 
