@@ -39,6 +39,9 @@ jobs:
       - name: Lint
         run: yarn lint
 
+      - name: Docker Cleanup
+        run: docker-compose kill        
+
       - name: Docker - Pull
         run: docker-compose pull
 
@@ -50,3 +53,6 @@ jobs:
 
       - name: Run tests
         run: yarn e2e
+
+      - name: Docker Cleanup
+        run: docker-compose kill        
