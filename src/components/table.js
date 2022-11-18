@@ -94,13 +94,13 @@ export default function Table({ columns, rows, onRowClick, emptyPlaceHolder }) {
             text-align: left;
             font-family: ${theme.typography.headingFontFamily};
             font-weight: ${theme.typography.baseFontWeight};
-            font-size: 0.875rem;
+            font-size: 0.875rem 1rem;
             letter-spacing: 0.125rem;
             border-bottom: 4px solid ${theme.colors.primaryColor};
           }
 
           tbody tr td {
-            padding: 1.5rem 1rem;
+            padding: 0.875rem;
             border-bottom: 1px solid ${theme.colors.baseColorLight};
             font-size: 0.9rem;
           }
