@@ -1,4 +1,4 @@
-describe('Required authentication', () => {
+describe('Protect pages with authentication', () => {
   const user = {
     id: 1,
     display_name: 'User 1',
