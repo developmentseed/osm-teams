@@ -26,7 +26,7 @@ export const authOptions = {
     },
   ],
   callbacks: {
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       // Add user id to session
       const userId = parseInt(token.sub)
       session.user_id = userId

@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import Router from 'next/router'
 import join from 'url-join'
 import { getSession, useSession } from 'next-auth/react'
@@ -39,7 +39,7 @@ function OrganizationsSection({ orgs }) {
     <Table
       rows={allOrgs}
       columns={[{ key: 'id' }, { key: 'name' }, { key: 'role' }]}
-      onRowClick={(row, index) => {
+      onRowClick={(row) => {
         Router.push(
           join(URL, `/organizations?id=${row.id}`),
           join(URL, `/organizations/${row.id}`)
@@ -58,7 +58,7 @@ function TeamsSection({ teams }) {
     <Table
       rows={teams}
       columns={[{ key: 'id' }, { key: 'name' }, { key: 'hashtag' }]}
-      onRowClick={(row, index) => {
+      onRowClick={(row) => {
         Router.push(
           join(URL, `/team?id=${row.id}`),
           join(URL, `/teams/${row.id}`)

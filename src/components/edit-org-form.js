@@ -36,7 +36,6 @@ export default function EditOrgForm({
         submitForm,
         values,
         errors,
-        setFieldValue,
         setErrors,
         setStatus,
       }) => {

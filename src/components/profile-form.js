@@ -251,7 +251,7 @@ export default class ProfileForm extends Component {
               actions.setStatus(e.message)
             }
           }}
-          render={({ errors, status, isSubmitting, values }) => {
+          render={({ status, isSubmitting }) => {
             const addProfileText = `Submit ${isSubmitting ? ' 🕙' : ''}`
             return (
               <Form>

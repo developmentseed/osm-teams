@@ -7,7 +7,7 @@ import { authOptions } from './auth/[...nextauth]'
 
 let handler = nc({
   attachParams: true,
-  onError: (err, req, res, next) => {
+  onError: (err, req, res) => {
     logger.error(err)
     // Handle Boom errors
     if (err.isBoom) {

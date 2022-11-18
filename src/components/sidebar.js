@@ -1,7 +1,7 @@
-import React, { Component, Fragment } from 'react'
+import React, { Fragment } from 'react'
 import join from 'url-join'
 import getConfig from 'next/config'
-import Router, { withRouter } from 'next/router'
+import { withRouter } from 'next/router'
 import theme from '../styles/theme'
 import Link from '../components/Link'
 import NextLink from 'next/link'
@@ -11,7 +11,7 @@ import Button from './button'
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
 
-const NavLink = withRouter(({ children, router, href }) => {
+const NavLink = withRouter(({ children, href }) => {
   return (
     <Link href={href} activeClassName='active'>
       {children}
@@ -19,7 +19,7 @@ const NavLink = withRouter(({ children, router, href }) => {
   )
 })
 
-export default function Sidebar({ uid }) {
+export default function Sidebar() {
   const { status } = useSession()
 
   const isAuthenticated = status === 'authenticated'
