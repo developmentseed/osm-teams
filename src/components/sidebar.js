@@ -208,6 +208,7 @@ const sidebarStyles = css.global`
     }
   }
 `
+
 const NavLink = withRouter(({ children, href }) => {
   return (
     <Link href={href} activeClassName='active'>

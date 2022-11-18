@@ -262,7 +262,7 @@ export default class EditBadge extends Component {
               variant='danger'
               type='submit'
               value='Delete'
-              onClick={async (e) => {
+              onClick={async () => {
                 this.setState({
                   isDeleting: true,
                 })

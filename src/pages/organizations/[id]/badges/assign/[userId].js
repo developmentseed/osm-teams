@@ -149,7 +149,7 @@ export default class NewBadgeAssignment extends Component {
                 }
               }
             }}
-            render={({ isSubmitting, values, errors, touched }) => {
+            render={({ isSubmitting, values, errors }) => {
               return (
                 <Form>
                   <div className='page__heading'>

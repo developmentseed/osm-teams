@@ -3,7 +3,7 @@ import getConfig from 'next/config'
 const { publicRuntimeConfig } = getConfig()
 
 class ApiClient {
-  constructor(props = {}) {
+  constructor() {
     this.defaultOptions = {
       headers: {
         'Content-Type': 'application/json',

@@ -246,7 +246,7 @@ export default class EditBadgeAssignment extends Component {
                   variant='danger'
                   type='submit'
                   value='Unassign this badge'
-                  onClick={async (e) => {
+                  onClick={async () => {
                     this.setState({
                       isDeleting: true,
                     })

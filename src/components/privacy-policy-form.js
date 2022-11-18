@@ -32,7 +32,6 @@ export default function PrivacyPolicyForm({ initialValues, onSubmit }) {
         submitForm,
         values,
         errors,
-        setFieldValue,
         setErrors,
         setStatus,
       }) => {
