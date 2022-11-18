@@ -1,11 +1,26 @@
-const db = require('../db')
-const { unpack, ValidationError, checkRequiredProperties, PropertyRequiredError } = require('../lib/utils')
-const { map, has, propEq, anyPass, forEach, prop, assoc, pick, keys } = require('ramda')
+const db = require('../../src/lib/db')
+const {
+  unpack,
+  ValidationError,
+  checkRequiredProperties,
+  PropertyRequiredError,
+} = require('../lib/utils')
+const {
+  map,
+  has,
+  propEq,
+  anyPass,
+  forEach,
+  prop,
+  assoc,
+  pick,
+  keys,
+} = require('ramda')
 
 /**
  * Given the profile type return the db table
  */
-function getTableForProfileType (profileType) {
+function getTableForProfileType(profileType) {
   let table
   switch (profileType) {
     case 'org': {
@@ -28,20 +43,20 @@ function getTableForProfileType (profileType) {
 const ownerTypeValid = anyPass([
   propEq('ownerType', 'user'),
   propEq('ownerType', 'team'),
-  propEq('ownerType', 'org')
+  propEq('ownerType', 'org'),
 ])
 
 const profileTypeValid = anyPass([
   propEq('profileType', 'user'),
   propEq('profileType', 'team'),
-  propEq('profileType', 'org')
+  propEq('profileType', 'org'),
 ])
 
 const visibilityValid = anyPass([
   propEq('visibility', 'public'),
   propEq('visibility', 'team'),
   propEq('visibility', 'org'),
-  propEq('visibility', 'org_staff')
+  propEq('visibility', 'org_staff'),
 ])
 
 /**
@@ -54,15 +69,19 @@ const visibilityValid = anyPass([
  * @param {boolean} attribute.required whether this attribute is required to be filled
  * @param {enum} attribute.visibility enum: 'org_staff', 'org', 'user', 'team'
  */
-function checkProfileKey (attribute) {
+function checkProfileKey(attribute) {
   checkRequiredProperties(['name', 'profileType'], attribute)
 
   if (!profileTypeValid(attribute)) {
-    throw new ValidationError('profileType should be one of "user", "team" or "org"')
+    throw new ValidationError(
+      'profileType should be one of "user", "team" or "org"'
+    )
   }
 
   if (has('visibility', attribute) && !visibilityValid(attribute)) {
-    throw new ValidationError('visibility should be one of "public", "team", "org" or "org_staff"')
+    throw new ValidationError(
+      'visibility should be one of "public", "team", "org" or "org_staff"'
+    )
   }
 }
 
@@ -78,7 +97,7 @@ function checkProfileKey (attribute) {
  * @param {string} ownerType enum: 'owner', 'user', 'team'
  * @param {integer} ownerId iD in owner, user or team tables
  */
-async function addProfileKeys (attributes, ownerType, ownerId) {
+async function addProfileKeys(attributes, ownerType, ownerId) {
   attributes = [].concat(attributes)
 
   if (!ownerId) {
@@ -86,24 +105,24 @@ async function addProfileKeys (attributes, ownerType, ownerId) {
   }
 
   if (!ownerTypeValid({ ownerType })) {
-    throw new ValidationError('ownerType should be one of "user", "team" or "org"')
+    throw new ValidationError(
+      'ownerType should be one of "user", "team" or "org"'
+    )
   }
 
   // Run checks
   forEach(checkProfileKey, attributes)
 
   // Modify the columns for the database
-  const toInsert = attributes.map(({
-    profileType,
-    ...rest
-  }) => ({
+  const toInsert = attributes.map(({ profileType, ...rest }) => ({
     [`owner_${ownerType}`]: ownerId,
-    'profile_type': profileType,
-    ...rest
+    profile_type: profileType,
+    ...rest,
   }))
 
   const conn = await db()
-  return conn('profile_keys').insert(toInsert)
+  return conn('profile_keys')
+    .insert(toInsert)
     .onConflict(['name', `owner_${ownerType}`])
     .merge()
     .returning('*')
@@ -117,9 +136,11 @@ async function addProfileKeys (attributes, ownerType, ownerId) {
  * @param {boolean} attribute.required whether this attribute is required to be filled
  * @param {enum} attribute.visibility enum: 'org_staff', 'org', 'user', 'team'
  */
-async function modifyProfileKey (id, attribute) {
+async function modifyProfileKey(id, attribute) {
   if (has('visibility', attribute) && !visibilityValid(attribute)) {
-    throw new ValidationError('visibility should be one of "public", "team", "org" or "org_staff"')
+    throw new ValidationError(
+      'visibility should be one of "public", "team", "org" or "org_staff"'
+    )
   }
 
   const conn = await db()
@@ -131,7 +152,7 @@ async function modifyProfileKey (id, attribute) {
  *
  * @param {integer} id id of key to delete
  */
-async function deleteProfileKey (id) {
+async function deleteProfileKey(id) {
   const conn = await db()
   return conn('profile_keys').where('id', id).delete()
 }
@@ -142,7 +163,7 @@ async function deleteProfileKey (id) {
  * @param {integer} id id of key to get
  * @returns ProfileAttribute
  */
-async function getProfileKey (id) {
+async function getProfileKey(id) {
   const conn = await db()
   return unpack(conn('profile_keys').where('id', id))
 }
@@ -154,23 +175,27 @@ async function getProfileKey (id) {
  * @param {*} ownerId id of owner
  * @param {string} profileType  'user' | 'org' | 'team'
  */
-async function getProfileKeysForOwner (ownerType, ownerId, profileType) {
+async function getProfileKeysForOwner(ownerType, ownerId, profileType) {
   if (!ownerTypeValid({ ownerType })) {
-    throw new ValidationError('ownerType must be one of "user", "org" or "team"')
+    throw new ValidationError(
+      'ownerType must be one of "user", "org" or "team"'
+    )
   }
 
   if (profileType && !profileTypeValid({ profileType })) {
-    throw new ValidationError('profileType must be one of "user", "org" or "team"')
+    throw new ValidationError(
+      'profileType must be one of "user", "org" or "team"'
+    )
   }
 
   const conn = await db()
   let query = conn('profile_keys').where({
-    [`owner_${ownerType}`]: ownerId
+    [`owner_${ownerType}`]: ownerId,
   })
 
   if (profileType) {
     query = query.andWhere({
-      'profile_type': profileType
+      profile_type: profileType,
     })
   }
   return query
@@ -185,7 +210,7 @@ async function getProfileKeysForOwner (ownerType, ownerId, profileType) {
  * @param {string} profileType Type of profile we are inserting to
  * @param {integer} id ID of profile for which we are setting the attributes
  */
-async function setProfile (attributeValues, profileType, id) {
+async function setProfile(attributeValues, profileType, id) {
   attributeValues = [].concat(attributeValues)
 
   if (!profileType) {
@@ -197,7 +222,9 @@ async function setProfile (attributeValues, profileType, id) {
   }
 
   if (!profileTypeValid({ profileType })) {
-    throw new ValidationError('profileType should be one of "user", "team" or "org"')
+    throw new ValidationError(
+      'profileType should be one of "user", "team" or "org"'
+    )
   }
 
   const conn = await db()
@@ -205,12 +232,14 @@ async function setProfile (attributeValues, profileType, id) {
   let tags = prop('tags', currentProfile)
 
   // Pick tags that are still in the database
-  const tagsInDB = await conn('profile_keys').select('id').whereIn('id', keys(tags))
+  const tagsInDB = await conn('profile_keys')
+    .select('id')
+    .whereIn('id', keys(tags))
 
   tags = pick(map(prop('id'), tagsInDB), tags)
 
   // Add the attribute values
-  attributeValues.forEach(tagPair => {
+  attributeValues.forEach((tagPair) => {
     if (tagPair.key_id) {
       tags[tagPair.key_id] = tagPair.value
     }
@@ -219,7 +248,10 @@ async function setProfile (attributeValues, profileType, id) {
   const table = getTableForProfileType(profileType)
 
   return conn(table)
-    .update({ profile: assoc('tags', tags, currentProfile), updated_at: conn.fn.now() })
+    .update({
+      profile: assoc('tags', tags, currentProfile),
+      updated_at: conn.fn.now(),
+    })
     .where('id', id)
 }
 
@@ -230,7 +262,7 @@ async function setProfile (attributeValues, profileType, id) {
  * @param {integer} id ID of profile for which we are getting the attributes
  * @returns
  */
-async function getProfile (profileType, id) {
+async function getProfile(profileType, id) {
   if (!profileType) {
     throw new PropertyRequiredError('profileType')
   }
@@ -239,22 +271,25 @@ async function getProfile (profileType, id) {
   }
 
   if (!profileTypeValid({ profileType })) {
-    throw new ValidationError('profileType should be one of "user", "team" or "org"')
+    throw new ValidationError(
+      'profileType should be one of "user", "team" or "org"'
+    )
   }
 
   const table = getTableForProfileType(profileType)
 
   const conn = await db()
-  return unpack(conn(table).select('profile').where('id', id))
-    .then(prop('profile'))
+  return unpack(conn(table).select('profile').where('id', id)).then(
+    prop('profile')
+  )
 }
 
-async function getUserManageToken (id) {
+async function getUserManageToken(id) {
   const conn = await db()
   return unpack(conn('users').select('manageToken').where('id', id).debug())
 }
 
-async function getUserBadges (id) {
+async function getUserBadges(id) {
   const conn = await db()
   return conn('user_badges')
     .select([
@@ -263,7 +298,7 @@ async function getUserBadges (id) {
       'valid_until',
       'organization_id',
       'name',
-      'color'
+      'color',
     ])
     .leftJoin(
       'organization_badge',
@@ -283,5 +318,5 @@ module.exports = {
   getProfile,
   getTableForProfileType,
   getUserManageToken,
-  getUserBadges
+  getUserBadges,
 }

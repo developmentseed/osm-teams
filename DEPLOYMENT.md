@@ -30,7 +30,7 @@ This is because we set the token provider at `https://mapping.team/hyauth` and u
 
 		location / {
           		proxy_set_header host $host;
-          		proxy_pass http://127.0.0.1:8989/;
+          		proxy_pass http://127.0.0.1:3000/;
         	}
   }
 ```

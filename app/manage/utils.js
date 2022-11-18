@@ -12,18 +12,18 @@ const getOsmId = prop('osm_id')
  * @returns {Promise<*>}
  * @async
  */
-async function teamsMembersModeratorsHelper (teamsData) {
+async function teamsMembersModeratorsHelper(teamsData) {
   const teamIds = teamsData.map(getId)
   const [members, moderators] = await Promise.all([
     team.listMembers(teamIds),
-    team.listModerators(teamIds)
+    team.listModerators(teamIds),
   ])
-  return teamsData.map(team => {
+  return teamsData.map((team) => {
     const predicate = ({ team_id }) => team_id === team.id
     return {
       ...team,
       members: members.filter(predicate).map(getOsmId),
-      moderators: moderators.filter(predicate).map(getOsmId)
+      moderators: moderators.filter(predicate).map(getOsmId),
     }
   })
 }
@@ -36,7 +36,7 @@ async function teamsMembersModeratorsHelper (teamsData) {
  *
  * @returns {function} Route middleware function
  */
-function routeWrapper (config) {
+function routeWrapper(config) {
   const { validate, handler } = config
   return async (req, reply) => {
     try {
@@ -57,5 +57,5 @@ function routeWrapper (config) {
 
 module.exports = {
   teamsMembersModeratorsHelper,
-  routeWrapper
+  routeWrapper,
 }

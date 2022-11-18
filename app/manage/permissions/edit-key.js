@@ -12,7 +12,7 @@ const R = require('ramda')
  * @param {Object} params request parameters
  * @returns {Promise<boolean>} can the request go through?
  */
-async function editKey (uid, { id }) {
+async function editKey(uid, { id }) {
   // user has to be authenticated
   if (!uid) return false
 
@@ -21,7 +21,7 @@ async function editKey (uid, { id }) {
   let owners = []
 
   if (key.owner_user) {
-    return (uid.toString() === key.owner_user.toString())
+    return uid.toString() === key.owner_user.toString()
   }
 
   if (key.owner_team) {
@@ -31,7 +31,7 @@ async function editKey (uid, { id }) {
   if (key.owner_org) {
     owners = await organization.getOwners(key.owner_org)
   }
-  let osmIds = owners.map(owner => (R.prop('osm_id', owner)).toString())
+  let osmIds = owners.map((owner) => R.prop('osm_id', owner).toString())
   return osmIds.includes(uid.toString())
 }
 

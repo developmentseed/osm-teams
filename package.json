@@ -1,6 +1,6 @@
 {
   "name": "osm-teams",
-  "version": "1.7.0",
+  "version": "2.0.0",
   "description": "Teams for OpenStreetMap!",
   "homepage": "https://mapping.team",
   "repository": {
@@ -16,16 +16,21 @@
   },
   "license": "MIT",
   "scripts": {
-    "docs:validate": "swagger-cli validate docs/api.yml",
-    "docs:api": "swagger-markdown -i docs/api.yml -o docs/api.md",
-    "docs": "npm run docs:validate && npm run docs:api",
-    "dev": "NODE_ENV=development nodemon --watch app app/index.js",
-    "migrate": "knex --knexfile app/db/knexfile.js migrate:latest",
-    "test": "NODE_ENV=test nyc ava app/tests/**/*.test.js -c 1 --serial --verbose",
-    "lint": "devseed-standard",
-    "lintfix": "devseed-standard --fix",
+    "docs:update-version": "node -p \"JSON.stringify({'apiFolder': 'src/pages/api','schemaFolders': ['models'],'definition': {'openapi': '3.0.0','info': {'title': 'OSM Teams API Docs','version': require('./package.json').version}}}, null, 2)\" > next-swagger-doc.json",
+    "docs:generate": "yarn next-swagger-doc-cli next-swagger-doc.json",
+    "docs:validate": "yarn docs:update-version && yarn docs:generate && swagger-cli validate public/swagger.json",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "e2e:dev": "NODE_ENV=test start-server-and-test dev http://127.0.0.1:3000/api cy:open",
+    "e2e": "NODE_ENV=test start-server-and-test dev http://127.0.0.1:3000/api cy:run",
+    "dev": "next dev",
+    "migrate": "knex migrate:latest",
+    "migrate:test": "NODE_ENV=test knex migrate:latest",
+    "test": "NODE_ENV=test nyc ava tests/**/*.test.js -c 1 --serial --verbose",
+    "lint": "next lint",
     "build": "next build",
-    "start": "NODE_ENV=production node app/index.js"
+    "start": "NODE_ENV=production node app/index.js",
+    "postinstall": "yarn run next telemetry disable > /dev/null"
   },
   "browserify": {
     "transform": [
@@ -41,6 +46,7 @@
     ]
   },
   "dependencies": {
+    "@hapi/boom": "^10.0.0",
     "body-parser": "^1.19.1",
     "chance": "^1.1.8",
     "compression": "^1.7.3",
@@ -49,7 +55,6 @@
     "csurf": "^1.11.0",
     "date-fns": "^2.28.0",
     "dotenv": "^6.2.0",
-    "dotenv-webpack": "^1.8.0",
     "express": "^4.17.2",
     "express-boom": "^2.0.0",
     "express-pino-logger": "^4.0.0",
@@ -61,7 +66,10 @@
     "knex-postgis": "^0.14.1",
     "leaflet": "^1.7.1",
     "leaflet-control-geocoder": "^1.13.0",
-    "next": "^8.0.1",
+    "next": "^13.0.1",
+    "next-swagger-doc": "^0.3.6",
+    "next-auth": "^4.16.4",
+    "next-connect": "^0.13.0",
     "node-fetch": "^2.6.7",
     "passport-light": "^1.0.1",
     "passport-oauth": "^1.0.0",
@@ -72,8 +80,8 @@
     "qs": "^6.10.3",
     "querystring": "^0.2.1",
     "ramda": "^0.26.1",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-leaflet": "^2.8.0",
     "react-modal": "^3.14.4",
     "react-select": "^5.2.2",
@@ -84,9 +92,9 @@
     "session-file-store": "^1.5.0",
     "simple-oauth2": "^2.5.2",
     "sinon": "^7.5.0",
-    "sqlite3": "5",
+    "sqlite3": "^5.1.2",
     "supertest": "^4.0.2",
-    "swagger-ui-express": "^4.3.0",
+    "swagger-ui-react": "^4.15.5",
     "url-join": "^4.0.0",
     "url-parse": "^1.5.9",
     "url-regex": "^5.0.0",
@@ -101,9 +109,16 @@
     "@babel/preset-react": "^7.16.7",
     "ava": "^3.15.0",
     "babelify": "^10.0.0",
-    "devseed-standard": "^1.1.0",
+    "cypress": "^11.1.0",
+    "@panva/hkdf": "^1.0.1",
+    "eslint": "8.26.0",
+    "eslint-config-next": "13.0.1",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "jose": "^4.11.0",
     "nodemon": "^1.19.4",
     "nyc": "^15.1.0",
-    "swagger-markdown": "^1.4.6"
+    "prettier": "2.7.1",
+    "start-server-and-test": "^1.14.0"
   }
 }

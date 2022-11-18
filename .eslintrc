@@ -1,10 +1,10 @@
 {
-  "root": true,
-  "extends": ["devseed-standard"],
-  "rules": {
-    "camelcase": "off",
-    "node/no-deprecated-api": ["error", {
-        "ignoreModuleItems": ["url.parse"]
-    }]
-  }
+  "env": {
+    "es6": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "next/core-web-vitals",
+    "plugin:prettier/recommended"
+  ]
 }

@@ -9,7 +9,7 @@ const { isMember } = require('../../lib/team')
  * @param {Object} params request parameters
  * @returns {boolean} can the request go through?
  */
-async function memberTeam (uid, { id }) {
+async function memberTeam(uid, { id }) {
   try {
     return await isMember(id, uid)
   } catch (e) {

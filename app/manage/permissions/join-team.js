@@ -9,7 +9,7 @@ const { isPublic, isMember } = require('../../lib/team')
  * @param {Object} params request parameters
  * @returns {boolean} can the request go through?
  */
-async function joinTeam (uid, { id }) {
+async function joinTeam(uid, { id }) {
   // User has to be authenticated
   if (!uid) {
     return false

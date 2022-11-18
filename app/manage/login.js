@@ -1,44 +1,50 @@
-const { serverRuntimeConfig, publicRuntimeConfig } = require('../../next.config')
+const {
+  serverRuntimeConfig,
+  publicRuntimeConfig,
+} = require('../../next.config')
 const jwt = require('jsonwebtoken')
-const db = require('../db')
+const db = require('../../src/lib/db')
 
 const credentials = {
   client: {
     id: serverRuntimeConfig.OSM_HYDRA_ID,
-    secret: serverRuntimeConfig.OSM_HYDRA_SECRET
+    secret: serverRuntimeConfig.OSM_HYDRA_SECRET,
   },
   auth: {
     tokenHost: serverRuntimeConfig.HYDRA_TOKEN_HOST,
     tokenPath: serverRuntimeConfig.HYDRA_TOKEN_PATH,
-    authorizeHost: serverRuntimeConfig.HYDRA_AUTHZ_HOST || serverRuntimeConfig.HYDRA_TOKEN_HOST,
-    authorizePath: serverRuntimeConfig.HYDRA_AUTHZ_PATH
-  }
+    authorizeHost:
+      serverRuntimeConfig.HYDRA_AUTHZ_HOST ||
+      serverRuntimeConfig.HYDRA_TOKEN_HOST,
+    authorizePath: serverRuntimeConfig.HYDRA_AUTHZ_PATH,
+  },
 }
 
 const oauth2 = require('simple-oauth2').create(credentials)
 
 var generateState = function (length) {
   var text = ''
-  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  var possible =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   for (var i = 0; i < length; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length))
   }
   return text
 }
 
-function login (req, res) {
+function login(req, res) {
   let state = generateState(24)
   const authorizationUri = oauth2.authorizationCode.authorizeURL({
     redirect_uri: `${publicRuntimeConfig.APP_URL}/login/accept`,
     scope: 'openid clients',
-    state
+    state,
   })
   req.session.login_csrf = state
 
   res.redirect(authorizationUri)
 }
 
-async function loginAccept (req, res) {
+async function loginAccept(req, res) {
   const { code, state } = req.query
   /**
    * Token exchange with CSRF handling
@@ -55,7 +61,7 @@ async function loginAccept (req, res) {
     // Create options for token exchange
     const options = {
       code,
-      redirect_uri: `${publicRuntimeConfig.APP_URL}/login/accept`
+      redirect_uri: `${publicRuntimeConfig.APP_URL}/login/accept`,
     }
 
     try {
@@ -64,9 +70,11 @@ async function loginAccept (req, res) {
 
       // Store access token and refresh token
       let conn = await db()
-      await conn('users').where('id', sub).update({
-        manageToken: JSON.stringify(result)
-      })
+      await conn('users')
+        .where('id', sub)
+        .update({
+          manageToken: JSON.stringify(result),
+        })
 
       // Store id token in session
       req.session.idToken = result.id_token
@@ -83,7 +91,7 @@ async function loginAccept (req, res) {
  * @param {*} req
  * @param {*} res
  */
-function logout (req, res) {
+function logout(req, res) {
   req.session.destroy(function (err) {
     if (err) console.error(err)
     res.redirect(publicRuntimeConfig.APP_URL)
@@ -93,5 +101,5 @@ function logout (req, res) {
 module.exports = {
   login,
   loginAccept,
-  logout
+  logout,
 }

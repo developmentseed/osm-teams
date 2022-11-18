@@ -3,7 +3,6 @@ node_modules
 tmp
 *.log*
 .next
-*.env
 .vscode
 *.db
 # ignore node_modules symlink
@@ -13,3 +12,5 @@ hydra-config/prod/prod.yml
 .nyc_output
 coverage
 docker-data/*
+public/swagger.json
+.env*.local
