@@ -181,7 +181,7 @@ class Organization extends Component {
   }
 
   renderStaff(owners, managers) {
-    const columns = [{ key: 'id' }, { key: 'name' }, { key: 'role' }]
+    const columns = [{ key: 'name' }, { key: 'id' }, { key: 'role' }]
     const ownerRows = owners.map(assoc('role', 'owner'))
     const managerRows = managers.map(assoc('role', 'manager'))
     let allRows = ownerRows
@@ -263,7 +263,7 @@ class Organization extends Component {
   }
 
   renderMembers(memberRows) {
-    const columns = [{ key: 'id' }, { key: 'name' }]
+    const columns = [{ key: 'name' }, { key: 'id' }]
     return (
       <Table
         rows={memberRows}

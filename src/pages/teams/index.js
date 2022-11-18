@@ -62,8 +62,8 @@ export default class TeamList extends Component {
     return (
       <Table
         rows={teams}
-        columns={[{ key: 'id' }, { key: 'name' }, { key: 'hashtag' }]}
-        onRowClick={(row, index) => {
+        columns={[{ key: 'name' }, { key: 'id' }, { key: 'hashtag' }]}
+        onRowClick={(row) => {
           Router.push(
             join(URL, `/team?id=${row.id}`),
             join(URL, `/teams/${row.id}`)

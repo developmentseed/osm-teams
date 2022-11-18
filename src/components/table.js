@@ -22,7 +22,8 @@ function TableHead({ columns }) {
   )
 }
 
-function Row({ columns, row, index, onRowClick }) {
+function Row({ columns, row, index, onRowClick, showRowNumber }) {
+  console.log(showRowNumber)
   return (
     <tr
       onClick={() => {
@@ -30,17 +31,34 @@ function Row({ columns, row, index, onRowClick }) {
       }}
     >
       {columns.map(({ key }) => {
-        const item =
+        let item
+        item =
           typeof row[key] === 'function'
             ? row[key](row, index, columns)
             : row[key]
-        return <td key={`row-${index}-key-${key}`}>{item}</td>
+        if (showRowNumber && key === ' ') {
+          item = index + 1
+        }
+        return (
+          <td
+            width={showRowNumber && key === ' ' && '1rem'}
+            key={`row-${index}-key-${key}`}
+          >
+            {item}
+          </td>
+        )
       })}
     </tr>
   )
 }
 
-function TableBody({ columns, rows, onRowClick, emptyPlaceHolder }) {
+function TableBody({
+  columns,
+  rows,
+  onRowClick,
+  emptyPlaceHolder,
+  showRowNumbers,
+}) {
   return (
     <tbody className='lh-copy'>
       {!rows || rows.length === 0 ? (
@@ -58,6 +76,7 @@ function TableBody({ columns, rows, onRowClick, emptyPlaceHolder }) {
               row={row}
               index={index}
               onRowClick={onRowClick}
+              showRowNumber={showRowNumbers}
             />
           )
         })
@@ -66,7 +85,15 @@ function TableBody({ columns, rows, onRowClick, emptyPlaceHolder }) {
   )
 }
 
-export default function Table({ columns, rows, onRowClick, emptyPlaceHolder }) {
+export default function Table({
+  columns,
+  rows,
+  onRowClick,
+  emptyPlaceHolder,
+  showRowNumbers,
+}) {
+  showRowNumbers && columns.unshift({ key: ' ' })
+  console.log(columns)
   return (
     <table>
       <TableHead columns={columns} />
@@ -75,6 +102,7 @@ export default function Table({ columns, rows, onRowClick, emptyPlaceHolder }) {
         rows={rows}
         onRowClick={onRowClick}
         emptyPlaceHolder={emptyPlaceHolder}
+        showRowNumbers={showRowNumbers}
       />
       <style jsx global>
         {`

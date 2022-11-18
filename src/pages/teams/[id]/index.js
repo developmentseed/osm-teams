@@ -271,12 +271,12 @@ class Team extends Component {
       contains(parseInt(userId), orgOwners)
     const isMember = contains(userId, members)
 
-    const columns = [{ key: 'id' }, { key: 'name' }, { key: 'role' }]
+    const columns = [{ key: 'name' }, { key: 'id' }, { key: 'role' }]
 
     let memberRows = teamMembers.members.map((member) => {
       const role = contains(parseInt(member.id), moderators)
-        ? 'moderator'
-        : 'member'
+        ? 'Moderator'
+        : 'Member'
       return assoc('role', role, member)
     })
 
@@ -419,6 +419,7 @@ class Team extends Component {
                 onRowClick={(row) => {
                   this.openProfileModal(row)
                 }}
+                showRowNumbers
               />
               <Modal
                 style={{
