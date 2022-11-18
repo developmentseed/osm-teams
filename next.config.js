@@ -32,6 +32,7 @@ module.exports = {
       'migrations',
       'styles',
       'src',
+      'cypress',
     ],
   },
 }
