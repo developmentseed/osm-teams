@@ -28,7 +28,8 @@ const homeStyles = css`
     z-index: 1;
     grid-area: main;
     overflow: inherit;
-    padding-bottom: 2rem;
+    display: grid;
+    place-content: center;
   }
   main:after {
     content: '';
@@ -44,7 +45,7 @@ const homeStyles = css`
     background: url(${join(URL, '/static/grid-map.svg')});
     background-size: contain;
     background-repeat: no-repeat;
-    background-position: center 75%;
+    background-position: center center;
     overflow: hidden;
   }
 
@@ -59,14 +60,12 @@ const homeStyles = css`
     display: flex;
     flex-flow: column wrap;
     text-align: left;
-    align-items: flex-end;
     max-width: 48rem;
     padding: 2rem;
     background: rgba(25, 51, 130, 0.9);
     border: 4px solid white;
     position: relative;
     box-shadow: 12px 12px 0 ${theme.colors.primaryDark}, 12px 12px 0 3px white;
-    margin: 2rem;
   }
 
   .welcome__intro {

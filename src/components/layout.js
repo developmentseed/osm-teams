@@ -37,7 +37,7 @@ export const globalStyles = css.global`
   .page-layout {
     display: grid;
     position: relative;
-    grid-template-rows: 5rem 1fr;
+    grid-template-rows: 4rem 1fr;
     grid-template-columns: 100%;
     grid-template-areas:
       'sidebar'
