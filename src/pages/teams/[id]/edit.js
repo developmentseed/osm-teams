@@ -4,8 +4,8 @@ import Router from 'next/router'
 import { pick, split } from 'ramda'
 import { getTeam, updateTeam, destroyTeam } from '../../../lib/teams-api'
 import getConfig from 'next/config'
-import EditTeamForm from '../components/edit-team-form'
-import Button from '../components/button'
+import EditTeamForm from '../../../components/edit-team-form'
+import Button from '../../../components/button'
 import theme from '../styles/theme'
 import {
   getOrgTeamAttributes,
