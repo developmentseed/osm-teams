@@ -5,8 +5,9 @@ import theme from '../styles/theme'
 import css from 'styled-jsx/css'
 
 const { publicRuntimeConfig } = getConfig()
+const URL = publicRuntimeConfig.APP_URL
 
-const style = css`
+const style = css.global`
   .button {
     display: inline-block;
     text-align: center;
@@ -24,6 +25,8 @@ const style = css`
     transition: all 0.2s ease;
     /* Default Colors */
     background: #ffffff;
+    background-repeat: no-repeat;
+    background-position: center;
     color: ${theme.colors.primaryColor};
     box-shadow: 2px 2px #ffffff, 4px 4px ${theme.colors.primaryColor};
     border: 2px solid ${theme.colors.primaryColor};
@@ -85,6 +88,7 @@ export default function Button({
   children,
   size,
   className,
+  flat,
 }) {
   let classes = [`button`, variant, size, className]
   if (disabled) classes.push('disabled')
@@ -127,6 +131,14 @@ export default function Button({
     <div onClick={onClick} className={classNames} disabled={disabled}>
       {children}
       <style jsx>{style}</style>
+      <style jsx>{`
+        .button {
+          box-shadow: ${flat && 'none'};
+          border: ${flat && 'none'};
+          background-image: ${type === 'close' &&
+          `url(${join(URL, '/static/icon-close.svg')})`};
+        }
+      `}</style>
     </div>
   )
 }

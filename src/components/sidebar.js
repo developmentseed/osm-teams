@@ -90,8 +90,8 @@ const sidebarStyles = css.global`
   }
 
   .global-menu__link.login {
+    text-align: center;
     background: white;
-    line-height: 2.5rem;
   }
   .global-menu__link:active {
     background-color: rgba(244, 244, 244, 0.1);

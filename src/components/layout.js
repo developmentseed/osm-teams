@@ -85,7 +85,7 @@ export const globalStyles = css.global`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    margin-bottom: calc(${theme.layout.globalSpacing} * 2);
+    margin-bottom: ${theme.layout.globalSpacing};
   }
 
   @media (min-width: ${theme.mediaRanges.medium}) {
@@ -95,6 +95,7 @@ export const globalStyles = css.global`
     }
     .section-actions {
       flex-direction: row;
+      align-items: center;
     }
   }
 

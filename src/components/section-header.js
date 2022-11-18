@@ -13,7 +13,6 @@ export default function SectionHeader({ children }) {
             font-weight: ${theme.typography.baseFontWeight};
             text-transform: uppercase;
             letter-spacing: 0.0125rem;
-            margin-bottom: ${theme.layout.globalSpacing};
           }
         `}
       </style>

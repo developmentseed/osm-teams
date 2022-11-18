@@ -6,12 +6,12 @@ import { getTeam, updateTeam, destroyTeam } from '../../../lib/teams-api'
 import getConfig from 'next/config'
 import EditTeamForm from '../../../components/edit-team-form'
 import Button from '../../../components/button'
-import theme from '../styles/theme'
+import theme from '../../../styles/theme'
 import {
   getOrgTeamAttributes,
   getTeamAttributes,
   getTeamProfile,
-} from '../lib/profiles-api'
+} from '../../../lib/profiles-api'
 const { publicRuntimeConfig } = getConfig()
 
 export default class TeamEdit extends Component {
