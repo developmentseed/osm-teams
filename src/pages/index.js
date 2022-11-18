@@ -1,6 +1,5 @@
-import React, { Component } from 'react'
+import React from 'react'
 import Button from '../components/button'
-import Router from 'next/router'
 import join from 'url-join'
 import getConfig from 'next/config'
 import theme from '../styles/theme'

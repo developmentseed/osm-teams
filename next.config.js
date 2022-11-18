@@ -31,6 +31,7 @@ module.exports = {
       'tests',
       'migrations',
       'styles',
+      'src',
     ],
   },
 }

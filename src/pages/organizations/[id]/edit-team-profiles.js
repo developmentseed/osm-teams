@@ -41,7 +41,7 @@ export default class OrgEditTeamProfile extends Component {
     this.getAttributes()
   }
 
-  renderActions(row, index, columns) {
+  renderActions(row) {
     return (
       <Popup
         trigger={<span>⚙️</span>}

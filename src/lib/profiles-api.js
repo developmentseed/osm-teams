@@ -76,12 +76,12 @@ export async function getOrgTeamAttributes(id) {
  *
  * @returns {Array[Object]} - list of team details
  */
-export async function getTeamAttributes (id) {
+export async function getTeamAttributes(id) {
   let res = await fetch(join(URL, 'keys', 'teams', `${id}`), {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json; charset=utf-8'
-    }
+      'Content-Type': 'application/json; charset=utf-8',
+    },
   })
   if (res.status === 200) {
     return res.json()
