@@ -88,8 +88,8 @@ export default class EditBadge extends Component {
 
   renderAssignedMembers({ orgId, badgeId }) {
     const columns = [
-      { key: 'id', label: 'OSM ID' },
       { key: 'displayName', label: 'Display Name' },
+      { key: 'id', label: 'OSM ID' },
       { key: 'assignedAt', label: 'Assigned At' },
       { key: 'validUntil', label: 'Valid Until' },
     ]

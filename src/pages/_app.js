@@ -20,14 +20,14 @@ export default function App({
       <Layout>
         <Sidebar />
         <Component {...pageProps} />
+        <Button
+          href='https://forms.gle/mQQX37FcvfVMoiCW7'
+          variant='danger'
+          id='feedback'
+        >
+          Feedback
+        </Button>
       </Layout>
-      <Button
-        href='https://forms.gle/mQQX37FcvfVMoiCW7'
-        variant='danger'
-        id='feedback'
-      >
-        Feedback
-      </Button>
       <ToastContainer position='bottom-right' />
     </SessionProvider>
   )

@@ -38,7 +38,7 @@ function OrganizationsSection({ orgs }) {
   return (
     <Table
       rows={allOrgs}
-      columns={[{ key: 'id' }, { key: 'name' }, { key: 'role' }]}
+      columns={[{ key: 'name' }, { key: 'id' }, { key: 'role' }]}
       onRowClick={(row) => {
         Router.push(
           join(URL, `/organizations?id=${row.id}`),
@@ -57,7 +57,7 @@ function TeamsSection({ teams }) {
   return (
     <Table
       rows={teams}
-      columns={[{ key: 'id' }, { key: 'name' }, { key: 'hashtag' }]}
+      columns={[{ key: 'name' }, { key: 'id' }, { key: 'hashtag' }]}
       onRowClick={(row) => {
         Router.push(
           join(URL, `/team?id=${row.id}`),
