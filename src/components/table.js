@@ -23,7 +23,6 @@ function TableHead({ columns }) {
 }
 
 function Row({ columns, row, index, onRowClick, showRowNumber }) {
-  console.log(showRowNumber)
   return (
     <tr
       onClick={() => {
@@ -31,8 +30,7 @@ function Row({ columns, row, index, onRowClick, showRowNumber }) {
       }}
     >
       {columns.map(({ key }) => {
-        let item
-        item =
+        let item =
           typeof row[key] === 'function'
             ? row[key](row, index, columns)
             : row[key]
@@ -93,7 +91,6 @@ export default function Table({
   showRowNumbers,
 }) {
   showRowNumbers && columns.unshift({ key: ' ' })
-  console.log(columns)
   return (
     <table>
       <TableHead columns={columns} />
