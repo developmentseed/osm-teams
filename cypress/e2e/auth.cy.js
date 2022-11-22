@@ -1,9 +1,16 @@
-describe('Protect pages with authentication', () => {
-  const user = {
-    id: 1,
-    display_name: 'User 1',
-  }
+describe('Check public routes', () => {
+  it(`Route / is public`, () => {
+    cy.visit('/')
+    cy.get('body').should('contain', 'Create teams')
+  })
 
+  it(`Route /teams is public`, () => {
+    cy.visit('/teams')
+    cy.get('body').should('contain', 'Filter teams using map bounds')
+  })
+})
+
+describe('Check protected routes', () => {
   const protectedRoutes = [
     '/clients',
     '/organizations/1',
@@ -31,7 +38,10 @@ describe('Protect pages with authentication', () => {
   protectedRoutes.forEach((testRoute) => {
     it(`Route ${testRoute} is displayed when authenticated`, () => {
       // Authorized visit, should redirect to sign in
-      cy.login(user)
+      cy.login({
+        id: 1,
+        display_name: 'User 1',
+      })
       cy.visit(testRoute)
       cy.get('body').should('not.contain', 'Sign in')
     })
