@@ -1,5 +1,5 @@
 const organization = require('../lib/organization')
-const team = require('../lib/team')
+const team = require('../../src/models/team')
 const { teamsMembersModeratorsHelper } = require('./utils')
 const { map, prop } = require('ramda')
 const Boom = require('@hapi/boom')

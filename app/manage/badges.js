@@ -3,7 +3,7 @@ const yup = require('yup')
 const organization = require('../lib/organization')
 const profile = require('../lib/profile')
 const { routeWrapper } = require('./utils')
-const team = require('../lib/team')
+const team = require('../../src/models/team')
 
 /**
  * Get the list of badges of an organization

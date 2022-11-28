@@ -1,8 +1,8 @@
-const db = require('../../src/lib/db')
+const db = require('../lib/db')
 const knexPostgis = require('knex-postgis')
 const join = require('url-join')
 const xml2js = require('xml2js')
-const { unpack } = require('./utils')
+const { unpack } = require('../../app/lib/utils')
 const { prop, isEmpty } = require('ramda')
 const request = require('request-promise-native')
 

@@ -1,4 +1,4 @@
-const { isMember } = require('../../lib/team')
+const { isMember } = require('../../../src/models/team')
 
 /**
  * team:member

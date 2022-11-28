@@ -3,7 +3,7 @@ const sinon = require('sinon')
 const { any } = require('ramda')
 
 const db = require('../../src/lib/db')
-const team = require('../../app/lib/team')
+const team = require('../../src/models/team')
 const permissions = require('../../app/manage/permissions')
 const { resetDb } = require('../utils')
 

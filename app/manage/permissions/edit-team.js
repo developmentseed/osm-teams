@@ -1,4 +1,4 @@
-const { isModerator, associatedOrg } = require('../../lib/team')
+const { isModerator, associatedOrg } = require('../../../src/models/team')
 const { isOwner } = require('../../lib/organization')
 
 /**

@@ -1,5 +1,5 @@
 const db = require('../../src/lib/db')
-const team = require('./team')
+const team = require('../../src/models/team')
 const { map, prop, includes, has, isNil } = require('ramda')
 const { unpack, PropertyRequiredError } = require('./utils')
 

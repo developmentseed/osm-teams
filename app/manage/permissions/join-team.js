@@ -1,4 +1,4 @@
-const { isPublic, isMember } = require('../../lib/team')
+const { isPublic, isMember } = require('../../../src/models/team')
 
 /**
  * team:join

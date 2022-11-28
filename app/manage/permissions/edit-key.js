@@ -1,6 +1,6 @@
 const profile = require('../../lib/profile')
 const organization = require('../../lib/organization')
-const team = require('../../lib/team')
+const team = require('../../../src/models/team')
 const R = require('ramda')
 
 /**

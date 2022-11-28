@@ -1,4 +1,4 @@
-const team = require('../lib/team')
+const team = require('../../src/models/team')
 const db = require('../../src/lib/db')
 const yup = require('yup')
 const crypto = require('crypto')
