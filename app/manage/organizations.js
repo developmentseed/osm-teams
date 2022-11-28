@@ -14,7 +14,7 @@ async function listMyOrgs(req, reply) {
     reply.send(orgs)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -32,7 +32,7 @@ async function createOrg(req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -63,7 +63,7 @@ async function getOrgStaff(req, reply) {
   const { id } = req.params
 
   if (!id) {
-    return reply.boom.badRequest('organization id is required')
+    throw Boom.badRequest('organization id is required')
   }
 
   try {
@@ -83,7 +83,7 @@ async function getOrgStaff(req, reply) {
     reply.send({ owners, managers })
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -91,7 +91,7 @@ async function getOrgMembers(req, reply) {
   const { id } = req.params
 
   if (!id) {
-    return reply.boom.badRequest('organization id is required')
+    throw Boom.badRequest('organization id is required')
   }
 
   let { page } = req.query
@@ -106,7 +106,7 @@ async function getOrgMembers(req, reply) {
     reply.send({ members, page })
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -119,7 +119,7 @@ async function updateOrg(req, reply) {
   const { body } = req
 
   if (!id) {
-    return reply.boom.badRequest('organization id is required')
+    throw Boom.badRequest('organization id is required')
   }
 
   try {
@@ -127,7 +127,7 @@ async function updateOrg(req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -138,7 +138,7 @@ async function destroyOrg(req, reply) {
   const { id } = req.params
 
   if (!id) {
-    return reply.boom.badRequest('organization id is required')
+    throw Boom.badRequest('organization id is required')
   }
 
   try {
@@ -146,7 +146,7 @@ async function destroyOrg(req, reply) {
     return reply.status(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -157,11 +157,11 @@ async function addOwner(req, reply) {
   const { id, osmId } = req.params
 
   if (!id) {
-    return reply.boom.badRequest('organization id is required')
+    throw Boom.badRequest('organization id is required')
   }
 
   if (!osmId) {
-    return reply.boom.badRequest('osmId to add is required')
+    throw Boom.badRequest('osmId to add is required')
   }
 
   try {
@@ -169,7 +169,7 @@ async function addOwner(req, reply) {
     return reply.status(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -180,11 +180,11 @@ async function removeOwner(req, reply) {
   const { id, osmId } = req.params
 
   if (!id) {
-    return reply.boom.badRequest('organization id is required')
+    throw Boom.badRequest('organization id is required')
   }
 
   if (!osmId) {
-    return reply.boom.badRequest('osmId to add is required')
+    throw Boom.badRequest('osmId to add is required')
   }
 
   try {
@@ -192,7 +192,7 @@ async function removeOwner(req, reply) {
     return reply.status(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -203,11 +203,11 @@ async function addManager(req, reply) {
   const { id, osmId } = req.params
 
   if (!id) {
-    return reply.boom.badRequest('organization id is required')
+    throw Boom.badRequest('organization id is required')
   }
 
   if (!osmId) {
-    return reply.boom.badRequest('osmId to add is required')
+    throw Boom.badRequest('osmId to add is required')
   }
 
   try {
@@ -215,7 +215,7 @@ async function addManager(req, reply) {
     return reply.status(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -226,11 +226,11 @@ async function removeManager(req, reply) {
   const { id, osmId } = req.params
 
   if (!id) {
-    return reply.boom.badRequest('organization id is required')
+    throw Boom.badRequest('organization id is required')
   }
 
   if (!osmId) {
-    return reply.boom.badRequest('osmId to add is required')
+    throw Boom.badRequest('osmId to add is required')
   }
 
   try {
@@ -238,7 +238,7 @@ async function removeManager(req, reply) {
     return reply.status(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -255,7 +255,7 @@ async function createOrgTeam(req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -270,7 +270,7 @@ async function getOrgTeams(req, reply) {
     reply.send(enhancedData)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 

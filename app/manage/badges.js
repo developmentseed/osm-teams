@@ -4,6 +4,7 @@ const organization = require('../lib/organization')
 const profile = require('../lib/profile')
 const { routeWrapper } = require('./utils')
 const team = require('../../src/models/team')
+const { Boom } = require('@hapi/boom')
 
 /**
  * Get the list of badges of an organization
@@ -26,7 +27,7 @@ const listBadges = routeWrapper({
       reply.send(badges)
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
   },
 })
@@ -60,7 +61,7 @@ const createBadge = routeWrapper({
       reply.send(badge)
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
   },
 })
@@ -122,7 +123,7 @@ const getBadge = routeWrapper({
       })
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
   },
 })
@@ -155,7 +156,7 @@ const patchBadge = routeWrapper({
       reply.send(badge)
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
   },
 })
@@ -181,7 +182,7 @@ const deleteBadge = routeWrapper({
       })
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
   },
 })
@@ -214,7 +215,7 @@ const assignUserBadge = routeWrapper({
       )
 
       if (!isMemberOrStaff) {
-        return reply.boom.badRequest('User is not part of the organization.')
+        throw Boom.badRequest('User is not part of the organization.')
       }
 
       // assign badge
@@ -232,11 +233,9 @@ const assignUserBadge = routeWrapper({
     } catch (err) {
       console.log(err)
       if (err.code === '23505') {
-        return reply.boom.badRequest('User is already assigned to badge.')
+        throw Boom.badRequest('User is already assigned to badge.')
       } else {
-        return reply.boom.badRequest(
-          'Unexpected error, please try again later.'
-        )
+        throw Boom.badRequest('Unexpected error, please try again later.')
       }
     }
   },
@@ -259,7 +258,7 @@ const listUserBadges = routeWrapper({
       reply.send({ badges })
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
   },
 })
@@ -302,7 +301,7 @@ const updateUserBadge = routeWrapper({
       reply.send(badge)
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
   },
 })
@@ -335,7 +334,7 @@ const removeUserBadge = routeWrapper({
       })
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
   },
 })
