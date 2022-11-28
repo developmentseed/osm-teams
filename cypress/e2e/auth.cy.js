@@ -3,11 +3,6 @@ describe('Check public routes', () => {
     cy.visit('/')
     cy.get('body').should('contain', 'Create teams')
   })
-
-  it(`Route /teams is public`, () => {
-    cy.visit('/teams')
-    cy.get('body').should('contain', 'Filter teams using map bounds')
-  })
 })
 
 describe('Check protected routes', () => {
@@ -21,11 +16,6 @@ describe('Check protected routes', () => {
     '/organizations/1/profile',
     '/organizations/create',
     '/profile',
-    '/teams/1',
-    '/teams/1/edit-profiles',
-    '/teams/1/edit',
-    '/teams/1/profile',
-    '/teams/create',
   ]
 
   protectedRoutes.forEach((testRoute) => {
