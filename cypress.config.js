@@ -46,6 +46,7 @@ module.exports = defineConfig({
       })
     },
   },
+  screenshotOnRunFailure: false,
   env: {
     NEXTAUTH_SECRET: 'next-auth-cypress-secret',
   },

@@ -1,31 +1,24 @@
 const test = require('ava')
-const db = require('../../src/lib/db')
-const { initializeContext } = require('./initialization')
+const createAgent = require('../utils/create-agent')
+const { resetDb, disconnectDb } = require('../utils/db')
 
-const { migrationsDirectory } = require('../utils')
+test.before(resetDb)
 
-test.before(initializeContext)
-
-test.after.always(async () => {
-  const conn = await db()
-  await conn.migrate.rollback({ directory: migrationsDirectory })
-  conn.destroy()
-})
+test.after.always(disconnectDb)
 
 test('an authenticated user can create a team', async (t) => {
-  let res = await t.context.agent
+  const agent = await createAgent({ id: 1 })
+  let res = await agent
     .post('/api/teams')
     .send({ name: 'road team 1' })
-    .set('Authorization', 'Bearer user100')
     .expect(200)
 
   t.is(res.body.name, 'road team 1')
 })
 
 test('an unauthenticated user cannot create a team', async (t) => {
-  let res = await t.context.agent
-    .post('/api/teams')
-    .send({ name: 'road team 2' })
+  const agent = await createAgent()
+  let res = await agent.post('/api/teams').send({ name: 'road team 2' })
 
   t.is(res.status, 401)
 })

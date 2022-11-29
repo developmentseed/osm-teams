@@ -1,7 +1,7 @@
 const db = require('../../src/lib/db')
 const sinon = require('sinon')
 const hydra = require('../../app/lib/hydra')
-const { migrationsDirectory } = require('../utils')
+const { resetDb } = require('../utils')
 
 /**
  * Helper function to create an org
@@ -33,9 +33,9 @@ async function destroyOrg(t) {
  * Function to initialize test contexts for permissions
  * @param {Object} t - ava test context
  */
-async function initializeContext(t) {
+async function initializeContext() {
   const conn = await db()
-  await conn.migrate.latest({ directory: migrationsDirectory })
+  await resetDb()
 
   // seed
   await conn('users').insert({ id: 100 })
@@ -59,11 +59,6 @@ async function initializeContext(t) {
   })
 
   introspectStub.withArgs('invalidToken').returns({ active: false })
-
-  // Initialize context objects
-  t.context.agent = require('supertest').agent(
-    await require('../../app/index')()
-  )
 }
 
 module.exports = {
