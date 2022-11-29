@@ -1,4 +1,4 @@
-name: Test E2E
+name: Test
 
 on:
   pull_request:
@@ -48,8 +48,11 @@ jobs:
       - name: Migrate database
         run: for i in {1..6}; do yarn migrate:test && break || sleep 10; done # retries up to 6 times every 10 s if db is not available
 
-      - name: Run tests
+      - name: Run Cypress tests
         run: yarn e2e
 
+      - name: Run API tests
+        run: yarn test
+
       - name: Docker Cleanup
-        run: docker-compose kill        
+        run: docker-compose kill
