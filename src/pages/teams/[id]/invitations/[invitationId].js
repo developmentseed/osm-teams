@@ -1,10 +1,11 @@
 import React from 'react'
 import Error from 'next/error'
 import * as yup from 'yup'
-import { getSession } from 'next-auth/react'
+import { getSession, signIn } from 'next-auth/react'
 import * as TeamInvitation from '../../../../models/team-invitation'
 import * as Team from '../../../../models/team'
 import logger from '../../../../lib/logger'
+import Button from '../../../../components/button'
 
 const routeSchema = yup
   .object({
@@ -14,6 +15,17 @@ const routeSchema = yup
   .required()
 
 export default function TeamInvitationPage({ errorCode, errorMessage }) {
+  // Token is valid but user is not authorized
+  if (errorCode === 401) {
+    return (
+      <div>
+        <div>Please sign in</div>
+        <Button onClick={() => signIn('openstreetmap')}>Sign in →</Button>
+      </div>
+    )
+  }
+
+  // Another error occurred
   if (errorCode) {
     return <Error statusCode={errorCode} title={errorMessage} />
   }

@@ -54,7 +54,7 @@ describe('Team invitation page', () => {
     cy.visit(
       `/teams/${validInvitation.teamId}/invitations/${validInvitation.uuid}`
     )
-    cy.get('body').contains('Must be signed in.')
+    cy.get('body').contains('Please sign in')
   })
 
   it('Valid invitation - user is authenticated', () => {
