@@ -1,6 +1,7 @@
 const { defineConfig } = require('cypress')
 const db = require('./src/lib/db')
 const Team = require('./src/models/team')
+const TeamInvitation = require('./src/models/team-invitation')
 
 const user1 = {
   id: 1,
@@ -17,8 +18,6 @@ module.exports = defineConfig({
           await conn.raw('TRUNCATE TABLE team RESTART IDENTITY CASCADE')
           return null
         },
-      })
-      on('task', {
         'db:seed': async () => {
           // Add teams
           await Promise.all(
@@ -40,6 +39,9 @@ module.exports = defineConfig({
           )
 
           return null
+        },
+        'db:seed:team-invitations': async (teamInvitations) => {
+          return Promise.all(teamInvitations.map(TeamInvitation.create))
         },
       })
     },
