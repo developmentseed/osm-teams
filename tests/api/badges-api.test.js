@@ -1,13 +1,7 @@
 const test = require('ava')
-const sinon = require('sinon')
+const createAgent = require('../utils/create-agent')
+const { resetDb, disconnectDb } = require('../utils/db-helpers')
 
-const db = require('../../src/lib/db')
-const hydra = require('../../app/lib/hydra')
-
-const { resetDb } = require('../utils')
-
-let app
-let dbClient
 let org1
 let orgTeam1
 let orgOwner = {
@@ -24,39 +18,14 @@ let notOrgMember = {
 }
 let badge1, badge2, badge3
 
-let introspectStub = sinon.stub(hydra, 'introspect')
-
-async function createUserAgent({ id }) {
-  // Add user to db
-  await dbClient('users').insert({ id })
-
-  // Mock hydra auth
-  introspectStub.withArgs(`user${id}`).returns({
-    active: true,
-    sub: `${id}`,
-  })
-
-  // Return agent with auth token
-  return require('supertest')
-    .agent(app)
-    .set('Authorization', `Bearer user${id}`)
-}
-
 test.before(async () => {
-  console.log('Connecting to test database...')
-  dbClient = await db()
-
-  await resetDb(dbClient)
-
-  console.log('Starting server...')
-  app = await require('../../app/index')()
+  await resetDb()
 
   // Create user agents
-  console.log('Creating agents...')
-  orgOwner.agent = await createUserAgent(orgOwner)
-  orgManager.agent = await createUserAgent(orgManager)
-  orgTeamMember.agent = await createUserAgent(orgTeamMember)
-  notOrgMember.agent = await createUserAgent(notOrgMember)
+  orgOwner.agent = await createAgent(orgOwner)
+  orgManager.agent = await createAgent(orgManager)
+  orgTeamMember.agent = await createAgent(orgTeamMember)
+  notOrgMember.agent = await createAgent(notOrgMember)
 
   // Create organization
   org1 = (
@@ -85,9 +54,7 @@ test.before(async () => {
     .expect(200)
 })
 
-test.after.always(async () => {
-  dbClient.destroy()
-})
+test.after.always(disconnectDb)
 
 /**
  * CREATE BADGE
