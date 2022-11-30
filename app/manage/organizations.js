@@ -210,13 +210,8 @@ async function addManager(req, reply) {
     throw Boom.badRequest('osmId to add is required')
   }
 
-  try {
-    await organization.addManager(id, Number(osmId))
-    return reply.status(200).send()
-  } catch (err) {
-    console.log(err)
-    throw Boom.badRequest(err.message)
-  }
+  await organization.addManager(id, Number(osmId))
+  return reply.status(200).send()
 }
 
 /**

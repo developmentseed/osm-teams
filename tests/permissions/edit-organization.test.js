@@ -1,19 +1,37 @@
 const test = require('ava')
 const db = require('../../src/lib/db')
-const { initializeContext, createOrg, destroyOrg } = require('./initialization')
+const createAgent = require('../utils/create-agent')
+const { resetDb, disconnectDb } = require('../utils/db-helpers')
 
-const { migrationsDirectory } = require('../utils')
+// Seed data
+const user1 = { id: 1 }
+const user2 = { id: 2 }
 
-test.before(initializeContext)
+// Helper variables
+let user1Agent
+let user2Agent
+let org1
 
-test.after.always(async () => {
-  await db.migrate.rollback({ directory: migrationsDirectory })
-  db.destroy()
+// Prepare environment
+test.before(async () => {
+  await resetDb()
+
+  // Create agents
+  user1Agent = await createAgent(user1)
+  user2Agent = await createAgent(user2)
+
+  // Add seed data to db
+  await db('users').insert(user1)
+  await db('users').insert(user2)
+  org1 = (
+    await user1Agent
+      .post('/api/organizations')
+      .send({ name: 'permissions org' })
+  ).body
 })
 
-// set up and tear down an org for each test
-test.beforeEach(createOrg)
-test.afterEach(destroyOrg)
+// Disconnect db
+test.after.always(disconnectDb)
 
 /**
  * An org owner can update the org
@@ -23,12 +41,11 @@ test.afterEach(destroyOrg)
  */
 test('org owner can update an org', async (t) => {
   const orgName2 = 'org owner can update an org - org 2'
-  const res2 = await t.context.agent
-    .put(`/api/organizations/${t.context.org.id}`)
-    .set('Authorization', `Bearer user100`)
+  const res = await user1Agent
+    .put(`/api/organizations/${org1.id}`)
     .send({ name: orgName2 })
 
-  t.is(res2.status, 200)
+  t.is(res.status, 200)
 })
 
 /**
@@ -39,18 +56,16 @@ test('org owner can update an org', async (t) => {
 test('org manager cannot update an org', async (t) => {
   const orgName2 = 'org manager cannot update an org - org 2'
 
-  // We create a manager role for user 101
-  await t.context.agent
-    .post(`/api/organizations/${t.context.org.id}/addManager/101`)
-    .set('Authorization', `Bearer user100`)
+  // We create a manager role for user 2
+  await user1Agent
+    .put(`/api/organizations/${org1.id}/addManager/${user2.id}`)
     .expect(200)
 
-  const res3 = await t.context.agent
-    .put(`/api/organizations/${t.context.org.id}`)
-    .set('Authorization', `Bearer user101`)
+  const res = await user2Agent
+    .put(`/api/organizations/${org1.id}`)
     .send({ name: orgName2 })
 
-  t.is(res3.status, 401)
+  t.is(res.status, 401)
 })
 
 /**
@@ -61,10 +76,9 @@ test('org manager cannot update an org', async (t) => {
 test('no-role user cannot update an org', async (t) => {
   const orgName2 = 'no-role user cannot update an org - org 2'
 
-  const res2 = await t.context.agent
-    .put(`/api/organizations/${t.context.org.id}`)
-    .set('Authorization', `Bearer user101`)
+  const res = await user2Agent
+    .put(`/api/organizations/${org1.id}`)
     .send({ name: orgName2 })
 
-  t.is(res2.status, 401)
+  t.is(res.status, 401)
 })

@@ -1,4 +1,7 @@
-const { isPublic, isMemberOrStaff } = require('../../../src/models/organization')
+const {
+  isPublic,
+  isMemberOrStaff,
+} = require('../../../src/models/organization')
 
 /**
  * org:view-members

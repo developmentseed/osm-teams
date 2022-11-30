@@ -201,7 +201,6 @@ const assignUserBadge = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-
       // user is related to org?
       const isMemberOrStaff = await organization.isMemberOrStaff(
         req.params.id,
@@ -275,7 +274,6 @@ const updateUserBadge = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-
       const { assigned_at, valid_until } = req.body
 
       // Yup validation returns time-zoned dates, update query use UTC strings
@@ -313,7 +311,6 @@ const removeUserBadge = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-
       // delete user badge
       await db('user_badges').delete().where({
         user_id: req.params.userId,

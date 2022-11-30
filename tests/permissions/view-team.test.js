@@ -1,42 +1,47 @@
 const test = require('ava')
-const db = require('../../src/lib/db')
-const { initializeContext } = require('./initialization')
+const createAgent = require('../utils/create-agent')
+const { resetDb, disconnectDb } = require('../utils/db-helpers')
+const Team = require('../../src/models/team')
 
-const team = require('../../src/models/team')
+// Seed data
+const user1 = { id: 1 }
 
-const { migrationsDirectory } = require('../utils')
+// Helper variables
+let publicAgent
+let user1Agent
+let publicTeam
+let privateTeam
 
-test.before(async (t) => {
-  await initializeContext(t)
+// Prepare test environment
+test.before(async () => {
+  await resetDb()
 
-  t.context.publicTeam = await team.create({ name: 'public team' }, 100)
-  t.context.privateTeam = await team.create(
+  // Create agents
+  publicAgent = await createAgent()
+  user1Agent = await createAgent(user1)
+
+  // Create teams
+  publicTeam = await Team.create({ name: 'public team' }, user1.id)
+  privateTeam = await Team.create(
     { name: 'private team', privacy: 'private' },
-    100
+    user1.id
   )
 })
 
-test.after.always(async () => {
-  await db.migrate.rollback({ directory: migrationsDirectory })
-  db.destroy()
-})
+// Close db connection
+test.after.always(disconnectDb)
 
 test('public teams are visible to unauthenticated users', async (t) => {
-  const team = t.context.publicTeam
-  let res = await t.context.agent.get(`/api/teams/${team.id}`)
+  let res = await publicAgent.get(`/api/teams/${publicTeam.id}`)
   t.is(res.status, 200)
 })
 
 test('private team metadata are visible to unauthenticated users', async (t) => {
-  const team = t.context.privateTeam
-  let res = await t.context.agent.get(`/api/teams/${team.id}`)
+  let res = await publicAgent.get(`/api/teams/${privateTeam.id}`)
   t.is(res.status, 200)
 })
 
 test('private team metadata are visible to team moderators', async (t) => {
-  const team = t.context.privateTeam
-  let res = await t.context.agent
-    .get(`/api/teams/${team.id}`)
-    .set('Authorization', `Bearer user100`)
+  let res = await user1Agent.get(`/api/teams/${privateTeam.id}`)
   t.is(res.status, 200)
 })

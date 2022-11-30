@@ -1,6 +1,6 @@
 const test = require('ava')
 const createAgent = require('../utils/create-agent')
-const { resetDb, disconnectDb } = require('../utils/db')
+const { resetDb, disconnectDb } = require('../utils/db-helpers')
 
 test.before(resetDb)
 

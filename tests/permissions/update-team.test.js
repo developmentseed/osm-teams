@@ -1,133 +1,119 @@
 const test = require('ava')
-const db = require('../../src/lib/db')
-const { initializeContext } = require('./initialization')
+const createAgent = require('../utils/create-agent')
+const { resetDb, disconnectDb } = require('../utils/db-helpers')
 
-const { migrationsDirectory } = require('../utils')
-
-test.before(initializeContext)
-
-test.after.always(async () => {
-  await db.migrate.rollback({ directory: migrationsDirectory })
-  db.destroy()
+let user1Agent
+let user2Agent
+let user3Agent
+test.before(async () => {
+  await resetDb()
+  user1Agent = await createAgent({ id: 1 })
+  user2Agent = await createAgent({ id: 2 })
+  user3Agent = await createAgent({ id: 3 })
 })
+test.after.always(disconnectDb)
 
 test('a team moderator can update a team', async (t) => {
-  let res = await t.context.agent
+  let res = await user1Agent
     .post('/api/teams')
     .send({ name: 'road team 1' })
-    .set('Authorization', 'Bearer user100')
     .expect(200)
 
-  let res2 = await t.context.agent
+  let res2 = await user1Agent
     .put(`/api/teams/${res.body.id}`)
-    .set('Authorization', 'Bearer user100')
     .send({ name: 'building team 1' })
 
   t.is(res2.status, 200)
 })
 
 test('a non-team moderator cannot update a team', async (t) => {
-  let res = await t.context.agent
+  let res = await user1Agent
     .post('/api/teams')
     .send({ name: 'road team 2' })
-    .set('Authorization', 'Bearer user100')
     .expect(200)
 
-  let res2 = await t.context.agent
+  let res2 = await user2Agent
     .put(`/api/teams/${res.body.id}`)
-    .set('Authorization', 'Bearer user101')
     .send({ name: 'building team 2' })
 
   t.is(res2.status, 401)
 })
 
 test('an org team cannot be updated by non-org user', async (t) => {
-  // Let's create an organization, user100 is the owner
-  const res = await t.context.agent
+  // Let's create an organization, user1 is the owner
+  const res = await user1Agent
     .post('/api/organizations')
     .send({ name: 'org team cannot be updated by non-org user' })
-    .set('Authorization', 'Bearer user100')
     .expect(200)
 
-  // Let's set user101 to be a manager of this organization and create a
+  // Let's set user2 to be a manager of this organization and create a
   // team in the organization
-  await t.context.agent
-    .put(`/api/organizations/${res.body.id}/addManager/101`)
-    .set('Authorization', 'Bearer user100')
+  await user1Agent
+    .put(`/api/organizations/${res.body.id}/addManager/2`)
     .expect(200)
 
-  const res2 = await t.context.agent
+  const res2 = await user2Agent
     .post(`/api/organizations/${res.body.id}/teams`)
     .send({ name: 'org team cannot be updated by non-org user - team' })
-    .set('Authorization', 'Bearer user101')
     .expect(200)
 
-  // Use a different user from 101 or 100 to update the team
-  const res3 = await t.context.agent
+  // Use a different user from 1 or 2 to update the team
+  const res3 = await user3Agent
     .put(`/api/teams/${res2.body.id}`)
     .send({ name: 'org team cannot be updated by non-org user - team2' })
-    .set('Authorization', 'Bearer user102')
 
   t.is(res3.status, 401)
 })
 
 test('an org team can be updated by the the org manager', async (t) => {
-  // Let's create an organization, user100 is the owner
-  const res = await t.context.agent
+  // Let's create an organization, user1 is the owner
+  const res = await user1Agent
     .post('/api/organizations')
     .send({ name: 'org manager can update team' })
-    .set('Authorization', 'Bearer user100')
     .expect(200)
 
-  // Let's set user101 to be a manager of this organization and create a
+  // Let's set user2 to be a manager of this organization and create a
   // team in the organization
-  await t.context.agent
-    .put(`/api/organizations/${res.body.id}/addManager/101`)
-    .set('Authorization', 'Bearer user100')
+  await user1Agent
+    .put(`/api/organizations/${res.body.id}/addManager/2`)
     .expect(200)
 
-  const res2 = await t.context.agent
+  const res2 = await user2Agent
     .post(`/api/organizations/${res.body.id}/teams`)
     .send({ name: 'org team can be updated by manager - team' })
-    .set('Authorization', 'Bearer user101')
     .expect(200)
 
   // Use the manager to update the team
-  const res3 = await t.context.agent
+  const res3 = await user2Agent
     .put(`/api/teams/${res2.body.id}`)
     .send({ name: 'org team can be updated by manager - team2' })
-    .set('Authorization', 'Bearer user101')
 
   t.is(res3.status, 200)
 })
 
 test('an org team can be updated by the owner of the org', async (t) => {
-  // Let's create an organization, user100 is the owner
-  const res = await t.context.agent
+  // Let's create an organization, user1 is the owner
+  const res = await user1Agent
     .post('/api/organizations')
     .send({ name: 'org owner can update team' })
-    .set('Authorization', 'Bearer user100')
     .expect(200)
 
-  // Let's set user101 to be a manager of this organization and create a
+  // Let's set user2 to be a manager of this organization and create a
   // team in the organization
-  await t.context.agent
-    .put(`/api/organizations/${res.body.id}/addManager/101`)
-    .set('Authorization', 'Bearer user100')
+  await user1Agent
+    .put(`/api/organizations/${res.body.id}/addManager/2`)
     .expect(200)
 
-  const res2 = await t.context.agent
+  const res2 = await user2Agent
     .post(`/api/organizations/${res.body.id}/teams`)
     .send({ name: 'org team can be updated by owner - team' })
-    .set('Authorization', 'Bearer user101')
     .expect(200)
 
-  // user101 is the moderator and manager, but user100 should be able
+  // user2 is the moderator and manager, but user1 should be able
   // to edit this team
-  const res3 = await t.context.agent
+  const res3 = await user1Agent
     .put(`/api/teams/${res2.body.id}`)
     .send({ name: 'org team can be updated by owner - team2' })
-    .set('Authorization', 'Bearer user100')
 
   t.is(res3.status, 200)
 })
