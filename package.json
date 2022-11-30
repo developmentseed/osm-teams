@@ -109,7 +109,7 @@
     "@babel/preset-env": "^7.16.8",
     "@babel/preset-react": "^7.16.7",
     "@panva/hkdf": "^1.0.1",
-    "ava": "^3.15.0",
+    "ava": "^5.1.0",
     "babelify": "^10.0.0",
     "cypress": "^11.1.0",
     "eslint": "8.26.0",
