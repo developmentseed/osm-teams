@@ -10,8 +10,7 @@ const db = require('../../../src/lib/db')
  * @returns {undefined}
  */
 async function deleteClient(uid, { id }) {
-  let conn = await db()
-  const [client] = await conn('hydra_client').where('id', id)
+  const [client] = await db('hydra_client').where('id', id)
   return client.owner === uid
 }
 

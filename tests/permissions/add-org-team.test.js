@@ -7,9 +7,8 @@ const { migrationsDirectory } = require('../utils')
 test.before(initializeContext)
 
 test.after.always(async () => {
-  const conn = await db()
-  await conn.migrate.rollback({ directory: migrationsDirectory })
-  conn.destroy()
+  await db.migrate.rollback({ directory: migrationsDirectory })
+  db.destroy()
 })
 
 // set up and tear down an org for each test

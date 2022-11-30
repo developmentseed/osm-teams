@@ -286,8 +286,7 @@ const getJoinInvitations = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-      const invitations = await conn('invitations')
+      const invitations = await db('invitations')
         .select()
         .where('team_id', req.params.id)
         .orderBy('created_at', 'desc') // Most recent first
@@ -310,9 +309,8 @@ const createJoinInvitation = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
       const uuid = crypto.randomUUID()
-      const [invitation] = await conn('invitations')
+      const [invitation] = await db('invitations')
         .insert({
           id: uuid,
           team_id: req.params.id,
@@ -337,8 +335,7 @@ const deleteJoinInvitation = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-      await conn('invitations')
+      await db('invitations')
         .where({
           team_id: req.params.id,
           id: req.params.uuid,
@@ -364,8 +361,7 @@ const acceptJoinInvitation = routeWrapper({
   handler: async (req, reply) => {
     const user = req.session.user_id
     try {
-      const conn = await db()
-      const [invitation] = await conn('invitations').where({
+      const [invitation] = await db('invitations').where({
         team_id: req.params.id,
         id: req.params.uuid,
       })

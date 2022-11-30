@@ -14,8 +14,7 @@ module.exports = defineConfig({
     setupNodeEvents(on) {
       on('task', {
         'db:reset': async () => {
-          const conn = await db()
-          await conn.raw('TRUNCATE TABLE team RESTART IDENTITY CASCADE')
+          await db.raw('TRUNCATE TABLE team RESTART IDENTITY CASCADE')
           return null
         },
         'db:seed': async () => {

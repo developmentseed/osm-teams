@@ -7,17 +7,16 @@ const { migrationsDirectory } = require('../utils')
 
 let agent
 test.before(async () => {
-  const conn = await db()
-  await conn.migrate.latest({ directory: migrationsDirectory })
-  await conn.schema.createTable('hydra_client', (t) => {
+  await db.migrate.latest({ directory: migrationsDirectory })
+  await db.schema.createTable('hydra_client', (t) => {
     // schema at https://github.com/ory/hydra/blob/master/client/manager_sql.go
     t.string('id')
     t.string('owner')
   })
 
   // seed
-  await conn('hydra_client').insert({ id: 999, owner: '100' })
-  await conn('hydra_client').insert({ id: 998, owner: '101' })
+  await db('hydra_client').insert({ id: 999, owner: '100' })
+  await db('hydra_client').insert({ id: 998, owner: '101' })
 
   // stub hydra introspect
   let introspectStub = sinon.stub(hydra, 'introspect')
@@ -39,10 +38,9 @@ test.before(async () => {
 })
 
 test.after.always(async () => {
-  const conn = await db()
-  await conn.schema.dropTable('hydra_client')
-  await conn.migrate.rollback({ directory: migrationsDirectory })
-  conn.destroy()
+  await db.schema.dropTable('hydra_client')
+  await db.migrate.rollback({ directory: migrationsDirectory })
+  db.destroy()
 })
 
 test('a user can delete a client they created', async (t) => {

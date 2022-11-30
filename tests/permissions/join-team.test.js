@@ -17,9 +17,8 @@ test.before(async (t) => {
 })
 
 test.after.always(async () => {
-  const conn = await db()
-  await conn.migrate.rollback({ directory: migrationsDirectory })
-  conn.destroy()
+  await db.migrate.rollback({ directory: migrationsDirectory })
+  db.destroy()
 })
 
 test('a user can join a public team', async (t) => {

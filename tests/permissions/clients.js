@@ -8,11 +8,10 @@ const migrationsDirectory = path.join(__dirname, '..', '..', 'db', 'migrations')
 
 let agent
 test.before(async () => {
-  const conn = await db()
-  await conn.migrate.latest({ directory: migrationsDirectory })
+  await db.migrate.latest({ directory: migrationsDirectory })
 
   // seed
-  await conn('users').insert({ id: 100 })
+  await db('users').insert({ id: 100 })
 
   // stub hydra introspect
   let introspectStub = sinon.stub(hydra, 'introspect')
@@ -30,9 +29,8 @@ test.before(async () => {
 })
 
 test.after.always(async () => {
-  const conn = await db()
-  await conn.migrate.rollback({ directory: migrationsDirectory })
-  conn.destroy()
+  await db.migrate.rollback({ directory: migrationsDirectory })
+  db.destroy()
 })
 
 test('an authenticated user can view their clients', async (t) => {

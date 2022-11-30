@@ -34,12 +34,11 @@ async function destroyOrg(t) {
  * @param {Object} t - ava test context
  */
 async function initializeContext() {
-  const conn = await db()
   await resetDb()
 
   // seed
-  await conn('users').insert({ id: 100 })
-  await conn('users').insert({ id: 101 })
+  await db('users').insert({ id: 100 })
+  await db('users').insert({ id: 101 })
 
   // stub hydra introspect
   let introspectStub = sinon.stub(hydra, 'introspect')
