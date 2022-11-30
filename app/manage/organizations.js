@@ -1,4 +1,4 @@
-const organization = require('../lib/organization')
+const organization = require('../../src/models/organization')
 const team = require('../../src/models/team')
 const { teamsMembersModeratorsHelper } = require('./utils')
 const { map, prop } = require('ramda')

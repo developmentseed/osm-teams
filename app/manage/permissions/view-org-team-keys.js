@@ -1,4 +1,4 @@
-const { isOwner, isOrgTeamModerator } = require('../../lib/organization')
+const { isOwner, isOrgTeamModerator } = require('../../../src/models/organization')
 
 /**
  * organization:view-team-keys

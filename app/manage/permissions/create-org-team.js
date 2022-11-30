@@ -1,4 +1,4 @@
-const { isOwner, isManager } = require('../../lib/organization')
+const { isOwner, isManager } = require('../../../src/models/organization')
 
 /**
  * organization:create-team

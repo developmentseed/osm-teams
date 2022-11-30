@@ -6,7 +6,7 @@ const { routeWrapper } = require('./utils')
 const { prop, map, dissoc } = require('ramda')
 const urlRegex = require('url-regex')
 const { teamsMembersModeratorsHelper } = require('./utils')
-const profile = require('../lib/profile')
+const profile = require('../../src/models/profile')
 const Boom = require('@hapi/boom')
 
 const isUrl = urlRegex({ exact: true })

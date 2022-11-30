@@ -1,6 +1,6 @@
-const profile = require('../lib/profile')
+const profile = require('../../src/models/profile')
 const team = require('../../src/models/team')
-const org = require('../lib/organization')
+const org = require('../../src/models/organization')
 const { pick, prop, assoc } = require('ramda')
 const { ValidationError, PropertyRequiredError } = require('../lib/utils')
 const Boom = require('@hapi/boom')
