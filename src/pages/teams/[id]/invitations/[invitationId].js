@@ -18,10 +18,12 @@ export default function TeamInvitationPage({ errorCode, errorMessage }) {
   // Token is valid but user is not authorized
   if (errorCode === 401) {
     return (
-      <div>
-        <div>Please sign in</div>
-        <Button onClick={() => signIn('openstreetmap')}>Sign in →</Button>
-      </div>
+      <article className='inner page'>
+        <section>
+          <h1>Please sign in</h1>
+          <Button onClick={() => signIn('openstreetmap')}>Sign in →</Button>
+        </section>
+      </article>
     )
   }
 
@@ -30,7 +32,13 @@ export default function TeamInvitationPage({ errorCode, errorMessage }) {
     return <Error statusCode={errorCode} title={errorMessage} />
   }
 
-  return <div>Invitation accepted successfully.</div>
+  return (
+    <article className='inner page'>
+      <section>
+        <h1>Invitation accepted successfully.</h1>
+      </section>
+    </article>
+  )
 }
 
 export async function getServerSideProps(ctx) {
