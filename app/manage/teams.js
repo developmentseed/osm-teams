@@ -198,7 +198,7 @@ async function destroyTeam(req, reply) {
 
   try {
     await team.destroy(id)
-    reply.status(200)
+    return reply.status(200).send()
   } catch (err) {
     console.log(err)
     throw Boom.badRequest(err.message)
@@ -218,7 +218,7 @@ async function addMember(req, reply) {
 
   try {
     await team.addMember(id, osmId)
-    return reply.status(200)
+    return reply.status(200).send()
   } catch (err) {
     console.log(err)
     throw Boom.badRequest(err.message)
@@ -249,7 +249,7 @@ async function updateMembers(req, reply) {
     await team.resolveMemberNames(members)
 
     await team.updateMembers(id, add, remove)
-    return reply.status(200)
+    return reply.status(200).send()
   } catch (err) {
     console.error(err)
     throw Boom.badRequest(err.message)
@@ -269,7 +269,7 @@ async function removeMember(req, reply) {
 
   try {
     await team.removeMember(id, osmId)
-    return reply.status(200)
+    return reply.status(200).send()
   } catch (err) {
     console.log(err)
     throw Boom.badRequest(err.message)
@@ -344,7 +344,7 @@ const deleteJoinInvitation = routeWrapper({
           id: req.params.uuid,
         })
         .del()
-      reply.status(200)
+      return reply.status(200).send()
     } catch (err) {
       console.log(err)
       throw Boom.badRequest(err.message)
@@ -372,10 +372,10 @@ const acceptJoinInvitation = routeWrapper({
 
       // If this invitation doesn't exist, then it's not valid
       if (!invitation) {
-        return reply.status(404)
+        return reply.status(404).send()
       } else {
         team.addMember(req.params.id, user)
-        return reply.status(200)
+        return reply.status(200).send()
       }
     } catch (err) {
       console.log(err)
@@ -398,7 +398,7 @@ async function joinTeam(req, reply) {
 
   try {
     await team.addMember(id, osmId)
-    return reply.status(200)
+    return reply.status(200).send()
   } catch (err) {
     console.log(err)
     throw Boom.badRequest(err.message)
