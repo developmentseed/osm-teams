@@ -3,7 +3,7 @@ const sinon = require('sinon')
 
 const db = require('../../src/lib/db')
 const { resetDb } = require('../utils')
-const team = require('../../app/lib/team')
+const team = require('../../src/models/team')
 const organization = require('../../app/lib/organization')
 const permissions = require('../../app/manage/permissions')
 

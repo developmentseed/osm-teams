@@ -1,4 +1,4 @@
-const team = require('../lib/team')
+const team = require('../../src/models/team')
 const { prop } = require('ramda')
 
 const getId = prop('id')

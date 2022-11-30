@@ -1,5 +1,5 @@
 const profile = require('../lib/profile')
-const team = require('../lib/team')
+const team = require('../../src/models/team')
 const org = require('../lib/organization')
 const { pick, prop, assoc } = require('ramda')
 const { ValidationError, PropertyRequiredError } = require('../lib/utils')

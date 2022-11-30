@@ -1,4 +1,4 @@
-const team = require('../lib/team')
+const team = require('../../src/models/team')
 const db = require('../../src/lib/db')
 const yup = require('yup')
 const crypto = require('crypto')
@@ -7,6 +7,7 @@ const { prop, map, dissoc } = require('ramda')
 const urlRegex = require('url-regex')
 const { teamsMembersModeratorsHelper } = require('./utils')
 const profile = require('../lib/profile')
+const { Boom } = require('@hapi/boom')
 
 const isUrl = urlRegex({ exact: true })
 const getOsmId = prop('osm_id')
@@ -27,7 +28,7 @@ async function listTeams(req, reply) {
     reply.send(enhancedData)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -43,7 +44,7 @@ async function listMyTeams(req, reply) {
     }
     reply.send(result)
   } catch (err) {
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -51,7 +52,7 @@ async function getTeam(req, reply) {
   const { id } = req.params
 
   if (!id) {
-    return reply.boom.badRequest('team id is required')
+    throw Boom.badRequest('Team id is required')
   }
 
   try {
@@ -59,13 +60,13 @@ async function getTeam(req, reply) {
     const associatedOrg = await team.associatedOrg(id)
 
     if (!teamData) {
-      return reply.boom.notFound()
+      throw Boom.notFound()
     }
 
     return reply.send(Object.assign({}, teamData, { org: associatedOrg }))
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -73,7 +74,7 @@ async function getTeamMembers(req, reply) {
   const { id } = req.params
 
   if (!id) {
-    return reply.boom.badRequest('team id is required')
+    throw Boom.badRequest('team id is required')
   }
 
   try {
@@ -86,7 +87,7 @@ async function getTeamMembers(req, reply) {
     )
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -94,7 +95,7 @@ async function createTeam(req, reply) {
   const { body } = req
   const { user_id } = req.session
   if (body.editing_policy && !isUrl.test(body.editing_policy)) {
-    return reply.boom.badRequest('editing_policy must be a valid url')
+    throw Boom.badRequest('editing_policy must be a valid url')
   }
 
   try {
@@ -102,7 +103,7 @@ async function createTeam(req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -111,11 +112,11 @@ async function updateTeam(req, reply) {
   const { body } = req
 
   if (!id) {
-    return reply.boom.badRequest('team id is required')
+    throw Boom.badRequest('team id is required')
   }
 
   if (body.editing_policy && !isUrl.test(body.editing_policy)) {
-    return reply.boom.badRequest('editing_policy must be a valid url')
+    throw Boom.badRequest('editing_policy must be a valid url')
   }
 
   try {
@@ -131,7 +132,7 @@ async function updateTeam(req, reply) {
     reply.send(updatedTeam)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -139,11 +140,11 @@ async function assignModerator(req, reply) {
   const { id: teamId, osmId } = req.params
 
   if (!teamId) {
-    return reply.boom.badRequest('team id is required')
+    throw Boom.badRequest('team id is required')
   }
 
   if (!osmId) {
-    return reply.boom.badRequest(
+    throw Boom.badRequest(
       'osm id of member to promote to moderator is required'
     )
   }
@@ -153,7 +154,7 @@ async function assignModerator(req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -161,11 +162,11 @@ async function removeModerator(req, reply) {
   const { id: teamId, osmId } = req.params
 
   if (!teamId) {
-    return reply.boom.badRequest('team id is required')
+    throw Boom.badRequest('team id is required')
   }
 
   if (!osmId) {
-    return reply.boom.badRequest(
+    throw Boom.badRequest(
       'osm id of member to demote from moderator is required'
     )
   }
@@ -175,7 +176,7 @@ async function removeModerator(req, reply) {
     reply.send(data)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -183,7 +184,7 @@ async function destroyTeam(req, reply) {
   const { id } = req.params
 
   if (!id) {
-    return reply.boom.badRequest('team id is required')
+    throw Boom.badRequest('team id is required')
   }
 
   try {
@@ -191,7 +192,7 @@ async function destroyTeam(req, reply) {
     reply.status(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -199,11 +200,11 @@ async function addMember(req, reply) {
   const { id, osmId } = req.params
 
   if (!id) {
-    return reply.boom.badRequest('team id is required')
+    throw Boom.badRequest('team id is required')
   }
 
   if (!osmId) {
-    return reply.boom.badRequest('osm id is required')
+    throw Boom.badRequest('osm id is required')
   }
 
   try {
@@ -211,7 +212,7 @@ async function addMember(req, reply) {
     return reply.status(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -220,11 +221,11 @@ async function updateMembers(req, reply) {
   const { add, remove } = req.body
 
   if (!id) {
-    return reply.boom.badRequest('team id is required')
+    throw Boom.badRequest('team id is required')
   }
 
   if (!add && !remove) {
-    return reply.boom.badRequest('osm ids are required')
+    throw Boom.badRequest('osm ids are required')
   }
 
   try {
@@ -242,7 +243,7 @@ async function updateMembers(req, reply) {
     return reply.status(200)
   } catch (err) {
     console.error(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -250,11 +251,11 @@ async function removeMember(req, reply) {
   const { id, osmId } = req.params
 
   if (!id) {
-    return reply.boom.badRequest('team id is required')
+    throw Boom.badRequest('team id is required')
   }
 
   if (!osmId) {
-    return reply.boom.badRequest('osm id is required')
+    throw Boom.badRequest('osm id is required')
   }
 
   try {
@@ -262,7 +263,7 @@ async function removeMember(req, reply) {
     return reply.status(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 
@@ -311,7 +312,7 @@ const createJoinInvitation = routeWrapper({
       reply.send(invitation)
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
   },
 })
@@ -337,7 +338,7 @@ const deleteJoinInvitation = routeWrapper({
       reply.status(200)
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
   },
 })
@@ -369,7 +370,7 @@ const acceptJoinInvitation = routeWrapper({
       }
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
   },
 })
@@ -379,11 +380,11 @@ async function joinTeam(req, reply) {
   const osmId = req.session.user_id
 
   if (!id) {
-    return reply.boom.badRequest('team id is required')
+    throw Boom.badRequest('team id is required')
   }
 
   if (!osmId) {
-    return reply.boom.badRequest('osm id is required')
+    throw Boom.badRequest('osm id is required')
   }
 
   try {
@@ -391,7 +392,7 @@ async function joinTeam(req, reply) {
     return reply.status(200)
   } catch (err) {
     console.log(err)
-    return reply.boom.badRequest(err.message)
+    throw Boom.badRequest(err.message)
   }
 }
 

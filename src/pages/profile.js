@@ -8,7 +8,7 @@ import SectionHeader from '../components/section-header'
 import Table from '../components/table'
 import { assoc, flatten, propEq, find } from 'ramda'
 import { listMyOrganizations } from '../../app/lib/organization'
-import team from '../../app/lib/team'
+import team from '../models/team'
 import { teamsMembersModeratorsHelper } from '../../app/manage/utils'
 
 const { publicRuntimeConfig } = getConfig()

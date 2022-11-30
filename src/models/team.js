@@ -1,8 +1,8 @@
-const db = require('../../src/lib/db')
+const db = require('../lib/db')
 const knexPostgis = require('knex-postgis')
 const join = require('url-join')
 const xml2js = require('xml2js')
-const { unpack } = require('./utils')
+const { unpack } = require('../../app/lib/utils')
 const { prop, isEmpty } = require('ramda')
 const request = require('request-promise-native')
 
@@ -34,6 +34,17 @@ const teamAttributes = [
  *
  */
 async function resolveMemberNames(ids) {
+  // The following avoids hitting OSM API when testing. We use TESTING variable
+  // instead of NODE_EN because the server run in development mode while
+  // executing E2E tests.
+  if (process.env.TESTING === 'true') {
+    return ids.map((id) => ({
+      id,
+      name: `User ${id}`,
+      image: `https://via.placeholder.com/150`,
+    }))
+  }
+
   try {
     const resp = await request(
       join(serverRuntimeConfig.OSM_API, `/api/0.6/users?users=${ids.join(',')}`)
