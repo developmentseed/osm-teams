@@ -70,26 +70,35 @@ async function getTeam(req, reply) {
   }
 }
 
-async function getTeamMembers(req, reply) {
-  const { id } = req.params
+const getTeamMembers = routeWrapper({
+  validate: {
+    params: yup
+      .object({
+        id: yup.number().required().positive().integer(),
+      })
+      .required(),
+  },
+  handler: async (req, reply) => {
+    const { id } = req.params
 
-  if (!id) {
-    throw Boom.badRequest('team id is required')
-  }
+    if (!id) {
+      throw Boom.badRequest('team id is required')
+    }
 
-  try {
-    const memberIds = map(getOsmId, await team.getMembers(id))
-    const members = await team.resolveMemberNames(memberIds)
-    const moderators = await team.getModerators(id)
+    try {
+      const memberIds = map(getOsmId, await team.getMembers(id))
+      const members = await team.resolveMemberNames(memberIds)
+      const moderators = await team.getModerators(id)
 
-    return reply.send(
-      Object.assign({}, { teamId: id }, { members, moderators })
-    )
-  } catch (err) {
-    console.log(err)
-    throw Boom.badRequest(err.message)
-  }
-}
+      return reply.send(
+        Object.assign({}, { teamId: id }, { members, moderators })
+      )
+    } catch (err) {
+      console.log(err)
+      throw Boom.badRequest(err.message)
+    }
+  },
+})
 
 async function createTeam(req, reply) {
   const { body } = req
