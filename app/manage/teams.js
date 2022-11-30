@@ -7,7 +7,7 @@ const { prop, map, dissoc } = require('ramda')
 const urlRegex = require('url-regex')
 const { teamsMembersModeratorsHelper } = require('./utils')
 const profile = require('../lib/profile')
-const { Boom } = require('@hapi/boom')
+const Boom = require('@hapi/boom')
 
 const isUrl = urlRegex({ exact: true })
 const getOsmId = prop('osm_id')

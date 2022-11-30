@@ -4,7 +4,7 @@ const organization = require('../lib/organization')
 const profile = require('../lib/profile')
 const { routeWrapper } = require('./utils')
 const team = require('../../src/models/team')
-const { Boom } = require('@hapi/boom')
+const Boom = require('@hapi/boom')
 
 /**
  * Get the list of badges of an organization
