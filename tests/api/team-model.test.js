@@ -1,20 +1,13 @@
 const test = require('ava')
-const db = require('../../src/lib/db')
 const team = require('../../src/models/team')
 const { prop } = require('ramda')
-const { resetDb } = require('../utils')
+const { resetDb, disconnectDb } = require('../utils/db-helpers')
 
 test.before(async () => {
-  const conn = await db()
-
-  await resetDb(conn)
-
-  // seed
-  await conn('users').insert({ id: 1 })
-  await conn('users').insert({ id: 2 })
-  await conn('users').insert({ id: 3 })
-  await conn('users').insert({ id: 4 })
+  await resetDb()
 })
+
+test.after.always(disconnectDb)
 
 test('create a team', async (t) => {
   const data = await team.create({ name: 'map team 1' }, 1)

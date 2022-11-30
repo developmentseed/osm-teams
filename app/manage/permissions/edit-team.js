@@ -1,5 +1,5 @@
 const { isModerator, associatedOrg } = require('../../../src/models/team')
-const { isOwner } = require('../../lib/organization')
+const { isOwner } = require('../../../src/models/organization')
 
 /**
  * team:update

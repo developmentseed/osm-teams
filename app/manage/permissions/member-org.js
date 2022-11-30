@@ -1,4 +1,4 @@
-const { isMemberOrStaff } = require('../../lib/organization')
+const { isMemberOrStaff } = require('../../../src/models/organization')
 
 /**
  * org:member

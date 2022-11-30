@@ -3,7 +3,7 @@ const {
   isMember,
   associatedOrg,
 } = require('../../../src/models/team')
-const { isOwner } = require('../../lib/organization')
+const { isOwner } = require('../../../src/models/organization')
 
 /**
  * team:view-members

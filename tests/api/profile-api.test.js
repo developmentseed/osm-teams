@@ -1,42 +1,28 @@
 const test = require('ava')
-const sinon = require('sinon')
 
 const db = require('../../src/lib/db')
 const team = require('../../src/models/team')
-const org = require('../../app/lib/organization')
-const permissions = require('../../app/manage/permissions')
-const profile = require('../../app/lib/profile')
-const { resetDb } = require('../utils')
+const org = require('../../src/models/organization')
+const profile = require('../../src/models/profile')
 
 const { prop, concat, includes, propEq, find } = require('ramda')
 
-let agent
+const { resetDb, disconnectDb } = require('../utils/db-helpers')
+const createAgent = require('../utils/create-agent')
 
+let user1Agent
 test.before(async () => {
-  const conn = await db()
-
-  await resetDb(conn)
+  await resetDb()
 
   // seed
-  await conn('users').insert({ id: 1 })
-  await conn('users').insert({ id: 2 })
-  await conn('users').insert({ id: 3 })
-  await conn('users').insert({ id: 4 })
+  await db('users').insert({ id: 1 })
+  await db('users').insert({ id: 2 })
+  await db('users').insert({ id: 3 })
+  await db('users').insert({ id: 4 })
 
-  // Ensure authenticate middleware always goes through with user_id 1
-  const middleware = function () {
-    return function (req, res, next) {
-      res.locals.user_id = 1
-      return next()
-    }
-  }
-
-  sinon.stub(permissions, 'can').callsFake(middleware)
-  sinon.stub(permissions, 'authenticate').callsFake(middleware)
-  sinon.stub(permissions, 'check').callsFake(middleware)
-
-  agent = require('supertest').agent(await require('../../app/index')())
+  user1Agent = await createAgent({ id: 1 })
 })
+test.after.always(disconnectDb)
 
 /**
  * Get a team user profile with correct visibility
@@ -116,7 +102,9 @@ test('get team user profile within an org', async (t) => {
    - the team key that has team visibility
    - the team key that has public visibility
   */
-  const res1 = await agent.get(`/api/profiles/teams/${team1.id}/2`).expect(200)
+  const res1 = await user1Agent
+    .get(`/api/profiles/teams/${team1.id}/2`)
+    .expect(200)
   t.is(Object.keys(res1.body).length, team1Keys.length)
 
   /* user 1 gets the profile of user 2 from team2 (they are on different teams)
@@ -125,14 +113,16 @@ test('get team user profile within an org', async (t) => {
    - the team key that has team visibility
    - the team key that has public visibility
   */
-  const res2 = await agent.get(`/api/profiles/teams/${team2.id}/2`).expect(200)
+  const res2 = await user1Agent
+    .get(`/api/profiles/teams/${team2.id}/2`)
+    .expect(200)
   t.is(Object.keys(res2.body).length, team2Keys.length)
 })
 
 test('create profile keys for org', async (t) => {
   const name = 'create profile keys for org'
   const org1 = await org.create({ name: 'create profile keys for org' }, 1)
-  await agent
+  await user1Agent
     .post(`/api/profiles/keys/organizations/${org1.id}`)
     .send([{ name, visibility: 'org' }])
     .expect(200)
@@ -150,7 +140,7 @@ test('create profile keys for org team', async (t) => {
     { name: 'create profile keys for org teams' },
     1
   )
-  await agent
+  await user1Agent
     .post(`/api/profiles/keys/organizations/${org1.id}/teams`)
     .send([{ name, visibility: 'org' }])
     .expect(200)
@@ -168,7 +158,7 @@ test('create profile keys for org users', async (t) => {
     { name: 'create profile keys for org users' },
     1
   )
-  await agent
+  await user1Agent
     .post(`/api/profiles/keys/organizations/${org1.id}/users`)
     .send([{ name, visibility: 'org' }])
     .expect(200)
@@ -183,7 +173,7 @@ test('create profile keys for org users', async (t) => {
 test('create profile keys for teams', async (t) => {
   const name = 'create profile keys for team'
   const team1 = await team.create({ name: 'create profile keys for team' }, 1)
-  await agent
+  await user1Agent
     .post(`/api/profiles/keys/teams/${team1.id}`)
     .send([{ name, visibility: 'team' }])
     .expect(200)
@@ -201,7 +191,7 @@ test('create profile keys for teams users', async (t) => {
     { name: 'create profile keys for team users' },
     1
   )
-  await agent
+  await user1Agent
     .post(`/api/profiles/keys/teams/${team1.id}/users`)
     .send([{ name, visibility: 'team' }])
     .expect(200)
@@ -216,7 +206,7 @@ test('create profile keys for teams users', async (t) => {
 test('set profile for user 1', async (t) => {
   const name = 'set profile for a user'
   const team1 = await team.create({ name: 'set profile for a user' }, 1)
-  await agent
+  await user1Agent
     .post(`/api/profiles/keys/teams/${team1.id}/users`)
     .send([{ name, visibility: 'team' }])
     .expect(200)
@@ -224,7 +214,7 @@ test('set profile for user 1', async (t) => {
   const keys = await profile.getProfileKeysForOwner('team', team1.id, 'user')
   const keyId = find(propEq('name', name), keys).id
 
-  await agent
+  await user1Agent
     .post('/api/my/profiles')
     .send([{ key_id: keyId, value: 'success' }])
     .expect(200)

@@ -1,10 +1,10 @@
-const db = require('../../src/lib/db')
+const db = require('../lib/db')
 const {
   unpack,
   ValidationError,
   checkRequiredProperties,
   PropertyRequiredError,
-} = require('../lib/utils')
+} = require('../../app/lib/utils')
 const {
   map,
   has,
@@ -120,8 +120,7 @@ async function addProfileKeys(attributes, ownerType, ownerId) {
     ...rest,
   }))
 
-  const conn = await db()
-  return conn('profile_keys')
+  return db('profile_keys')
     .insert(toInsert)
     .onConflict(['name', `owner_${ownerType}`])
     .merge()
@@ -143,8 +142,7 @@ async function modifyProfileKey(id, attribute) {
     )
   }
 
-  const conn = await db()
-  return conn('profile_keys').where('id', id).update(attribute)
+  return db('profile_keys').where('id', id).update(attribute)
 }
 
 /**
@@ -153,8 +151,7 @@ async function modifyProfileKey(id, attribute) {
  * @param {integer} id id of key to delete
  */
 async function deleteProfileKey(id) {
-  const conn = await db()
-  return conn('profile_keys').where('id', id).delete()
+  return db('profile_keys').where('id', id).delete()
 }
 
 /**
@@ -164,8 +161,7 @@ async function deleteProfileKey(id) {
  * @returns ProfileAttribute
  */
 async function getProfileKey(id) {
-  const conn = await db()
-  return unpack(conn('profile_keys').where('id', id))
+  return unpack(db('profile_keys').where('id', id))
 }
 
 /**
@@ -188,8 +184,7 @@ async function getProfileKeysForOwner(ownerType, ownerId, profileType) {
     )
   }
 
-  const conn = await db()
-  let query = conn('profile_keys').where({
+  let query = db('profile_keys').where({
     [`owner_${ownerType}`]: ownerId,
   })
 
@@ -227,12 +222,11 @@ async function setProfile(attributeValues, profileType, id) {
     )
   }
 
-  const conn = await db()
   const currentProfile = await getProfile(profileType, id)
   let tags = prop('tags', currentProfile)
 
   // Pick tags that are still in the database
-  const tagsInDB = await conn('profile_keys')
+  const tagsInDB = await db('profile_keys')
     .select('id')
     .whereIn('id', keys(tags))
 
@@ -247,10 +241,10 @@ async function setProfile(attributeValues, profileType, id) {
 
   const table = getTableForProfileType(profileType)
 
-  return conn(table)
+  return db(table)
     .update({
       profile: assoc('tags', tags, currentProfile),
-      updated_at: conn.fn.now(),
+      updated_at: db.fn.now(),
     })
     .where('id', id)
 }
@@ -278,20 +272,17 @@ async function getProfile(profileType, id) {
 
   const table = getTableForProfileType(profileType)
 
-  const conn = await db()
-  return unpack(conn(table).select('profile').where('id', id)).then(
+  return unpack(db(table).select('profile').where('id', id)).then(
     prop('profile')
   )
 }
 
 async function getUserManageToken(id) {
-  const conn = await db()
-  return unpack(conn('users').select('manageToken').where('id', id).debug())
+  return unpack(db('users').select('manageToken').where('id', id).debug())
 }
 
 async function getUserBadges(id) {
-  const conn = await db()
-  return conn('user_badges')
+  return db('user_badges')
     .select([
       'id',
       'assigned_at',

@@ -7,7 +7,7 @@ import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Table from '../components/table'
 import { assoc, flatten, propEq, find } from 'ramda'
-import { listMyOrganizations } from '../../app/lib/organization'
+import { listMyOrganizations } from '../models/organization'
 import team from '../models/team'
 import { teamsMembersModeratorsHelper } from '../../app/manage/utils'
 

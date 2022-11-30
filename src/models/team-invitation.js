@@ -2,8 +2,7 @@ const db = require('../lib/db')
 const crypto = require('crypto')
 
 async function create({ uuid, teamId, createdAt, expiresAt }) {
-  const conn = await db()
-  const [invitation] = await conn('invitations')
+  const [invitation] = await db('invitations')
     .insert({
       id: uuid || crypto.randomUUID(),
       team_id: teamId,
@@ -15,8 +14,7 @@ async function create({ uuid, teamId, createdAt, expiresAt }) {
 }
 
 async function get({ id, teamId }) {
-  const conn = await db()
-  const [invitation] = await conn('invitations')
+  const [invitation] = await db('invitations')
     .select()
     .where({ id, team_id: teamId })
   return invitation
