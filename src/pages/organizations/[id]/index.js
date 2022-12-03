@@ -3,6 +3,7 @@ import Router, { withRouter } from 'next/router'
 import {
   getOrg,
   getOrgStaff,
+  getOrgTeams,
   getMembers,
   addManager,
   removeManager,
@@ -60,6 +61,7 @@ class Organization extends Component {
     this.state = {
       profileInfo: [],
       profileUserId: '',
+      teams: [],
       members: [],
       managers: [],
       owners: [],
@@ -76,6 +78,7 @@ class Organization extends Component {
   async componentDidMount() {
     this.setState({ session: await getSession() })
     await this.getOrg()
+    await this.getOrgTeams()
     await this.getOrgStaff()
     await this.getBadges()
     return this.getMembers(0)
@@ -179,6 +182,22 @@ class Organization extends Component {
       })
     }
   }
+  async getOrgTeams() {
+    const { id } = this.props
+    try {
+      let { teams } = await getOrgTeams(id)
+      this.setState({
+        teams,
+      })
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e,
+        teams: [],
+        loading: false,
+      })
+    }
+  }
 
   renderStaff(owners, managers) {
     const columns = [{ key: 'name' }, { key: 'id' }, { key: 'role' }]
@@ -203,6 +222,18 @@ class Organization extends Component {
     )
   }
 
+  renderOrgTeams(teams) {
+    const columns = [{ key: 'name' }, { key: 'id' }, { key: 'members' }]
+    return (
+      <Table
+        rows={teams}
+        columns={columns}
+        emptyPlaceHolder={
+          this.state.loading ? 'Loading...' : 'This organization has no staff.'
+        }
+      />
+    )
+  }
   async getBadges() {
     try {
       const { id: orgId } = this.props
@@ -279,7 +310,7 @@ class Organization extends Component {
   }
 
   render() {
-    const { org, members, managers, owners, error } = this.state
+    const { org, members, managers, owners, error, teams } = this.state
     if (!org) return null
 
     const userId = parseInt(this.state.session.user_id)
@@ -379,6 +410,9 @@ class Organization extends Component {
             </dl>
           </Card>
         </div>
+
+        <div className='team__table'>{this.renderOrgTeams(teams)}</div>
+
         {isOrgPublic || isMemberOfOrg ? (
           <div className='team__table'>
             <Section>
