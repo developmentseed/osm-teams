@@ -22,7 +22,7 @@ module.exports = {
   env: {
     APP_URL:
       process.env.APP_URL ||
-      process.env.NEXT_PUBLIC_VERCEL_URL ||
+      `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` ||
       'http://127.0.0.1:3000',
     OSM_NAME: process.env.OSM_NAME || 'OSM',
     BASE_PATH: process.env.BASE_PATH || '',
