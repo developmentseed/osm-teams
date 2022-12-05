@@ -7,7 +7,7 @@ import { ToastContainer } from 'react-toastify'
 import { SessionProvider } from 'next-auth/react'
 import join from 'url-join'
 
-const BASE_PATH = process.env.BASE_PATH
+const APP_URL = process.env.APP_URL
 
 export default function App({
   Component,
@@ -16,7 +16,7 @@ export default function App({
   return (
     <SessionProvider
       session={session}
-      basePath={`${join(BASE_PATH, '/api/auth')}`}
+      basePath={`${join(APP_URL, '/api/auth')}`}
     >
       <Head>
         <title>OSM Teams</title>
