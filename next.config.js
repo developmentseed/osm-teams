@@ -18,7 +18,8 @@ module.exports = {
     HYDRA_AUTHZ_PATH: process.env.HYDRA_AUTHZ_PATH || '/oauth2/auth',
     HYDRA_ADMIN_HOST: process.env.HYDRA_ADMIN_HOST || 'http://localhost:4445',
   },
-  publicRuntimeConfig: {
+  basePath: process.env.BASE_PATH || '',
+  env: {
     APP_URL:
       process.env.APP_URL ||
       process.env.NEXT_PUBLIC_VERCEL_URL ||
