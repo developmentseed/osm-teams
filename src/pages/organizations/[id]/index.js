@@ -231,7 +231,7 @@ class Organization extends Component {
         members: members.length,
       }
     })
-    console.log(teams)
+
     return (
       <Table
         rows={teamRows}
