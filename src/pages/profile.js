@@ -9,6 +9,7 @@ import { assoc, flatten, propEq, find } from 'ramda'
 import { listMyOrganizations } from '../models/organization'
 import team from '../models/team'
 import { teamsMembersModeratorsHelper } from '../../app/manage/utils'
+import { RoleLabel } from '../components/label'
 
 const URL = process.env.APP_URL
 
@@ -32,6 +33,9 @@ function OrganizationsSection({ orgs }) {
       allOrgs.push(org)
     }
   })
+  allOrgs.forEach(
+    (org) => (org.role = <RoleLabel role={org.role}>{org.role}</RoleLabel>)
+  )
 
   return (
     <Table

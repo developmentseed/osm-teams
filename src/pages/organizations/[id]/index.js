@@ -24,7 +24,7 @@ import { assoc, propEq, find, contains, prop, map } from 'ramda'
 import APIClient from '../../../lib/api-client'
 import join from 'url-join'
 import { getSession } from 'next-auth/react'
-
+import { RoleLabel } from '../../../components/label'
 const URL = process.env.APP_URL
 
 const apiClient = new APIClient()
@@ -260,11 +260,24 @@ class Organization extends Component {
     ) : null
   }
 
-  renderMembers(memberRows) {
-    const columns = [{ key: 'name' }, { key: 'id' }]
+  renderMembers(members, managers, owners) {
+    const columns = [{ key: 'name' }, { key: 'id' }, { key: 'role' }]
+    const ownerRows = owners.map(assoc('role', 'owner'))
+    const managerRows = managers.map(assoc('role', 'manager'))
+
+    let allRows = ownerRows
+    managerRows.forEach((row) => {
+      if (!find(propEq('id', row.id))(ownerRows)) {
+        ownerRows.push(row)
+      }
+      members.push(row)
+    })
+    allRows.forEach(
+      (row) => (row.role = <RoleLabel role={row.role}>{row.role}</RoleLabel>)
+    )
     return (
       <Table
-        rows={memberRows}
+        rows={allRows}
         columns={columns}
         emptyPlaceHolder={
           this.state.loading
@@ -428,7 +441,7 @@ class Organization extends Component {
                 </div>
               </div>
             </Section>
-            {this.renderMembers(members)}
+            {this.renderMembers(members, managers, owners)}
           </div>
         ) : (
           <div />

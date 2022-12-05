@@ -22,7 +22,7 @@ function TableHead({ columns }) {
   )
 }
 
-function Row({ columns, row, index, onRowClick, showRowNumber }) {
+function Row({ columns, row, index, onRowClick, showRowNumber, children }) {
   return (
     <tr
       onClick={() => {
@@ -42,7 +42,7 @@ function Row({ columns, row, index, onRowClick, showRowNumber }) {
             width={showRowNumber && key === ' ' && '1rem'}
             key={`row-${index}-key-${key}`}
           >
-            {item}
+            {children || item}
           </td>
         )
       })}

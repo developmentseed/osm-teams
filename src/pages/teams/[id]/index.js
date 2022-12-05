@@ -33,6 +33,7 @@ import {
 } from '../../../lib/profiles-api'
 import { getOrgStaff } from '../../../lib/org-api'
 import { toast } from 'react-toastify'
+import { RoleLabel } from '../../../components/label'
 
 const APP_URL = process.env.APP_URL
 const Map = dynamic(() => import('../../../components/team-map'), {
@@ -276,7 +277,13 @@ class Team extends Component {
       const role = contains(parseInt(member.id), moderators)
         ? 'Moderator'
         : 'Member'
-      return assoc('role', role, member)
+      const memberRow = assoc('role', role, member)
+      memberRow.role = (
+        <RoleLabel key={member.id} role={role}>
+          {role}
+        </RoleLabel>
+      )
+      return memberRow
     })
 
     let profileActions = []
