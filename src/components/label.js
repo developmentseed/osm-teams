@@ -40,7 +40,7 @@ export function RoleLabel(props) {
     manager: theme.colors.infoColor,
     owner: theme.colors.secondaryColor,
   }
-  console.log(props)
+
   return (
     <Label bgColor={roleBgColor[props.role.toLowerCase()]}>
       {props.children}
