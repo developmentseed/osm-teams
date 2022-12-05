@@ -67,7 +67,6 @@ export async function getOrg(id) {
  * @param {integer} id
  * @returns {response}
  */
-//  const orgTeams = await agent.get(`/api/organizations/${res.body.id}/teams`)
 export async function getOrgTeams(id) {
   let res = await fetch(join(URL, `${id}`, 'teams'))
 
