@@ -69,8 +69,7 @@ async function loginAccept(req, res) {
       const { sub } = jwt.decode(result.id_token)
 
       // Store access token and refresh token
-      let conn = await db()
-      await conn('users')
+      await db('users')
         .where('id', sub)
         .update({
           manageToken: JSON.stringify(result),

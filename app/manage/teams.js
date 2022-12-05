@@ -6,8 +6,8 @@ const { routeWrapper } = require('./utils')
 const { prop, map, dissoc } = require('ramda')
 const urlRegex = require('url-regex')
 const { teamsMembersModeratorsHelper } = require('./utils')
-const profile = require('../lib/profile')
-const { Boom } = require('@hapi/boom')
+const profile = require('../../src/models/profile')
+const Boom = require('@hapi/boom')
 
 const isUrl = urlRegex({ exact: true })
 const getOsmId = prop('osm_id')
@@ -70,26 +70,35 @@ async function getTeam(req, reply) {
   }
 }
 
-async function getTeamMembers(req, reply) {
-  const { id } = req.params
+const getTeamMembers = routeWrapper({
+  validate: {
+    params: yup
+      .object({
+        id: yup.number().required().positive().integer(),
+      })
+      .required(),
+  },
+  handler: async (req, reply) => {
+    const { id } = req.params
 
-  if (!id) {
-    throw Boom.badRequest('team id is required')
-  }
+    if (!id) {
+      throw Boom.badRequest('team id is required')
+    }
 
-  try {
-    const memberIds = map(getOsmId, await team.getMembers(id))
-    const members = await team.resolveMemberNames(memberIds)
-    const moderators = await team.getModerators(id)
+    try {
+      const memberIds = map(getOsmId, await team.getMembers(id))
+      const members = await team.resolveMemberNames(memberIds)
+      const moderators = await team.getModerators(id)
 
-    return reply.send(
-      Object.assign({}, { teamId: id }, { members, moderators })
-    )
-  } catch (err) {
-    console.log(err)
-    throw Boom.badRequest(err.message)
-  }
-}
+      return reply.send(
+        Object.assign({}, { teamId: id }, { members, moderators })
+      )
+    } catch (err) {
+      console.log(err)
+      throw Boom.badRequest(err.message)
+    }
+  },
+})
 
 async function createTeam(req, reply) {
   const { body } = req
@@ -189,7 +198,7 @@ async function destroyTeam(req, reply) {
 
   try {
     await team.destroy(id)
-    reply.status(200)
+    return reply.status(200).send()
   } catch (err) {
     console.log(err)
     throw Boom.badRequest(err.message)
@@ -209,7 +218,7 @@ async function addMember(req, reply) {
 
   try {
     await team.addMember(id, osmId)
-    return reply.status(200)
+    return reply.status(200).send()
   } catch (err) {
     console.log(err)
     throw Boom.badRequest(err.message)
@@ -240,7 +249,7 @@ async function updateMembers(req, reply) {
     await team.resolveMemberNames(members)
 
     await team.updateMembers(id, add, remove)
-    return reply.status(200)
+    return reply.status(200).send()
   } catch (err) {
     console.error(err)
     throw Boom.badRequest(err.message)
@@ -260,7 +269,7 @@ async function removeMember(req, reply) {
 
   try {
     await team.removeMember(id, osmId)
-    return reply.status(200)
+    return reply.status(200).send()
   } catch (err) {
     console.log(err)
     throw Boom.badRequest(err.message)
@@ -277,8 +286,7 @@ const getJoinInvitations = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-      const invitations = await conn('invitations')
+      const invitations = await db('invitations')
         .select()
         .where('team_id', req.params.id)
         .orderBy('created_at', 'desc') // Most recent first
@@ -301,9 +309,8 @@ const createJoinInvitation = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
       const uuid = crypto.randomUUID()
-      const [invitation] = await conn('invitations')
+      const [invitation] = await db('invitations')
         .insert({
           id: uuid,
           team_id: req.params.id,
@@ -328,14 +335,13 @@ const deleteJoinInvitation = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-      await conn('invitations')
+      await db('invitations')
         .where({
           team_id: req.params.id,
           id: req.params.uuid,
         })
         .del()
-      reply.status(200)
+      return reply.status(200).send()
     } catch (err) {
       console.log(err)
       throw Boom.badRequest(err.message)
@@ -355,18 +361,17 @@ const acceptJoinInvitation = routeWrapper({
   handler: async (req, reply) => {
     const user = req.session.user_id
     try {
-      const conn = await db()
-      const [invitation] = await conn('invitations').where({
+      const [invitation] = await db('invitations').where({
         team_id: req.params.id,
         id: req.params.uuid,
       })
 
       // If this invitation doesn't exist, then it's not valid
       if (!invitation) {
-        return reply.status(404)
+        return reply.status(404).send()
       } else {
         team.addMember(req.params.id, user)
-        return reply.status(200)
+        return reply.status(200).send()
       }
     } catch (err) {
       console.log(err)
@@ -389,7 +394,7 @@ async function joinTeam(req, reply) {
 
   try {
     await team.addMember(id, osmId)
-    return reply.status(200)
+    return reply.status(200).send()
   } catch (err) {
     console.log(err)
     throw Boom.badRequest(err.message)

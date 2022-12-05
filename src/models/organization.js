@@ -1,7 +1,7 @@
-const db = require('../../src/lib/db')
-const team = require('../../src/models/team')
+const db = require('../lib/db')
+const team = require('./team')
 const { map, prop, includes, has, isNil } = require('ramda')
-const { unpack, PropertyRequiredError } = require('./utils')
+const { unpack, PropertyRequiredError } = require('../../app/lib/utils')
 
 // Organization attributes (without profile)
 const orgAttributes = [
@@ -22,8 +22,7 @@ const orgAttributes = [
  * @return {promise}
  */
 async function get(id) {
-  const conn = await db()
-  return unpack(conn('organization').select(orgAttributes).where('id', id))
+  return unpack(db('organization').select(orgAttributes).where('id', id))
 }
 
 /**
@@ -32,9 +31,8 @@ async function get(id) {
  * @param {integer} osmId
  */
 async function listMyOrganizations(osmId) {
-  const conn = await db()
-  const memberOrgs = await conn('organization')
-    .select(conn.raw('distinct(organization.id), organization.name'))
+  const memberOrgs = await db('organization')
+    .select(db.raw('distinct(organization.id), organization.name'))
     .join(
       'organization_team',
       'organization_team.organization_id',
@@ -43,11 +41,11 @@ async function listMyOrganizations(osmId) {
     .join('member', 'organization_team.id', 'member.team_id')
     .where('osm_id', osmId)
 
-  const managerOrgs = await conn('organization_manager')
+  const managerOrgs = await db('organization_manager')
     .join('organization', 'organization_id', 'organization.id')
     .select()
     .where('osm_id', osmId)
-  const ownerOrgs = await conn('organization_owner')
+  const ownerOrgs = await db('organization_owner')
     .join('organization', 'organization_id', 'organization.id')
     .select()
     .where('osm_id', osmId)
@@ -65,8 +63,7 @@ async function listMyOrganizations(osmId) {
  * @return {promise}
  */
 async function getOwners(id) {
-  const conn = await db()
-  return conn('organization_owner').where('organization_id', id)
+  return db('organization_owner').where('organization_id', id)
 }
 
 /**
@@ -75,8 +72,7 @@ async function getOwners(id) {
  * @return {promise}
  */
 async function getManagers(id) {
-  const conn = await db()
-  return conn('organization_manager').where('organization_id', id)
+  return db('organization_manager').where('organization_id', id)
 }
 
 /**
@@ -92,9 +88,8 @@ async function create(data, osmId) {
   if (!osmId) throw new Error('owner osm id is required as second argument')
 
   if (!data.name) throw new Error('data.name property is required')
-  const conn = await db()
 
-  return conn.transaction(async (trx) => {
+  return db.transaction(async (trx) => {
     const [row] = await trx('organization')
       .insert(data)
       .returning(orgAttributes)
@@ -117,8 +112,7 @@ async function create(data, osmId) {
  * @return {promise}
  */
 async function destroy(id) {
-  const conn = await db()
-  return conn('organization').where('id', id).del()
+  return db('organization').where('id', id).del()
 }
 
 /**
@@ -129,12 +123,11 @@ async function destroy(id) {
  * @return {promise}
  */
 async function update(id, data) {
-  const conn = await db()
   if (has('name', data) && isNil(prop('name', data))) {
     throw new Error('data.name property is required')
   }
   return unpack(
-    conn('organization').where('id', id).update(data).returning(orgAttributes)
+    db('organization').where('id', id).update(data).returning(orgAttributes)
   )
 }
 
@@ -146,13 +139,12 @@ async function update(id, data) {
  * @return {promise}
  */
 async function addOwner(id, osmId) {
-  const conn = await db()
   const isAlreadyOwner = await isOwner(id, osmId)
 
   // Only ids that are not already in owner list should be added. Duplicate requests should fail silently
   if (!isAlreadyOwner) {
     return unpack(
-      conn('organization_owner').insert({ organization_id: id, osm_id: osmId })
+      db('organization_owner').insert({ organization_id: id, osm_id: osmId })
     )
   }
 }
@@ -166,7 +158,6 @@ async function addOwner(id, osmId) {
  * @return {promise}
  */
 async function removeOwner(id, osmId) {
-  const conn = await db()
   const owners = map(prop('osm_id'), await getOwners(id))
 
   if (owners.length === 1) {
@@ -178,7 +169,7 @@ async function removeOwner(id, osmId) {
   // Only ids that are already in owner list can be removed. Requests for nonexistant ids should fail silently
   if (includes(osmId, owners)) {
     return unpack(
-      conn('organization_owner')
+      db('organization_owner')
         .where({ organization_id: id, osm_id: osmId })
         .del()
     )
@@ -193,13 +184,12 @@ async function removeOwner(id, osmId) {
  * @return {promise}
  */
 async function addManager(id, osmId) {
-  const conn = await db()
   const isAlreadyManager = await isManager(id, osmId)
 
   // Only ids that are not already in manager list should be added. Duplicate requests should fail silently
   if (!isAlreadyManager) {
     return unpack(
-      conn('organization_manager').insert({
+      db('organization_manager').insert({
         organization_id: id,
         osm_id: osmId,
       })
@@ -216,13 +206,12 @@ async function addManager(id, osmId) {
  * @return {promise}
  */
 async function removeManager(id, osmId) {
-  const conn = await db()
   const managers = map(prop('osm_id'), await getManagers(id))
 
   // Only ids that are already in manager list can be removed. Requests for nonexistant ids should fail silently
   if (includes(osmId, managers)) {
     return unpack(
-      conn('organization_manager')
+      db('organization_manager')
         .where({ organization_id: id, osm_id: osmId })
         .del()
     )
@@ -241,9 +230,7 @@ async function removeManager(id, osmId) {
  * @return {promise}
  */
 async function createOrgTeam(organizationId, data, osmId) {
-  const conn = await db()
-
-  return conn.transaction(async (trx) => {
+  return db.transaction(async (trx) => {
     const record = await team.create(data, osmId, trx)
     await trx('organization_team').insert({
       team_id: record.id,
@@ -261,13 +248,11 @@ async function createOrgTeam(organizationId, data, osmId) {
 async function getMembers(organizationId, page) {
   if (!organizationId) throw new PropertyRequiredError('organization id')
 
-  const conn = await db()
-
-  const subquery = conn('organization_team')
+  const subquery = db('organization_team')
     .select('team_id')
     .where('organization_id', organizationId)
-  let query = conn('member')
-    .select(conn.raw('array_agg(team_id) as teams, osm_id'))
+  let query = db('member')
+    .select(db.raw('array_agg(team_id) as teams, osm_id'))
     .where('team_id', 'in', subquery)
     .groupBy('osm_id')
 
@@ -297,18 +282,17 @@ async function isMember(organizationId, osmId) {
 async function isMemberOrStaff(organizationId, osmId) {
   if (!organizationId) throw new PropertyRequiredError('organization id')
   if (!osmId) throw new PropertyRequiredError('osm id')
-  const conn = await db()
-  const subquery = conn('organization_team')
+  const subquery = db('organization_team')
     .select('team_id')
     .where('organization_id', organizationId)
-  const memberQuery = conn('member')
+  const memberQuery = db('member')
     .select('osm_id')
     .where('team_id', 'in', subquery)
     .andWhere('osm_id', osmId)
-  const ownerQuery = conn('organization_owner')
+  const ownerQuery = db('organization_owner')
     .select('osm_id')
     .where({ organization_id: organizationId, osm_id: osmId })
-  const managerQuery = conn('organization_manager')
+  const managerQuery = db('organization_manager')
     .select('osm_id')
     .where({ organization_id: organizationId, osm_id: osmId })
   const result = await memberQuery.union(ownerQuery).union(managerQuery)
@@ -323,11 +307,10 @@ async function isMemberOrStaff(organizationId, osmId) {
 async function isOrgTeamModerator(organizationId, osmId) {
   if (!organizationId) throw new PropertyRequiredError('organization id')
   if (!osmId) throw new PropertyRequiredError('osm id')
-  const conn = await db()
-  const subquery = conn('organization_team')
+  const subquery = db('organization_team')
     .select('team_id')
     .where('organization_id', organizationId)
-  const isModeratorOfAny = await conn('moderator')
+  const isModeratorOfAny = await db('moderator')
     .whereIn('team_id', subquery)
     .debug()
   return isModeratorOfAny.length > 0
@@ -342,8 +325,7 @@ async function isOrgTeamModerator(organizationId, osmId) {
 async function isOwner(organizationId, osmId) {
   if (!organizationId) throw new PropertyRequiredError('organization id')
   if (!osmId) throw new PropertyRequiredError('osm id')
-  const conn = await db()
-  const result = await conn('organization_owner').where({
+  const result = await db('organization_owner').where({
     organization_id: organizationId,
     osm_id: osmId,
   })
@@ -359,8 +341,7 @@ async function isOwner(organizationId, osmId) {
 async function isManager(organizationId, osmId) {
   if (!organizationId) throw new PropertyRequiredError('organization id')
   if (!osmId) throw new PropertyRequiredError('osm id')
-  const conn = await db()
-  const result = await conn('organization_manager').where({
+  const result = await db('organization_manager').where({
     organization_id: organizationId,
     osm_id: osmId,
   })
@@ -374,10 +355,9 @@ async function isManager(organizationId, osmId) {
  * @param {Object} options.osmId - filter by osm id
  */
 async function getOrgStaff(options) {
-  const conn = await db()
-  let ownerQuery = conn('organization_owner')
+  let ownerQuery = db('organization_owner')
     .select(
-      conn.raw("organization_id, osm_id, 'owner' as type, organization.name")
+      db.raw("organization_id, osm_id, 'owner' as type, organization.name")
     )
     .join(
       'organization',
@@ -385,9 +365,9 @@ async function getOrgStaff(options) {
       'organization_owner.organization_id'
     )
 
-  let managerQuery = conn('organization_manager')
+  let managerQuery = db('organization_manager')
     .select(
-      conn.raw("organization_id, osm_id, 'manager' as type, organization.name")
+      db.raw("organization_id, osm_id, 'manager' as type, organization.name")
     )
     .join(
       'organization',
@@ -418,8 +398,7 @@ async function getOrgStaff(options) {
  */
 async function isPublic(orgId) {
   if (!orgId) throw new PropertyRequiredError('organization id')
-  const conn = await db()
-  const { privacy } = await unpack(conn('organization').where({ id: orgId }))
+  const { privacy } = await unpack(db('organization').where({ id: orgId }))
   return privacy === 'public'
 }
 

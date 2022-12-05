@@ -1,4 +1,4 @@
-const organization = require('../lib/organization')
+const organization = require('../../src/models/organization')
 const team = require('../../src/models/team')
 const { teamsMembersModeratorsHelper } = require('./utils')
 const { map, prop } = require('ramda')
@@ -143,7 +143,7 @@ async function destroyOrg(req, reply) {
 
   try {
     await organization.destroy(id)
-    return reply.status(200)
+    return reply.status(200).send()
   } catch (err) {
     console.log(err)
     throw Boom.badRequest(err.message)
@@ -166,7 +166,7 @@ async function addOwner(req, reply) {
 
   try {
     await organization.addOwner(id, Number(osmId))
-    return reply.status(200)
+    return reply.status(200).send()
   } catch (err) {
     console.log(err)
     throw Boom.badRequest(err.message)
@@ -189,7 +189,7 @@ async function removeOwner(req, reply) {
 
   try {
     await organization.removeOwner(id, Number(osmId))
-    return reply.status(200)
+    return reply.status(200).send()
   } catch (err) {
     console.log(err)
     throw Boom.badRequest(err.message)
@@ -210,13 +210,8 @@ async function addManager(req, reply) {
     throw Boom.badRequest('osmId to add is required')
   }
 
-  try {
-    await organization.addManager(id, Number(osmId))
-    return reply.status(200)
-  } catch (err) {
-    console.log(err)
-    throw Boom.badRequest(err.message)
-  }
+  await organization.addManager(id, Number(osmId))
+  return reply.status(200).send()
 }
 
 /**
@@ -235,7 +230,7 @@ async function removeManager(req, reply) {
 
   try {
     await organization.removeManager(id, Number(osmId))
-    return reply.status(200)
+    return reply.status(200).send()
   } catch (err) {
     console.log(err)
     throw Boom.badRequest(err.message)

@@ -1,31 +1,32 @@
 const { range, map, contains, prop, propEq, find, includes } = require('ramda')
 const test = require('ava')
 const db = require('../../src/lib/db')
-const organization = require('../../app/lib/organization')
+const organization = require('../../src/models/organization')
 const team = require('../../src/models/team')
-const profile = require('../../app/lib/profile')
-const { resetDb } = require('../utils')
+const profile = require('../../src/models/profile')
 const {
   ValidationError,
   PropertyRequiredError,
 } = require('../../app/lib/utils')
 
+const { resetDb, disconnectDb } = require('../utils/db-helpers')
+
 test.before(async () => {
-  const conn = await db()
+  await resetDb()
 
-  await resetDb(conn)
-
-  // seed
-  await conn('users').insert({ id: 1 })
-  await conn('users').insert({ id: 2 })
-  await conn('users').insert({ id: 3 })
-  await conn('users').insert({ id: 4 })
-  await conn('users').insert({ id: 5 })
-  await conn('users').insert({ id: 6 })
-  await conn('users').insert({ id: 7 })
-  await conn('users').insert({ id: 8 })
-  await conn('users').insert({ id: 9 })
+  // Seed users
+  await db('users').insert({ id: 1 })
+  await db('users').insert({ id: 2 })
+  await db('users').insert({ id: 3 })
+  await db('users').insert({ id: 4 })
+  await db('users').insert({ id: 5 })
+  await db('users').insert({ id: 6 })
+  await db('users').insert({ id: 7 })
+  await db('users').insert({ id: 8 })
+  await db('users').insert({ id: 9 })
 })
+
+test.after.always(disconnectDb)
 
 test('add attributes for a public user profile', async (t) => {
   const name = 'Age'
@@ -270,8 +271,6 @@ test('set attribute for profile', async (t) => {
     4
   )
 
-  const conn = await db()
-
   // Get the keys
   const keys = await profile.getProfileKeysForOwner('user', 4)
 
@@ -289,7 +288,7 @@ test('set attribute for profile', async (t) => {
     4
   )
 
-  const user = (await conn('users').where('id', 4))[0]
+  const user = (await db('users').where('id', 4))[0]
 
   const userTags = user.profile.tags
   t.is(Object.keys(userTags).length, 2)
@@ -330,8 +329,7 @@ test('set attribute for profile - upsert', async (t) => {
     3
   )
 
-  const conn = await db()
-  const [user] = await conn('users').where('id', 3)
+  const [user] = await db('users').where('id', 3)
 
   t.is(user.profile.tags[toInsertId1], value2)
 })
