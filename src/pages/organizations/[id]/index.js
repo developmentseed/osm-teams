@@ -229,7 +229,7 @@ class Organization extends Component {
         rows={teams}
         columns={columns}
         emptyPlaceHolder={
-          this.state.loading ? 'Loading...' : 'This organization has no staff.'
+          this.state.loading ? 'Loading...' : 'This organization has no teams.'
         }
       />
     )
@@ -410,8 +410,12 @@ class Organization extends Component {
             </dl>
           </Card>
         </div>
-
-        <div className='team__table'>{this.renderOrgTeams(teams)}</div>
+        <div className='team__table'>
+          <Section>
+            <SectionHeader>Teams</SectionHeader>
+          </Section>
+          <div>{this.renderOrgTeams(teams)}</div>
+        </div>
 
         {isOrgPublic || isMemberOfOrg ? (
           <div className='team__table'>
