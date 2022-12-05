@@ -5,13 +5,19 @@ import Layout from '../components/layout.js'
 import Button from '../components/button'
 import { ToastContainer } from 'react-toastify'
 import { SessionProvider } from 'next-auth/react'
+import join from 'url-join'
+
+const BASE_PATH = process.env.BASE_PATH
 
 export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }) {
   return (
-    <SessionProvider session={session}>
+    <SessionProvider
+      session={session}
+      basePath={`${join(BASE_PATH, '/api/auth')}`}
+    >
       <Head>
         <title>OSM Teams</title>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
