@@ -185,7 +185,7 @@ class Organization extends Component {
   async getOrgTeams() {
     const { id } = this.props
     try {
-      let { teams } = await getOrgTeams(id)
+      const teams = await getOrgTeams(id)
       this.setState({
         teams,
       })
