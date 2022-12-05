@@ -224,13 +224,27 @@ class Organization extends Component {
 
   renderOrgTeams(teams) {
     const columns = [{ key: 'name' }, { key: 'id' }, { key: 'members' }]
+    const teamRows = teams.map(({ name, id, members }) => {
+      return {
+        name,
+        id,
+        members: members.length,
+      }
+    })
+    console.log(teams)
     return (
       <Table
-        rows={teams}
+        rows={teamRows}
         columns={columns}
         emptyPlaceHolder={
           this.state.loading ? 'Loading...' : 'This organization has no teams.'
         }
+        onRowClick={(row) => {
+          Router.push(
+            join(URL, `/team?id=${row.id}`),
+            join(URL, `/teams/${row.id}`)
+          )
+        }}
       />
     )
   }
