@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import getConfig from 'next/config'
 import Button from '../components/button'
-const { publicRuntimeConfig } = getConfig()
+import Link from 'next/link'
 
 class Consent extends Component {
   static async getInitialProps({ query }) {
@@ -21,8 +20,7 @@ class Consent extends Component {
     if (!client) {
       return (
         <div className='page inner'>
-          Invalid parameters, go back{' '}
-          <a href={publicRuntimeConfig.APP_URL}>home</a>?
+          Invalid parameters, go back <Link href='/'>home</Link>?
         </div>
       )
     }
@@ -79,14 +77,14 @@ class Consent extends Component {
           <ul>
             {client.client_policy ? (
               <li>
-                <a href={client.client_policy}>Policy</a>
+                <Link href={client.client_policy}>Policy</Link>
               </li>
             ) : (
               <div />
             )}
             {client.tos_uri ? (
               <li>
-                <a href={client.tos_uri}>Terms of Service</a>
+                <Link href={client.tos_uri}>Terms of Service</Link>
               </li>
             ) : (
               <div />

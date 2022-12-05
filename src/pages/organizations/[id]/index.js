@@ -22,12 +22,10 @@ import Modal from 'react-modal'
 import ProfileModal from '../../../components/profile-modal'
 import { assoc, propEq, find, contains, prop, map } from 'ramda'
 import APIClient from '../../../lib/api-client'
-import getConfig from 'next/config'
 import join from 'url-join'
 import { getSession } from 'next-auth/react'
 
-const { publicRuntimeConfig } = getConfig()
-const URL = publicRuntimeConfig.APP_URL
+const URL = process.env.APP_URL
 
 const apiClient = new APIClient()
 

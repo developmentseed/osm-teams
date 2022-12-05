@@ -7,10 +7,8 @@ import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import join from 'url-join'
 import Router from 'next/router'
-import getConfig from 'next/config'
 
-const { publicRuntimeConfig } = getConfig()
-const URL = publicRuntimeConfig.APP_URL
+const URL = process.env.APP_URL
 
 const apiClient = new APIClient()
 

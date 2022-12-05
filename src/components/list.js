@@ -1,9 +1,10 @@
 import React from 'react'
+import Link from 'next/link'
 import theme from '../styles/theme'
 
 const Item = ({ item, children }) => {
   return (
-    <a href={item.href} as={item.as || item.href}>
+    <Link href={item.href} as={item.as || item.href}>
       {children(item)}
       <style jsx>
         {`
@@ -18,7 +19,7 @@ const Item = ({ item, children }) => {
           }
         `}
       </style>
-    </a>
+    </Link>
   )
 }
 

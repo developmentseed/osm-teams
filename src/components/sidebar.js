@@ -1,16 +1,13 @@
 import React, { Fragment } from 'react'
 import css from 'styled-jsx/css'
 import join from 'url-join'
-import getConfig from 'next/config'
-import { withRouter } from 'next/router'
 import theme from '../styles/theme'
-import Link from '../components/Link'
+import NavLink from '../components/Link'
 import NextLink from 'next/link'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import Button from './button'
 
-const { publicRuntimeConfig } = getConfig()
-const URL = publicRuntimeConfig.APP_URL
+const URL = process.env.APP_URL
 
 const sidebarStyles = css.global`
   .page__sidebar {
@@ -209,14 +206,6 @@ const sidebarStyles = css.global`
   }
 `
 
-const NavLink = withRouter(({ children, href }) => {
-  return (
-    <Link href={href} activeClassName='active'>
-      {children}
-    </Link>
-  )
-})
-
 export default function Sidebar() {
   const { status } = useSession()
 
@@ -226,32 +215,32 @@ export default function Sidebar() {
     <Fragment>
       <li>
         <NavLink href='/teams/create'>
-          <a
+          <div
             className='global-menu__link global-menu__link--make'
             title='Make New Team'
           >
             <span>Make New Team</span>
-          </a>
+          </div>
         </NavLink>
       </li>
       <li>
         <NavLink href='/profile'>
-          <a
+          <div
             className='global-menu__link global-menu__link--profile'
             title='Visit Your Profile'
           >
             <span>Profile</span>
-          </a>
+          </div>
         </NavLink>
       </li>
       <li>
         <NavLink href='/clients'>
-          <a
+          <div
             className='global-menu__link global-menu__link--app'
             title='Connect new app'
           >
             <span>Connect a new app</span>
-          </a>
+          </div>
         </NavLink>
       </li>
     </Fragment>
@@ -269,23 +258,23 @@ export default function Sidebar() {
         <ul className='global-menu'>
           <li>
             <NavLink href='/teams'>
-              <a
+              <div
                 className='global-menu__link global-menu__link--explore'
                 title='Explore all Teams'
               >
                 <span>Explore Teams</span>
-              </a>
+              </div>
             </NavLink>
           </li>
           {isAuthenticated ? additionalMenuItems : <Fragment />}
           <li>
             <NavLink href='/developers'>
-              <a
+              <div
                 className='global-menu__link global-menu__link--developers'
                 title='Visit Developers Page'
               >
                 <span>Developer guide</span>
-              </a>
+              </div>
             </NavLink>
           </li>
         </ul>

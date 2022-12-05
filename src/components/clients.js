@@ -3,8 +3,8 @@ import Button from './button'
 import Card from './card'
 import theme from '../styles/theme'
 import join from 'url-join'
-import getConfig from 'next/config'
-const { publicRuntimeConfig } = getConfig()
+
+const APP_URL = process.env.APP_URL
 
 function newClient({ client_id, client_name, client_secret }) {
   return (
@@ -62,7 +62,7 @@ class Clients extends Component {
   }
 
   async getClients() {
-    let res = await fetch(join(publicRuntimeConfig.APP_URL, '/api/clients'))
+    let res = await fetch(join(APP_URL, '/api/clients'))
     if (res.status === 200) {
       return res.json()
     } else {
@@ -72,7 +72,7 @@ class Clients extends Component {
 
   async createClient(e) {
     e.preventDefault()
-    let res = await fetch(join(publicRuntimeConfig.APP_URL, '/api/clients'), {
+    let res = await fetch(join(APP_URL, '/api/clients'), {
       method: 'POST',
       body: JSON.stringify({
         client_name: this.state.clientName,
@@ -94,7 +94,7 @@ class Clients extends Component {
   }
 
   async deleteClient(id) {
-    await fetch(join(publicRuntimeConfig.APP_URL, `/api/clients/${id}`), {
+    await fetch(join(APP_URL, `/api/clients/${id}`), {
       method: 'DELETE',
     })
     await this.refreshClients()

@@ -3,11 +3,11 @@ import join from 'url-join'
 import Router from 'next/router'
 import { createTeam, createOrgTeam } from '../../lib/teams-api'
 import { dissoc } from 'ramda'
-import getConfig from 'next/config'
 import EditTeamForm from '../../components/edit-team-form'
 import { getSession } from 'next-auth/react'
 import { getOrgStaff } from '../../models/organization'
-const { publicRuntimeConfig } = getConfig()
+
+const APP_URL = process.env.APP_URL
 
 export default function TeamCreate({ staff }) {
   return (
@@ -28,7 +28,7 @@ export default function TeamCreate({ staff }) {
               team = await createTeam(values)
             }
             actions.setSubmitting(false)
-            Router.push(join(publicRuntimeConfig.APP_URL, `/teams/${team.id}`))
+            Router.push(join(APP_URL, `/teams/${team.id}`))
           } catch (e) {
             console.error(e)
             actions.setSubmitting(false)

@@ -2,7 +2,6 @@ import React from 'react'
 import Router from 'next/router'
 import join from 'url-join'
 import { getSession, useSession } from 'next-auth/react'
-import getConfig from 'next/config'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Table from '../components/table'
@@ -11,8 +10,7 @@ import { listMyOrganizations } from '../models/organization'
 import team from '../models/team'
 import { teamsMembersModeratorsHelper } from '../../app/manage/utils'
 
-const { publicRuntimeConfig } = getConfig()
-const URL = publicRuntimeConfig.APP_URL
+const URL = process.env.APP_URL
 
 function OrganizationsSection({ orgs }) {
   if (orgs.length === 0) {

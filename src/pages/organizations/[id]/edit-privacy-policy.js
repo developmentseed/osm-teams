@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import join from 'url-join'
 import { prop } from 'ramda'
-import getConfig from 'next/config'
 import Router from 'next/router'
 import { getOrg, updateOrgPrivacyPolicy } from '../../../lib/org-api'
 import PrivacyPolicyForm from '../../../components/privacy-policy-form'
-const { publicRuntimeConfig } = getConfig()
+
+const APP_URL = process.env.APP_URL
 
 export default class OrgPrivacyPolicy extends Component {
   static async getInitialProps({ query }) {
@@ -76,12 +76,7 @@ export default class OrgPrivacyPolicy extends Component {
               try {
                 await updateOrgPrivacyPolicy(orgId, values)
                 actions.setSubmitting(false)
-                Router.push(
-                  join(
-                    publicRuntimeConfig.APP_URL,
-                    `/organizations/${orgId}/edit`
-                  )
-                )
+                Router.push(join(APP_URL, `/organizations/${orgId}/edit`))
               } catch (e) {
                 console.error(e)
                 actions.setSubmitting(false)

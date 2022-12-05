@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
-import getConfig from 'next/config'
 
-const { publicRuntimeConfig } = getConfig()
-const URL = publicRuntimeConfig.APP_URL
+const URL = process.env.APP_URL
 
 class Developers extends Component {
   render() {
