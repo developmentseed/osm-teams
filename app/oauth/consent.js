@@ -9,8 +9,7 @@ const { serverRuntimeConfig } = require('../../next.config')
 const { path } = require('ramda')
 
 async function idTokenExtraParams(sub) {
-  const conn = await db()
-  const [user] = await conn('users').where('id', sub)
+  const [user] = await db('users').where('id', sub)
   const { profile } = user
   const displayName = profile.displayName || sub
   const picture =

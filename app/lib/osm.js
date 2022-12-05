@@ -12,10 +12,7 @@ const xml2js = require('xml2js')
 const InternalOAuthError = require('passport-oauth').InternalOAuthError
 const OSMStrategy = require('passport-openstreetmap').Strategy
 
-const {
-  serverRuntimeConfig,
-  publicRuntimeConfig,
-} = require('../../next.config')
+const { serverRuntimeConfig } = require('../../next.config')
 
 // get an authentication token pair from openstreetmap
 function openstreetmap(req, res) {
@@ -72,17 +69,16 @@ function openstreetmap(req, res) {
       consumerKey: OSM_CONSUMER_KEY,
       consumerSecret: OSM_CONSUMER_SECRET,
       callbackURL: `${
-        publicRuntimeConfig.APP_URL
+        process.env.APP_URL
       }/oauth/openstreetmap/callback?login_challenge=${encodeURIComponent(
         challenge
       )}`,
     },
     async (token, tokenSecret, profile, done) => {
-      let conn = await db()
-      let [user] = await conn('users').where('id', profile.id)
+      let [user] = await db('users').where('id', profile.id)
       if (user) {
         const newProfile = R.mergeDeepRight(user.profile, profile)
-        await conn('users')
+        await db('users')
           .where('id', profile.id)
           .update({
             osmToken: token,
@@ -90,7 +86,7 @@ function openstreetmap(req, res) {
             profile: JSON.stringify(newProfile),
           })
       } else {
-        await conn('users').insert({
+        await db('users').insert({
           id: profile.id,
           osmToken: token,
           osmTokenSecret: tokenSecret,

@@ -1,8 +1,7 @@
 import Button from '../components/button'
 import React, { Component } from 'react'
-import getConfig from 'next/config'
-const { publicRuntimeConfig } = getConfig()
 
+const OSM_NAME = process.env.OSM_NAME
 class Login extends Component {
   static async getInitialProps({ query }) {
     if (query) {
@@ -13,7 +12,6 @@ class Login extends Component {
   }
 
   render() {
-    const OSM_NAME = publicRuntimeConfig.OSM_NAME
     return (
       <section className='inner page'>
         <h1>Login</h1>

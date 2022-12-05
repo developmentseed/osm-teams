@@ -2,12 +2,11 @@ import React from 'react'
 import css from 'styled-jsx/css'
 import Button from '../components/button'
 import join from 'url-join'
-import getConfig from 'next/config'
 import theme from '../styles/theme'
 import { useSession, signOut, signIn } from 'next-auth/react'
 
-const { publicRuntimeConfig } = getConfig()
-const URL = publicRuntimeConfig.APP_URL
+const OSM_NAME = process.env.OSM_NAME
+const APP_URL = process.env.APP_URL
 
 const title = String.raw`
    ____  _____ __  ___   _______________    __  ________
@@ -42,7 +41,7 @@ const homeStyles = css`
     width: 100%;
     opacity: 0.8;
     z-index: -1;
-    background: url(${join(URL, '/static/grid-map.svg')});
+    background: url(${join(APP_URL, '/static/grid-map.svg')});
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center center;
@@ -176,41 +175,29 @@ export default function Home() {
             <pre>{title}</pre>
           </h1>
           <p>
-            Create teams of {publicRuntimeConfig.OSM_NAME} users and import them
-            into your apps. Making maps better, together. Enable teams in
-            OpenStreetMap applications, or build your team here. It’s dangerous
-            to map alone!
+            Create teams of {OSM_NAME} users and import them into your apps.
+            Making maps better, together. Enable teams in OpenStreetMap
+            applications, or build your team here. It’s dangerous to map alone!
           </p>
           {status === 'authenticated' ? (
             <div className='welcome__user'>
               <h2>Welcome, {session.user.username}!</h2>
               <ul className='welcome__user--actions'>
                 <li>
-                  <a href={join(publicRuntimeConfig.APP_URL, '/teams/create')}>
-                    Create New Team
-                  </a>
+                  <a href={join(APP_URL, '/teams/create')}>Create New Team</a>
                 </li>
                 <li>
-                  <a
-                    href={join(publicRuntimeConfig.APP_URL, '/teams')}
-                    className=''
-                  >
+                  <a href={join(APP_URL, '/teams')} className=''>
                     All Teams
                   </a>
                 </li>
                 <li>
-                  <a
-                    href={join(publicRuntimeConfig.APP_URL, '/profile')}
-                    className=''
-                  >
+                  <a href={join(APP_URL, '/profile')} className=''>
                     Profile
                   </a>
                 </li>
                 <li>
-                  <a
-                    href={join(publicRuntimeConfig.APP_URL, '/clients')}
-                    className=''
-                  >
+                  <a href={join(APP_URL, '/clients')} className=''>
                     Connected Apps
                   </a>
                 </li>

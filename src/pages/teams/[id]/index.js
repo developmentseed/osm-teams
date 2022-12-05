@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import getConfig from 'next/config'
 import join from 'url-join'
 import { map, prop, contains, reverse, assoc } from 'ramda'
 import Modal from 'react-modal'
@@ -34,8 +33,8 @@ import {
 } from '../../../lib/profiles-api'
 import { getOrgStaff } from '../../../lib/org-api'
 import { toast } from 'react-toastify'
-const { publicRuntimeConfig } = getConfig()
 
+const APP_URL = process.env.APP_URL
 const Map = dynamic(() => import('../../../components/team-map'), {
   ssr: false,
 })
@@ -71,7 +70,7 @@ class Team extends Component {
       if (invitations.length) {
         this.setState({
           joinLink: join(
-            publicRuntimeConfig.APP_URL,
+            APP_URL,
             'teams',
             id,
             'invitations',

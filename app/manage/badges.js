@@ -1,10 +1,10 @@
 const db = require('../../src/lib/db')
 const yup = require('yup')
-const organization = require('../lib/organization')
-const profile = require('../lib/profile')
+const organization = require('../../src/models/organization')
+const profile = require('../../src/models/profile')
 const { routeWrapper } = require('./utils')
 const team = require('../../src/models/team')
-const { Boom } = require('@hapi/boom')
+const Boom = require('@hapi/boom')
 
 /**
  * Get the list of badges of an organization
@@ -19,8 +19,7 @@ const listBadges = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-      const badges = await conn('organization_badge')
+      const badges = await db('organization_badge')
         .select('*')
         .where('organization_id', req.params.id)
         .orderBy('id')
@@ -51,8 +50,7 @@ const createBadge = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-      const [badge] = await conn('organization_badge')
+      const [badge] = await db('organization_badge')
         .insert({
           organization_id: req.params.id,
           ...req.body,
@@ -80,13 +78,12 @@ const getBadge = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-      const [badge] = await conn('organization_badge')
+      const [badge] = await db('organization_badge')
         .select('*')
         .where('id', req.params.badgeId)
         .returning('*')
 
-      let users = await conn('user_badges')
+      let users = await db('user_badges')
         .select({
           id: 'user_badges.user_id',
           assignedAt: 'user_badges.assigned_at',
@@ -148,8 +145,7 @@ const patchBadge = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-      const [badge] = await conn('organization_badge')
+      const [badge] = await db('organization_badge')
         .update(req.body)
         .where('id', req.params.badgeId)
         .returning('*')
@@ -174,8 +170,7 @@ const deleteBadge = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-      await conn('organization_badge').delete().where('id', req.params.badgeId)
+      await db('organization_badge').delete().where('id', req.params.badgeId)
       return reply.send({
         status: 200,
         message: `Badge ${req.params.badgeId} deleted successfully.`,
@@ -206,8 +201,6 @@ const assignUserBadge = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-
       // user is related to org?
       const isMemberOrStaff = await organization.isMemberOrStaff(
         req.params.id,
@@ -220,7 +213,7 @@ const assignUserBadge = routeWrapper({
 
       // assign badge
       const { assigned_at, valid_until } = req.body
-      const [badge] = await conn('user_badges')
+      const [badge] = await db('user_badges')
         .insert({
           user_id: req.params.userId,
           badge_id: req.params.badgeId,
@@ -281,13 +274,11 @@ const updateUserBadge = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-
       const { assigned_at, valid_until } = req.body
 
       // Yup validation returns time-zoned dates, update query use UTC strings
       // to avoid that.
-      const [badge] = await conn('user_badges')
+      const [badge] = await db('user_badges')
         .update({
           assigned_at: assigned_at.toISOString(),
           valid_until: valid_until ? valid_until.toISOString() : null,
@@ -320,10 +311,8 @@ const removeUserBadge = routeWrapper({
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-
       // delete user badge
-      await conn('user_badges').delete().where({
+      await db('user_badges').delete().where({
         user_id: req.params.userId,
         badge_id: req.params.badgeId,
       })

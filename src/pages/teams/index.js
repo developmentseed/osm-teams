@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import getConfig from 'next/config'
 import dynamic from 'next/dynamic'
 import Router from 'next/router'
 import Section from '../../components/section'
@@ -13,8 +12,7 @@ const Map = dynamic(import('../../components/list-map'), {
   ssr: false,
 })
 
-const { publicRuntimeConfig } = getConfig()
-const URL = publicRuntimeConfig.APP_URL
+const URL = process.env.APP_URL
 
 export default class TeamList extends Component {
   constructor(props) {

@@ -1,4 +1,4 @@
-const { isOwner } = require('../../lib/organization')
+const { isOwner } = require('../../../src/models/organization')
 
 /**
  * organization:edit

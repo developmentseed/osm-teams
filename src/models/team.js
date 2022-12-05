@@ -85,10 +85,9 @@ async function resolveMemberNames(ids) {
  * @return {promise}
  **/
 async function get(id) {
-  const conn = await db()
-  const st = knexPostgis(conn)
+  const st = knexPostgis(db)
   return unpack(
-    conn('team')
+    db('team')
       .select(...teamAttributes, st.asGeoJSON('location'))
       .where('id', id)
   )
@@ -101,8 +100,7 @@ async function get(id) {
  * @return {promise}
  **/
 async function getMembers(id) {
-  const conn = await db()
-  return conn('member').where('team_id', id)
+  return db('member').where('team_id', id)
 }
 
 /**
@@ -113,8 +111,7 @@ async function getMembers(id) {
  * @returns {Promise[Array]} list of moderators
  */
 async function getModerators(id) {
-  const conn = await db()
-  return conn('moderator').where('team_id', id)
+  return db('moderator').where('team_id', id)
 }
 
 /**
@@ -130,10 +127,9 @@ async function list(options) {
   options = options || {}
   const { osmId, bbox, organizationId } = options
 
-  const conn = await db()
-  const st = knexPostgis(conn)
+  const st = knexPostgis(db)
 
-  let query = conn('team').select(...teamAttributes, st.asGeoJSON('location'))
+  let query = db('team').select(...teamAttributes, st.asGeoJSON('location'))
 
   if (osmId) {
     query = query.whereIn('id', function () {
@@ -166,8 +162,7 @@ async function list(options) {
  * @async
  */
 async function listMembers(teamIds) {
-  const conn = await db()
-  return conn('member').select('team_id', 'osm_id').whereIn('team_id', teamIds)
+  return db('member').select('team_id', 'osm_id').whereIn('team_id', teamIds)
 }
 
 /**
@@ -178,10 +173,7 @@ async function listMembers(teamIds) {
  * @async
  */
 async function listModerators(teamIds) {
-  const conn = await db()
-  return conn('moderator')
-    .select('team_id', 'osm_id')
-    .whereIn('team_id', teamIds)
+  return db('moderator').select('team_id', 'osm_id').whereIn('team_id', teamIds)
 }
 
 /**
@@ -191,9 +183,8 @@ async function listModerators(teamIds) {
  * @returns {Promise[Array]}
  */
 async function listModeratedBy(osmId) {
-  const conn = await db()
-  const st = knexPostgis(conn)
-  const query = conn('team')
+  const st = knexPostgis(db)
+  const query = db('team')
     .select(teamAttributes, st.asGeoJSON('location'))
     .whereIn('id', (subQuery) =>
       subQuery.select('team_id').from('moderator').where('osm_id', osmId)
@@ -217,7 +208,7 @@ async function listModeratedBy(osmId) {
 async function create(data, osmId, trx) {
   if (!osmId) throw new Error('moderator osm id is required as second argument')
   if (!data.name) throw new Error('data.name property is required')
-  const conn = trx || (await db())
+  const conn = trx || db
   const st = knexPostgis(conn)
 
   // convert location to postgis geom
@@ -245,8 +236,7 @@ async function create(data, osmId, trx) {
  * @return {promise}
  **/
 async function update(id, data) {
-  const conn = await db()
-  const st = knexPostgis(conn)
+  const st = knexPostgis(db)
 
   // convert location to postgis geom
   if (data.location) {
@@ -256,7 +246,7 @@ async function update(id, data) {
   }
 
   return unpack(
-    conn('team')
+    db('team')
       .where('id', id)
       .update(data)
       .returning([...teamAttributes, st.asGeoJSON('location')])
@@ -269,8 +259,7 @@ async function update(id, data) {
  * @return {promise}
  **/
 async function destroy(id) {
-  const conn = await db()
-  return conn.transaction(async (trx) => {
+  return db.transaction(async (trx) => {
     await trx('team').where('id', id).del()
     await trx('member').where('team_id', id).del()
   })
@@ -284,13 +273,11 @@ async function destroy(id) {
  * @return {promise}
  **/
 async function updateMembers(teamId, osmIdsToAdd, osmIdstoRemove) {
-  const conn = await db()
-
   // Make sure we have integers
   osmIdsToAdd = (osmIdsToAdd || []).map((x) => parseInt(x))
   osmIdstoRemove = (osmIdstoRemove || []).map((x) => parseInt(x))
 
-  return conn.transaction(async (trx) => {
+  return db.transaction(async (trx) => {
     if (osmIdsToAdd) {
       const members = await trx('member').where('team_id', teamId)
       let dedupedOsmIdsToAdd = osmIdsToAdd.filter((osmId) => {
@@ -346,13 +333,12 @@ async function removeMember(teamId, osmId) {
  * @param {int} osmId - osm id
  */
 async function assignModerator(teamId, osmId) {
-  const conn = await db()
   if (!(await isMember(teamId, osmId))) {
     throw new Error(
       'cannot assign osmId to be moderator because they are not a team member yet'
     )
   }
-  return unpack(conn('moderator').insert({ team_id: teamId, osm_id: osmId }))
+  return unpack(db('moderator').insert({ team_id: teamId, osm_id: osmId }))
 }
 
 /**
@@ -363,8 +349,7 @@ async function assignModerator(teamId, osmId) {
  */
 async function removeModerator(teamId, osmId) {
   const table = 'moderator'
-  const conn = await db()
-  const moderatorRecord = conn(table).where({ team_id: teamId, osm_id: osmId })
+  const moderatorRecord = db(table).where({ team_id: teamId, osm_id: osmId })
   const isModerator = (await moderatorRecord).length > 0
   /* the isModerator() function could have been used here ^, but since we are
    * going to del() the record at the end of this function, calling isModerator()
@@ -372,7 +357,7 @@ async function removeModerator(teamId, osmId) {
   if (!isModerator) {
     throw new Error('cannot remove osmId because osmId is not a moderator')
   }
-  const modCount = (await conn(table).where({ team_id: teamId })).length
+  const modCount = (await db(table).where({ team_id: teamId })).length
   if (modCount === 1) {
     throw new Error(
       'cannot remove osmId because there must be at least one moderator'
@@ -390,8 +375,7 @@ async function removeModerator(teamId, osmId) {
 async function isModerator(teamId, osmId) {
   if (!teamId) throw new Error('team id is required as first argument')
   if (!osmId) throw new Error('osm id is required as second argument')
-  const conn = await db()
-  const result = await conn('moderator').where({
+  const result = await db('moderator').where({
     team_id: teamId,
     osm_id: osmId,
   })
@@ -407,8 +391,7 @@ async function isModerator(teamId, osmId) {
 async function isMember(teamId, osmId) {
   if (!teamId) throw new Error('team id is required as first argument')
   if (!osmId) throw new Error('osm id is required as second argument')
-  const conn = await db()
-  const result = await conn('member').where({ team_id: teamId, osm_id: osmId })
+  const result = await db('member').where({ team_id: teamId, osm_id: osmId })
   return result.length > 0
 }
 
@@ -421,12 +404,11 @@ async function isMember(teamId, osmId) {
  */
 async function isPublic(teamId) {
   if (!teamId) throw new Error('team id is required as first argument')
-  const conn = await db()
   const { privacy } = await unpack(
-    conn('team')
+    db('team')
       .select(
         'id',
-        conn.raw(`
+        db.raw(`
     case
     when (
       select teams_can_be_public from organization join organization_team on organization.id = organization_id where team_id = team.id
@@ -451,9 +433,8 @@ async function isPublic(teamId) {
 async function associatedOrg(teamId) {
   if (!teamId) throw new Error('team id is required as first argument')
 
-  const conn = await db()
   return unpack(
-    conn('organization_team')
+    db('organization_team')
       .where('team_id', teamId)
       .join('organization', 'organization_id', 'organization.id')
       .select('organization_id', 'name')
@@ -465,8 +446,7 @@ async function isInvitationValid(teamId, invitationId) {
   if (!invitationId)
     throw new Error('invitation id is required as second argument')
 
-  const conn = await db()
-  const invitations = await conn('invitations').where({
+  const invitations = await db('invitations').where({
     team_id: teamId,
     id: invitationId,
   })

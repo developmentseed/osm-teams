@@ -1,8 +1,6 @@
-import getConfig from 'next/config'
 import join from 'url-join'
-
-const { publicRuntimeConfig } = getConfig()
-const URL = join(publicRuntimeConfig.APP_URL, '/api/organizations')
+const APP_URL = process.env.APP_URL
+const ORG_URL = join(APP_URL, '/api/organizations')
 
 /**
  * createTeam
@@ -11,7 +9,7 @@ const URL = join(publicRuntimeConfig.APP_URL, '/api/organizations')
  * @returns {Response}
  */
 export async function createOrg(data) {
-  const res = await fetch(URL, {
+  const res = await fetch(ORG_URL, {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {
@@ -32,9 +30,7 @@ export async function createOrg(data) {
  *
  */
 export async function getMyOrgs() {
-  const res = await fetch(
-    join(publicRuntimeConfig.APP_URL, '/api/my/organizations')
-  )
+  const res = await fetch(join(APP_URL, '/api/my/organizations'))
 
   if (res.status === 200) {
     return res.json()
@@ -50,7 +46,7 @@ export async function getMyOrgs() {
  * @param {integer} id
  */
 export async function getOrg(id) {
-  let res = await fetch(join(URL, `${id}`))
+  let res = await fetch(join(ORG_URL, `${id}`))
   if (res.status === 200) {
     return res.json()
   } else {
@@ -88,7 +84,7 @@ export async function getOrgTeams(id) {
  * @param {integer} id
  */
 export async function getOrgStaff(id) {
-  let res = await fetch(join(URL, `${id}`, 'staff'))
+  let res = await fetch(join(ORG_URL, `${id}`, 'staff'))
   if (res.status === 200) {
     return res.json()
   }
@@ -107,7 +103,7 @@ export async function getOrgStaff(id) {
  * @param {integer} page
  */
 export async function getMembers(id, page) {
-  let res = await fetch(join(URL, `${id}`, 'members', `?page=${page}`))
+  let res = await fetch(join(ORG_URL, `${id}`, 'members', `?page=${page}`))
   if (res.status === 200) {
     return res.json()
   }
@@ -126,7 +122,7 @@ export async function getMembers(id, page) {
  * @param {data} values data to update
  */
 export async function updateOrg(id, values) {
-  return fetch(join(URL, `${id}`), {
+  return fetch(join(ORG_URL, `${id}`), {
     method: 'PUT',
     body: JSON.stringify(values),
     headers: {
@@ -141,7 +137,7 @@ export async function updateOrg(id, values) {
  * @param {data} values data to update
  */
 export async function updateOrgPrivacyPolicy(id, privacyPolicy) {
-  return fetch(join(URL, `${id}`), {
+  return fetch(join(ORG_URL, `${id}`), {
     method: 'PUT',
     body: JSON.stringify({ privacy_policy: privacyPolicy }),
     headers: {
@@ -156,7 +152,7 @@ export async function updateOrgPrivacyPolicy(id, privacyPolicy) {
  * @param {integer} id id of organization
  */
 export async function destroyOrg(id) {
-  return fetch(join(URL, `${id}`), {
+  return fetch(join(ORG_URL, `${id}`), {
     method: 'DELETE',
   })
 }
@@ -167,7 +163,7 @@ export async function destroyOrg(id) {
  * @param {integer} osmId osmId to add
  */
 export async function addManager(id, osmId) {
-  return fetch(join(URL, `${id}`, 'addManager', `${osmId}`), {
+  return fetch(join(ORG_URL, `${id}`, 'addManager', `${osmId}`), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -181,7 +177,7 @@ export async function addManager(id, osmId) {
  * @param {integer} osmId osmId to add
  */
 export async function removeManager(id, osmId) {
-  return fetch(join(URL, `${id}`, 'removeManager', `${osmId}`), {
+  return fetch(join(ORG_URL, `${id}`, 'removeManager', `${osmId}`), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -195,7 +191,7 @@ export async function removeManager(id, osmId) {
  * @param {integer} osmId osmId to add
  */
 export async function addOwner(id, osmId) {
-  return fetch(join(URL, `${id}`, 'addOwner', `${osmId}`), {
+  return fetch(join(ORG_URL, `${id}`, 'addOwner', `${osmId}`), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -209,7 +205,7 @@ export async function addOwner(id, osmId) {
  * @param {integer} osmId osmId to add
  */
 export async function removeOwner(id, osmId) {
-  return fetch(join(URL, `${id}`, 'removeOwner', `${osmId}`), {
+  return fetch(join(ORG_URL, `${id}`, 'removeOwner', `${osmId}`), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',

@@ -1,9 +1,7 @@
 import React from 'react'
-import join from 'url-join'
-import getConfig from 'next/config'
 import theme from '../styles/theme'
-const { publicRuntimeConfig } = getConfig()
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Header({ uid, username, picture }) {
   return (
@@ -14,17 +12,18 @@ export default function Header({ uid, username, picture }) {
           <Link href='/'>Teams</Link>
         </h1>
         {uid ? (
-          <a href='#' className='user__heading'>
-            <img src={picture} className='user__heading-avatar' />
+          <Link href='#' className='user__heading'>
+            <Image
+              alt='avatar'
+              src={picture}
+              className='user__heading-avatar'
+            />
             <h2 className='user__heading-username'>{username}</h2>
-          </a>
+          </Link>
         ) : (
-          <a
-            className='user__heading'
-            href={join(publicRuntimeConfig.APP_URL, 'login')}
-          >
+          <Link className='user__heading' href='/login'>
             Login
-          </a>
+          </Link>
         )}
       </div>
       <style jsx global>

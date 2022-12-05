@@ -1,7 +1,4 @@
-import getConfig from 'next/config'
-
-const { publicRuntimeConfig } = getConfig()
-
+const APP_URL = process.env.APP_URL
 class ApiClient {
   constructor() {
     this.defaultOptions = {
@@ -12,7 +9,7 @@ class ApiClient {
   }
 
   baseUrl(subpath) {
-    return `${publicRuntimeConfig.APP_URL}/api${subpath}`
+    return `${APP_URL}/api${subpath}`
   }
 
   async fetch(method, path, data, config = {}) {
