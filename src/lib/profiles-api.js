@@ -1,8 +1,7 @@
-import getConfig from 'next/config'
 import join from 'url-join'
 
-const { publicRuntimeConfig } = getConfig()
-const URL = join(publicRuntimeConfig.APP_URL, '/api/profiles')
+const APP_URL = process.env.APP_URL
+const PROFILE_URL = join(APP_URL, '/api/profiles')
 
 /**
  * getTeamMemberAttributes
@@ -11,7 +10,7 @@ const URL = join(publicRuntimeConfig.APP_URL, '/api/profiles')
  * @returns {Array[Object]} - list of team details
  */
 export async function getTeamMemberAttributes(id) {
-  let res = await fetch(join(URL, 'keys', 'teams', `${id}`, 'users'), {
+  let res = await fetch(join(PROFILE_URL, 'keys', 'teams', `${id}`, 'users'), {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -33,12 +32,15 @@ export async function getTeamMemberAttributes(id) {
  * @returns {Array[Object]} - list of team details
  */
 export async function getOrgMemberAttributes(id) {
-  let res = await fetch(join(URL, 'keys', 'organizations', `${id}`, 'users'), {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-  })
+  let res = await fetch(
+    join(PROFILE_URL, 'keys', 'organizations', `${id}`, 'users'),
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    }
+  )
   if (res.status === 200) {
     return res.json()
   } else {
@@ -55,12 +57,15 @@ export async function getOrgMemberAttributes(id) {
  * @returns {Array[Object]} - list of team details
  */
 export async function getOrgTeamAttributes(id) {
-  let res = await fetch(join(URL, 'keys', 'organizations', `${id}`, 'teams'), {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-  })
+  let res = await fetch(
+    join(PROFILE_URL, 'keys', 'organizations', `${id}`, 'teams'),
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    }
+  )
   if (res.status === 200) {
     return res.json()
   } else {
@@ -77,7 +82,7 @@ export async function getOrgTeamAttributes(id) {
  * @returns {Array[Object]} - list of team details
  */
 export async function getTeamAttributes(id) {
-  let res = await fetch(join(URL, 'keys', 'teams', `${id}`), {
+  let res = await fetch(join(PROFILE_URL, 'keys', 'teams', `${id}`), {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -100,7 +105,7 @@ export async function getTeamAttributes(id) {
  * @param {Object} data - new key attributes
  */
 export async function modifyAttribute(id, data) {
-  return fetch(join(URL, 'keys', `${id}`), {
+  return fetch(join(PROFILE_URL, 'keys', `${id}`), {
     method: 'PUT',
     body: JSON.stringify(data),
     headers: {
@@ -115,7 +120,7 @@ export async function modifyAttribute(id, data) {
  * @param {integer} id - key id
  */
 export async function deleteAttribute(id) {
-  return fetch(join(URL, 'keys', `${id}`), {
+  return fetch(join(PROFILE_URL, 'keys', `${id}`), {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -128,12 +133,15 @@ export async function deleteAttribute(id) {
  * get the profile of a user in a org
  */
 export async function getUserOrgProfile(orgId, userId) {
-  const res = await fetch(join(URL, 'organizations', `${orgId}`, `${userId}`), {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-  })
+  const res = await fetch(
+    join(PROFILE_URL, 'organizations', `${orgId}`, `${userId}`),
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    }
+  )
   if (res.status === 200) {
     return res.json()
   }
@@ -151,12 +159,15 @@ export async function getUserOrgProfile(orgId, userId) {
  * get the profile of a user in a team
  */
 export async function getUserTeamProfile(teamId, userId) {
-  const res = await fetch(join(URL, 'teams', `${teamId}`, `${userId}`), {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-  })
+  const res = await fetch(
+    join(PROFILE_URL, 'teams', `${teamId}`, `${userId}`),
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    }
+  )
   if (res.status === 200) {
     return res.json()
   }
@@ -178,7 +189,7 @@ export async function getUserTeamProfile(teamId, userId) {
  */
 export async function addTeamMemberAttributes(id, data) {
   data = [].concat(data)
-  return fetch(join(URL, 'keys', 'teams', `${id}`, 'users'), {
+  return fetch(join(PROFILE_URL, 'keys', 'teams', `${id}`, 'users'), {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {
@@ -196,7 +207,7 @@ export async function addTeamMemberAttributes(id, data) {
  */
 export async function addOrgMemberAttributes(id, data) {
   data = [].concat(data)
-  return fetch(join(URL, 'keys', 'organizations', `${id}`, 'users'), {
+  return fetch(join(PROFILE_URL, 'keys', 'organizations', `${id}`, 'users'), {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {
@@ -214,7 +225,7 @@ export async function addOrgMemberAttributes(id, data) {
  */
 export async function addOrgTeamAttributes(id, data) {
   data = [].concat(data)
-  return fetch(join(URL, 'keys', 'organizations', `${id}`, 'teams'), {
+  return fetch(join(PROFILE_URL, 'keys', 'organizations', `${id}`, 'teams'), {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {
@@ -228,7 +239,7 @@ export async function addOrgTeamAttributes(id, data) {
  * Get the requesting user's profile
  */
 export async function getMyProfile() {
-  let res = await fetch(join(publicRuntimeConfig.APP_URL, '/api/my/profiles'), {
+  let res = await fetch(join(APP_URL, '/api/my/profiles'), {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -248,7 +259,7 @@ export async function getMyProfile() {
  * Set the requesting user's profile
  */
 export async function setMyProfile(data) {
-  return fetch(join(publicRuntimeConfig.APP_URL, '/api/my/profiles'), {
+  return fetch(join(APP_URL, '/api/my/profiles'), {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {
@@ -258,15 +269,12 @@ export async function setMyProfile(data) {
 }
 
 export async function getTeamProfile(id) {
-  let res = await fetch(
-    join(publicRuntimeConfig.APP_URL, `/api/profiles/teams/${id}`),
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-      },
-    }
-  )
+  let res = await fetch(join(APP_URL, `/api/profiles/teams/${id}`), {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+  })
   if (res.status === 200) {
     return res.json()
   }

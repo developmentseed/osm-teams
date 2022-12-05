@@ -1,11 +1,10 @@
 import React from 'react'
-import getConfig from 'next/config'
 import join from 'url-join'
 import theme from '../styles/theme'
 import css from 'styled-jsx/css'
+import Link from 'next/link'
 
-const { publicRuntimeConfig } = getConfig()
-const URL = publicRuntimeConfig.APP_URL
+const URL = process.env.APP_URL
 
 const style = css.global`
   .button {
@@ -110,13 +109,9 @@ export default function Button({
     )
   }
   if (href) {
-    let fullUrl
-    href.startsWith('http')
-      ? (fullUrl = href)
-      : (fullUrl = join(publicRuntimeConfig.APP_URL, href))
     return (
-      <a
-        href={fullUrl}
+      <Link
+        href={href}
         className={classNames}
         disabled={disabled}
         name={name}
@@ -124,7 +119,7 @@ export default function Button({
       >
         {children || value}
         <style jsx>{style}</style>
-      </a>
+      </Link>
     )
   }
   return (

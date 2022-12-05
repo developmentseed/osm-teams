@@ -3,7 +3,6 @@ import join from 'url-join'
 import Router from 'next/router'
 import { pick, split } from 'ramda'
 import { getTeam, updateTeam, destroyTeam } from '../../../lib/teams-api'
-import getConfig from 'next/config'
 import EditTeamForm from '../../../components/edit-team-form'
 import Button from '../../../components/button'
 import theme from '../../../styles/theme'
@@ -12,8 +11,8 @@ import {
   getTeamAttributes,
   getTeamProfile,
 } from '../../../lib/profiles-api'
-const { publicRuntimeConfig } = getConfig()
 
+const APP_URL = process.env.APP_URL
 export default class TeamEdit extends Component {
   static async getInitialProps({ query }) {
     if (query) {
@@ -65,7 +64,7 @@ export default class TeamEdit extends Component {
     try {
       const res = await destroyTeam(id)
       if (res.ok) {
-        Router.push(join(publicRuntimeConfig.APP_URL, `/teams`))
+        Router.push(join(APP_URL, `/teams`))
       } else {
         throw new Error('Could not delete team')
       }
@@ -176,9 +175,7 @@ export default class TeamEdit extends Component {
 
                 await updateTeam(team.id, values)
                 actions.setSubmitting(false)
-                Router.push(
-                  join(publicRuntimeConfig.APP_URL, `/teams/${team.id}`)
-                )
+                Router.push(join(APP_URL, `/teams/${team.id}`))
               } catch (e) {
                 console.error(e)
                 actions.setSubmitting(false)

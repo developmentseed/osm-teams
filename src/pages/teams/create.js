@@ -3,10 +3,9 @@ import join from 'url-join'
 import Router from 'next/router'
 import { createTeam, createOrgTeam } from '../../lib/teams-api'
 import { dissoc } from 'ramda'
-import getConfig from 'next/config'
 import EditTeamForm from '../../components/edit-team-form'
-const { publicRuntimeConfig } = getConfig()
 
+const APP_URL = process.env.APP_URL
 export default class TeamCreate extends Component {
   static async getInitialProps({ query }) {
     if (query) {
@@ -34,9 +33,7 @@ export default class TeamCreate extends Component {
                 team = await createTeam(values)
               }
               actions.setSubmitting(false)
-              Router.push(
-                join(publicRuntimeConfig.APP_URL, `/teams/${team.id}`)
-              )
+              Router.push(join(APP_URL, `/teams/${team.id}`))
             } catch (e) {
               console.error(e)
               actions.setSubmitting(false)

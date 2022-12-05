@@ -1,9 +1,8 @@
-const {
-  serverRuntimeConfig,
-  publicRuntimeConfig,
-} = require('../../next.config')
+const { serverRuntimeConfig } = require('../../next.config')
 const jwt = require('jsonwebtoken')
 const db = require('../../src/lib/db')
+
+const APP_URL = process.env.APP_URL
 
 const credentials = {
   client: {
@@ -35,7 +34,7 @@ var generateState = function (length) {
 function login(req, res) {
   let state = generateState(24)
   const authorizationUri = oauth2.authorizationCode.authorizeURL({
-    redirect_uri: `${publicRuntimeConfig.APP_URL}/login/accept`,
+    redirect_uri: `${APP_URL}/login/accept`,
     scope: 'openid clients',
     state,
   })
@@ -61,7 +60,7 @@ async function loginAccept(req, res) {
     // Create options for token exchange
     const options = {
       code,
-      redirect_uri: `${publicRuntimeConfig.APP_URL}/login/accept`,
+      redirect_uri: `${APP_URL}/login/accept`,
     }
 
     try {
@@ -77,7 +76,7 @@ async function loginAccept(req, res) {
 
       // Store id token in session
       req.session.idToken = result.id_token
-      return res.redirect(`${publicRuntimeConfig.APP_URL}/profile`)
+      return res.redirect(`${APP_URL}/profile`)
     } catch (error) {
       console.error(error)
       return res.status(500).json('Authentication failed')
@@ -93,7 +92,7 @@ async function loginAccept(req, res) {
 function logout(req, res) {
   req.session.destroy(function (err) {
     if (err) console.error(err)
-    res.redirect(publicRuntimeConfig.APP_URL)
+    res.redirect(APP_URL)
   })
 }
 

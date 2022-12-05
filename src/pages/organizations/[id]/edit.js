@@ -3,11 +3,11 @@ import join from 'url-join'
 import Router from 'next/router'
 import { pick } from 'ramda'
 import { getOrg, updateOrg, destroyOrg } from '../../../lib/org-api'
-import getConfig from 'next/config'
 import EditOrgForm from '../../../components/edit-org-form'
 import Button from '../../../components/button'
 import theme from '../../../styles/theme'
-const { publicRuntimeConfig } = getConfig()
+
+const APP_URL = process.env.APP_URL
 
 export default class OrgEdit extends Component {
   static async getInitialProps({ query }) {
@@ -50,7 +50,7 @@ export default class OrgEdit extends Component {
     try {
       const res = await destroyOrg(id)
       if (res.ok) {
-        Router.push(join(publicRuntimeConfig.APP_URL, `/profile`))
+        Router.push(join(APP_URL, `/profile`))
       } else {
         throw new Error('Could not delete team')
       }
@@ -138,9 +138,7 @@ export default class OrgEdit extends Component {
               try {
                 await updateOrg(org.id, values)
                 actions.setSubmitting(false)
-                Router.push(
-                  join(publicRuntimeConfig.APP_URL, `/organizations/${org.id}`)
-                )
+                Router.push(join(APP_URL, `/organizations/${org.id}`))
               } catch (e) {
                 console.error(e)
                 actions.setSubmitting(false)

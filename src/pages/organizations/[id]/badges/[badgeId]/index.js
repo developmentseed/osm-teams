@@ -5,14 +5,12 @@ import APIClient from '../../../../../lib/api-client'
 import { getOrg } from '../../../../../lib/org-api'
 import Button from '../../../../../components/button'
 import Router from 'next/router'
-import getConfig from 'next/config'
 import { toast } from 'react-toastify'
 import theme from '../../../../../styles/theme'
 import Table from '../../../../../components/table'
 import { toDateString } from '../../../../../lib/utils'
 
-const { publicRuntimeConfig } = getConfig()
-const URL = publicRuntimeConfig.APP_URL
+const URL = process.env.APP_URL
 
 const apiClient = new APIClient()
 

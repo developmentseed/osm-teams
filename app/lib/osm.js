@@ -12,10 +12,7 @@ const xml2js = require('xml2js')
 const InternalOAuthError = require('passport-oauth').InternalOAuthError
 const OSMStrategy = require('passport-openstreetmap').Strategy
 
-const {
-  serverRuntimeConfig,
-  publicRuntimeConfig,
-} = require('../../next.config')
+const { serverRuntimeConfig } = require('../../next.config')
 
 // get an authentication token pair from openstreetmap
 function openstreetmap(req, res) {
@@ -72,7 +69,7 @@ function openstreetmap(req, res) {
       consumerKey: OSM_CONSUMER_KEY,
       consumerSecret: OSM_CONSUMER_SECRET,
       callbackURL: `${
-        publicRuntimeConfig.APP_URL
+        process.env.APP_URL
       }/oauth/openstreetmap/callback?login_challenge=${encodeURIComponent(
         challenge
       )}`,

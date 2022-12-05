@@ -6,11 +6,9 @@ import { getOrg } from '../../../../lib/org-api'
 import Button from '../../../../components/button'
 import Router from 'next/router'
 import { getRandomColor } from '../../../../lib/utils'
-import getConfig from 'next/config'
 import { toast } from 'react-toastify'
 
-const { publicRuntimeConfig } = getConfig()
-const URL = publicRuntimeConfig.APP_URL
+const URL = process.APP_URL
 
 const apiClient = new APIClient()
 

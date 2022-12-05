@@ -1,9 +1,8 @@
-import getConfig from 'next/config'
 import qs from 'qs'
 import join from 'url-join'
 
-const { publicRuntimeConfig } = getConfig()
-const URL = join(publicRuntimeConfig.APP_URL, '/api/teams')
+const APP_URL = process.env.APP_URL
+const TEAMS_URL = join(APP_URL, '/api/teams')
 
 /**
  * getTeams
@@ -13,7 +12,7 @@ const URL = join(publicRuntimeConfig.APP_URL, '/api/teams')
  */
 export async function getTeams(options) {
   let str = qs.stringify(options, { arrayFormat: 'comma' })
-  const res = await fetch(`${URL}?${str}`)
+  const res = await fetch(`${TEAMS_URL}?${str}`)
 
   if (res.status === 200) {
     return res.json()
@@ -29,7 +28,7 @@ export async function getTeams(options) {
  * @returns {Response}
  */
 export async function createTeam(data) {
-  const res = await fetch(URL, {
+  const res = await fetch(TEAMS_URL, {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {
@@ -53,13 +52,7 @@ export async function createTeam(data) {
  */
 export async function createOrgTeam(orgId, data) {
   const res = await fetch(
-    join(
-      publicRuntimeConfig.APP_URL,
-      'api',
-      'organizations',
-      `${orgId}`,
-      'teams'
-    ),
+    join(APP_URL, 'api', 'organizations', `${orgId}`, 'teams'),
     {
       method: 'POST',
       body: JSON.stringify(data),
@@ -84,7 +77,7 @@ export async function createOrgTeam(orgId, data) {
  * @returns {Object} - team details
  */
 export async function getTeam(id) {
-  let res = await fetch(join(URL, `${id}`))
+  let res = await fetch(join(TEAMS_URL, `${id}`))
   if (res.status === 200) {
     return res.json()
   } else {
@@ -103,7 +96,7 @@ export async function getTeam(id) {
  * @returns {Response}
  */
 export async function updateTeam(id, values) {
-  return fetch(join(URL, `${id}`), {
+  return fetch(join(TEAMS_URL, `${id}`), {
     method: 'PUT',
     body: JSON.stringify(values),
     headers: {
@@ -117,7 +110,7 @@ export async function updateTeam(id, values) {
  * @param id - Team id
  */
 export async function destroyTeam(id) {
-  return fetch(join(URL, `${id}`), {
+  return fetch(join(TEAMS_URL, `${id}`), {
     method: 'DELETE',
   })
 }
@@ -130,7 +123,7 @@ export async function destroyTeam(id) {
  * @returns {Response}
  */
 export async function getTeamMembers(id) {
-  let res = await fetch(join(URL, `${id}`, 'members'))
+  let res = await fetch(join(TEAMS_URL, `${id}`, 'members'))
   if (res.status === 200) {
     return res.json()
   }
@@ -154,7 +147,7 @@ export async function getTeamMembers(id) {
  * @returns {Response}
  */
 export async function updateMembers(id, add, remove) {
-  return fetch(join(URL, `${id}`, 'members'), {
+  return fetch(join(TEAMS_URL, `${id}`, 'members'), {
     method: 'PATCH',
     body: JSON.stringify({ add, remove }),
     headers: {
@@ -195,7 +188,7 @@ export async function removeMember(id, osmId) {
  * @returns {Response}
  */
 export async function joinTeam(id) {
-  return fetch(join(URL, `${id}`, 'join'), {
+  return fetch(join(TEAMS_URL, `${id}`, 'join'), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -210,7 +203,7 @@ export async function joinTeam(id) {
  * @param {int} osmId - id of new moderator
  */
 export async function assignModerator(id, osmId) {
-  return fetch(join(URL, `${id}`, 'assignModerator', `${osmId}`), {
+  return fetch(join(TEAMS_URL, `${id}`, 'assignModerator', `${osmId}`), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -225,7 +218,7 @@ export async function assignModerator(id, osmId) {
  * @param {int} osmId - id of new moderator
  */
 export async function removeModerator(id, osmId) {
-  return fetch(join(URL, `${id}`, 'removeModerator', `${osmId}`), {
+  return fetch(join(TEAMS_URL, `${id}`, 'removeModerator', `${osmId}`), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -240,7 +233,7 @@ export async function removeModerator(id, osmId) {
  * @returns {uuid[]} invitation ids
  */
 export async function getTeamJoinInvitations(id) {
-  let res = await fetch(join(URL, `${id}`, 'invitations'))
+  let res = await fetch(join(TEAMS_URL, `${id}`, 'invitations'))
   if (res.status === 200) {
     return res.json()
   } else {
@@ -251,7 +244,7 @@ export async function getTeamJoinInvitations(id) {
 }
 
 export async function createTeamJoinInvitation(id) {
-  const res = await fetch(join(URL, `${id}`, 'invitations'), {
+  const res = await fetch(join(TEAMS_URL, `${id}`, 'invitations'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -267,7 +260,7 @@ export async function createTeamJoinInvitation(id) {
 
 export async function acceptTeamJoinInvitation(id, uuid) {
   const res = await fetch(
-    join(URL, `${id}`, 'invitations', `${uuid}`, 'accept'),
+    join(TEAMS_URL, `${id}`, 'invitations', `${uuid}`, 'accept'),
     {
       method: 'POST',
       headers: {
