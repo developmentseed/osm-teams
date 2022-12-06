@@ -55,7 +55,6 @@
     "cors": "^2.8.5",
     "csurf": "^1.11.0",
     "date-fns": "^2.28.0",
-    "dotenv": "^6.2.0",
     "express": "^4.17.2",
     "express-boom": "^2.0.0",
     "express-pino-logger": "^4.0.0",
