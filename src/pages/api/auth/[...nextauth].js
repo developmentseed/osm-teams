@@ -1,38 +1,43 @@
 import NextAuth from 'next-auth'
 
-export const authOptions = {
+export default NextAuth({
+  // Configure one or more authentication providers
   providers: [
     {
-      id: 'openstreetmap',
-      name: 'openstreetmap',
-      clientId: process.env.OSM_CONSUMER_KEY,
-      clientSecret: process.env.OSM_CONSUMER_SECRET,
+      id: 'osm-teams',
+      name: 'OSM Teams',
       type: 'oauth',
-      authorization: {
-        url: 'https://www.openstreetmap.org/oauth2/authorize',
-        params: {
-          scope: 'read_prefs',
-        },
-      },
-      token: 'https://www.openstreetmap.org/oauth2/token',
-      userinfo: 'https://api.openstreetmap.org/api/0.6/user/details.json',
-      profile({ user }) {
+      wellKnown:
+        'https://auth.mapping.team/hyauth/.well-known/openid-configuration',
+      authorization: { params: { scope: 'openid offline' } },
+      idToken: true,
+      async profile(profile) {
         return {
-          id: user.id,
-          name: user.display_name,
-          image: user.img?.href,
+          id: profile.sub,
+          name: profile.preferred_username,
+          image: profile.picture,
         }
       },
+      clientId: process.env.OSM_TEAMS_CLIENT_ID,
+      clientSecret: process.env.OSM_TEAMS_CLIENT_SECRET,
     },
   ],
   callbacks: {
+    async jwt({ token, account, profile }) {
+      // Persist the OAuth access_token and or the user id to the token right after signin
+      if (account) {
+        token.accessToken = account.access_token
+        token.userId = profile.sub
+      }
+      return token
+    },
     async session({ session, token }) {
-      // Add user id to session
-      const userId = parseInt(token.sub)
-      session.user_id = userId
+      // Send properties to the client, like an access_token and user id from a provider.
+      session.accessToken = token.accessToken
+      session.user_id = token.userId
       return session
     },
   },
-}
-
-export default NextAuth(authOptions)
+  // A database is optional, but required to persist accounts in a database
+  database: process.env.DATABASE_URL,
+})
