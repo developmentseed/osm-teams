@@ -1,6 +1,8 @@
 import NextAuth from 'next-auth'
+import { mergeDeepRight } from 'ramda'
+const db = require('../../../lib/db')
 
-export default NextAuth({
+export const authOptions = {
   // Configure one or more authentication providers
   providers: [
     {
@@ -38,6 +40,26 @@ export default NextAuth({
       return session
     },
   },
-  // A database is optional, but required to persist accounts in a database
-  database: process.env.DATABASE_URL,
-})
+
+  events: {
+    async signIn({ profile }) {
+      // On successful sign in we should persist the user to the database
+      let [user] = await db('users').where('id', profile.id)
+      if (user) {
+        const newProfile = mergeDeepRight(user.profile, profile)
+        await db('users')
+          .where('id', profile.id)
+          .update({
+            profile: JSON.stringify(newProfile),
+          })
+      } else {
+        await db('users').insert({
+          id: profile.id,
+          profile: JSON.stringify(profile),
+        })
+      }
+    },
+  },
+}
+
+export default NextAuth(authOptions)
