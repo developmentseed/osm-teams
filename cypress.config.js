@@ -1,7 +1,9 @@
 const { defineConfig } = require('cypress')
 const db = require('./src/lib/db')
 const Team = require('./src/models/team')
+const Organization = require('./src/models/organization')
 const TeamInvitation = require('./src/models/team-invitation')
+const { pick } = require('ramda')
 
 const user1 = {
   id: 1,
@@ -15,6 +17,7 @@ module.exports = defineConfig({
       on('task', {
         'db:reset': async () => {
           await db.raw('TRUNCATE TABLE team RESTART IDENTITY CASCADE')
+          await db.raw('TRUNCATE TABLE organization RESTART IDENTITY CASCADE')
           return null
         },
         'db:seed': async () => {
@@ -41,6 +44,20 @@ module.exports = defineConfig({
         },
         'db:seed:team-invitations': async (teamInvitations) => {
           return Promise.all(teamInvitations.map(TeamInvitation.create))
+        },
+        'db:seed:organizations': async (orgs) => {
+          return Promise.all(
+            orgs.map((org) =>
+              Organization.create(pick(['name'], org), org.ownerId)
+            )
+          )
+        },
+        'db:seed:organization-teams': async ({ orgId, teams, managerId }) => {
+          return Promise.all(
+            teams.map((team) =>
+              Organization.createOrgTeam(orgId, pick(['name'], team), managerId)
+            )
+          )
         },
       })
     },

@@ -64,7 +64,7 @@ export async function getOrg(id) {
  * @returns {response}
  */
 export async function getOrgTeams(id) {
-  let res = await fetch(join(URL, `${id}`, 'teams'))
+  let res = await fetch(join(ORG_URL, `${id}`, 'teams'))
 
   if (res.status === 200) {
     return res.json()
