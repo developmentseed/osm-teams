@@ -5,7 +5,7 @@ Cypress.Commands.add('login', (userObj) => {
   cy.wrap(null)
     .then(() => {
       return getSessionToken(
-        { ...userObj, sub: userObj.id },
+        { ...userObj, userId: userObj.id },
         Cypress.env('NEXTAUTH_SECRET')
       )
     })
