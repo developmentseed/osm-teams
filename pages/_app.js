@@ -6,6 +6,7 @@ import Layout from '../components/layout.js'
 import PageBanner from '../components/banner'
 import Button from '../components/button'
 import { ToastContainer } from 'react-toastify'
+import MaintenancePage from './maintenance'
 
 class OSMHydra extends App {
   static async getInitialProps ({ Component, ctx }) {
@@ -26,9 +27,13 @@ class OSMHydra extends App {
   }
 
   render () {
-    const { Component, pageProps, userData } = this.props
+    const { Component, pageProps, userData, router } = this.props
     let bannerContent
     let { uid, username, picture } = userData
+
+    if (router && router.pathname === '/maintenance') {
+      return <MaintenancePage />
+    }
 
     // store the userdata in localstorage if in browser
     let authed
