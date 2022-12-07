@@ -207,7 +207,7 @@ export default function Home() {
               </Button>
             </div>
           ) : (
-            <Button onClick={() => signIn('openstreetmap')}>Sign in →</Button>
+            <Button onClick={() => signIn('osm-teams')}>Sign in →</Button>
           )}
         </div>
         <div className='map-bg' />

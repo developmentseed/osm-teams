@@ -5,7 +5,7 @@ async function createAgent(user) {
 
   if (user) {
     const encryptedToken = await getSessionToken(
-      { ...user, sub: user.id },
+      user,
       process.env.NEXTAUTH_SECRET
     )
     agent.set('Cookie', [`next-auth.session-token=${encryptedToken}`])
