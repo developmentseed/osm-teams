@@ -9,7 +9,7 @@ export const authOptions = {
       id: 'osm-teams',
       name: 'OSM Teams',
       type: 'oauth',
-      wellknown:
+      wellKnown:
         'https://auth.mapping.team/hyauth/.well-known/openid-configuration',
       authorization: { params: { scope: 'openid offline' } },
       idToken: true,
