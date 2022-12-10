@@ -8,7 +8,7 @@ import Link from '../components/Link'
 const { publicRuntimeConfig } = getConfig()
 const URL = publicRuntimeConfig.APP_URL
 
-const NavLink = withRouter(({ children, router, href }) => {
+const NavLink = withRouter(({ children, href }) => {
   return <Link href={href} activeClassName='active'>{children}</Link>
 })
 
@@ -18,20 +18,6 @@ class Sidebar extends Component {
 
     const additionalMenuItems = (
       <Fragment>
-        <li>
-          <NavLink href='/teams/create'>
-            <a className='global-menu__link global-menu__link--make' title='Make New Team'>
-              <span>Make New Team</span>
-            </a>
-          </NavLink>
-        </li>
-        <li>
-          <NavLink href='/profile'>
-            <a className='global-menu__link global-menu__link--profile' title='Visit Your Profile'>
-              <span>Profile</span>
-            </a>
-          </NavLink>
-        </li>
         <li>
           <NavLink href='/clients'>
             <a className='global-menu__link global-menu__link--app' title='Connect new app'>
@@ -48,13 +34,6 @@ class Sidebar extends Component {
         </div>
         <nav role='navigation'>
           <ul className='global-menu'>
-            <li>
-              <NavLink href='/teams'>
-                <a className='global-menu__link global-menu__link--explore' title='Explore all Teams'>
-                  <span>Explore Teams</span>
-                </a>
-              </NavLink>
-            </li>
             {
               uid ? additionalMenuItems : <Fragment />
             }
