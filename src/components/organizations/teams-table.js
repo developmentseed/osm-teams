@@ -4,30 +4,39 @@ import Router from 'next/router'
 import join from 'url-join'
 import { useFetchList } from '../../hooks/use-fetch-list'
 import { useState } from 'react'
+import Pagination from '../pagination'
 
 function TeamsTable({ orgId }) {
   const [page, setPage] = useState(0)
 
-  const { result, isLoading, error, fetch } = useFetchList(
+  const { result, isLoading } = useFetchList(
     `/organizations/${orgId}/teams?page=${page}`
   )
 
   const columns = [{ key: 'name' }, { key: 'id' }, { key: 'members' }]
 
   return (
-    <Table
-      rows={result}
-      columns={columns}
-      emptyPlaceHolder={
-        isLoading ? 'Loading...' : 'This organization has no teams.'
-      }
-      onRowClick={(row) => {
-        Router.push(
-          join(URL, `/team?id=${row.id}`),
-          join(URL, `/teams/${row.id}`)
-        )
-      }}
-    />
+    <>
+      <Table
+        rows={result}
+        columns={columns}
+        emptyPlaceHolder={
+          isLoading ? 'Loading...' : 'This organization has no teams.'
+        }
+        onRowClick={(row) => {
+          Router.push(
+            join(URL, `/team?id=${row.id}`),
+            join(URL, `/teams/${row.id}`)
+          )
+        }}
+      />
+      <Pagination
+        pageSize={10}
+        currentPage={page}
+        totalRecords={100}
+        setPage={setPage}
+      />
+    </>
   )
 }
 
