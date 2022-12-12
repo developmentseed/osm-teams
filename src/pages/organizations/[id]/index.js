@@ -3,7 +3,6 @@ import Router, { withRouter } from 'next/router'
 import {
   getOrg,
   getOrgStaff,
-  getOrgTeams,
   getMembers,
   addManager,
   removeManager,
@@ -77,7 +76,6 @@ class Organization extends Component {
   async componentDidMount() {
     this.setState({ session: await getSession() })
     await this.getOrg()
-    await this.getOrgTeams()
     await this.getOrgStaff()
     await this.getBadges()
     return this.getMembers(0)
@@ -177,22 +175,6 @@ class Organization extends Component {
       this.setState({
         error: e,
         org: null,
-        loading: false,
-      })
-    }
-  }
-  async getOrgTeams() {
-    const { id } = this.props
-    try {
-      const teams = await getOrgTeams(id)
-      this.setState({
-        teams,
-      })
-    } catch (e) {
-      console.error(e)
-      this.setState({
-        error: e,
-        teams: [],
         loading: false,
       })
     }
@@ -297,7 +279,7 @@ class Organization extends Component {
   }
 
   render() {
-    const { org, members, managers, owners, error, teams } = this.state
+    const { org, members, managers, owners, error } = this.state
     if (!org) return null
 
     const userId = parseInt(this.state.session.user_id)

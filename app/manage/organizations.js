@@ -1,6 +1,5 @@
 const organization = require('../../src/models/organization')
 const team = require('../../src/models/team')
-const { teamsMembersModeratorsHelper } = require('./utils')
 const { map, prop } = require('ramda')
 const Boom = require('@hapi/boom')
 
@@ -237,38 +236,6 @@ async function removeManager(req, reply) {
   }
 }
 
-/**
- * Create org team
- */
-async function createOrgTeam(req, reply) {
-  const { id } = req.params
-  const { body } = req
-  const { user_id } = req.session
-
-  try {
-    const data = await organization.createOrgTeam(id, body, user_id)
-    reply.send(data)
-  } catch (err) {
-    console.log(err)
-    throw Boom.badRequest(err.message)
-  }
-}
-
-/**
- * List org teams
- */
-async function getOrgTeams(req, reply) {
-  const { id } = req.params
-  try {
-    const data = await team.list({ organizationId: id })
-    const enhancedData = await teamsMembersModeratorsHelper(data)
-    reply.send(enhancedData)
-  } catch (err) {
-    console.log(err)
-    throw Boom.badRequest(err.message)
-  }
-}
-
 module.exports = {
   createOrg,
   getOrg,
@@ -278,8 +245,6 @@ module.exports = {
   removeOwner,
   addManager,
   removeManager,
-  createOrgTeam,
-  getOrgTeams,
   listMyOrgs,
   getOrgStaff,
   getOrgMembers,

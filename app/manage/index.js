@@ -28,8 +28,6 @@ const {
   removeOwner,
   addManager,
   removeManager,
-  createOrgTeam,
-  getOrgTeams,
   getOrgMembers,
   listMyOrgs,
   getOrgStaff,
@@ -158,17 +156,6 @@ function manageRouter(handler) {
     '/api/organizations/:id/removeManager/:osmId',
     can('organization:edit'),
     removeManager
-  )
-
-  handler.post(
-    '/api/organizations/:id/teams',
-    can('organization:create-team'),
-    createOrgTeam
-  )
-  handler.get(
-    '/api/organizations/:id/teams',
-    can('organization:view-members'),
-    getOrgTeams
   )
 
   /**
