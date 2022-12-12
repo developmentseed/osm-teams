@@ -4,6 +4,8 @@ import { validate } from '../../../../middlewares/validation'
 import Organization from '../../../../models/organization'
 import Team from '../../../../models/team'
 import * as Yup from 'yup'
+import canViewOrgMembers from '../../../../middlewares/can/view-org-members'
+import canCreateOrgTeam from '../../../../middlewares/can/create-org-team'
 
 const handler = baseHandler
 
@@ -22,6 +24,7 @@ handler.use(
  * Create organization team
  */
 handler.post(
+  canCreateOrgTeam,
   validate({
     body: Yup.object({
       name: Yup.string().required(),
@@ -45,7 +48,7 @@ handler.post(
 /**
  * Get organization teams
  */
-handler.get(async function (req, res) {
+handler.get(canViewOrgMembers, async function (req, res) {
   const { orgId } = req.query
   const data = await Team.list({ organizationId: orgId })
   const enhancedData = await teamsMembersModeratorsHelper(data)

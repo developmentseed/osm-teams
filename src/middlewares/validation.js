@@ -8,7 +8,7 @@
 export function validate(schema) {
   return async (req, res, next) => {
     if (schema.query) {
-      req.body = await schema.query.validate(req.query)
+      req.query = await schema.query.validate(req.query)
     }
     if (schema.body) {
       req.body = await schema.body.validate(req.body)
