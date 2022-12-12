@@ -7,10 +7,9 @@ import { useState } from 'react'
 
 function TeamsTable({ orgId }) {
   const [page, setPage] = useState(0)
-  const pageSize = 10
 
   const { result, isLoading, error, fetch } = useFetchList(
-    `/organizations/${orgId}/teams?page=${page}&limit=${pageSize}`
+    `/organizations/${orgId}/teams?page=${page}`
   )
 
   const columns = [{ key: 'name' }, { key: 'id' }, { key: 'members' }]

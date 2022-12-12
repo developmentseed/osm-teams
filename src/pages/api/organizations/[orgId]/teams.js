@@ -16,6 +16,7 @@ handler.use(
   validate({
     query: Yup.object({
       orgId: Yup.number().required().positive().integer(),
+      page: Yup.number().min(0).integer(),
     }).required(),
   })
 )
@@ -49,8 +50,8 @@ handler.post(
  * Get organization teams
  */
 handler.get(canViewOrgMembers, async function (req, res) {
-  const { orgId } = req.query
-  const data = await Team.list({ organizationId: orgId })
+  const { orgId, page } = req.query
+  const data = await Team.list({ organizationId: orgId, page })
   const enhancedData = await teamsMembersModeratorsHelper(data)
   return res.send(enhancedData)
 })

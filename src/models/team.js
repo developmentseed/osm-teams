@@ -8,6 +8,8 @@ const request = require('request-promise-native')
 
 const { serverRuntimeConfig } = require('../../next.config')
 
+const DEFAULT_LIMIT = 10
+
 /**
  * This doesn't include the profile column, which we get separately
  */
@@ -127,6 +129,8 @@ async function list(options) {
   options = options || {}
   const { osmId, bbox, organizationId } = options
 
+  const page = options.page || 0
+
   const st = knexPostgis(db)
 
   let query = db('team').select(...teamAttributes, st.asGeoJSON('location'))
@@ -151,7 +155,7 @@ async function list(options) {
     )
   }
 
-  return query
+  return query.limit(DEFAULT_LIMIT).offset(page * DEFAULT_LIMIT)
 }
 
 /**
