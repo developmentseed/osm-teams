@@ -1,3 +1,5 @@
+const { generateSequenceArray } = require('../../src/lib/utils')
+
 const user1 = {
   id: 1,
   display_name: 'User 1',
@@ -9,9 +11,10 @@ const org1 = {
   ownerId: user1.id,
 }
 
-const team1 = {
-  name: 'Team 1',
-}
+const teams = generateSequenceArray(30, 1).map((i) => ({
+  id: i,
+  name: `Team ${i}`,
+}))
 
 describe('Organization page', () => {
   before(() => {
@@ -19,22 +22,26 @@ describe('Organization page', () => {
     cy.task('db:seed:organizations', [org1])
   })
 
-  it('List organization teams', () => {
+  it('Display message when organization has no teams', () => {
     cy.login(user1)
 
     // Check state when no teams are available
     cy.visit('/organizations/1')
     cy.get('body').should('contain', 'This organization has no teams.')
+  })
+
+  it('Display list of teams', () => {
+    cy.login(user1)
 
     // Seed org teams
     cy.task('db:seed:organization-teams', {
       orgId: org1.id,
-      teams: [team1],
+      teams,
       managerId: user1.id,
     })
 
     // Check state when teams are available
     cy.visit('/organizations/1')
-    cy.get('body').should('contain', team1.name)
+    cy.get('body').should('contain', teams[0].name)
   })
 })

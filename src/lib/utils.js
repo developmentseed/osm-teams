@@ -17,3 +17,14 @@ export function toDateString(timestamp) {
   const dateFormat = new Intl.DateTimeFormat(navigator.language).format
   return dateFormat(new Date(timestamp))
 }
+
+/**
+ * Generates an Array containing a sequence of integers
+ *
+ * @param {Number} length Array length
+ * @param {Number} initialValue Initial value
+ * @returns
+ */
+export function generateSequenceArray(length, initialValue) {
+  return Array.from({ length }, (_, i) => i + initialValue)
+}
