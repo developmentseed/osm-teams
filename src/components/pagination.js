@@ -1,6 +1,8 @@
 import React from 'react'
 import T from 'prop-types'
 
+import Button from './button'
+
 function listPageOptions(page, lastPage) {
   let pageOptions = [1]
   if (lastPage === 0) {
@@ -48,75 +50,52 @@ function Pagination({ pageSize, currentPage, totalRecords, setPage }) {
 
   return (
     <nav>
-      <button
+      <Button
         data-cy='first-page-button'
         onClick={() => setPage(0)}
         disabled={currentPage === 0}
-        useIcon='chevron-left-trail--small'
-        hideText
-        $flat={false}
-        variation='primary-raised-light'
-        size='small'
-      >
-        Previous page
-      </button>
-      <button
+        useIcon='chevron-left--trail'
+        className='small'
+        flat
+      />
+      <Button
         data-cy='previous-page-button'
         onClick={() => setPage(currentPage - 1)}
         disabled={currentPage === 0}
         useIcon='chevron-left--small'
-        hideText
-        $flat={false}
-        variation='primary-raised-light'
-        size='small'
-      >
-        Previous page
-      </button>
+        className='small'
+        flat
+      />
       {pages.map((page) => {
         return (
-          <button
+          <Button
             onClick={() => setPage(page - 1)}
             key={`page-${page - 1}`}
-            $flat={currentPage === page - 1}
-            variation={
-              page === '...'
-                ? 'base-plain'
-                : currentPage === page - 1
-                ? 'primary-raised-dark'
-                : 'primary-raised-light'
-            }
             disabled={page === '...'}
             data-cy={`page-${page}-button`}
-            size='small'
+            className='small'
+            flat
           >
             {page}
-          </button>
+          </Button>
         )
       })}
-      <button
+      <Button
         data-cy='next-page-button'
         onClick={() => setPage(currentPage + 1)}
         disabled={currentPage === maxPages - 1}
         useIcon='chevron-right--small'
-        hideText
-        $flat={false}
-        variation='primary-raised-light'
-        size='small'
-      >
-        Next page
-      </button>
-      <button
+        className='small'
+        flat
+      />
+      <Button
         data-cy='last-page-button'
         onClick={() => setPage(maxPages - 1)}
         disabled={currentPage === maxPages - 1}
-        useIcon='chevron-right-trail--small'
-        hideText
-        $flat={false}
-        variation='primary-raised-light'
-        size='small'
-      >
-        Last page
-      </button>
+        useIcon='chevron-right--trail'
+        className='small'
+        flat
+      />
       <div>
         Showing {currentPage * pageSize + 1}-
         {Intl.NumberFormat().format(
@@ -126,6 +105,22 @@ function Pagination({ pageSize, currentPage, totalRecords, setPage }) {
         )}{' '}
         of {Intl.NumberFormat().format(totalRecords)}
       </div>
+      <style jsx>
+        {`
+          nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+          }
+          nav > div:last-child {
+            flex-basis: 100%;
+            width: 100%;
+            text-align: center;
+          }
+        `}
+      </style>
     </nav>
   )
 }
