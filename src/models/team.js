@@ -11,6 +11,37 @@ const { serverRuntimeConfig } = require('../../next.config')
 const DEFAULT_LIMIT = 10
 
 /**
+ * @swagger
+ * components:
+ *   schemas:
+ *     NewTeam:
+ *       type: object
+ *       required:
+ *         - name
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: The team's name.
+ *           example: Local Mappers
+ *         organizationId:
+ *           type: integer
+ *           description: The ID of the organization the team is part of.
+ *     Team:
+ *       allOf:
+ *         - type: object
+ *           properties:
+ *             id:
+ *               type: integer
+ *               description: The team ID.
+ *         - $ref: '#/components/schemas/NewTeam'
+ *     ArrayOfTeams:
+ *       type: array
+ *       items:
+ *         $ref: '#/components/schemas/NewTeam'
+ *
+ */
+
+/**
  * This doesn't include the profile column, which we get separately
  */
 const teamAttributes = [
@@ -117,17 +148,40 @@ async function getModerators(id) {
 }
 
 /**
+ * Get team count
+ *
+ * @param options
+ * @param {int} options.organizationId - filter by whether team belongs to organization
+ * @return {int}
+ **/
+async function count({ organizationId }) {
+  let query = db('team').count('id')
+
+  if (organizationId) {
+    query = query.whereIn('id', function () {
+      this.select('team_id')
+        .from('organization_team')
+        .where('organization_id', organizationId)
+    })
+  }
+
+  const [{ count }] = await query
+  return parseInt(count)
+}
+
+/**
  * Get all teams
  *
  * @param options
  * @param {int} options.osmId - filter by whether osmId is a member
  * @param {int} options.organizationId - filter by whether team belongs to organization
  * @param {Array[float]} options.bbox - filter for teams whose location is in bbox (xmin, ymin, xmax, ymax)
+ * @param {bool} options.disableLimit - Return all fields when true
  * @return {Promise[Array]}
  **/
 async function list(options) {
   options = options || {}
-  const { osmId, bbox, organizationId } = options
+  const { osmId, bbox, organizationId, disableLimit } = options
 
   const page = options.page || 0
 
@@ -155,7 +209,9 @@ async function list(options) {
     )
   }
 
-  return query.limit(DEFAULT_LIMIT).offset(page * DEFAULT_LIMIT)
+  return disableLimit
+    ? query
+    : query.limit(DEFAULT_LIMIT).offset(page * DEFAULT_LIMIT)
 }
 
 /**
@@ -460,6 +516,7 @@ async function isInvitationValid(teamId, invitationId) {
 
 module.exports = {
   get,
+  count,
   list,
   listMembers,
   listModerators,

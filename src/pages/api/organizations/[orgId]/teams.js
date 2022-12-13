@@ -47,13 +47,37 @@ handler.post(
 )
 
 /**
- * Get organization teams
+ * @swagger
+ * /api/organizations/{id}/teams:
+ *   get:
+ *     description: Get list of teams of an organization
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Numeric ID of the organization the teams are part of.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: A list of teams.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                   description: Total number of teams in the organization.
+ *                 items:
+ *                   $ref: '#/components/schemas/ArrayOfTeams'
  */
 handler.get(canViewOrgMembers, async function (req, res) {
   const { orgId, page } = req.query
   const data = await Team.list({ organizationId: orgId, page })
   const enhancedData = await teamsMembersModeratorsHelper(data)
-  return res.send(enhancedData)
+  const total = await Team.count({ organizationId: orgId })
+  return res.send({ data: enhancedData, total })
 })
 
 export default handler

@@ -1,3 +1,11 @@
-import pino from 'pino'
+import Pino from 'pino'
 
-export default pino({ prettyPrint: true })
+/**
+ * Create logger instance. Level is set to 'silent' when testing.
+ */
+const logger = Pino({
+  prettyPrint: true,
+  level: process.env.TESTING ? 'silent' : 'info',
+})
+
+export default logger
