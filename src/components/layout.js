@@ -74,6 +74,10 @@ export const globalStyles = css.global`
     margin-bottom: calc(${theme.layout.globalSpacing} * 4);
   }
 
+  .inner.page section {
+    margin-bottom: calc(${theme.layout.globalSpacing} * 2);
+  }
+
   .page__heading {
     display: flex;
     justify-content: space-between;
