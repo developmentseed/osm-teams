@@ -9,16 +9,17 @@ import Pagination from '../pagination'
 function TeamsTable({ orgId }) {
   const [page, setPage] = useState(0)
 
-  const { result, isLoading } = useFetchList(
-    `/organizations/${orgId}/teams?page=${page}`
-  )
+  const {
+    result: { total, data },
+    isLoading,
+  } = useFetchList(`/organizations/${orgId}/teams?page=${page}`)
 
   const columns = [{ key: 'name' }, { key: 'id' }, { key: 'members' }]
 
   return (
     <>
       <Table
-        rows={result}
+        rows={data}
         columns={columns}
         emptyPlaceHolder={
           isLoading ? 'Loading...' : 'This organization has no teams.'
@@ -33,7 +34,7 @@ function TeamsTable({ orgId }) {
       <Pagination
         pageSize={10}
         currentPage={page}
-        totalRecords={100}
+        totalRecords={total}
         setPage={setPage}
       />
     </>

@@ -11,7 +11,9 @@ const org1 = {
   ownerId: user1.id,
 }
 
-const teams = generateSequenceArray(30, 1).map((i) => ({
+const ORG_TEAMS_COUNT = 35
+
+const teams = generateSequenceArray(ORG_TEAMS_COUNT, 1).map((i) => ({
   id: i,
   name: `Team ${i}`,
 }))
