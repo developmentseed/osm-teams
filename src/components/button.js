@@ -14,11 +14,11 @@ const style = css.global`
     vertical-align: middle;
     line-height: 1.5rem;
     font-size: 1rem;
-    min-width: 1rem;
+    padding: 0.375rem 1rem;
+    min-width: 2rem;
     min-height: 1rem;
     font-family: ${theme.typography.monoFontFamily};
     text-transform: uppercase;
-    padding: 0.75rem calc(${theme.layout.globalSpacing} * 2);
     cursor: pointer;
     transition: all 0.2s ease;
     /* Default Colors */

@@ -88,7 +88,7 @@ function renderActions(actions) {
           Edit user access
         </span>
       }
-      position='bottom down'
+      position='bottom left'
       on='click'
       closeOnDocumentClick
       contentStyle={{ padding: '10px', width: '250px', border: 'none' }}
@@ -193,7 +193,12 @@ export default function ProfileModal({
           )}
           <h3>{user.name}</h3>
         </div>
-        <Button flat type='close' size='small' onClick={() => onClose()} />
+        <Button
+          flat
+          useIcon='close'
+          variant='small'
+          onClick={() => onClose()}
+        />
       </div>
       {!isEmpty(actions) && renderActions(actions, ref)}
       {profileContent}

@@ -324,9 +324,7 @@ class Team extends Component {
             <div className='section-actions'>
               <SectionHeader>Team Details</SectionHeader>
               {isUserModerator ? (
-                <Button variant='small' href={`/teams/${team.id}/edit`}>
-                  Edit
-                </Button>
+                <Button href={`/teams/${team.id}/edit`}>Edit</Button>
               ) : (
                 ''
               )}

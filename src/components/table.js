@@ -108,7 +108,7 @@ export default function Table({
             width: 100%;
             border-spacing: 0;
             max-width: 100%;
-            margin-bottom: calc(${theme.layout.globalSpacing} * 4);
+            margin-bottom: ${theme.layout.globalSpacing};
           }
 
           thead th {
