@@ -23,9 +23,6 @@ const DEFAULT_LIMIT = 10
  *           type: string
  *           description: The team's name.
  *           example: Local Mappers
- *         organizationId:
- *           type: integer
- *           description: The ID of the organization the team is part of.
  *     Team:
  *       allOf:
  *         - type: object

@@ -22,7 +22,34 @@ handler.use(
 )
 
 /**
- * Create organization team
+ * @swagger
+ * /api/organizations/{id}/teams:
+ *   post:
+ *     summary: Add a team to this organization. Only owners and managers can add new teams.
+ *     tags:
+ *       - organizations
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Numeric ID of the organization the teams are part of.
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/NewTeam'
+ *     responses:
+ *       200:
+ *         description: Team was added successfully
+ *       400:
+ *         description: error creating team for organization
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ResponseError'
  */
 handler.post(
   canCreateOrgTeam,
@@ -50,7 +77,9 @@ handler.post(
  * @swagger
  * /api/organizations/{id}/teams:
  *   get:
- *     description: Get list of teams of an organization
+ *     summary: Get list of teams of an organization
+ *     tags:
+ *       - organizations
  *     parameters:
  *       - in: path
  *         name: id

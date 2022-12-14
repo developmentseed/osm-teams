@@ -22,6 +22,7 @@ import { authOptions } from '../pages/api/auth/[...nextauth]'
  *       properties:
  *         statusCode:
  *           type: integer
+ *           example: 401
  *         error:
  *           type: string
  *         message:
