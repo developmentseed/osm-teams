@@ -1,25 +1,41 @@
 import T from 'prop-types'
-import Table from '../table'
+import Table from './table'
 import Router from 'next/router'
 import join from 'url-join'
 import { useFetchList } from '../../hooks/use-fetch-list'
 import { useState } from 'react'
 import Pagination from '../pagination'
 
-function TeamsTable({ orgId }) {
+function TeamsTable({ type, orgId }) {
   const [page, setPage] = useState(0)
+
+  let apiBasePath
+
+  switch (type) {
+    case 'all-teams':
+      apiBasePath = '/teams'
+      break
+    case 'my-teams':
+      apiBasePath = '/my/teams'
+      break
+    case 'org-teams':
+      apiBasePath = `/organizations/${orgId}/teams`
+      break
+    default:
+      break
+  }
 
   const {
     result: { total, data },
     isLoading,
-  } = useFetchList(`/organizations/${orgId}/teams?page=${page}`)
+  } = useFetchList(`${apiBasePath}?page=${page}`)
 
   const columns = [{ key: 'name' }, { key: 'members' }]
 
   return (
     <>
       <Table
-        data-cy='org-teams-table'
+        data-cy={`${type}-table`}
         rows={data}
         columns={columns}
         emptyPlaceHolder={
@@ -34,7 +50,7 @@ function TeamsTable({ orgId }) {
       />
       {total > 0 && (
         <Pagination
-          data-cy='org-teams-table-pagination'
+          data-cy={`${type}-table-pagination`}
           pageSize={10}
           currentPage={page}
           totalRecords={total}
@@ -46,7 +62,8 @@ function TeamsTable({ orgId }) {
 }
 
 TeamsTable.propTypes = {
-  orgId: T.number.isRequired,
+  type: T.oneOf(['all-teams', 'org-teams', 'my-teams']).isRequired,
+  orgId: T.number,
 }
 
 export default TeamsTable

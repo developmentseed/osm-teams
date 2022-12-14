@@ -13,7 +13,7 @@ import { getUserOrgProfile } from '../../../lib/profiles-api'
 import Card from '../../../components/card'
 import Section from '../../../components/section'
 import SectionHeader from '../../../components/section-header'
-import Table from '../../../components/table'
+import Table from '../../../components/tables/table'
 import theme from '../../../styles/theme'
 import AddMemberForm from '../../../components/add-member-form'
 import SvgSquare from '../../../components/svg-square'
@@ -24,7 +24,7 @@ import { assoc, propEq, find, contains, prop, map } from 'ramda'
 import APIClient from '../../../lib/api-client'
 import join from 'url-join'
 import { getSession } from 'next-auth/react'
-import TeamsTable from '../../../components/organizations/teams-table'
+import TeamsTable from '../../../components/tables/teams'
 
 const URL = process.env.APP_URL
 
@@ -383,7 +383,7 @@ class Organization extends Component {
           <Section>
             <SectionHeader>Teams</SectionHeader>
           </Section>
-          <TeamsTable orgId={org.id} />
+          <TeamsTable type='org-teams' orgId={org.id} />
         </div>
 
         {isOrgPublic || isMemberOfOrg ? (
