@@ -19,6 +19,7 @@ function TeamsTable({ orgId }) {
   return (
     <>
       <Table
+        data-cy='org-teams-table'
         rows={data}
         columns={columns}
         emptyPlaceHolder={
@@ -31,12 +32,15 @@ function TeamsTable({ orgId }) {
           )
         }}
       />
-      <Pagination
-        pageSize={10}
-        currentPage={page}
-        totalRecords={total}
-        setPage={setPage}
-      />
+      {total > 0 && (
+        <Pagination
+          data-cy='org-teams-table-pagination'
+          pageSize={10}
+          currentPage={page}
+          totalRecords={total}
+          setPage={setPage}
+        />
+      )}
     </>
   )
 }

@@ -44,12 +44,18 @@ function listPageOptions(page, lastPage) {
   }
 }
 
-function Pagination({ pageSize, currentPage, totalRecords, setPage }) {
+function Pagination({
+  pageSize,
+  currentPage,
+  totalRecords,
+  setPage,
+  'data-cy': dataCy,
+}) {
   const maxPages = pageSize ? Math.ceil(totalRecords / pageSize) : 0
   const pages = listPageOptions(currentPage + 1, maxPages)
 
   return (
-    <nav>
+    <nav data-cy={dataCy}>
       <Button
         data-cy='first-page-button'
         onClick={() => setPage(0)}

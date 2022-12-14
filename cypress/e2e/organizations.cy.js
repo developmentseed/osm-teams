@@ -29,7 +29,10 @@ describe('Organization page', () => {
 
     // Check state when no teams are available
     cy.visit('/organizations/1')
-    cy.get('body').should('contain', 'This organization has no teams.')
+    cy.get('[data-cy=org-teams-table]').contains(
+      'This organization has no teams'
+    )
+    cy.get('[data-cy=org-teams-table-pagination]').should('not.exist')
   })
 
   it('Display list of teams', () => {

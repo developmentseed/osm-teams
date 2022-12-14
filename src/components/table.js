@@ -89,10 +89,11 @@ export default function Table({
   onRowClick,
   emptyPlaceHolder,
   showRowNumbers,
+  'data-cy': dataCy,
 }) {
   showRowNumbers && columns.unshift({ key: ' ' })
   return (
-    <table>
+    <table data-cy={dataCy}>
       <TableHead columns={columns} />
       <TableBody
         columns={columns}
