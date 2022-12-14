@@ -35,7 +35,7 @@ describe('Organization page', () => {
     cy.get('[data-cy=org-teams-table-pagination]').should('not.exist')
   })
 
-  it('Display list of teams', () => {
+  it('Display paginated list of teams', () => {
     cy.login(user1)
 
     // Seed org teams
@@ -47,6 +47,39 @@ describe('Organization page', () => {
 
     // Check state when teams are available
     cy.visit('/organizations/1')
-    cy.get('body').should('contain', teams[0].name)
+
+    cy.get('[data-cy=org-teams-table]').contains('Team 10')
+
+    // Click last page button
+    cy.get('[data-cy=org-teams-table-pagination]').within(() => {
+      cy.get('[data-cy=last-page-button]').click()
+    })
+
+    // Last item is present
+    cy.get('[data-cy=org-teams-table]').contains('Team 9')
+
+    // Click page 2 button
+    cy.get('[data-cy=org-teams-table-pagination]').within(() => {
+      cy.get('[data-cy=page-2-button]').click()
+    })
+
+    // Item from page 2 is present
+    cy.get('[data-cy=org-teams-table]').contains('Team 2')
+
+    // Click next page button
+    cy.get('[data-cy=org-teams-table-pagination]').within(() => {
+      cy.get('[data-cy=next-page-button]').click()
+    })
+
+    // Item from page 3 is present
+    cy.get('[data-cy=org-teams-table]').contains('Team 3')
+
+    // Click previous page button
+    cy.get('[data-cy=org-teams-table-pagination]').within(() => {
+      cy.get('[data-cy=previous-page-button]').click()
+    })
+
+    // Item from page 2 is present
+    cy.get('[data-cy=org-teams-table]').contains('Team 2')
   })
 })

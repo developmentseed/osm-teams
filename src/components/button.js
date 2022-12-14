@@ -137,6 +137,7 @@ export default function Button({
   children,
   className,
   flat,
+  'data-cy': dataCy,
 }) {
   let classes = [`button`, variant, className]
   if (disabled) classes.push('disabled')
@@ -172,7 +173,12 @@ export default function Button({
     )
   }
   return (
-    <div onClick={onClick} className={classNames} disabled={disabled}>
+    <div
+      data-cy={dataCy}
+      onClick={onClick}
+      className={classNames}
+      disabled={disabled}
+    >
       {children}
       <style jsx>{style}</style>
       <style jsx>{`

@@ -209,6 +209,9 @@ async function list(options) {
     )
   }
 
+  // Always sort by team name
+  query = query.orderBy('name')
+
   return disableLimit
     ? query
     : query.limit(DEFAULT_LIMIT).offset(page * DEFAULT_LIMIT)
