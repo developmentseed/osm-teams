@@ -14,7 +14,7 @@ function TeamsTable({ orgId }) {
     isLoading,
   } = useFetchList(`/organizations/${orgId}/teams?page=${page}`)
 
-  const columns = [{ key: 'name' }, { key: 'id' }, { key: 'members' }]
+  const columns = [{ key: 'name' }, { key: 'members' }]
 
   return (
     <>
