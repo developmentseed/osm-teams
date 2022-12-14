@@ -39,6 +39,9 @@ jobs:
       - name: Lint
         run: yarn lint
 
+      - name: Validate Swagger Docs
+        run: yarn docs:validate
+
       - name: Docker - Pull
         run: docker-compose pull
 
