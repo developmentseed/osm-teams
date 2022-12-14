@@ -7,7 +7,7 @@ import Button from '../../../../../components/button'
 import Router from 'next/router'
 import { toast } from 'react-toastify'
 import theme from '../../../../../styles/theme'
-import Table from '../../../../../components/table'
+import Table from '../../../../../components/tables/table'
 import { toDateString } from '../../../../../lib/utils'
 
 const URL = process.env.APP_URL
