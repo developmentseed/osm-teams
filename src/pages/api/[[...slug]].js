@@ -1,41 +1,14 @@
 import packageJson from '../../../package.json'
-import nc from 'next-connect'
 import manageRouter from '../../../app/manage'
-import logger from '../../lib/logger'
-import { unstable_getServerSession } from 'next-auth/next'
-import { authOptions } from './auth/[...nextauth]'
+import { createBaseHandler } from '../../middlewares/base-handler'
 
-let handler = nc({
-  attachParams: true,
-  onError: (err, req, res) => {
-    logger.error(err)
-    // Handle Boom errors
-    if (err.isBoom) {
-      const { statusCode, payload } = err.output
-      return res.status(statusCode).json(payload)
-    }
+/**
+ * This is a catch all handler for the API routes from v1 that weren't
+ * migrated to the /src/page/api folder. The v1 routes are located in
+ * /app/manage folder and should be migrated to v2 approach when possible.
+ */
 
-    // Generic error
-    return res.status(500).json({
-      statusCode: 500,
-      error: 'Internal Server Error',
-      message: 'An internal server error occurred',
-    })
-  },
-  onNoMatch: (req, res) => {
-    res.status(404).json({
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'missing',
-    })
-  },
-})
-
-// Add session to request
-handler.use(async (req, res, next) => {
-  req.session = await unstable_getServerSession(req, res, authOptions)
-  next()
-})
+const handler = createBaseHandler()
 
 handler.get('api/', (_, res) => {
   res.status(200).json({ version: packageJson.version })

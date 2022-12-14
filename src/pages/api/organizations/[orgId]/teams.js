@@ -1,5 +1,5 @@
 import { teamsMembersModeratorsHelper } from '../../../../../app/manage/utils'
-import baseHandler from '../../../../middlewares/base-handler'
+import { createBaseHandler } from '../../../../middlewares/base-handler'
 import { validate } from '../../../../middlewares/validation'
 import Organization from '../../../../models/organization'
 import Team from '../../../../models/team'
@@ -7,7 +7,7 @@ import * as Yup from 'yup'
 import canViewOrgMembers from '../../../../middlewares/can/view-org-members'
 import canCreateOrgTeam from '../../../../middlewares/can/create-org-team'
 
-const handler = baseHandler
+const handler = createBaseHandler()
 
 /**
  * Validate query params
