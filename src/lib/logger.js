@@ -5,7 +5,7 @@ import Pino from 'pino'
  */
 const logger = Pino({
   prettyPrint: true,
-  level: process.env.TESTING ? 'silent' : 'info',
+  level: process.env.LOG_LEVEL || 'info',
 })
 
 export default logger
