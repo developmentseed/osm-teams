@@ -1,4 +1,4 @@
-const { isOwner } = require('../../lib/organization')
+const { isOwner } = require('../../../src/models/organization')
 
 /**
  * organization:edit
@@ -11,7 +11,7 @@ const { isOwner } = require('../../lib/organization')
  * @param {int} params.id - organization id
  * @returns {Promise<boolean>}
  */
-async function editOrg (uid, { id }) {
+async function editOrg(uid, { id }) {
   return isOwner(id, uid)
 }
 

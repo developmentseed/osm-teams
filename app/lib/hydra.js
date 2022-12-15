@@ -16,32 +16,31 @@ var mockTlsTermination = {}
 
 if (process.env.MOCK_TLS_TERMINATION) {
   mockTlsTermination = {
-    'X-Forwarded-Proto': 'https'
+    'X-Forwarded-Proto': 'https',
   }
 }
 
 // A little helper that takes type (can be "login" or "consent") and a challenge and returns the response from ORY Hydra.
-function get (flow, challenge) {
+function get(flow, challenge) {
   const url = new URL(`/oauth2/auth/requests/${flow}`, hydraUrl)
   url.search = querystring.stringify({ [`${flow}_challenge`]: challenge })
-  return fetch(url.toString())
-    .then(function (res) {
-      if (res.status < 200 || res.status > 302) {
-        // This will handle any errors that aren't network related (network related errors are handled automatically)
-        return res.json().then(function (body) {
-          if (res.status !== 404) {
-            console.error('An error occurred while making a HTTP request: ', body)
-          }
-          return Promise.reject(new Error(body.error.message))
-        })
-      }
+  return fetch(url.toString()).then(function (res) {
+    if (res.status < 200 || res.status > 302) {
+      // This will handle any errors that aren't network related (network related errors are handled automatically)
+      return res.json().then(function (body) {
+        if (res.status !== 404) {
+          console.error('An error occurred while making a HTTP request: ', body)
+        }
+        return Promise.reject(new Error(body.error.message))
+      })
+    }
 
-      return res.json()
-    })
+    return res.json()
+  })
 }
 
 // A little helper that takes type (can be "login" or "consent"), the action (can be "accept" or "reject") and a challenge and returns the response from ORY Hydra.
-function put (flow, action, challenge, body) {
+function put(flow, action, challenge, body) {
   const url = new URL(`/oauth2/auth/requests/${flow}/${action}`, hydraUrl)
   url.search = querystring.stringify({ [`${flow}_challenge`]: challenge })
   return fetch(
@@ -52,89 +51,77 @@ function put (flow, action, challenge, body) {
       body: JSON.stringify(body),
       headers: {
         'Content-Type': 'application/json',
-        ...mockTlsTermination
-      }
+        ...mockTlsTermination,
+      },
     }
-  )
-    .then(function (res) {
-      if (res.status < 200 || res.status > 302) {
-        // This will handle any errors that aren't network related (network related errors are handled automatically)
-        return res.json().then(function (body) {
-          if (res.status !== 404) {
-            console.error('An error occurred while making a HTTP request: ', body)
-          }
-          return Promise.reject(new Error(body.error.message))
-        })
-      }
+  ).then(function (res) {
+    if (res.status < 200 || res.status > 302) {
+      // This will handle any errors that aren't network related (network related errors are handled automatically)
+      return res.json().then(function (body) {
+        if (res.status !== 404) {
+          console.error('An error occurred while making a HTTP request: ', body)
+        }
+        return Promise.reject(new Error(body.error.message))
+      })
+    }
 
-      return res.json()
-    })
+    return res.json()
+  })
 }
 
-function getClients () {
-  return fetch(
-    uj(hydraUrl, '/clients'),
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        ...mockTlsTermination
-      }
+function getClients() {
+  return fetch(uj(hydraUrl, '/clients'), {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...mockTlsTermination,
+    },
+  }).then(function (res) {
+    if (res.status < 200 || res.status > 302) {
+      // This will handle any errors that aren't network related (network related errors are handled automatically)
+      return res.json().then(function (body) {
+        if (res.status !== 404) {
+          console.error('An error occurred while making a HTTP request: ', body)
+        }
+        return Promise.reject(new Error(body.error.message))
+      })
     }
-  )
-    .then(function (res) {
-      if (res.status < 200 || res.status > 302) {
-        // This will handle any errors that aren't network related (network related errors are handled automatically)
-        return res.json().then(function (body) {
-          if (res.status !== 404) {
-            console.error('An error occurred while making a HTTP request: ', body)
-          }
-          return Promise.reject(new Error(body.error.message))
-        })
-      }
 
-      return res.json()
-    })
+    return res.json()
+  })
 }
 
-function createClient (body) {
-  return fetch(
-    uj(hydraUrl, '/clients'),
-    {
-      method: 'POST',
-      body: JSON.stringify(body),
-      headers: {
-        'Content-Type': 'application/json',
-        ...mockTlsTermination
-      }
+function createClient(body) {
+  return fetch(uj(hydraUrl, '/clients'), {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: {
+      'Content-Type': 'application/json',
+      ...mockTlsTermination,
+    },
+  }).then(function (res) {
+    if (res.status < 200 || res.status > 302) {
+      // This will handle any errors that aren't network related (network related errors are handled automatically)
+      return res.json().then(function (body) {
+        if (res.status !== 404) {
+          console.error('An error occurred while making a HTTP request: ', body)
+        }
+        return Promise.reject(new Error(body.error.message))
+      })
     }
-  )
-    .then(function (res) {
-      if (res.status < 200 || res.status > 302) {
-        // This will handle any errors that aren't network related (network related errors are handled automatically)
-        return res.json().then(function (body) {
-          if (res.status !== 404) {
-            console.error('An error occurred while making a HTTP request: ', body)
-          }
-          return Promise.reject(new Error(body.error.message))
-        })
-      }
 
-      return res.json()
-    })
+    return res.json()
+  })
 }
 
-function deleteClient (id) {
-  return fetch(
-    uj(hydraUrl, `/clients/${id}`),
-    {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        ...mockTlsTermination
-      }
-    }
-  )
+function deleteClient(id) {
+  return fetch(uj(hydraUrl, `/clients/${id}`), {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      ...mockTlsTermination,
+    },
+  })
 }
 
 /**
@@ -142,19 +129,18 @@ function deleteClient (id) {
  *
  * @param {String} token Access Token
  */
-function introspect (token) {
+function introspect(token) {
   const body = qs.stringify({ token })
-  return fetch(
-    uj(hydraUrl, '/oauth2/introspect'), {
-      method: 'POST',
-      body,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        ...mockTlsTermination
-      }
-    })
-    .then(r => r.json())
+  return fetch(uj(hydraUrl, '/oauth2/introspect'), {
+    method: 'POST',
+    body,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded',
+      ...mockTlsTermination,
+    },
+  })
+    .then((r) => r.json())
     .then((body) => {
       return body
     })
@@ -188,7 +174,7 @@ var hydra = {
   createClient,
   deleteClient,
   getClients,
-  introspect
+  introspect,
 }
 
 module.exports = hydra

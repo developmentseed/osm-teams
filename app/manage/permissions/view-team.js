@@ -7,7 +7,7 @@
  *
  * @returns {boolean} can the request go through?
  */
-async function viewTeam () {
+async function viewTeam() {
   return true
 }
 

@@ -1,9 +1,10 @@
-const db = require('../db')
+const db = require('../../src/lib/db')
 const yup = require('yup')
-const organization = require('../lib/organization')
-const profile = require('../lib/profile')
+const organization = require('../../src/models/organization')
+const profile = require('../../src/models/profile')
 const { routeWrapper } = require('./utils')
-const team = require('../lib/team')
+const team = require('../../src/models/team')
+const Boom = require('@hapi/boom')
 
 /**
  * Get the list of badges of an organization
@@ -12,23 +13,22 @@ const listBadges = routeWrapper({
   validate: {
     params: yup
       .object({
-        id: yup.number().required().positive().integer()
+        id: yup.number().required().positive().integer(),
       })
-      .required()
+      .required(),
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-      const badges = await conn('organization_badge')
+      const badges = await db('organization_badge')
         .select('*')
         .where('organization_id', req.params.id)
         .orderBy('id')
       reply.send(badges)
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
-  }
+  },
 })
 
 /**
@@ -38,31 +38,30 @@ const createBadge = routeWrapper({
   validate: {
     params: yup
       .object({
-        id: yup.number().required().positive().integer()
+        id: yup.number().required().positive().integer(),
       })
       .required(),
     body: yup
       .object({
         name: yup.string().required(),
-        color: yup.string().required()
+        color: yup.string().required(),
       })
-      .required()
+      .required(),
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-      const [badge] = await conn('organization_badge')
+      const [badge] = await db('organization_badge')
         .insert({
           organization_id: req.params.id,
-          ...req.body
+          ...req.body,
         })
         .returning('*')
       reply.send(badge)
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
-  }
+  },
 })
 
 /**
@@ -73,23 +72,22 @@ const getBadge = routeWrapper({
     params: yup
       .object({
         id: yup.number().required().positive().integer(),
-        badgeId: yup.number().required().positive().integer()
+        badgeId: yup.number().required().positive().integer(),
       })
-      .required()
+      .required(),
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-      const [badge] = await conn('organization_badge')
+      const [badge] = await db('organization_badge')
         .select('*')
         .where('id', req.params.badgeId)
         .returning('*')
 
-      let users = await conn('user_badges')
+      let users = await db('user_badges')
         .select({
           id: 'user_badges.user_id',
           assignedAt: 'user_badges.assigned_at',
-          validUntil: 'user_badges.valid_until'
+          validUntil: 'user_badges.valid_until',
         })
         .leftJoin(
           'organization_badge',
@@ -112,19 +110,19 @@ const getBadge = routeWrapper({
           id: u.id,
           assignedAt: u.assignedAt,
           validUntil: u.validUntil,
-          displayName: userProfiles[u.id] ? userProfiles[u.id].name : ''
+          displayName: userProfiles[u.id] ? userProfiles[u.id].name : '',
         }))
       }
 
       reply.send({
         ...badge,
-        users
+        users,
       })
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
-  }
+  },
 })
 
 /**
@@ -135,29 +133,28 @@ const patchBadge = routeWrapper({
     params: yup
       .object({
         id: yup.number().required().positive().integer(),
-        badgeId: yup.number().required().positive().integer()
+        badgeId: yup.number().required().positive().integer(),
       })
       .required(),
     body: yup
       .object({
         name: yup.string().optional(),
-        color: yup.string().optional()
+        color: yup.string().optional(),
       })
-      .required()
+      .required(),
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-      const [badge] = await conn('organization_badge')
+      const [badge] = await db('organization_badge')
         .update(req.body)
         .where('id', req.params.badgeId)
         .returning('*')
       reply.send(badge)
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
-  }
+  },
 })
 
 /**
@@ -167,23 +164,22 @@ const deleteBadge = routeWrapper({
   validate: {
     params: yup
       .object({
-        badgeId: yup.number().required().positive().integer()
+        badgeId: yup.number().required().positive().integer(),
       })
-      .required()
+      .required(),
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-      await conn('organization_badge').delete().where('id', req.params.badgeId)
+      await db('organization_badge').delete().where('id', req.params.badgeId)
       return reply.send({
         status: 200,
-        message: `Badge ${req.params.badgeId} deleted successfully.`
+        message: `Badge ${req.params.badgeId} deleted successfully.`,
       })
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
-  }
+  },
 })
 
 /**
@@ -195,18 +191,16 @@ const assignUserBadge = routeWrapper({
       .object({
         id: yup.number().required().positive().integer(),
         badgeId: yup.number().required().positive().integer(),
-        userId: yup.number().required().positive().integer()
+        userId: yup.number().required().positive().integer(),
       })
       .required(),
     body: yup.object({
       assigned_at: yup.date().required(),
-      valid_until: yup.date().nullable()
-    })
+      valid_until: yup.date().nullable(),
+    }),
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-
       // user is related to org?
       const isMemberOrStaff = await organization.isMemberOrStaff(
         req.params.id,
@@ -214,17 +208,17 @@ const assignUserBadge = routeWrapper({
       )
 
       if (!isMemberOrStaff) {
-        return reply.boom.badRequest('User is not part of the organization.')
+        throw Boom.badRequest('User is not part of the organization.')
       }
 
       // assign badge
       const { assigned_at, valid_until } = req.body
-      const [badge] = await conn('user_badges')
+      const [badge] = await db('user_badges')
         .insert({
           user_id: req.params.userId,
           badge_id: req.params.badgeId,
           assigned_at: assigned_at.toISOString(),
-          valid_until: valid_until ? valid_until.toISOString() : null
+          valid_until: valid_until ? valid_until.toISOString() : null,
         })
         .returning('*')
 
@@ -232,14 +226,12 @@ const assignUserBadge = routeWrapper({
     } catch (err) {
       console.log(err)
       if (err.code === '23505') {
-        return reply.boom.badRequest('User is already assigned to badge.')
+        throw Boom.badRequest('User is already assigned to badge.')
       } else {
-        return reply.boom.badRequest(
-          'Unexpected error, please try again later.'
-        )
+        throw Boom.badRequest('Unexpected error, please try again later.')
       }
     }
-  }
+  },
 })
 
 /**
@@ -249,9 +241,9 @@ const listUserBadges = routeWrapper({
   validate: {
     params: yup
       .object({
-        userId: yup.number().required().positive().integer()
+        userId: yup.number().required().positive().integer(),
       })
-      .required()
+      .required(),
   },
   handler: async function (req, reply) {
     try {
@@ -259,9 +251,9 @@ const listUserBadges = routeWrapper({
       reply.send({ badges })
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
-  }
+  },
 })
 
 /**
@@ -272,39 +264,37 @@ const updateUserBadge = routeWrapper({
     params: yup
       .object({
         badgeId: yup.number().required().positive().integer(),
-        userId: yup.number().required().positive().integer()
+        userId: yup.number().required().positive().integer(),
       })
       .required(),
     body: yup.object({
       assigned_at: yup.date().required(),
-      valid_until: yup.date().nullable()
-    })
+      valid_until: yup.date().nullable(),
+    }),
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-
       const { assigned_at, valid_until } = req.body
 
       // Yup validation returns time-zoned dates, update query use UTC strings
       // to avoid that.
-      const [badge] = await conn('user_badges')
+      const [badge] = await db('user_badges')
         .update({
           assigned_at: assigned_at.toISOString(),
-          valid_until: valid_until ? valid_until.toISOString() : null
+          valid_until: valid_until ? valid_until.toISOString() : null,
         })
         .where({
           user_id: req.params.userId,
-          badge_id: req.params.badgeId
+          badge_id: req.params.badgeId,
         })
         .returning('*')
 
       reply.send(badge)
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
-  }
+  },
 })
 
 /**
@@ -315,29 +305,27 @@ const removeUserBadge = routeWrapper({
     params: yup
       .object({
         badgeId: yup.number().required().positive().integer(),
-        userId: yup.number().required().positive().integer()
+        userId: yup.number().required().positive().integer(),
       })
-      .required()
+      .required(),
   },
   handler: async function (req, reply) {
     try {
-      const conn = await db()
-
       // delete user badge
-      await conn('user_badges').delete().where({
+      await db('user_badges').delete().where({
         user_id: req.params.userId,
-        badge_id: req.params.badgeId
+        badge_id: req.params.badgeId,
       })
 
       return reply.send({
         status: 200,
-        message: `Badge ${req.params.badgeId} unassigned successfully.`
+        message: `Badge ${req.params.badgeId} unassigned successfully.`,
       })
     } catch (err) {
       console.log(err)
-      return reply.boom.badRequest(err.message)
+      throw Boom.badRequest(err.message)
     }
-  }
+  },
 })
 
 module.exports = {
@@ -349,5 +337,5 @@ module.exports = {
   assignUserBadge,
   listUserBadges,
   updateUserBadge,
-  removeUserBadge
+  removeUserBadge,
 }

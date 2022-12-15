@@ -1,5 +1,5 @@
-const { isModerator, associatedOrg } = require('../../lib/team')
-const { isOwner } = require('../../lib/organization')
+const { isModerator, associatedOrg } = require('../../../src/models/team')
+const { isOwner } = require('../../../src/models/organization')
 
 /**
  * team:update
@@ -12,7 +12,7 @@ const { isOwner } = require('../../lib/organization')
  * @param {Object} params request parameters
  * @returns {Promise<boolean>} can the request go through?
  */
-async function updateTeam (uid, { id }) {
+async function updateTeam(uid, { id }) {
   // user has to be authenticated
   if (!uid) return false
 

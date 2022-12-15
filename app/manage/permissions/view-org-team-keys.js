@@ -1,4 +1,7 @@
-const { isOwner, isOrgTeamModerator } = require('../../lib/organization')
+const {
+  isOwner,
+  isOrgTeamModerator,
+} = require('../../../src/models/organization')
 
 /**
  * organization:view-team-keys
@@ -11,7 +14,7 @@ const { isOwner, isOrgTeamModerator } = require('../../lib/organization')
  * @param {int} params.id - organization id
  * @returns {Promise<boolean>}
  */
-async function editOrg (uid, { id }) {
+async function editOrg(uid, { id }) {
   const teamModerator = await isOrgTeamModerator(id, uid)
   return teamModerator || isOwner(id, uid)
 }

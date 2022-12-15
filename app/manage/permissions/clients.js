@@ -1,4 +1,4 @@
-const db = require('../../db')
+const db = require('../../../src/lib/db')
 
 /**
  * clients
@@ -10,10 +10,9 @@ const db = require('../../db')
  * @param {Object} params request parameters
  * @returns {boolean} can the request go through?
  */
-async function clients (uid) {
+async function clients(uid) {
   try {
-    let conn = await db()
-    const [user] = await conn('users').where('id', uid)
+    const [user] = await db('users').where('id', uid)
     if (user) {
       return true
     }

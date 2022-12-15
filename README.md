@@ -1,20 +1,4 @@
-# osm-teams 🤝
-
-<div>
-  <a href="https://circleci.com/gh/developmentseed/osm-teams">
-    <img src="https://circleci.com/gh/developmentseed/osm-teams.png" />
-  </a>
-  <a href="https://standardjs.com">
-    <img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square"
-      alt="Standard" />
-  </a>
-  <a href="http://validator.swagger.io/validator/debug?url=https://raw.githubusercontent.com/developmentseed/osm-teams/master/docs/api.yml">
-    <img src="http://validator.swagger.io/validator?url=https://raw.githubusercontent.com/developmentseed/osm-teams/master/docs/api.yml">
-  </a>
-  </div>
-
-Check the beta 👉 <!-- markdownlint-disable MD034 -->https://mapping.team
-<!-- markdownlint-enable MD034 -->
+# OSM Teams 🤝
 
 ## Development
 
@@ -23,33 +7,25 @@ Install requirements:
 - [nvm](https://github.com/creationix/nvm)
 - [Docker](https://www.docker.com)
 
-Visit your [OpenStreetMap settings](https://www.openstreetmap.org/account/edit) page and register an OAuth1 Client App:
+Visit your [OpenStreetMap settings](https://www.openstreetmap.org/account/edit) page and [register an OAuth2 app](https://www.openstreetmap.org/oauth2/applications) with the following settings:
 
-![OSM Client App](oauth1-osm-client-app.png "OAuth1 page at OSM Website")
+- Name: `OSM Teams Dev` (or another name of your preference)
+- Redirect URIs: `http://127.0.0.1:3000/api/auth/callback/openstreetmap`
+- Confidential application: `false`
+- Permissions: `Read user preferences` only
 
-Create an `.env` file by copying `.env.sample` and replacing the values as needed. `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` are values available at the OAuth app page on openstreetmap.org. The .env file should contain:
+Example:
 
-    ```bash
-    OSM_CONSUMER_KEY=<osm-teams-app>
-    OSM_CONSUMER_SECRET=<osm-teams-app-secret>
-    DSN=postgres://postgres@dev-db/osm-teams?sslmode=disable
-    ```
+![OSM Client App](oauth2-osm-client-app.png "OAuth 2 page at OSM Website")
 
-Start Hydra and PostgreSQL with Docker:
+Create an `.env.local` file and add environment variables `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` obtained at OAuth2 page at OpenStreetMap website. The `.env.local` file should be like the following:
 
-    docker-compose -f compose.dev.yml up --build
+    OSM_CONSUMER_KEY=<osm-oauth2-client-id>
+    OSM_CONSUMER_SECRET=<osm-oauth2-client-secret>
 
-On a separate terminal, create the [first-party](https://auth0.com/docs/applications/concepts/app-types-first-third-party) "manage" app:
+Start development and test databases with Docker:
 
-```bash
-docker-compose exec hydra hydra clients create --endpoint http://localhost:4445 \
-  --id manage \
-  --secret manage-secret \
-  --response-types code,id_token \
-  --grant-types refresh_token,authorization_code \
-  --scope openid,offline,clients \
-  --callbacks http://localhost:8989/login/accept
-```
+    docker-compose up --build
 
 Install Node.js the required version (see [.nvmrc](.nvmrc) file):
 
@@ -68,9 +44,37 @@ Start development server:
     yarn dev
 
 <!-- markdownlint-disable MD034 -->
-✨ You can now login to the app at http://localhost:8989
+✨ You can now login to the app at http://127.0.0.1:3000
 <!-- markdownlint-enable MD034 -->
+
+## Testing
+
+Migrate `test-db` database:
+
+    yarn migrate:test
+
+This project uses Cypress for end-to-end testing. To run once:
+
+    yarn e2e
+
+To open Cypress dashboard for interactive development:
+
+    yarn e2e:dev
+
+## API
+
+The API docs can be accessed at <http://127.0.0.1:3000/docs/api>.
+
+All API routes should include descriptions in [OpenAPI 3.0 format](https://swagger.io/specification).
+
+Run the following command to validate the API docs:
+
+    yarn docs:validate
 
 ## Acknowledgments
 
 - This app is based off of [OSM/Hydra](https://github.com/kamicut/osmhydra)
+
+## LICENSE
+
+[MIT](LICENSE)

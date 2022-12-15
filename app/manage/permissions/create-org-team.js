@@ -1,4 +1,4 @@
-const { isOwner, isManager } = require('../../lib/organization')
+const { isOwner, isManager } = require('../../../src/models/organization')
 
 /**
  * organization:create-team
@@ -11,7 +11,7 @@ const { isOwner, isManager } = require('../../lib/organization')
  * @param {int} params.id - organization id
  * @returns {Promise<boolean>}
  */
-async function createOrgTeam (uid, { id }) {
+async function createOrgTeam(uid, { id }) {
   return (await isOwner(id, uid)) || isManager(id, uid)
 }
 

@@ -1,4 +1,4 @@
-const { isMemberOrStaff } = require('../../lib/organization')
+const { isMemberOrStaff } = require('../../../src/models/organization')
 
 /**
  * org:member
@@ -9,7 +9,7 @@ const { isMemberOrStaff } = require('../../lib/organization')
  * @param {Object} params request parameters
  * @returns {boolean} can the request go through?
  */
-async function memberOrg (uid, { id }) {
+async function memberOrg(uid, { id }) {
   try {
     return await isMemberOrStaff(id, uid)
   } catch (e) {
