@@ -152,8 +152,7 @@ class Clients extends Component {
                   <div>({client.client_id})</div>
                 </div>
                 <Button
-                  size='small'
-                  variant='danger'
+                  variant='danger small'
                   onClick={() => this.deleteClient(client.client_id)}
                 >
                   Delete

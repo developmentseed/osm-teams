@@ -3,7 +3,6 @@ import Router, { withRouter } from 'next/router'
 import {
   getOrg,
   getOrgStaff,
-  getOrgTeams,
   getMembers,
   addManager,
   removeManager,
@@ -25,6 +24,7 @@ import { assoc, propEq, find, contains, prop, map } from 'ramda'
 import APIClient from '../../../lib/api-client'
 import join from 'url-join'
 import { getSession } from 'next-auth/react'
+import TeamsTable from '../../../components/organizations/teams-table'
 
 const URL = process.env.APP_URL
 
@@ -76,7 +76,6 @@ class Organization extends Component {
   async componentDidMount() {
     this.setState({ session: await getSession() })
     await this.getOrg()
-    await this.getOrgTeams()
     await this.getOrgStaff()
     await this.getBadges()
     return this.getMembers(0)
@@ -180,22 +179,6 @@ class Organization extends Component {
       })
     }
   }
-  async getOrgTeams() {
-    const { id } = this.props
-    try {
-      const teams = await getOrgTeams(id)
-      this.setState({
-        teams,
-      })
-    } catch (e) {
-      console.error(e)
-      this.setState({
-        error: e,
-        teams: [],
-        loading: false,
-      })
-    }
-  }
 
   renderStaff(owners, managers) {
     const columns = [{ key: 'name' }, { key: 'id' }, { key: 'role' }]
@@ -220,32 +203,6 @@ class Organization extends Component {
     )
   }
 
-  renderOrgTeams(teams) {
-    const columns = [{ key: 'name' }, { key: 'id' }, { key: 'members' }]
-    const teamRows = teams.map(({ name, id, members }) => {
-      return {
-        name,
-        id,
-        members: members.length,
-      }
-    })
-
-    return (
-      <Table
-        rows={teamRows}
-        columns={columns}
-        emptyPlaceHolder={
-          this.state.loading ? 'Loading...' : 'This organization has no teams.'
-        }
-        onRowClick={(row) => {
-          Router.push(
-            join(URL, `/team?id=${row.id}`),
-            join(URL, `/teams/${row.id}`)
-          )
-        }}
-      />
-    )
-  }
   async getBadges() {
     try {
       const { id: orgId } = this.props
@@ -322,7 +279,7 @@ class Organization extends Component {
   }
 
   render() {
-    const { org, members, managers, owners, error, teams } = this.state
+    const { org, members, managers, owners, error } = this.state
     if (!org) return null
 
     const userId = parseInt(this.state.session.user_id)
@@ -426,7 +383,7 @@ class Organization extends Component {
           <Section>
             <SectionHeader>Teams</SectionHeader>
           </Section>
-          <div>{this.renderOrgTeams(teams)}</div>
+          <TeamsTable orgId={org.id} />
         </div>
 
         {isOrgPublic || isMemberOfOrg ? (

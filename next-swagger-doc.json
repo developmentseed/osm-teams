@@ -1,7 +1,7 @@
 {
-  "apiFolder": "src/pages/api",
+  "apiFolder": "src",
   "schemaFolders": [
-    "models"
+    "src"
   ],
   "definition": {
     "openapi": "3.0.0",

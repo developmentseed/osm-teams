@@ -205,11 +205,12 @@ test('get org teams', async (t) => {
   await organization.createOrgTeam(res.body.id, { name: teamName1 }, 1)
   await organization.createOrgTeam(res.body.id, { name: teamName2 }, 1)
 
-  const orgTeams = await user1Agent.get(
-    `/api/organizations/${res.body.id}/teams`
-  )
-  t.is(orgTeams.body.length, 2)
-  orgTeams.body.forEach((item) => {
+  const {
+    body: { data },
+  } = await user1Agent.get(`/api/organizations/${res.body.id}/teams`)
+
+  t.is(data.length, 2)
+  data.forEach((item) => {
     t.truthy(item.name)
     t.truthy(item.id)
     t.truthy(item.members.length)

@@ -35,7 +35,7 @@ async function listTeams(req, reply) {
 async function listMyTeams(req, reply) {
   const { user_id: osmId } = req.session
   try {
-    const memberOfTeams = await team.list({ osmId })
+    const memberOfTeams = await team.list({ osmId, disableLimit: true })
     const moderatorOfTeams = await team.listModeratedBy(osmId)
     const result = {
       osmId,

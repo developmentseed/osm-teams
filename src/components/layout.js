@@ -74,6 +74,10 @@ export const globalStyles = css.global`
     margin-bottom: calc(${theme.layout.globalSpacing} * 4);
   }
 
+  .inner.page section {
+    margin-bottom: calc(${theme.layout.globalSpacing} * 2);
+  }
+
   .page__heading {
     display: flex;
     justify-content: space-between;
@@ -241,7 +245,7 @@ export const globalStyles = css.global`
 
   #feedback {
     position: fixed;
-    right: -3.5rem;
+    right: -2rem;
     bottom: 12rem;
     z-index: 1200;
     transform: rotate(-90deg);

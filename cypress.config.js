@@ -21,25 +21,20 @@ module.exports = defineConfig({
           return null
         },
         'db:seed': async () => {
-          // Add teams
-          await Promise.all(
-            [
-              [
-                {
-                  name: 'Team 1',
-                },
-                user1.id,
-              ],
-              [
-                {
-                  name: 'Team 2',
-                  privacy: 'private',
-                },
-                user1.id,
-              ],
-            ].map((args) => Team.create(...args))
+          // Add teams in series
+          await Team.create(
+            {
+              name: 'Team 1',
+            },
+            user1.id
           )
-
+          await Team.create(
+            {
+              name: 'Team 2',
+              privacy: 'private',
+            },
+            user1.id
+          )
           return null
         },
         'db:seed:team-invitations': async (teamInvitations) => {
