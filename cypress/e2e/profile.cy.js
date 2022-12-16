@@ -50,7 +50,7 @@ describe('Profile page', () => {
     cy.get('[data-cy=my-teams-table-pagination]').should('not.exist')
   })
 
-  it.only('Teams list is paginated', () => {
+  it('Teams list is paginated', () => {
     // Add teams with user1 as creator
     cy.task('db:seed:teams', { teams: user1teams, moderatorId: user1.id })
 
