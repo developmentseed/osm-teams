@@ -175,7 +175,9 @@ test('remove manager', async (t) => {
 /**
  * Create org team
  */
-test('create an on org team', async (t) => {
+test('create an org team', async (t) => {
+  await resetDb()
+
   const teamName = 'create org team - team 1'
   const res = await user1Agent
     .post('/api/organizations')
@@ -187,14 +189,16 @@ test('create an on org team', async (t) => {
     .send({ name: teamName })
     .expect(200)
 
-  const orgTeams = await team.list({ organizationId: res.body.id })
-  t.is(orgTeams.length, 1)
+  const { data } = await team.list({ organizationId: res.body.id })
+  t.is(data.length, 1)
 })
 
 /**
  * Get org teams
  */
 test('get org teams', async (t) => {
+  await resetDb()
+
   const teamName1 = 'get org team - team 1'
   const teamName2 = 'get org team - team 2'
   const res = await user1Agent
@@ -206,14 +210,15 @@ test('get org teams', async (t) => {
   await organization.createOrgTeam(res.body.id, { name: teamName2 }, 1)
 
   const {
-    body: { data },
+    body: {
+      pagination: { total },
+      data,
+    },
   } = await user1Agent.get(`/api/organizations/${res.body.id}/teams`)
 
-  t.is(data.length, 2)
+  t.is(total, 2)
   data.forEach((item) => {
     t.truthy(item.name)
     t.truthy(item.id)
-    t.truthy(item.members.length)
-    t.truthy(item.moderators.length)
   })
 })
