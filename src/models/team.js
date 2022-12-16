@@ -178,9 +178,7 @@ async function count({ organizationId }) {
  **/
 async function list(options) {
   options = options || {}
-  const { osmId, bbox, organizationId, disableLimit } = options
-
-  const page = options.page || 0
+  const { osmId, bbox, organizationId } = options
 
   const st = knexPostgis(db)
 
@@ -209,9 +207,11 @@ async function list(options) {
   // Always sort by team name
   query = query.orderBy('name')
 
-  return disableLimit
-    ? query
-    : query.limit(DEFAULT_LIMIT).offset(page * DEFAULT_LIMIT)
+  return query.paginate({
+    isLengthAware: true,
+    currentPage: options.page || 1,
+    perPage: DEFAULT_LIMIT,
+  })
 }
 
 /**
@@ -277,7 +277,6 @@ async function create(data, osmId, trx) {
       location: st.setSRID(st.geomFromGeoJSON(data.location), 4326),
     })
   }
-
   return conn.transaction(async (trx) => {
     const [row] = await trx('team')
       .insert(data)

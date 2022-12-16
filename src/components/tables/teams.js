@@ -7,9 +7,10 @@ import { useState } from 'react'
 import Pagination from '../pagination'
 
 function TeamsTable({ type, orgId }) {
-  const [page, setPage] = useState(0)
+  const [page, setPage] = useState(1)
 
   let apiBasePath
+  let emptyMessage
 
   switch (type) {
     case 'all-teams':
@@ -17,16 +18,18 @@ function TeamsTable({ type, orgId }) {
       break
     case 'my-teams':
       apiBasePath = '/my/teams'
+      emptyMessage = 'You are not part of a team yet.'
       break
     case 'org-teams':
       apiBasePath = `/organizations/${orgId}/teams`
+      emptyMessage = 'This organization has no teams.'
       break
     default:
       break
   }
 
   const {
-    result: { total, data },
+    result: { data, pagination },
     isLoading,
   } = useFetchList(`${apiBasePath}?page=${page}`)
 
@@ -38,9 +41,7 @@ function TeamsTable({ type, orgId }) {
         data-cy={`${type}-table`}
         rows={data}
         columns={columns}
-        emptyPlaceHolder={
-          isLoading ? 'Loading...' : 'This organization has no teams.'
-        }
+        emptyPlaceHolder={isLoading ? 'Loading...' : emptyMessage}
         onRowClick={(row) => {
           Router.push(
             join(URL, `/team?id=${row.id}`),
@@ -48,12 +49,10 @@ function TeamsTable({ type, orgId }) {
           )
         }}
       />
-      {total > 0 && (
+      {pagination?.total > 0 && (
         <Pagination
           data-cy={`${type}-table-pagination`}
-          pageSize={10}
-          currentPage={page}
-          totalRecords={total}
+          pagination={pagination}
           setPage={setPage}
         />
       )}

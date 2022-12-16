@@ -1,4 +1,3 @@
-import { teamsMembersModeratorsHelper } from '../../../../../app/manage/utils'
 import { createBaseHandler } from '../../../../middlewares/base-handler'
 import { validate } from '../../../../middlewares/validation'
 import Organization from '../../../../models/organization'
@@ -103,10 +102,7 @@ handler.post(
  */
 handler.get(canViewOrgMembers, async function (req, res) {
   const { orgId, page } = req.query
-  const data = await Team.list({ organizationId: orgId, page })
-  const enhancedData = await teamsMembersModeratorsHelper(data)
-  const total = await Team.count({ organizationId: orgId })
-  return res.send({ data: enhancedData, total })
+  return res.send(await Team.list({ organizationId: orgId, page }))
 })
 
 export default handler
