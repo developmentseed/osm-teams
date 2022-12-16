@@ -92,15 +92,15 @@ describe('Profile page', () => {
       cy.get('[data-cy=next-page-button]').click()
     })
 
-    // // Item from page 3 is present
-    // cy.get('[data-cy=my-teams-table]').contains('Team 3')
+    // Item from page 3 is present
+    cy.get('[data-cy=my-teams-table]').contains('Team 3')
 
-    // // Click previous page button
-    // cy.get('[data-cy=my-teams-table-pagination]').within(() => {
-    //   cy.get('[data-cy=previous-page-button]').click()
-    // })
+    // Click previous page button
+    cy.get('[data-cy=my-teams-table-pagination]').within(() => {
+      cy.get('[data-cy=previous-page-button]').click()
+    })
 
-    // // Item from page 2 is present
-    // cy.get('[data-cy=my-teams-table]').contains('Team 2')
+    // Item from page 2 is present
+    cy.get('[data-cy=my-teams-table]').contains('Team 2')
   })
 })
