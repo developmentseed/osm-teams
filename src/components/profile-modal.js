@@ -182,9 +182,9 @@ export default function ProfileModal({
     <article className='modal__body'>
       <div className='modal__header'>
         <div className='user__item'>
-          {user.img ? (
+          {user.image ? (
             <figure>
-              <img src={user.img} />
+              <img src={user.image} />
             </figure>
           ) : (
             <figure>
