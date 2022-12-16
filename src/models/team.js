@@ -173,13 +173,11 @@ async function count({ organizationId }) {
  * @param {int} options.osmId - filter by whether osmId is a member
  * @param {int} options.organizationId - filter by whether team belongs to organization
  * @param {Array[float]} options.bbox - filter for teams whose location is in bbox (xmin, ymin, xmax, ymax)
- * @param {bool} options.disableLimit - Return all fields when true
+ * @param {bool} options.disablePagination - Return all fields when true
  * @return {Promise[Array]}
  **/
-async function list(options) {
-  options = options || {}
-  const { osmId, bbox, organizationId } = options
-
+async function list(options = {}) {
+  const { bbox, osmId, organizationId, page, disablePagination } = options
   const st = knexPostgis(db)
 
   let query = db('team').select(...teamAttributes, st.asGeoJSON('location'))
@@ -207,11 +205,13 @@ async function list(options) {
   // Always sort by team name
   query = query.orderBy('name')
 
-  return query.paginate({
-    isLengthAware: true,
-    currentPage: options.page || 1,
-    perPage: DEFAULT_LIMIT,
-  })
+  return disablePagination
+    ? query
+    : query.paginate({
+        isLengthAware: true,
+        currentPage: page || 1,
+        perPage: DEFAULT_LIMIT,
+      })
 }
 
 /**

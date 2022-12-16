@@ -23,7 +23,11 @@ async function listTeams(req, reply) {
   }
 
   try {
-    const data = await team.list({ osmId, bbox: bounds })
+    const data = await team.list({
+      osmId,
+      bbox: bounds,
+      disablePagination: true,
+    })
     const enhancedData = await teamsMembersModeratorsHelper(data)
     reply.send(enhancedData)
   } catch (err) {
