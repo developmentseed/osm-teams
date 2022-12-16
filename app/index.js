@@ -30,6 +30,14 @@ app.use(boom())
 async function init() {
   await nextApp.prepare()
 
+  // On maintenance mode, render maintenance page
+  if (process.env.MAINTENANCE_MODE === 'true') {
+    app.get('/*', (req, res) => {
+      return nextApp.render(req, res, '/maintenance')
+    })
+    return app
+  }
+
   /**
    * Sub apps init
    */

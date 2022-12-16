@@ -22,7 +22,7 @@ handler.use(
 
 /**
  * @swagger
- * /api/organizations/{id}/teams:
+ * /organizations/{id}/teams:
  *   post:
  *     summary: Add a team to this organization. Only owners and managers can add new teams.
  *     tags:
@@ -74,7 +74,7 @@ handler.post(
 
 /**
  * @swagger
- * /api/organizations/{id}/teams:
+ * /organizations/{id}/teams:
  *   get:
  *     summary: Get list of teams of an organization
  *     tags:
