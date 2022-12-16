@@ -32,22 +32,6 @@ async function listTeams(req, reply) {
   }
 }
 
-async function listMyTeams(req, reply) {
-  const { user_id: osmId } = req.session
-  try {
-    const memberOfTeams = await team.list({ osmId, disableLimit: true })
-    const moderatorOfTeams = await team.listModeratedBy(osmId)
-    const result = {
-      osmId,
-      member: memberOfTeams,
-      moderator: moderatorOfTeams,
-    }
-    reply.send(result)
-  } catch (err) {
-    throw Boom.badRequest(err.message)
-  }
-}
-
 async function getTeam(req, reply) {
   const { id } = req.params
 
@@ -410,7 +394,6 @@ module.exports = {
   getTeamMembers,
   joinTeam,
   listTeams,
-  listMyTeams,
   removeMember,
   removeModerator,
   updateMembers,

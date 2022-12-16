@@ -7,8 +7,7 @@ import SectionHeader from '../components/section-header'
 import Table from '../components/tables/table'
 import { assoc, flatten, propEq, find } from 'ramda'
 import { listMyOrganizations } from '../models/organization'
-import team from '../models/team'
-import { teamsMembersModeratorsHelper } from '../../app/manage/utils'
+import TeamsTable from '../components/tables/teams'
 
 const URL = process.env.APP_URL
 
@@ -47,26 +46,7 @@ function OrganizationsSection({ orgs }) {
   )
 }
 
-function TeamsSection({ teams }) {
-  if (teams.length === 0) {
-    return <p className='inner page'>No teams</p>
-  }
-
-  return (
-    <Table
-      rows={teams}
-      columns={[{ key: 'name' }, { key: 'id' }, { key: 'hashtag' }]}
-      onRowClick={(row) => {
-        Router.push(
-          join(URL, `/team?id=${row.id}`),
-          join(URL, `/teams/${row.id}`)
-        )
-      }}
-    />
-  )
-}
-
-export default function Profile({ orgs, teams }) {
+export default function Profile({ orgs }) {
   const { status } = useSession({
     required: true,
     onUnauthenticated() {
@@ -91,7 +71,7 @@ export default function Profile({ orgs, teams }) {
       ) : null}
       <Section>
         <SectionHeader>Your Teams</SectionHeader>
-        {<TeamsSection teams={teams} />}
+        <TeamsTable type='my-teams' />
       </Section>
     </div>
   )
@@ -104,10 +84,6 @@ export async function getServerSideProps(ctx) {
   // Get orgs
   const orgs = await listMyOrganizations(userId)
 
-  // Get user teams (mimic API call)
-  const data = await team.list({ osmId: userId })
-  const teams = await teamsMembersModeratorsHelper(data)
-
   // Make sure response is JSON
-  return JSON.parse(JSON.stringify({ props: { orgs, teams } }))
+  return JSON.parse(JSON.stringify({ props: { orgs } }))
 }

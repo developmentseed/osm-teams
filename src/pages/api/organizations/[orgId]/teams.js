@@ -9,18 +9,6 @@ import canCreateOrgTeam from '../../../../middlewares/can/create-org-team'
 const handler = createBaseHandler()
 
 /**
- * Validate query params
- */
-handler.use(
-  validate({
-    query: Yup.object({
-      orgId: Yup.number().required().positive().integer(),
-      page: Yup.number().min(0).integer(),
-    }).required(),
-  })
-)
-
-/**
  * @swagger
  * /organizations/{id}/teams:
  *   post:
@@ -53,6 +41,9 @@ handler.use(
 handler.post(
   canCreateOrgTeam,
   validate({
+    query: Yup.object({
+      orgId: Yup.number().required().positive().integer(),
+    }).required(),
     body: Yup.object({
       name: Yup.string().required(),
       location: Yup.string(),
@@ -100,9 +91,18 @@ handler.post(
  *                 items:
  *                   $ref: '#/components/schemas/ArrayOfTeams'
  */
-handler.get(canViewOrgMembers, async function (req, res) {
-  const { orgId, page } = req.query
-  return res.send(await Team.list({ organizationId: orgId, page }))
-})
+handler.get(
+  canViewOrgMembers,
+  validate({
+    query: Yup.object({
+      orgId: Yup.number().required().positive().integer(),
+      page: Yup.number().min(0).integer(),
+    }).required(),
+  }),
+  async function (req, res) {
+    const { orgId, page } = req.query
+    return res.send(await Team.list({ organizationId: orgId, page }))
+  }
+)
 
 export default handler

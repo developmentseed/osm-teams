@@ -1,6 +1,5 @@
 import React from 'react'
 import T from 'prop-types'
-
 import Button from './button'
 
 const PAGE_INDEX_START = 1

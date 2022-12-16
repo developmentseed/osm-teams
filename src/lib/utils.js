@@ -25,6 +25,6 @@ export function toDateString(timestamp) {
  * @param {Number} initialValue Initial value
  * @returns
  */
-export function generateSequenceArray(length, initialValue) {
+export function generateSequenceArray(length, initialValue = 0) {
   return Array.from({ length }, (_, i) => i + initialValue)
 }
