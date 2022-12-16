@@ -30,11 +30,12 @@ const DEFAULT_LIMIT = 10
  *             id:
  *               type: integer
  *               description: The team ID.
+ *               example: 10
  *         - $ref: '#/components/schemas/NewTeam'
  *     ArrayOfTeams:
  *       type: array
  *       items:
- *         $ref: '#/components/schemas/NewTeam'
+ *         $ref: '#/components/schemas/Team'
  *
  */
 

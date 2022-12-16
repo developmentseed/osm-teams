@@ -85,10 +85,9 @@ handler.post(
  *             schema:
  *               type: object
  *               properties:
- *                 total:
- *                   type: integer
- *                   description: Total number of teams in the organization.
- *                 items:
+ *                 pagination:
+ *                   $ref: '#/components/schemas/Pagination'
+ *                 data:
  *                   $ref: '#/components/schemas/ArrayOfTeams'
  */
 handler.get(

@@ -7,7 +7,7 @@ const handler = createBaseHandler()
 
 /**
  * @swagger
- * /api/my/teams:
+ * /my/teams:
  *   get:
  *     summary: Get list of teams the logged user is member or moderator
  *     tags:
@@ -20,10 +20,9 @@ const handler = createBaseHandler()
  *             schema:
  *               type: object
  *               properties:
- *                 total:
- *                   type: integer
- *                   description: Total number of teams
- *                 items:
+ *                 pagination:
+ *                   $ref: '#/components/schemas/Pagination'
+ *                 data:
  *                   $ref: '#/components/schemas/ArrayOfTeams'
  */
 handler.get(
