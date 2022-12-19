@@ -1,4 +1,5 @@
 const db = require('../lib/db')
+const logger = require('../lib/logger')
 const knexPostgis = require('knex-postgis')
 const join = require('url-join')
 const xml2js = require('xml2js')
@@ -117,7 +118,7 @@ async function resolveMemberNames(ids) {
       })
       await db('usernames').insert(usersToInsert)
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       throw new Error('Could not resolve usernames from OSM')
     }
   }
