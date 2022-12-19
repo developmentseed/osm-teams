@@ -3,6 +3,10 @@ const team = require('./team')
 const { map, prop, includes, has, isNil } = require('ramda')
 const { unpack, PropertyRequiredError } = require('../../app/lib/utils')
 
+const { serverRuntimeConfig } = require('../../next.config')
+
+const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
+
 // Organization attributes (without profile)
 const orgAttributes = [
   'id',
@@ -244,34 +248,57 @@ async function createOrgTeam(organizationId, data, osmId) {
  * Get all members and associated teams of an organization
  * We get all members of all associated teams with this organization
  * @param {int} organizationId - organization id
+ * @param {object} options - pagination params
+ *
  */
-async function getMembers(organizationId, page) {
-  if (!organizationId) throw new PropertyRequiredError('organization id')
+async function getMembers(organizationId, options) {
+  const currentPage = options?.page || 1
 
-  const subquery = db('organization_team')
+  // Sub-query for all org teams
+  const allOrgTeamsQuery = db('organization_team')
     .select('team_id')
     .where('organization_id', organizationId)
-  let query = db('member')
-    .select(db.raw('array_agg(team_id) as teams, osm_id'))
-    .where('team_id', 'in', subquery)
-    .groupBy('osm_id')
 
-  if (page) {
-    query = query.limit(50).offset(page * 20)
+  // Get list of member of org teams, paginated
+  const result = await db('member')
+    .select('osm_id')
+    .where('team_id', 'in', allOrgTeamsQuery)
+    .groupBy('osm_id')
+    .orderBy('osm_id')
+    .paginate({
+      isLengthAware: true,
+      currentPage,
+      perPage: DEFAULT_PAGE_SIZE,
+    })
+
+  // Resolver member names
+  const data = await team.resolveMemberNames(result.data.map((m) => m.osm_id))
+
+  return {
+    ...result,
+    data,
   }
-  return query
 }
 
 /**
- * Checks if an osmId is part of an organization members
+ * Check if user is part of an organization team
  * @param {int} organizationId - organization id
  * @param {int} osmId - id of member we are testing
  */
 async function isMember(organizationId, osmId) {
-  if (!osmId) throw new PropertyRequiredError('osm id')
-  const members = await getMembers(organizationId)
-  const memberIds = members.map(prop('osm_id'))
-  return includes(Number(osmId), map(Number, memberIds))
+  // Sub-query for all org teams
+  const orgTeamsQuery = db('organization_team')
+    .select('team_id')
+    .where('organization_id', organizationId)
+
+  // Check if user is member of at least one org team
+  const memberships = await db('member')
+    .select('osm_id')
+    .where('team_id', 'in', orgTeamsQuery)
+    .where('osm_id', osmId)
+    .limit(1)
+
+  return memberships.length > 0
 }
 
 /**

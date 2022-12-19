@@ -52,6 +52,13 @@ module.exports = defineConfig({
           }
           return null
         },
+        'db:seed:add-members-to-team': async ({ teamId, members }) => {
+          for (let i = 0; i < members.length; i++) {
+            const member = members[i]
+            await Team.addMember(teamId, member.id)
+          }
+          return null
+        },
         'db:seed:team-invitations': async (teamInvitations) => {
           return Promise.all(teamInvitations.map(TeamInvitation.create))
         },
@@ -62,7 +69,11 @@ module.exports = defineConfig({
             )
           )
         },
-        'db:seed:organization-teams': async ({ orgId, teams, managerId }) => {
+        'db:seed:add-organization-teams': async ({
+          orgId,
+          teams,
+          managerId,
+        }) => {
           return Promise.all(
             teams.map((team) =>
               Organization.createOrgTeam(orgId, pick(['name'], team), managerId)

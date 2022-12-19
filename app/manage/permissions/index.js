@@ -24,7 +24,6 @@ const teamPermissions = {
 const organizationPermissions = {
   'organization:edit': require('./edit-org'),
   'organization:member': require('./member-org'),
-  'organization:view-members': require('./view-org-members'),
   'organization:view-team-keys': require('./view-org-team-keys'),
 }
 

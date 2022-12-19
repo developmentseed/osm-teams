@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import Router, { withRouter } from 'next/router'
 import {
   getOrg,
-  getOrgStaff,
-  getMembers,
   addManager,
   removeManager,
   addOwner,
@@ -20,11 +18,12 @@ import SvgSquare from '../../../components/svg-square'
 import Button from '../../../components/button'
 import Modal from 'react-modal'
 import ProfileModal from '../../../components/profile-modal'
-import { assoc, propEq, find, contains, prop, map } from 'ramda'
+import { contains, prop, map } from 'ramda'
 import APIClient from '../../../lib/api-client'
 import join from 'url-join'
 import { getSession } from 'next-auth/react'
 import TeamsTable from '../../../components/tables/teams'
+import UsersTable from '../../../components/tables/users'
 
 const URL = process.env.APP_URL
 
@@ -76,9 +75,9 @@ class Organization extends Component {
   async componentDidMount() {
     this.setState({ session: await getSession() })
     await this.getOrg()
-    await this.getOrgStaff()
+    // await this.getOrgStaff()
     await this.getBadges()
-    return this.getMembers(0)
+    // return this.getMembers(0)
   }
 
   async openProfileModal(user) {
@@ -115,54 +114,6 @@ class Organization extends Component {
     })
   }
 
-  async getOrgStaff() {
-    const { id } = this.props
-    try {
-      let { managers, owners } = await getOrgStaff(id)
-      this.setState({
-        managers,
-        owners,
-      })
-    } catch (e) {
-      console.error(e)
-      this.setState({
-        error: e,
-        managers: [],
-        owners: [],
-        loading: false,
-      })
-    }
-  }
-
-  async getMembers(currentPage) {
-    const { id } = this.props
-    try {
-      let { members, page } = await getMembers(id, currentPage)
-      this.setState({
-        members,
-        page: Number(page),
-        loading: false,
-      })
-    } catch (e) {
-      console.error(e)
-      this.setState({
-        error: e,
-        org: null,
-        loading: false,
-      })
-    }
-  }
-
-  async getNextPage() {
-    this.setState({ loading: true })
-    await this.getMembers(this.state.page + 1)
-  }
-
-  async getPrevPage() {
-    this.setState({ loading: true })
-    await this.getMembers(this.state.page - 1)
-  }
-
   async getOrg() {
     const { id } = this.props
     try {
@@ -178,29 +129,6 @@ class Organization extends Component {
         loading: false,
       })
     }
-  }
-
-  renderStaff(owners, managers) {
-    const columns = [{ key: 'name' }, { key: 'id' }, { key: 'role' }]
-    const ownerRows = owners.map(assoc('role', 'owner'))
-    const managerRows = managers.map(assoc('role', 'manager'))
-    let allRows = ownerRows
-    managerRows.forEach((row) => {
-      if (!find(propEq('id', row.id))(ownerRows)) {
-        ownerRows.push(row)
-      }
-    })
-
-    return (
-      <Table
-        rows={allRows}
-        columns={columns}
-        emptyPlaceHolder={
-          this.state.loading ? 'Loading...' : 'This organization has no staff.'
-        }
-        onRowClick={(row) => this.openProfileModal(row)}
-      />
-    )
   }
 
   async getBadges() {
@@ -262,24 +190,8 @@ class Organization extends Component {
     ) : null
   }
 
-  renderMembers(memberRows) {
-    const columns = [{ key: 'name' }, { key: 'id' }]
-    return (
-      <Table
-        rows={memberRows}
-        columns={columns}
-        emptyPlaceHolder={
-          this.state.loading
-            ? 'Loading...'
-            : 'This organization has no members.'
-        }
-        onRowClick={(row) => this.openProfileModal(row)}
-      />
-    )
-  }
-
   render() {
-    const { org, members, managers, owners, error } = this.state
+    const { org, managers, owners, error } = this.state
     if (!org) return null
 
     const userId = parseInt(this.state.session.user_id)
@@ -403,7 +315,7 @@ class Organization extends Component {
                 </div>
               </div>
             </Section>
-            {this.renderStaff(owners, managers)}
+            <UsersTable type='org-staff' orgId={org.id} />
           </div>
         ) : (
           <div />
@@ -437,7 +349,7 @@ class Organization extends Component {
                 </div>
               </div>
             </Section>
-            {this.renderMembers(members)}
+            <UsersTable type='org-members' orgId={org.id} />
           </div>
         ) : (
           <div />

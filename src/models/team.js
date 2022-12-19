@@ -5,10 +5,10 @@ const xml2js = require('xml2js')
 const { unpack } = require('../../app/lib/utils')
 const { prop, isEmpty } = require('ramda')
 const request = require('request-promise-native')
+const { addZeroPadding } = require('../lib/utils')
 
 const { serverRuntimeConfig } = require('../../next.config')
-
-const DEFAULT_LIMIT = 10
+const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
 /**
  * @swagger
@@ -211,7 +211,7 @@ async function list(options = {}) {
     : query.paginate({
         isLengthAware: true,
         currentPage: page || 1,
-        perPage: DEFAULT_LIMIT,
+        perPage: DEFAULT_PAGE_SIZE,
       })
 }
 

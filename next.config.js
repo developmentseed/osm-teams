@@ -4,6 +4,7 @@ const vercelUrl =
 
 module.exports = {
   serverRuntimeConfig: {
+    DEFAULT_PAGE_SIZE: 10,
     NODE_ENV: process.env.NODE_ENV || 'development',
     OSM_DOMAIN: process.env.OSM_DOMAIN || 'https://www.openstreetmap.org',
     OSM_API:

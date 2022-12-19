@@ -27,9 +27,7 @@ const {
   removeOwner,
   addManager,
   removeManager,
-  getOrgMembers,
   listMyOrgs,
-  getOrgStaff,
 } = require('./organizations')
 
 const {
@@ -123,16 +121,6 @@ function manageRouter(handler) {
   handler.get('/api/organizations/:id', can('public:authenticated'), getOrg)
   handler.put('/api/organizations/:id', can('organization:edit'), updateOrg)
   handler.delete('/api/organizations/:id', can('organization:edit'), destroyOrg)
-  handler.get(
-    '/api/organizations/:id/staff',
-    can('organization:view-members'),
-    getOrgStaff
-  )
-  handler.get(
-    '/api/organizations/:id/members',
-    can('organization:view-members'),
-    getOrgMembers
-  )
 
   handler.put(
     '/api/organizations/:id/addOwner/:osmId',
