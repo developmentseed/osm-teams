@@ -381,11 +381,10 @@ async function isManager(organizationId, osmId) {
  * @param {Object} options.organizationId - filter by organization
  * @param {Object} options.osmId - filter by osm id
  */
-async function getOrgStaff(options) {
+async function getOrgStaff(options = {}) {
+  console.log('getOrgStaff')
   let ownerQuery = db('organization_owner')
-    .select(
-      db.raw("organization_id, osm_id, 'owner' as type, organization.name")
-    )
+    .select(db.raw("organization_id, osm_id, 'owner' as type"))
     .join(
       'organization',
       'organization.id',
@@ -393,9 +392,7 @@ async function getOrgStaff(options) {
     )
 
   let managerQuery = db('organization_manager')
-    .select(
-      db.raw("organization_id, osm_id, 'manager' as type, organization.name")
-    )
+    .select(db.raw("organization_id, osm_id, 'manager' as type"))
     .join(
       'organization',
       'organization.id',
@@ -413,7 +410,20 @@ async function getOrgStaff(options) {
       options.osmId
     )
   }
-  return ownerQuery.unionAll(managerQuery)
+
+  const result = await ownerQuery.unionAll(managerQuery).paginate({
+    isLengthAware: true,
+    currentPage: options.page || 1,
+    perPage: DEFAULT_PAGE_SIZE,
+  })
+
+  // Resolver member names
+  const data = await team.resolveMemberNames(result.data.map((m) => m.osm_id))
+
+  return {
+    ...result,
+    data,
+  }
 }
 
 /**

@@ -9,15 +9,22 @@ function UsersTable({ type, orgId, onRowClick }) {
 
   let apiBasePath
   let emptyMessage
+  let columns
 
   switch (type) {
     case 'org-members':
       apiBasePath = `/organizations/${orgId}/members`
       emptyMessage = 'No members yet.'
+      columns = [{ key: 'name' }, { key: 'id', label: 'OSM ID' }]
       break
     case 'org-staff':
       apiBasePath = `/organizations/${orgId}/staff`
       emptyMessage = 'No staff found.'
+      columns = [
+        { key: 'name' },
+        { key: 'id', label: 'OSM ID' },
+        { key: 'type' },
+      ]
       break
     default:
       break
@@ -27,8 +34,6 @@ function UsersTable({ type, orgId, onRowClick }) {
     result: { data, pagination },
     isLoading,
   } = useFetchList(`${apiBasePath}?page=${page}`)
-
-  const columns = [{ key: 'name' }, { key: 'id', label: 'OSM ID' }]
 
   return (
     <>
