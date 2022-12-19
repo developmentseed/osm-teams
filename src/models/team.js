@@ -71,7 +71,7 @@ async function resolveMemberNames(ids) {
   if (process.env.TESTING === 'true') {
     return ids.map((id) => ({
       id,
-      name: `User ${id}`,
+      name: `User ${addZeroPadding(id, 3)}`, // use zero-padded number for consistent table sorting
       image: `https://via.placeholder.com/150`,
     }))
   }

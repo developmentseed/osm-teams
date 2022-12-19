@@ -21,7 +21,7 @@ describe('Teams page', () => {
     // Signed in team member
     cy.login({
       id: 1,
-      display_name: 'User 1',
+      display_name: 'User 001',
     })
     cy.visit('/teams/1')
     cy.get('body').should('contain', 'Team Members')
