@@ -1,6 +1,6 @@
 const db = require('../lib/db')
 const team = require('./team')
-const { map, prop, includes, has, isNil } = require('ramda')
+const { map, prop, includes, has, isNil, find, propEq } = require('ramda')
 const { unpack, PropertyRequiredError } = require('../../app/lib/utils')
 
 const { serverRuntimeConfig } = require('../../next.config')
@@ -381,36 +381,46 @@ async function isManager(organizationId, osmId) {
  * @param {Object} options.organizationId - filter by organization
  * @param {Object} options.osmId - filter by osm id
  */
-async function getOrgStaff(options = {}) {
+async function getOrgStaff(organizationId, options = {}) {
   // Get owners
   let ownerQuery = db('organization_owner')
     .select(db.raw("organization_id, osm_id, 'owner' as type"))
-    .where('organization_id', options.organizationId)
+    .where('organization_id', organizationId)
 
   // Get managers that are not owners
   let managerQuery = db('organization_manager')
     .select(db.raw("organization_id, osm_id, 'manager' as type"))
-    .where('organization_id', options.organizationId)
+    .where('organization_id', organizationId)
     .whereNotIn(
       'osm_id',
       db('organization_owner')
         .select('osm_id')
-        .where('organization_id', options.organizationId)
+        .where('organization_id', organizationId)
     )
 
-  // Execute query with paginations
+  // Execute query with pagination
   const result = await ownerQuery.unionAll(managerQuery).paginate({
     isLengthAware: true,
     currentPage: options.page || 1,
     perPage: DEFAULT_PAGE_SIZE,
   })
 
-  // Resolver member names
-  const data = await team.resolveMemberNames(result.data.map((m) => m.osm_id))
+  // Get osm user meta from ids
+  const osmUsers = await team.resolveMemberNames(
+    result.data.map((m) => m.osm_id)
+  )
 
   return {
     ...result,
-    data,
+    // Apply OSM display names to results
+    data: result.data.map((u) => {
+      const osmUser = find(propEq('id', u.osm_id))(osmUsers)
+      return {
+        ...u,
+        id: u.osm_id,
+        name: osmUser?.name || '',
+      }
+    }),
   }
 }
 

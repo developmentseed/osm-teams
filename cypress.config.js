@@ -80,6 +80,13 @@ module.exports = defineConfig({
             )
           )
         },
+        'db:seed:add-organization-managers': async ({ orgId, managerIds }) => {
+          for (let i = 0; i < managerIds.length; i++) {
+            const managerId = managerIds[i]
+            await Organization.addManager(orgId, managerId)
+          }
+          return null
+        },
       })
     },
   },

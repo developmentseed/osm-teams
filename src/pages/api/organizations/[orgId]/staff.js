@@ -37,16 +37,15 @@ handler.get(
   canViewOrgMembers,
   validate({
     query: Yup.object({
-      orgId: Yup.number().required().positive().integer(),
+      orgId: Yup.number().required().positive().integer().required(),
       page: Yup.number().min(0).integer(),
     }).required(),
   }),
   async function (req, res) {
     const { orgId, page } = req.query
 
-    const staff = await Organization.getOrgStaff({
+    const staff = await Organization.getOrgStaff(orgId, {
       page,
-      organizationId: orgId,
     })
 
     return res.send(staff)

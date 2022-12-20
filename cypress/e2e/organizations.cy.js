@@ -1,10 +1,11 @@
 const { generateSequenceArray, addZeroPadding } = require('../../src/lib/utils')
 
-// Owner user
-const user1 = {
-  id: 1,
-  display_name: 'User 001',
-}
+const orgStaff = generateSequenceArray(7, 1).map((i) => ({
+  id: i,
+  name: `User ${addZeroPadding(i, 3)}`,
+}))
+
+const [user1, user2, user3] = orgStaff
 
 // Organization meta
 const org1 = {
@@ -58,7 +59,26 @@ describe('Organization page', () => {
     cy.get('[data-cy=org-teams-table-pagination]').should('not.exist')
   })
 
-  it.only('Display paginated list of teams', () => {
+  it('Organization staff table is populated and paginated', () => {
+    cy.login(user1)
+
+    // Add org staff
+    cy.task('db:seed:add-organization-managers', {
+      orgId: org1.id,
+      managerIds: [user2.id, user3.id],
+    })
+
+    // Check state when teams are available
+    cy.visit('/organizations/1')
+
+    // Org staff table is populated
+    cy.get('[data-cy=org-staff-table]').contains('User 002')
+    cy.get('[data-cy=org-staff-table-pagination]').within(() => {
+      cy.contains('Showing 1-3 of 3')
+    })
+  })
+
+  it('Organization teams and members tables are populated and paginated', () => {
     cy.login(user1)
 
     // Add org teams
@@ -89,6 +109,9 @@ describe('Organization page', () => {
     // Check state when teams are available
     cy.visit('/organizations/1')
 
+    /**
+     * ORG TEAMS
+     */
     cy.get('[data-cy=org-teams-table]').contains('Org 1 Team 010')
 
     // Verify index, then click on last page button
@@ -122,7 +145,9 @@ describe('Organization page', () => {
     // Item from page 2 is present
     cy.get('[data-cy=org-teams-table]').contains('Org 1 Team 015')
 
-    // ORG TEAM MEMBERS
+    /**
+     * ORG TEAM MEMBERS
+     */
     cy.get('[data-cy=org-members-table]').should('exist')
 
     // Click last page button
