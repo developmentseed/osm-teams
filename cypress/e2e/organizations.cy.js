@@ -5,6 +5,11 @@ const user1 = {
   display_name: 'User 1',
 }
 
+const user2 = {
+  id: 2,
+  display_name: 'User 2',
+}
+
 const org1 = {
   id: 1,
   name: 'My org',
@@ -19,12 +24,20 @@ const teams = generateSequenceArray(ORG_TEAMS_COUNT, 1).map((i) => ({
 }))
 
 describe('Organization page', () => {
-  before(() => {
+  it('Test authentication scenarios', () => {
     cy.task('db:reset')
-    cy.task('db:seed:organizations', [org1])
+    cy.task('db:seed:organizations', [{ ...org1, privacy: 'private' }])
+
+    // Private org, non-member user
+    cy.login(user2)
+    cy.visit('/organizations/1')
+    cy.get('body').contains('Unauthorized')
   })
 
   it('Display message when organization has no teams', () => {
+    cy.task('db:reset')
+    cy.task('db:seed:organizations', [org1])
+
     cy.login(user1)
 
     // Check state when no teams are available
@@ -36,6 +49,9 @@ describe('Organization page', () => {
   })
 
   it('Display paginated list of teams', () => {
+    cy.task('db:reset')
+    cy.task('db:seed:organizations', [org1])
+
     cy.login(user1)
 
     // Seed org teams

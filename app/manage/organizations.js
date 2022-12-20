@@ -51,7 +51,12 @@ async function getOrg(req, reply) {
     organization.get(id),
     organization.isMember(id, user_id),
   ])
-  reply.send({ ...data, isMemberOfOrg })
+
+  if (!isMemberOfOrg && data?.privacy === 'private') {
+    throw Boom.unauthorized()
+  } else {
+    reply.send({ ...data, isMemberOfOrg })
+  }
 }
 
 /**

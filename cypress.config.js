@@ -43,7 +43,7 @@ module.exports = defineConfig({
         'db:seed:organizations': async (orgs) => {
           return Promise.all(
             orgs.map((org) =>
-              Organization.create(pick(['name'], org), org.ownerId)
+              Organization.create(pick(['name', 'privacy'], org), org.ownerId)
             )
           )
         },

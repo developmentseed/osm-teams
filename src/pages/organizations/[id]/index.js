@@ -164,14 +164,13 @@ class Organization extends Component {
   }
 
   async getOrg() {
-    const { id } = this.props
+    const { id: orgId } = this.props
     try {
-      let org = await getOrg(id)
+      const org = await apiClient.get(`/organizations/${orgId}`)
       this.setState({
         org,
       })
     } catch (e) {
-      console.error(e)
       this.setState({
         error: e,
         org: null,
@@ -280,16 +279,6 @@ class Organization extends Component {
 
   render() {
     const { org, members, managers, owners, error } = this.state
-    if (!org) return null
-
-    const userId = parseInt(this.state.session.user_id)
-    const ownerIds = map(parseInt, map(prop('id'), owners))
-    const managerIds = map(parseInt, map(prop('id'), managers))
-    const isUserOwner = contains(userId, ownerIds)
-    const disabledLabel = !this.state.loading ? 'primary' : 'disabled'
-
-    const isOrgPublic = org.privacy === 'public'
-    const isMemberOfOrg = org.isMemberOfOrg
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -312,6 +301,17 @@ class Organization extends Component {
         )
       }
     }
+
+    if (!org) return null
+
+    const userId = parseInt(this.state.session.user_id)
+    const ownerIds = map(parseInt, map(prop('id'), owners))
+    const managerIds = map(parseInt, map(prop('id'), managers))
+    const isUserOwner = contains(userId, ownerIds)
+    const disabledLabel = !this.state.loading ? 'primary' : 'disabled'
+
+    const isOrgPublic = org.privacy === 'public'
+    const isMemberOfOrg = org.isMemberOfOrg
 
     let profileActions = []
 
