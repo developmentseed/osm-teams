@@ -382,35 +382,23 @@ async function isManager(organizationId, osmId) {
  * @param {Object} options.osmId - filter by osm id
  */
 async function getOrgStaff(options = {}) {
-  console.log('getOrgStaff')
+  // Get owners
   let ownerQuery = db('organization_owner')
     .select(db.raw("organization_id, osm_id, 'owner' as type"))
-    .join(
-      'organization',
-      'organization.id',
-      'organization_owner.organization_id'
-    )
+    .where('organization_id', options.organizationId)
 
+  // Get managers that are not owners
   let managerQuery = db('organization_manager')
     .select(db.raw("organization_id, osm_id, 'manager' as type"))
-    .join(
-      'organization',
-      'organization.id',
-      'organization_manager.organization_id'
+    .where('organization_id', options.organizationId)
+    .whereNotIn(
+      'osm_id',
+      db('organization_owner')
+        .select('osm_id')
+        .where('organization_id', options.organizationId)
     )
 
-  if (options.organizationId) {
-    ownerQuery = ownerQuery.where('organization.id', options.organizationId)
-    managerQuery = managerQuery.where('organization.id', options.organizationId)
-  }
-  if (options.osmId) {
-    ownerQuery = ownerQuery.where('organization_owner.osm_id', options.osmId)
-    managerQuery = managerQuery.where(
-      'organization_manager.osm_id',
-      options.osmId
-    )
-  }
-
+  // Execute query with paginations
   const result = await ownerQuery.unionAll(managerQuery).paginate({
     isLengthAware: true,
     currentPage: options.page || 1,
