@@ -6,6 +6,8 @@ import { useFetchList } from '../../hooks/use-fetch-list'
 import { useState } from 'react'
 import Pagination from '../pagination'
 
+const APP_URL = process.env.APP_URL
+
 function TeamsTable({ orgId }) {
   const [page, setPage] = useState(0)
 
@@ -26,10 +28,7 @@ function TeamsTable({ orgId }) {
           isLoading ? 'Loading...' : 'This organization has no teams.'
         }
         onRowClick={(row) => {
-          Router.push(
-            join(URL, `/team?id=${row.id}`),
-            join(URL, `/teams/${row.id}`)
-          )
+          Router.push(join(APP_URL, `/teams/${row.id}`))
         }}
       />
       {total > 0 && (
