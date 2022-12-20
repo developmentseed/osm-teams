@@ -65,61 +65,61 @@ const teamAttributes = [
  *
  */
 async function resolveMemberNames(ids) {
-  // The following avoids hitting OSM API when testing. We use TESTING variable
-  // instead of NODE_EN because the server run in development mode while
-  // executing E2E tests.
-  if (process.env.TESTING === 'true') {
-    return ids.map((id) => ({
-      id,
-      name: `User ${id}`,
-      image: `https://via.placeholder.com/150`,
-    }))
-  }
-
   // get the display names from the database table first
-  const foundUsers = await db('usernames').whereIn('id', ids)
+  const foundUsers = await db('osm_users').whereIn('id', ids)
   const foundUserIds = foundUsers.map(prop('id'))
   const notFound = difference(ids, foundUserIds)
 
   let usersFromOSM = []
   if (notFound.length > 0) {
     try {
-      const resp = await request(
-        join(
-          serverRuntimeConfig.OSM_API,
-          `/api/0.6/users?users=${notFound.join(',')}`
+      // The following avoids hitting OSM API when testing. We use TESTING variable
+      // instead of NODE_EN because the server run in development mode while
+      // executing E2E tests.
+      if (process.env.TESTING === 'true') {
+        usersFromOSM = notFound.map((id) => ({
+          id,
+          name: `User ${id}`,
+          image: `https://via.placeholder.com/150`,
+        }))
+      } else {
+        const resp = await request(
+          join(
+            serverRuntimeConfig.OSM_API,
+            `/api/0.6/users?users=${notFound.join(',')}`
+          )
         )
-      )
-      var parser = new xml2js.Parser()
+        var parser = new xml2js.Parser()
 
-      usersFromOSM = await new Promise((resolve, reject) => {
-        parser.parseString(resp, (err, xml) => {
-          if (err) {
-            reject(err)
-          }
+        usersFromOSM = await new Promise((resolve, reject) => {
+          parser.parseString(resp, (err, xml) => {
+            if (err) {
+              reject(err)
+            }
 
-          let users = xml.osm.user.map((user) => {
-            let img = prop('img', user)
-            if (img) {
-              img = img[0]['$'].href
-            }
-            return {
-              id: user['$'].id,
-              name: user['$'].display_name,
-              image: img,
-            }
+            let users = xml.osm.user.map((user) => {
+              let img = prop('img', user)
+              if (img) {
+                img = img[0]['$'].href
+              }
+              return {
+                id: user['$'].id,
+                name: user['$'].display_name,
+                image: img,
+              }
+            })
+            resolve(users)
           })
-
-          resolve(users)
         })
-      })
+      }
+
       let usersToInsert = usersFromOSM.map((u) => {
         return assoc('updated_at', db.fn.now(), u)
       })
-      await db('usernames').insert(usersToInsert)
+      await db('osm_users').insert(usersToInsert)
     } catch (e) {
       logger.error(e)
-      throw new Error('Could not resolve usernames from OSM')
+      throw new Error('Could not resolve user names from OSM')
     }
   }
   return concat(usersFromOSM, foundUsers)

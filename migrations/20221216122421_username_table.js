@@ -1,5 +1,5 @@
 exports.up = async function (knex) {
-  await knex.schema.createTable('usernames', (table) => {
+  await knex.schema.createTable('osm_users', (table) => {
     table.integer('id').primary()
     table.text('name')
     table.text('image')
@@ -8,5 +8,5 @@ exports.up = async function (knex) {
 }
 
 exports.down = async function (knex) {
-  await knex.schema.dropTable('usernames')
+  await knex.schema.dropTable('osm_users')
 }
