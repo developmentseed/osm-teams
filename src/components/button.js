@@ -122,6 +122,10 @@ const style = css.global`
   .button.fixed-size {
     width: 200px;
   }
+
+  div.disabled {
+    pointer-events: none;
+  }
 `
 
 export default function Button({
