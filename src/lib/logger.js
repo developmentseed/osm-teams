@@ -1,4 +1,4 @@
-import Pino from 'pino'
+const Pino = require('pino')
 
 /**
  * Create logger instance. Level is set to 'silent' when testing.
@@ -8,4 +8,4 @@ const logger = Pino({
   level: process.env.LOG_LEVEL || 'info',
 })
 
-export default logger
+module.exports = logger
