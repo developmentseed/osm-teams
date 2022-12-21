@@ -6,6 +6,7 @@ const xml2js = require('xml2js')
 const { unpack } = require('../../app/lib/utils')
 const { prop, isEmpty, difference, concat, assoc } = require('ramda')
 const request = require('request-promise-native')
+const { addZeroPadding } = require('../lib/utils')
 
 const { serverRuntimeConfig } = require('../../next.config')
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
@@ -79,7 +80,7 @@ async function resolveMemberNames(ids) {
       if (process.env.TESTING === 'true') {
         usersFromOSM = notFound.map((id) => ({
           id,
-          name: `User ${id}`,
+          name: `User ${addZeroPadding(id, 3)}`, // use zero-padded number for consistent table sorting during tests
           image: `https://via.placeholder.com/150`,
         }))
       } else {

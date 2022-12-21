@@ -18,6 +18,8 @@ module.exports = defineConfig({
         'db:reset': async () => {
           await db.raw('TRUNCATE TABLE team RESTART IDENTITY CASCADE')
           await db.raw('TRUNCATE TABLE organization RESTART IDENTITY CASCADE')
+          await db.raw('TRUNCATE TABLE users RESTART IDENTITY CASCADE')
+          await db.raw('TRUNCATE TABLE osm_users RESTART IDENTITY CASCADE')
           return null
         },
         'db:seed': async () => {
