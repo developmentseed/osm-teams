@@ -31,7 +31,7 @@ const handler = createBaseHandler()
  *                 pagination:
  *                   $ref: '#/components/schemas/Pagination'
  *                 data:
- *                   $ref: '#/components/schemas/ArrayOfStaff'
+ *                   $ref: '#/components/schemas/TeamMemberList'
  */
 handler.get(
   canViewOrgMembers,
