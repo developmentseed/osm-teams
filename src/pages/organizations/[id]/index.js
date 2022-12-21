@@ -56,6 +56,9 @@ class Organization extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      org: {
+        status: 'idle',
+      },
       profileInfo: [],
       profileUserId: '',
       teams: [],
@@ -75,9 +78,7 @@ class Organization extends Component {
   async componentDidMount() {
     this.setState({ session: await getSession() })
     await this.getOrg()
-    // await this.getOrgStaff()
     await this.getBadges()
-    // return this.getMembers(0)
   }
 
   async openProfileModal(user) {
@@ -116,17 +117,26 @@ class Organization extends Component {
 
   async getOrg() {
     const { id } = this.props
+    this.setState({
+      org: {
+        status: 'loading',
+      },
+    })
+
     try {
       let org = await getOrg(id)
       this.setState({
-        org,
+        org: {
+          data: org,
+          status: 'success',
+        },
       })
     } catch (e) {
-      console.error(e)
       this.setState({
-        error: e,
-        org: null,
-        loading: false,
+        org: {
+          error: e,
+          status: 'error',
+        },
       })
     }
   }
@@ -172,6 +182,7 @@ class Organization extends Component {
         </Section>
         {this.state.badges && (
           <Table
+            data-cy='badges-table'
             rows={(this.state.badges || []).map((row) => {
               return {
                 ...row,
@@ -192,7 +203,28 @@ class Organization extends Component {
 
   render() {
     const { org, managers, owners, error } = this.state
-    if (!org) return null
+
+    // Handle org loading errors
+    if (org.status === 'error') {
+      if (org.error.status === 401 || org.error.status === 403) {
+        return (
+          <article className='inner page'>
+            <h1>Unauthorized</h1>
+          </article>
+        )
+      } else if (org.error.status === 404) {
+        return (
+          <article className='inner page'>
+            <h1>Org not found</h1>
+          </article>
+        )
+      }
+    }
+
+    // Do not render page until org is fetched
+    if (org.status !== 'success') {
+      return null
+    }
 
     const userId = parseInt(this.state.session.user_id)
     const ownerIds = map(parseInt, map(prop('id'), owners))
@@ -200,8 +232,8 @@ class Organization extends Component {
     const isUserOwner = contains(userId, ownerIds)
     const disabledLabel = !this.state.loading ? 'primary' : 'disabled'
 
-    const isOrgPublic = org.privacy === 'public'
-    const isMemberOfOrg = org.isMemberOfOrg
+    const { isManager, isOwner } = org.data
+    const isStaff = isManager || isOwner
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -235,7 +267,7 @@ class Organization extends Component {
         profileActions.push({
           name: 'Remove owner',
           onClick: async () => {
-            await removeOwner(org.id, profileId)
+            await removeOwner(org.data.id, profileId)
             this.getOrg()
           },
         })
@@ -245,14 +277,14 @@ class Organization extends Component {
           profileActions.push({
             name: 'Promote to owner',
             onClick: async () => {
-              await addOwner(org.id, profileId)
+              await addOwner(org.data.id, profileId)
               this.getOrg()
             },
           })
           profileActions.push({
             name: 'Remove manager',
             onClick: async () => {
-              await removeManager(org.id, profileId)
+              await removeManager(org.data.id, profileId)
               this.getOrg()
             },
           })
@@ -263,7 +295,10 @@ class Organization extends Component {
         name: 'Assign a Badge',
         onClick: () =>
           Router.push(
-            join(URL, `/organizations/${org.id}/badges/assign/${profileId}`)
+            join(
+              URL,
+              `/organizations/${org.data.id}/badges/assign/${profileId}`
+            )
           ),
       })
     }
@@ -271,14 +306,17 @@ class Organization extends Component {
     return (
       <article className='inner page team'>
         <div className='page__heading'>
-          <h1>{org.name}</h1>
+          <h1>{org.data.name}</h1>
         </div>
         <div className='team__details'>
           <Card>
             <div className='section-actions'>
               <SectionHeader>Org Details</SectionHeader>
               {isUserOwner ? (
-                <Button variant='small' href={`/organizations/${org.id}/edit`}>
+                <Button
+                  variant='small'
+                  href={`/organizations/${org.data.id}/edit`}
+                >
                   Edit
                 </Button>
               ) : (
@@ -287,7 +325,7 @@ class Organization extends Component {
             </div>
             <dl>
               <dt>Bio: </dt>
-              <dd>{org.description}</dd>
+              <dd>{org.data.description}</dd>
             </dl>
           </Card>
         </div>
@@ -295,10 +333,10 @@ class Organization extends Component {
           <Section>
             <SectionHeader>Teams</SectionHeader>
           </Section>
-          <TeamsTable type='org-teams' orgId={org.id} />
+          <TeamsTable type='org-teams' orgId={org.data.id} />
         </div>
 
-        {isOrgPublic || isMemberOfOrg ? (
+        {isStaff ? (
           <div className='team__table'>
             <Section>
               <div className='section-actions'>
@@ -307,7 +345,7 @@ class Organization extends Component {
                   {isUserOwner && (
                     <AddMemberForm
                       onSubmit={async ({ osmId }) => {
-                        await addManager(org.id, osmId)
+                        await addManager(org.data.id, osmId)
                         return this.getOrg()
                       }}
                     />
@@ -315,12 +353,12 @@ class Organization extends Component {
                 </div>
               </div>
             </Section>
-            <UsersTable type='org-staff' orgId={org.id} />
+            <UsersTable type='org-staff' orgId={org.data.id} />
           </div>
         ) : (
           <div />
         )}
-        {isOrgPublic || isMemberOfOrg ? (
+        {isStaff ? (
           <div className='team__table'>
             <Section>
               <div className='section-actions'>
@@ -349,12 +387,12 @@ class Organization extends Component {
                 </div>
               </div>
             </Section>
-            <UsersTable type='org-members' orgId={org.id} />
+            <UsersTable type='org-members' orgId={org.data.id} />
           </div>
         ) : (
           <div />
         )}
-        {this.renderBadges()}
+        {isStaff && this.renderBadges()}
         <Modal
           style={{
             content: {

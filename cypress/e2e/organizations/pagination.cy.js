@@ -48,7 +48,7 @@ const orgTeam3Members = generateSequenceArray(15, 300).map((i) => ({
 describe('Organization page', () => {
   before(() => {
     cy.task('db:reset')
-    cy.task('db:seed:organizations', [org1])
+    cy.task('db:seed:add-organizations', [org1])
   })
 
   it('Display message when organization has no teams', () => {

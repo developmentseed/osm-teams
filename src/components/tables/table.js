@@ -57,9 +57,13 @@ function TableBody({
   emptyPlaceHolder,
   showRowNumbers,
 }) {
+  const isEmpty = !rows || rows.length === 0
   return (
-    <tbody className='lh-copy'>
-      {!rows || rows.length === 0 ? (
+    <tbody
+      className='lh-copy'
+      data-cy={isEmpty ? 'empty-table' : 'not-empty-table'}
+    >
+      {isEmpty ? (
         <tr>
           <td key='empty-row' colSpan={columns.length}>
             {emptyPlaceHolder || 'No data available.'}

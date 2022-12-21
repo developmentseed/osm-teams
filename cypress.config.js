@@ -64,23 +64,30 @@ module.exports = defineConfig({
         'db:seed:team-invitations': async (teamInvitations) => {
           return Promise.all(teamInvitations.map(TeamInvitation.create))
         },
-        'db:seed:organizations': async (orgs) => {
-          return Promise.all(
-            orgs.map((org) =>
-              Organization.create(pick(['name'], org), org.ownerId)
+        'db:seed:add-organizations': async (orgs) => {
+          for (let i = 0; i < orgs.length; i++) {
+            const org = orgs[i]
+            await Organization.create(
+              pick(['name', 'privacy'], org),
+              org.ownerId
             )
-          )
+          }
+          return null
         },
         'db:seed:add-organization-teams': async ({
           orgId,
           teams,
           managerId,
         }) => {
-          return Promise.all(
-            teams.map((team) =>
-              Organization.createOrgTeam(orgId, pick(['name'], team), managerId)
+          for (let i = 0; i < teams.length; i++) {
+            const team = teams[i]
+            await Organization.createOrgTeam(
+              orgId,
+              pick(['name', 'privacy'], team),
+              managerId
             )
-          )
+          }
+          return null
         },
         'db:seed:add-organization-managers': async ({ orgId, managerIds }) => {
           for (let i = 0; i < managerIds.length; i++) {

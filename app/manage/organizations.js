@@ -45,11 +45,19 @@ async function getOrg(req, reply) {
     throw Boom.badRequest('organization id is required')
   }
 
-  let [data, isMemberOfOrg] = await Promise.all([
+  let [data, isMember, isManager, isOwner] = await Promise.all([
     organization.get(id),
     organization.isMember(id, user_id),
+    organization.isManager(id, user_id),
+    organization.isOwner(id, user_id),
   ])
-  reply.send({ ...data, isMemberOfOrg })
+
+  // User needs to be member or staff to access a private org
+  if (data?.privacy === 'private' && !isMember && !isManager && !isOwner) {
+    throw Boom.unauthorized()
+  } else {
+    reply.send({ ...data, isMember, isManager, isOwner })
+  }
 }
 
 /**
