@@ -63,6 +63,7 @@
     "formik": "^2.2.9",
     "jsonwebtoken": "^8.5.0",
     "knex": "^2.3.0",
+    "knex-paginate": "^3.0.2",
     "knex-postgis": "^0.14.3",
     "leaflet": "^1.7.1",
     "leaflet-control-geocoder": "^1.13.0",

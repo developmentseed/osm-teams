@@ -223,33 +223,36 @@ test('remove moderator from team', async (t) => {
 })
 
 test('get my teams list', async (t) => {
-  // get previous teams list for checking relative counts within this test.
-  let response = await user1Agent.get(`/api/my/teams`).expect(200)
-  const { member: prevMember, moderator: prevModerator } = response.body
-  // create two more teams (osmId = 1)
-  await user1Agent.post('/api/teams').send({ name: 'map team ♾+2' }).expect(200)
-  const team = await user1Agent
+  // Clear database
+  await resetDb()
+
+  // Create team1 with user1
+  await user1Agent.post('/api/teams').send({ name: 'Team 1' }).expect(200)
+
+  // Create team2 with user1
+  const team2 = await user1Agent
     .post('/api/teams')
-    .send({ name: 'map team ♾+3' })
+    .send({ name: 'Team 2' })
     .expect(200)
-  const { id: teamId } = team.body
-  // add osmId 2 to one team, and make them moderator
-  await user1Agent.put(`/api/teams/add/${teamId}/2`).expect(200)
-  await user1Agent.put(`/api/teams/${teamId}/assignModerator/2`).expect(200)
-  // remove osmId 1 from moderator
-  await user1Agent.put(`/api/teams/${teamId}/removeModerator/1`).expect(200)
-  // check that osmId 1 is now +1 moderator and +2 member
-  response = await user1Agent.get(`/api/my/teams`).expect(200)
-  const { osmId, member, moderator } = response.body
-  t.is(osmId, 1)
-  t.is(moderator.length, prevModerator.length + 1)
-  t.is(member.length, prevMember.length + 2)
-  member.forEach((item) => {
-    t.truthy(item.name)
-    t.truthy(item.id)
-  })
-  moderator.forEach((item) => {
-    t.truthy(item.name)
-    t.truthy(item.id)
-  })
+
+  // Get team2 id
+  const { id: team2Id } = team2.body
+
+  // Make user2 moderator of team2
+  await user1Agent.put(`/api/teams/add/${team2Id}/2`).expect(200)
+  await user1Agent.put(`/api/teams/${team2Id}/assignModerator/2`).expect(200)
+
+  // Remove user1 as moderator from team 2
+  await user1Agent.put(`/api/teams/${team2Id}/removeModerator/1`).expect(200)
+
+  // user1 should be still be a member of both teams
+  const {
+    body: {
+      pagination: { total },
+      data: teams,
+    },
+  } = await user1Agent.get(`/api/my/teams`).expect(200)
+  t.is(total, 2)
+  t.is(teams[0].name, 'Team 1')
+  t.is(teams[1].name, 'Team 2')
 })

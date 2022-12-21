@@ -8,7 +8,6 @@ const {
   getTeamMembers,
   joinTeam,
   listTeams,
-  listMyTeams,
   removeMember,
   removeModerator,
   updateMembers,
@@ -68,7 +67,6 @@ function manageRouter(handler) {
    * List, Create, Read, Update, Delete operations on teams.
    */
   handler.get('api/teams', listTeams)
-  handler.get('/api/my/teams', can('public:authenticated'), listMyTeams)
   handler.post('/api/teams', can('public:authenticated'), createTeam)
   handler.get('/api/teams/:id', can('team:view'), getTeam)
   handler.get(

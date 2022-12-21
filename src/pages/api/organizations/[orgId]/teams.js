@@ -1,4 +1,3 @@
-import { teamsMembersModeratorsHelper } from '../../../../../app/manage/utils'
 import { createBaseHandler } from '../../../../middlewares/base-handler'
 import { validate } from '../../../../middlewares/validation'
 import Organization from '../../../../models/organization'
@@ -8,18 +7,6 @@ import canViewOrgMembers from '../../../../middlewares/can/view-org-members'
 import canCreateOrgTeam from '../../../../middlewares/can/create-org-team'
 
 const handler = createBaseHandler()
-
-/**
- * Validate query params
- */
-handler.use(
-  validate({
-    query: Yup.object({
-      orgId: Yup.number().required().positive().integer(),
-      page: Yup.number().min(0).integer(),
-    }).required(),
-  })
-)
 
 /**
  * @swagger
@@ -54,6 +41,9 @@ handler.use(
 handler.post(
   canCreateOrgTeam,
   validate({
+    query: Yup.object({
+      orgId: Yup.number().required().positive().integer(),
+    }).required(),
     body: Yup.object({
       name: Yup.string().required(),
       location: Yup.string(),
@@ -95,18 +85,23 @@ handler.post(
  *             schema:
  *               type: object
  *               properties:
- *                 total:
- *                   type: integer
- *                   description: Total number of teams in the organization.
- *                 items:
+ *                 pagination:
+ *                   $ref: '#/components/schemas/Pagination'
+ *                 data:
  *                   $ref: '#/components/schemas/ArrayOfTeams'
  */
-handler.get(canViewOrgMembers, async function (req, res) {
-  const { orgId, page } = req.query
-  const data = await Team.list({ organizationId: orgId, page })
-  const enhancedData = await teamsMembersModeratorsHelper(data)
-  const total = await Team.count({ organizationId: orgId })
-  return res.send({ data: enhancedData, total })
-})
+handler.get(
+  canViewOrgMembers,
+  validate({
+    query: Yup.object({
+      orgId: Yup.number().required().positive().integer(),
+      page: Yup.number().min(0).integer(),
+    }).required(),
+  }),
+  async function (req, res) {
+    const { orgId, page } = req.query
+    return res.send(await Team.list({ organizationId: orgId, page }))
+  }
+)
 
 export default handler

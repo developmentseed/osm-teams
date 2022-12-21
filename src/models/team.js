@@ -31,11 +31,12 @@ const DEFAULT_LIMIT = 10
  *             id:
  *               type: integer
  *               description: The team ID.
+ *               example: 10
  *         - $ref: '#/components/schemas/NewTeam'
  *     ArrayOfTeams:
  *       type: array
  *       items:
- *         $ref: '#/components/schemas/NewTeam'
+ *         $ref: '#/components/schemas/Team'
  *
  */
 
@@ -190,15 +191,11 @@ async function count({ organizationId }) {
  * @param {int} options.osmId - filter by whether osmId is a member
  * @param {int} options.organizationId - filter by whether team belongs to organization
  * @param {Array[float]} options.bbox - filter for teams whose location is in bbox (xmin, ymin, xmax, ymax)
- * @param {bool} options.disableLimit - Return all fields when true
+ * @param {bool} options.disablePagination - Return all fields when true
  * @return {Promise[Array]}
  **/
-async function list(options) {
-  options = options || {}
-  const { osmId, bbox, organizationId, disableLimit } = options
-
-  const page = options.page || 0
-
+async function list(options = {}) {
+  const { bbox, osmId, organizationId, page, disablePagination } = options
   const st = knexPostgis(db)
 
   let query = db('team').select(...teamAttributes, st.asGeoJSON('location'))
@@ -226,9 +223,13 @@ async function list(options) {
   // Always sort by team name
   query = query.orderBy('name')
 
-  return disableLimit
+  return disablePagination
     ? query
-    : query.limit(DEFAULT_LIMIT).offset(page * DEFAULT_LIMIT)
+    : query.paginate({
+        isLengthAware: true,
+        currentPage: page || 1,
+        perPage: DEFAULT_LIMIT,
+      })
 }
 
 /**
@@ -294,7 +295,6 @@ async function create(data, osmId, trx) {
       location: st.setSRID(st.geomFromGeoJSON(data.location), 4326),
     })
   }
-
   return conn.transaction(async (trx) => {
     const [row] = await trx('team')
       .insert(data)

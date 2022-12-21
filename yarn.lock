@@ -5737,6 +5737,11 @@ klaw-sync@^6.0.0:
   dependencies:
     graceful-fs "^4.1.11"
 
+knex-paginate@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/knex-paginate/-/knex-paginate-3.0.2.tgz#9db1211a0acf9807ab4de46efaf73f80352b9024"
+  integrity sha512-0M8bFlAb+vh2VXjI73gJsD6ffR2AunYe8i3xc0OEzXr+ynIx+cD7OBEqb0NKzmVNCi0pB0B6Bh/vXjov420sIQ==
+
 knex-postgis@^0.14.3:
   version "0.14.3"
   resolved "https://registry.yarnpkg.com/knex-postgis/-/knex-postgis-0.14.3.tgz#bd698fe32083c9fe868bf8e2e01c2aa2ea95574d"

@@ -4,7 +4,7 @@ import Popup from 'reactjs-popup'
 
 import ProfileAttributeForm from '../../../components/profile-attribute-form'
 import Button from '../../../components/button'
-import Table from '../../../components/table'
+import Table from '../../../components/tables/table'
 import {
   addOrgTeamAttributes,
   getOrgTeamAttributes,

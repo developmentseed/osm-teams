@@ -37,6 +37,21 @@ module.exports = defineConfig({
           )
           return null
         },
+        'db:seed:teams': async ({ teams, moderatorId }) => {
+          let createdTeams = []
+          for (let i = 0; i < teams.length; i++) {
+            const team = teams[i]
+            createdTeams.push(await Team.create(team, moderatorId))
+          }
+          return createdTeams
+        },
+        'db:seed:add-team-member': async ({ teams, memberId }) => {
+          for (let i = 0; i < teams.length; i++) {
+            const team = teams[i]
+            await Team.addMember(team.id, memberId)
+          }
+          return null
+        },
         'db:seed:team-invitations': async (teamInvitations) => {
           return Promise.all(teamInvitations.map(TeamInvitation.create))
         },

@@ -24,6 +24,39 @@ import nextSwaggerDocSpec from '../../../next-swagger-doc.json'
  *
  * components:
  *   schemas:
+ *     Pagination:
+ *       type: object
+ *       properties:
+ *         total:
+ *           description: total number of records
+ *           example: 55
+ *           format: int64
+ *           type: integer
+ *         perPage:
+ *           description: number of records per page
+ *           example: 10
+ *           format: int64
+ *           type: integer
+ *         lastPage:
+ *           description: last page index
+ *           example: 6
+ *           format: int64
+ *           type: integer
+ *         currentPage:
+ *           description: last page index
+ *           example: 2
+ *           format: int64
+ *           type: integer
+ *         from:
+ *           description: index of first item in the page
+ *           example: 11
+ *           format: int64
+ *           type: integer
+ *         to:
+ *           description: index of last item in the page
+ *           example: 20
+ *           format: int64
+ *           type: integer
  *     Team:
  *       properties:
  *         id:
@@ -61,20 +94,6 @@ import nextSwaggerDocSpec from '../../../next-swagger-doc.json'
  *           type: string
  *           format: uri
  *           description: link to organized editing policy of the team
- *         members:
- *           type: array
- *           description: list of team member's osm id
- *           items:
- *             type: number
- *         moderators:
- *           type: array
- *           description: list of team member's osm id
- *           items:
- *             type: number
- *     TeamList:
- *       type: array
- *       items:
- *         $ref: '#/components/schemas/Team'
  *     TeamMember:
  *       properties:
  *         id:
@@ -362,7 +381,7 @@ import nextSwaggerDocSpec from '../../../next-swagger-doc.json'
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/components/schemas/TeamList'
+ *                 $ref: '#/components/schemas/ArrayOfTeams'
  *         '400':
  *           description: error getting list of teams
  *           content:

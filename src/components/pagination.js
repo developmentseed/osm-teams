@@ -1,14 +1,15 @@
 import React from 'react'
 import T from 'prop-types'
-
 import Button from './button'
+
+const PAGE_INDEX_START = 1
 
 function listPageOptions(page, lastPage) {
   let pageOptions = [1]
-  if (lastPage === 0) {
+  if (lastPage === PAGE_INDEX_START) {
     return pageOptions
   }
-  if (page === 0 || page > lastPage) {
+  if (page === PAGE_INDEX_START || page > lastPage) {
     return pageOptions.concat([2, '...', lastPage])
   }
   if (lastPage > 5) {
@@ -44,22 +45,18 @@ function listPageOptions(page, lastPage) {
   }
 }
 
-function Pagination({
-  pageSize,
-  currentPage,
-  totalRecords,
-  setPage,
-  'data-cy': dataCy,
-}) {
-  const maxPages = pageSize ? Math.ceil(totalRecords / pageSize) : 0
+function Pagination({ pagination, setPage, 'data-cy': dataCy }) {
+  const { perPage, total, currentPage } = pagination
+
+  const maxPages = perPage ? Math.ceil(total / perPage) : 0
   const pages = listPageOptions(currentPage + 1, maxPages)
 
   return (
     <nav data-cy={dataCy}>
       <Button
         data-cy='first-page-button'
-        onClick={() => setPage(0)}
-        disabled={currentPage === 0}
+        onClick={() => setPage(PAGE_INDEX_START)}
+        disabled={currentPage === PAGE_INDEX_START}
         useIcon='chevron-left--trail'
         className='small'
         flat
@@ -67,7 +64,7 @@ function Pagination({
       <Button
         data-cy='previous-page-button'
         onClick={() => setPage(currentPage - 1)}
-        disabled={currentPage === 0}
+        disabled={currentPage === PAGE_INDEX_START}
         useIcon='chevron-left--small'
         className='small'
         flat
@@ -75,8 +72,8 @@ function Pagination({
       {pages.map((page) => {
         return (
           <Button
-            onClick={() => setPage(page - 1)}
-            key={`page-${page - 1}`}
+            onClick={() => setPage(page)}
+            key={`page-${page}`}
             disabled={page === '...'}
             data-cy={`page-${page}-button`}
             className='small'
@@ -89,27 +86,25 @@ function Pagination({
       <Button
         data-cy='next-page-button'
         onClick={() => setPage(currentPage + 1)}
-        disabled={currentPage === maxPages - 1}
+        disabled={currentPage === maxPages}
         useIcon='chevron-right--small'
         className='small'
         flat
       />
       <Button
         data-cy='last-page-button'
-        onClick={() => setPage(maxPages - 1)}
-        disabled={currentPage === maxPages - 1}
+        onClick={() => setPage(maxPages)}
+        disabled={currentPage === maxPages}
         useIcon='chevron-right--trail'
         className='small'
         flat
       />
       <div>
-        Showing {currentPage * pageSize + 1}-
+        Showing {(currentPage - 1) * perPage + 1}-
         {Intl.NumberFormat().format(
-          currentPage === maxPages - 1
-            ? totalRecords
-            : (currentPage + 1) * pageSize
+          currentPage === maxPages ? total : currentPage * perPage
         )}{' '}
-        of {Intl.NumberFormat().format(totalRecords)}
+        of {Intl.NumberFormat().format(total)}
       </div>
       <style jsx>
         {`
@@ -132,9 +127,9 @@ function Pagination({
 }
 
 Pagination.propTypes = {
-  pageSize: T.number.isRequired,
+  perPage: T.number.isRequired,
   currentPage: T.number.isRequired,
-  totalRecords: T.number.isRequired,
+  total: T.number.isRequired,
   setPage: T.func.isRequired,
 }
 

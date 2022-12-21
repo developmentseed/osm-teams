@@ -1,4 +1,4 @@
-import { Boom } from '@hapi/boom'
+import Boom from '@hapi/boom'
 import { isMemberOrStaff, isPublic } from '../../models/organization'
 
 /**
