@@ -86,7 +86,7 @@ function Pagination({ pagination, setPage, 'data-cy': dataCy }) {
       <Button
         data-cy='next-page-button'
         onClick={() => setPage(currentPage + 1)}
-        disabled={currentPage === maxPages - 1}
+        disabled={currentPage === maxPages}
         useIcon='chevron-right--small'
         className='small'
         flat
