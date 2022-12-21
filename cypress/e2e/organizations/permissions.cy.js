@@ -3,12 +3,12 @@ const {
   addZeroPadding,
 } = require('../../../src/lib/utils')
 
-const orgStaff = generateSequenceArray(5, 1).map((i) => ({
+const users = generateSequenceArray(4, 1).map((i) => ({
   id: i,
   name: `User ${addZeroPadding(i, 3)}`,
 }))
 
-const [ownerUser, managerUser, orgTeamMember1] = orgStaff
+const [ownerUser, managerUser, orgTeamMember1, nonMember] = users
 
 // ORGANIZATION SEED
 const privateOrg = {
@@ -52,6 +52,11 @@ describe('Organizations page: Permissions', () => {
     // Unauthenticated user cannot access
     cy.visit('/organizations/1')
     cy.get('body').should('contain', 'Sign in with OSM Teams')
+
+    // Non-member cannot access
+    cy.login(nonMember)
+    cy.visit('/organizations/1')
+    cy.get('body').should('contain', 'Unauthorized')
 
     // Start owner permissions checks
     cy.login(ownerUser)
