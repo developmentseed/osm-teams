@@ -229,8 +229,6 @@ class Organization extends Component {
     const userId = parseInt(this.state.session.user_id)
     const ownerIds = map(parseInt, map(prop('id'), owners))
     const managerIds = map(parseInt, map(prop('id'), managers))
-    const isUserOwner = contains(userId, ownerIds)
-    const disabledLabel = !this.state.loading ? 'primary' : 'disabled'
 
     const { isManager, isOwner } = org.data
     const isStaff = isManager || isOwner
@@ -259,7 +257,7 @@ class Organization extends Component {
 
     let profileActions = []
 
-    if (this.state.modalIsOpen && isUserOwner) {
+    if (this.state.modalIsOpen && isOwner) {
       const profileId = parseInt(this.state.profileMeta.id)
       const isProfileManager = contains(profileId, managerIds)
       const isProfileOwner = contains(profileId, ownerIds)
@@ -312,7 +310,7 @@ class Organization extends Component {
           <Card>
             <div className='section-actions'>
               <SectionHeader>Org Details</SectionHeader>
-              {isUserOwner ? (
+              {isOwner ? (
                 <Button
                   variant='small'
                   href={`/organizations/${org.data.id}/edit`}
@@ -342,7 +340,7 @@ class Organization extends Component {
               <div className='section-actions'>
                 <SectionHeader>Staff Members</SectionHeader>
                 <div>
-                  {isUserOwner && (
+                  {isOwner && (
                     <AddMemberForm
                       onSubmit={async ({ osmId }) => {
                         await addManager(org.data.id, osmId)

@@ -195,10 +195,21 @@ async function count({ organizationId }) {
  * @return {Promise[Array]}
  **/
 async function list(options = {}) {
-  const { bbox, osmId, organizationId, page, disablePagination } = options
+  const {
+    bbox,
+    osmId,
+    organizationId,
+    page,
+    disablePagination,
+    includePrivate,
+  } = options
   const st = knexPostgis(db)
 
   let query = db('team').select(...teamAttributes, st.asGeoJSON('location'))
+
+  if (!includePrivate) {
+    query.where('privacy', 'public')
+  }
 
   if (osmId) {
     query = query.whereIn('id', function () {

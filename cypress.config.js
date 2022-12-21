@@ -83,7 +83,7 @@ module.exports = defineConfig({
             const team = teams[i]
             await Organization.createOrgTeam(
               orgId,
-              pick(['name', 'privacy'], team),
+              pick(['id', 'name', 'privacy'], team),
               managerId
             )
           }

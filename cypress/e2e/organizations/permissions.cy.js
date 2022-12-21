@@ -41,14 +41,30 @@ const privateOrgPublicTeam2 = {
   name: 'Private Org Public Team 2',
 }
 
+// ORGANIZATION TEAMS SEED
+const publicOrgPrivateTeam = {
+  id: 4,
+  name: 'Public Org Private Team',
+  privacy: 'private',
+}
+
+const publicOrgPublicTeam1 = {
+  id: 5,
+  name: 'Public Org Public Team 1',
+}
+
+const publicOrgPublicTeam2 = {
+  id: 6,
+  name: 'Public Org Public Team 2',
+}
+
 describe('Organizations page: Permissions', () => {
   before(() => {
     cy.task('db:reset')
+    cy.task('db:seed:add-organizations', [privateOrg, publicOrg])
   })
 
   it('Org is private', () => {
-    cy.task('db:seed:add-organizations', [privateOrg, publicOrg])
-
     // Unauthenticated user cannot access
     cy.visit('/organizations/1')
     cy.get('body').should('contain', 'Sign in with OSM Teams')
@@ -113,6 +129,79 @@ describe('Organizations page: Permissions', () => {
       cy.should('contain', privateOrgPrivateTeam.name)
       cy.should('contain', privateOrgPublicTeam1.name)
       cy.should('contain', privateOrgPublicTeam2.name)
+    })
+  })
+
+  it('Org is public', () => {
+    // Create org teams
+    cy.task('db:seed:add-organization-teams', {
+      orgId: publicOrg.id,
+      teams: [publicOrgPrivateTeam, publicOrgPublicTeam1, publicOrgPublicTeam2],
+      managerId: managerUser.id,
+    })
+
+    // Unauthenticated can view org
+    cy.visit('/organizations/2')
+    cy.get('body').should('contain', 'Sign in with OSM Teams')
+
+    // Non-member can access, but cannot view private teams
+    cy.login(nonMember)
+    cy.visit('/organizations/2')
+    cy.get('body').should('contain', 'Public Org')
+    cy.get('[data-cy=org-staff-table]').should('not.exist')
+    cy.get('[data-cy=org-members-table]').should('not.exist')
+    cy.get('body').should('not.contain', 'Badges')
+    cy.get('[data-cy=org-teams-table]').within(() => {
+      cy.get('[data-cy=not-empty-table]').should('exist')
+      cy.should('not.contain', publicOrgPrivateTeam.name)
+      cy.should('contain', publicOrgPublicTeam1.name)
+      cy.should('contain', publicOrgPublicTeam2.name)
+    })
+
+    // Start owner permissions checks
+    cy.login(ownerUser)
+    cy.visit('/organizations/2')
+
+    // Org is loaded and all tables are present
+    cy.get('body').should('contain', 'Public Org')
+    cy.get('[data-cy=org-staff-table]').should('exist')
+    cy.get('[data-cy=org-members-table]').should('exist')
+    cy.get('body').should('contain', 'Badges')
+
+    // Manager permissions
+    cy.task('db:seed:add-organization-managers', {
+      orgId: publicOrg.id,
+      managerIds: [managerUser.id],
+    })
+    cy.login(managerUser)
+    cy.visit('/organizations/2')
+
+    // Org is loaded and badges table is not present
+    cy.get('body').should('contain', 'Public Org')
+    cy.get('[data-cy=org-staff-table]').should('exist')
+    cy.get('[data-cy=org-members-table]').should('exist')
+    cy.get('[data-cy=badges-table]').should('not.exist')
+
+    // Org team member can view its own team and the public ones
+    cy.task('db:seed:add-members-to-team', {
+      teamId: publicOrgPrivateTeam.id,
+      members: [orgTeamMember1],
+    })
+    cy.login(orgTeamMember1)
+    cy.visit('/organizations/2')
+
+    // Org is loaded
+    cy.get('body').should('contain', 'Public Org')
+    cy.get('[data-cy=org-staff-table]').should('not.exist')
+    cy.get('[data-cy=org-members-table]').should('not.exist')
+    cy.get('[data-cy=badges-table]').should('not.exist')
+
+    // Can see its own team and public ones
+    cy.get('[data-cy=org-teams-table]').within(() => {
+      cy.get('[data-cy=not-empty-table]').should('exist')
+      cy.should('contain', publicOrgPrivateTeam.name)
+      cy.should('contain', publicOrgPublicTeam1.name)
+      cy.should('contain', publicOrgPublicTeam2.name)
     })
   })
 })
