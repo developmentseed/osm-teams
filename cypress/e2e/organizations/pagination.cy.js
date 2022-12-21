@@ -1,4 +1,7 @@
-const { generateSequenceArray, addZeroPadding } = require('../../src/lib/utils')
+const {
+  generateSequenceArray,
+  addZeroPadding,
+} = require('../../../src/lib/utils')
 
 const orgStaff = generateSequenceArray(7, 1).map((i) => ({
   id: i,
