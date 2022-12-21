@@ -363,31 +363,9 @@ class Organization extends Component {
             <Section>
               <div className='section-actions'>
                 <SectionHeader>Organization Members</SectionHeader>
-                <div>
-                  <span style={{ marginRight: '1rem' }}>
-                    {this.state.page > 0 ? (
-                      <Button
-                        onClick={() => this.getPrevPage()}
-                        disabled={this.state.loading}
-                        variant={`${disabledLabel} small`}
-                      >
-                        Back
-                      </Button>
-                    ) : (
-                      ''
-                    )}
-                  </span>
-                  <Button
-                    onClick={() => this.getNextPage()}
-                    disabled={this.state.loading}
-                    variant={`${disabledLabel} small`}
-                  >
-                    Next
-                  </Button>
-                </div>
               </div>
+              <UsersTable type='org-members' orgId={org.data.id} />
             </Section>
-            <UsersTable type='org-members' orgId={org.data.id} />
           </div>
         ) : (
           <div />
