@@ -58,10 +58,13 @@ test('get organization staff', async (t) => {
     .send({ name: 'get organization staff' })
     .expect(200)
 
-  const org = await user1Agent.get(`/api/organizations/${res.body.id}/staff`)
+  const {
+    body: {
+      pagination: { total },
+    },
+  } = await user1Agent.get(`/api/organizations/${res.body.id}/staff`)
 
-  t.is(org.body.owners.length, 1)
-  t.is(org.body.managers.length, 1)
+  t.is(total, 1)
 })
 
 /**
