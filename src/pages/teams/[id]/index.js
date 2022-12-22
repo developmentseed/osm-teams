@@ -106,9 +106,7 @@ class Team extends Component {
 
       let orgOwners = []
       if (team.org) {
-        // Get organization owners
-        const { owners } = await getOrgStaff(team.org.organization_id)
-        orgOwners = owners.map((owner) => parseInt(owner.id))
+        orgOwners = (await getOrgStaff(team.org.organization_id)).owners
       }
       this.setState({
         team,

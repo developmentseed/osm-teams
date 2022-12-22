@@ -434,7 +434,6 @@ async function getOrgStaff(options) {
  * @param {Object} options.osmId - filter by osm id
  */
 async function getOrgStaffPaginated(organizationId, options = {}) {
-  console.log('aqui')
   // Get owners
   let ownerQuery = db('organization_owner')
     .select(db.raw("organization_id, osm_id, 'owner' as type"))
@@ -455,7 +454,7 @@ async function getOrgStaffPaginated(organizationId, options = {}) {
   const result = await ownerQuery.unionAll(managerQuery).paginate({
     isLengthAware: true,
     currentPage: options.page || 1,
-    perPage: DEFAULT_PAGE_SIZE,
+    perPage: options.perPage || DEFAULT_PAGE_SIZE,
   })
 
   // Get osm user meta from ids
