@@ -44,7 +44,7 @@ handler.get(
   async function (req, res) {
     const { orgId, page } = req.query
 
-    const staff = await Organization.getOrgStaff(orgId, {
+    const staff = await Organization.getOrgStaffPaginated(orgId, {
       page,
     })
 

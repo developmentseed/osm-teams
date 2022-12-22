@@ -46,7 +46,7 @@ handler.get(
   async function (req, res) {
     const { orgId, page } = req.query
 
-    let members = await Organization.getMembers(orgId, { page, paginate: true })
+    let members = await Organization.getMembersPaginated(orgId, { page })
 
     const memberIds = map(prop('osm_id'), members)
     if (memberIds.length > 0) {

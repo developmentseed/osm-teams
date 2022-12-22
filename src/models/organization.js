@@ -1,10 +1,8 @@
 const db = require('../lib/db')
 const team = require('./team')
-const { map, prop, includes, has, isNil, find, propEq } = require('ramda')
+const { map, prop, includes, has, isNil, propEq, find } = require('ramda')
 const { unpack, PropertyRequiredError } = require('../../app/lib/utils')
-
 const { serverRuntimeConfig } = require('../../next.config')
-
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
 // Organization attributes (without profile)
@@ -248,10 +246,32 @@ async function createOrgTeam(organizationId, data, osmId) {
  * Get all members and associated teams of an organization
  * We get all members of all associated teams with this organization
  * @param {int} organizationId - organization id
+ */
+async function getMembers(organizationId, page) {
+  if (!organizationId) throw new PropertyRequiredError('organization id')
+
+  const subquery = db('organization_team')
+    .select('team_id')
+    .where('organization_id', organizationId)
+  let query = db('member')
+    .select(db.raw('array_agg(team_id) as teams, osm_id'))
+    .where('team_id', 'in', subquery)
+    .groupBy('osm_id')
+
+  if (page) {
+    query = query.limit(50).offset(page * 20)
+  }
+  return query
+}
+
+/**
+ * Get all members and associated teams of an organization
+ * We get all members of all associated teams with this organization
+ * @param {int} organizationId - organization id
  * @param {object} options - pagination params
  *
  */
-async function getMembers(organizationId, options) {
+async function getMembersPaginated(organizationId, options) {
   const currentPage = options?.page || 1
 
   // Sub-query for all org teams
@@ -281,24 +301,15 @@ async function getMembers(organizationId, options) {
 }
 
 /**
- * Check if user is part of an organization team
+ * Checks if an osmId is part of an organization members
  * @param {int} organizationId - organization id
  * @param {int} osmId - id of member we are testing
  */
 async function isMember(organizationId, osmId) {
-  // Sub-query for all org teams
-  const orgTeamsQuery = db('organization_team')
-    .select('team_id')
-    .where('organization_id', organizationId)
-
-  // Check if user is member of at least one org team
-  const memberships = await db('member')
-    .select('osm_id')
-    .where('team_id', 'in', orgTeamsQuery)
-    .where('osm_id', osmId)
-    .limit(1)
-
-  return memberships.length > 0
+  if (!osmId) throw new PropertyRequiredError('osm id')
+  const members = await getMembers(organizationId)
+  const memberIds = members.map(prop('osm_id'))
+  return includes(Number(osmId), map(Number, memberIds))
 }
 
 /**
@@ -381,7 +392,50 @@ async function isManager(organizationId, osmId) {
  * @param {Object} options.organizationId - filter by organization
  * @param {Object} options.osmId - filter by osm id
  */
-async function getOrgStaff(organizationId, options = {}) {
+async function getOrgStaff(options) {
+  let ownerQuery = db('organization_owner')
+    .select(
+      db.raw("organization_id, osm_id, 'owner' as type, organization.name")
+    )
+    .join(
+      'organization',
+      'organization.id',
+      'organization_owner.organization_id'
+    )
+
+  let managerQuery = db('organization_manager')
+    .select(
+      db.raw("organization_id, osm_id, 'manager' as type, organization.name")
+    )
+    .join(
+      'organization',
+      'organization.id',
+      'organization_manager.organization_id'
+    )
+
+  if (options.organizationId) {
+    ownerQuery = ownerQuery.where('organization.id', options.organizationId)
+    managerQuery = managerQuery.where('organization.id', options.organizationId)
+  }
+  if (options.osmId) {
+    ownerQuery = ownerQuery.where('organization_owner.osm_id', options.osmId)
+    managerQuery = managerQuery.where(
+      'organization_manager.osm_id',
+      options.osmId
+    )
+  }
+  return ownerQuery.unionAll(managerQuery)
+}
+
+/**
+ * Get organization staff
+ * @param {Object} options - parameters
+ * @param {Object} options.organizationId - filter by organization
+ * @param {Object} options.osmId - filter by osm id
+ */
+async function getOrgStaffPaginated(organizationId, options = {}) {
+
+  console.log('aqui')
   // Get owners
   let ownerQuery = db('organization_owner')
     .select(db.raw("organization_id, osm_id, 'owner' as type"))
@@ -449,6 +503,7 @@ module.exports = {
   getOwners,
   getManagers,
   getMembers,
+  getMembersPaginated,
   isMemberOrStaff,
   isOwner,
   isManager,
@@ -457,5 +512,6 @@ module.exports = {
   createOrgTeam,
   listMyOrganizations,
   getOrgStaff,
+  getOrgStaffPaginated,
   isPublic,
 }
