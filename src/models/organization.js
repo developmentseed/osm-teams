@@ -434,7 +434,6 @@ async function getOrgStaff(options) {
  * @param {Object} options.osmId - filter by osm id
  */
 async function getOrgStaffPaginated(organizationId, options = {}) {
-
   console.log('aqui')
   // Get owners
   let ownerQuery = db('organization_owner')
