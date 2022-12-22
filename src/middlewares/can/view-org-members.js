@@ -10,7 +10,7 @@ import { isMemberOrStaff, isPublic } from '../../models/organization'
  */
 export default async function canViewOrgMembers(req, res, next) {
   const { orgId } = req.query
-  const { user_id: userId } = req.session
+  const userId = req.session?.user_id
 
   if (await isPublic(orgId)) {
     // Can view if org is public

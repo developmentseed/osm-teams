@@ -11,7 +11,7 @@ import Organization from '../../models/organization'
  */
 export default async function canViewOrgTeams(req, res, next) {
   const { orgId } = req.query
-  const { user_id: userId } = req.session
+  const userId = req.session?.user_id
 
   let [org, isMember, isManager, isOwner] = await Promise.all([
     Organization.get(orgId),
