@@ -26,7 +26,6 @@ async function listTeams(req, reply) {
     const data = await team.list({
       osmId,
       bbox: bounds,
-      disablePagination: true,
     })
     const enhancedData = await teamsMembersModeratorsHelper(data)
     reply.send(enhancedData)

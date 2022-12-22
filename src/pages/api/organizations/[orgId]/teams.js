@@ -104,7 +104,7 @@ handler.get(
       org: { isMember, isOwner, isManager },
     } = req
     return res.send(
-      await Team.list({
+      await Team.paginatedList({
         organizationId: orgId,
         page,
         includePrivate: isMember || isManager || isOwner,

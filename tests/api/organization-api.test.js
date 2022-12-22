@@ -192,7 +192,7 @@ test('create an org team', async (t) => {
     .send({ name: teamName })
     .expect(200)
 
-  const { data } = await team.list({ organizationId: res.body.id })
+  const data = await team.list({ organizationId: res.body.id })
   t.is(data.length, 1)
 })
 

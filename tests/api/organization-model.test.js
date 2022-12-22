@@ -238,12 +238,9 @@ test('create an organization team', async (t) => {
   await organization.createOrgTeam(org.id, orgTeam1, user1.id)
 
   // Query org teams
-  const {
-    pagination: { total },
-    data,
-  } = await team.list({ organizationId: org.id })
+  const data = await team.list({ organizationId: org.id })
 
   // Test result
-  t.is(total, 1)
+  t.is(data.length, 1)
   t.is(data[0].name, orgTeam1.name)
 })

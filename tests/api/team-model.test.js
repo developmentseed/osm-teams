@@ -37,7 +37,7 @@ test('moderator id is required to create team', async (t) => {
 
 test('list teams', async (t) => {
   await team.create({ name: 'list teams' }, 1)
-  const { data } = await team.list()
+  const data = await team.list()
   t.true(Array.isArray(data) && data.length > 0)
   data.forEach((item) => {
     t.truthy(item.name)
@@ -151,7 +151,7 @@ test('update team members', async (t) => {
 test('list teams a user belongs to', async (t) => {
   const created = await team.create({ name: 'boundary team 6' }, 1)
   await team.addMember(created.id, 1)
-  const { data } = await team.list({ osmId: 1 })
+  const data = await team.list({ osmId: 1 })
 
   t.true(Array.isArray(data) && data.length > 0)
   data.forEach((item) => {
@@ -175,8 +175,8 @@ test('list teams with bounding box', async (t) => {
   const list1 = await team.list({ bbox: [-1, -1, 1, 1] }) // contains the team
   const list2 = await team.list({ bbox: [1, 1, 2, 2] }) // does not contain the team
 
-  t.true(Array.isArray(list1.data) && list1.data.length === 1)
-  t.true(Array.isArray(list2.data) && list2.data.length === 0)
+  t.true(Array.isArray(list1) && list1.length === 1)
+  t.true(Array.isArray(list2) && list2.length === 0)
 })
 
 test('assign moderator to team', async (t) => {
