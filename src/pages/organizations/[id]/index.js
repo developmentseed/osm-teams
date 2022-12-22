@@ -6,6 +6,7 @@ import {
   removeManager,
   addOwner,
   removeOwner,
+  getOrgStaff,
 } from '../../../lib/org-api'
 import { getUserOrgProfile } from '../../../lib/profiles-api'
 import Card from '../../../components/card'
@@ -62,7 +63,6 @@ class Organization extends Component {
       profileInfo: [],
       profileUserId: '',
       teams: [],
-      members: [],
       managers: [],
       owners: [],
       page: 0,
@@ -78,6 +78,7 @@ class Organization extends Component {
   async componentDidMount() {
     this.setState({ session: await getSession() })
     await this.getOrg()
+    await this.getOrgStaff()
     await this.getBadges()
   }
 
@@ -113,6 +114,25 @@ class Organization extends Component {
     this.setState({
       modalIsOpen: false,
     })
+  }
+
+  async getOrgStaff() {
+    const { id } = this.props
+    try {
+      let { managers, owners } = await getOrgStaff(id)
+      this.setState({
+        managers,
+        owners,
+      })
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        error: e,
+        managers: [],
+        owners: [],
+        loading: false,
+      })
+    }
   }
 
   async getOrg() {
@@ -351,7 +371,11 @@ class Organization extends Component {
                 </div>
               </div>
             </Section>
-            <UsersTable type='org-staff' orgId={org.data.id} />
+            <UsersTable
+              type='org-staff'
+              orgId={org.data.id}
+              onRowClick={(row) => this.openProfileModal(row)}
+            />
           </div>
         ) : (
           <div />
@@ -362,7 +386,11 @@ class Organization extends Component {
               <div className='section-actions'>
                 <SectionHeader>Organization Members</SectionHeader>
               </div>
-              <UsersTable type='org-members' orgId={org.data.id} />
+              <UsersTable
+                type='org-members'
+                orgId={org.data.id}
+                onRowClick={(row) => this.openProfileModal(row)}
+              />
             </Section>
           </div>
         ) : (
