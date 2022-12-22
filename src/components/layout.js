@@ -44,7 +44,7 @@ export const globalStyles = css.global`
       'main'
       'footer';
     height: 100vh;
-    overflow: overlay;
+    overflow: auto;
   }
 
   @media screen and (min-width: ${theme.mediaRanges.small}) {
