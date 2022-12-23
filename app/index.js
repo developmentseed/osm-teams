@@ -10,6 +10,7 @@ const cors = require('cors')
 
 const manageRouter = require('./manage')
 const oauthRouter = require('./oauth')
+const logger = require('../src/lib/logger')
 
 const dev = process.env.NODE_ENV !== 'production'
 const PORT = process.env.PORT || 8989
@@ -60,7 +61,7 @@ async function init() {
       return nextApp.render(req, res, '/uh-oh')
     }
     res.status(err.status || 500)
-    console.error('error', err)
+    logger.error('error', err)
     res.boom.internal('An internal error occurred.')
   })
 
@@ -71,7 +72,7 @@ async function init() {
 if (require.main === module) {
   init().then((app) => {
     app.listen(PORT, () => {
-      console.log(`Starting server on port ${PORT}`)
+      logger.info(`Starting server on port ${PORT}`)
     })
   })
 }

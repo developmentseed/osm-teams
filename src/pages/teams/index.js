@@ -7,6 +7,7 @@ import theme from '../../styles/theme'
 import join from 'url-join'
 import { pick, map } from 'ramda'
 import { getTeams } from '../../lib/teams-api'
+import logger from '../../lib/logger'
 
 const Map = dynamic(import('../../components/list-map'), {
   ssr: false,
@@ -36,7 +37,7 @@ export default class TeamList extends Component {
         loading: false,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         teams: [],

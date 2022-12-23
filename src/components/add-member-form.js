@@ -1,6 +1,7 @@
 import React from 'react'
 import { Formik, Field, Form } from 'formik'
 import Button from './button'
+import logger from '../lib/logger'
 
 export default function AddMemberForm({ onSubmit }) {
   return (
@@ -14,7 +15,7 @@ export default function AddMemberForm({ onSubmit }) {
           actions.setSubmitting(false)
           actions.resetForm({ osmId: '' })
         } catch (e) {
-          console.error(e)
+          logger.error(e)
           actions.setSubmitting(false)
           actions.setStatus(e.message)
         }

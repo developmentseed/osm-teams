@@ -9,6 +9,7 @@ import { toast } from 'react-toastify'
 import theme from '../../../../../styles/theme'
 import Table from '../../../../../components/tables/table'
 import { toDateString } from '../../../../../lib/utils'
+import logger from '../../../../../lib/logger'
 
 const URL = process.env.APP_URL
 
@@ -76,7 +77,7 @@ export default class EditBadge extends Component {
         assignablePeople,
       })
     } catch (error) {
-      console.error(error)
+      logger.error(error)
       this.setState({
         error,
         loading: false,
@@ -170,7 +171,7 @@ export default class EditBadge extends Component {
                 toast.error(
                   `There was an error editing badge '${name}'. Please try again later.`
                 )
-                console.log(error)
+                logger.error(error)
               }
             }}
             render={({ isSubmitting, values, errors }) => {
@@ -248,7 +249,7 @@ export default class EditBadge extends Component {
                     toast.error(
                       `There was an error deleting the badge. Please try again later.`
                     )
-                    console.log(error)
+                    logger.error(error)
                   }
                 }}
               >

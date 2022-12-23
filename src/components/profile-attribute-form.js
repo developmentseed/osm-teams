@@ -2,6 +2,7 @@ import React from 'react'
 import { Formik, Field, Form } from 'formik'
 import { assoc } from 'ramda'
 import Button from './button'
+import logger from '../lib/logger'
 
 const validate = (values) => {
   const errors = {}
@@ -46,7 +47,7 @@ export default function ProfileAttributeForm({
           actions.setSubmitting(false)
           actions.resetForm(initialValues)
         } catch (e) {
-          console.error(e)
+          logger.error(e)
           actions.setSubmitting(false)
           actions.setStatus(e.message)
         }

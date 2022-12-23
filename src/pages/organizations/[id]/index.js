@@ -25,6 +25,7 @@ import join from 'url-join'
 import { getSession } from 'next-auth/react'
 import TeamsTable from '../../../components/tables/teams'
 import UsersTable from '../../../components/tables/users'
+import logger from '../../../lib/logger'
 
 const URL = process.env.APP_URL
 
@@ -101,7 +102,7 @@ class Organization extends Component {
         modalIsOpen: true,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         team: null,
@@ -125,7 +126,7 @@ class Organization extends Component {
         owners,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         managers: [],
@@ -170,9 +171,9 @@ class Organization extends Component {
       })
     } catch (e) {
       if (e.statusCode === 401) {
-        console.log("User doesn't have access to organization badges.")
+        logger.error("User doesn't have access to organization badges.")
       } else {
-        console.error(e)
+        logger.error(e)
       }
     }
   }

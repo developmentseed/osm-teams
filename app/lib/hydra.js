@@ -10,6 +10,7 @@ const qs = require('qs')
 const { URL } = require('url')
 
 const { serverRuntimeConfig } = require('../../next.config')
+const logger = require('../../src/lib/logger')
 const hydraUrl = serverRuntimeConfig.HYDRA_ADMIN_HOST
 
 var mockTlsTermination = {}
@@ -29,7 +30,7 @@ function get(flow, challenge) {
       // This will handle any errors that aren't network related (network related errors are handled automatically)
       return res.json().then(function (body) {
         if (res.status !== 404) {
-          console.error('An error occurred while making a HTTP request: ', body)
+          logger.error('An error occurred while making a HTTP request: ', body)
         }
         return Promise.reject(new Error(body.error.message))
       })
@@ -59,7 +60,7 @@ function put(flow, action, challenge, body) {
       // This will handle any errors that aren't network related (network related errors are handled automatically)
       return res.json().then(function (body) {
         if (res.status !== 404) {
-          console.error('An error occurred while making a HTTP request: ', body)
+          logger.error('An error occurred while making a HTTP request: ', body)
         }
         return Promise.reject(new Error(body.error.message))
       })
@@ -81,7 +82,7 @@ function getClients() {
       // This will handle any errors that aren't network related (network related errors are handled automatically)
       return res.json().then(function (body) {
         if (res.status !== 404) {
-          console.error('An error occurred while making a HTTP request: ', body)
+          logger.error('An error occurred while making a HTTP request: ', body)
         }
         return Promise.reject(new Error(body.error.message))
       })
@@ -104,7 +105,7 @@ function createClient(body) {
       // This will handle any errors that aren't network related (network related errors are handled automatically)
       return res.json().then(function (body) {
         if (res.status !== 404) {
-          console.error('An error occurred while making a HTTP request: ', body)
+          logger.error('An error occurred while making a HTTP request: ', body)
         }
         return Promise.reject(new Error(body.error.message))
       })

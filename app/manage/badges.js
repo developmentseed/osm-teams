@@ -5,6 +5,7 @@ const profile = require('../../src/models/profile')
 const { routeWrapper } = require('./utils')
 const team = require('../../src/models/team')
 const Boom = require('@hapi/boom')
+const logger = require('../../src/lib/logger')
 
 /**
  * Get the list of badges of an organization
@@ -25,7 +26,7 @@ const listBadges = routeWrapper({
         .orderBy('id')
       reply.send(badges)
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       throw Boom.badRequest(err.message)
     }
   },
@@ -58,7 +59,7 @@ const createBadge = routeWrapper({
         .returning('*')
       reply.send(badge)
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       throw Boom.badRequest(err.message)
     }
   },
@@ -119,7 +120,7 @@ const getBadge = routeWrapper({
         users,
       })
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       throw Boom.badRequest(err.message)
     }
   },
@@ -151,7 +152,7 @@ const patchBadge = routeWrapper({
         .returning('*')
       reply.send(badge)
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       throw Boom.badRequest(err.message)
     }
   },
@@ -176,7 +177,7 @@ const deleteBadge = routeWrapper({
         message: `Badge ${req.params.badgeId} deleted successfully.`,
       })
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       throw Boom.badRequest(err.message)
     }
   },
@@ -224,7 +225,7 @@ const assignUserBadge = routeWrapper({
 
       reply.send(badge)
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       if (err.code === '23505') {
         throw Boom.badRequest('User is already assigned to badge.')
       } else {
@@ -250,7 +251,7 @@ const listUserBadges = routeWrapper({
       const badges = await profile.getUserBadges(req.params.userId)
       reply.send({ badges })
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       throw Boom.badRequest(err.message)
     }
   },
@@ -291,7 +292,7 @@ const updateUserBadge = routeWrapper({
 
       reply.send(badge)
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       throw Boom.badRequest(err.message)
     }
   },
@@ -322,7 +323,7 @@ const removeUserBadge = routeWrapper({
         message: `Badge ${req.params.badgeId} unassigned successfully.`,
       })
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       throw Boom.badRequest(err.message)
     }
   },

@@ -12,6 +12,7 @@ import {
   deleteAttribute,
 } from '../../../lib/profiles-api'
 import theme from '../../../styles/theme'
+import logger from '../../../lib/logger'
 
 export default class OrgEditProfile extends Component {
   static async getInitialProps({ query }) {
@@ -111,7 +112,7 @@ export default class OrgEditProfile extends Component {
         loading: false,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         orgId: null,

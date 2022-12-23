@@ -33,6 +33,7 @@ import {
 } from '../../../lib/profiles-api'
 import { getOrgStaff } from '../../../lib/org-api'
 import { toast } from 'react-toastify'
+import logger from '../../../lib/logger'
 
 const APP_URL = process.env.APP_URL
 const Map = dynamic(() => import('../../../components/team-map'), {
@@ -79,7 +80,7 @@ class Team extends Component {
         })
       }
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       toast.error(e)
     }
   }
@@ -90,7 +91,7 @@ class Team extends Component {
       await createTeamJoinInvitation(id)
       this.getTeamJoinLink()
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       toast.error(e)
     }
   }
@@ -116,7 +117,7 @@ class Team extends Component {
         loading: false,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         team: null,
@@ -144,7 +145,7 @@ class Team extends Component {
         modalIsOpen: true,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         team: null,
@@ -167,7 +168,7 @@ class Team extends Component {
       await joinTeam(id, osmId)
       await this.getTeam(id)
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
       })
@@ -190,7 +191,7 @@ class Team extends Component {
       await assignModerator(id, osmId)
       await this.getTeam()
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         loading: false,
@@ -204,7 +205,7 @@ class Team extends Component {
       await removeModerator(id, osmId)
       await this.getTeam()
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         loading: false,
@@ -221,7 +222,7 @@ class Team extends Component {
       }
       await this.getTeam()
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         team: null,

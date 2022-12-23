@@ -15,6 +15,7 @@ import { getOrg } from '../lib/org-api'
 import { getTeam } from '../lib/teams-api'
 import Button from '../components/button'
 import { propOr, prop } from 'ramda'
+import logger from '../lib/logger'
 
 function GenderSelectField(props) {
   const [field, meta, { setValue, setTouched }] = useField(props.name)
@@ -141,7 +142,7 @@ export default class ProfileForm extends Component {
         loading: false,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         loading: false,
@@ -246,7 +247,7 @@ export default class ProfileForm extends Component {
               actions.setSubmitting(false)
               Router.push(returnUrl)
             } catch (e) {
-              console.error(e)
+              logger.error(e)
               actions.setSubmitting(false)
               actions.setStatus(e.message)
             }
