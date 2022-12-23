@@ -9,7 +9,7 @@ import { getRandomColor } from '../../../../lib/utils'
 import { toast } from 'react-toastify'
 import logger from '../../../../lib/logger'
 
-const URL = process.APP_URL
+const URL = process.env.APP_URL
 
 const apiClient = new APIClient()
 
