@@ -66,10 +66,13 @@ const teamAttributes = [
  *
  */
 async function resolveMemberNames(ids) {
+  // TODO Quick fix, we need to do proper type validation
+  const userIds = ids.map((i) => parseInt(i))
+
   // get the display names from the database table first
-  const foundUsers = await db('osm_users').whereIn('id', ids)
+  const foundUsers = await db('osm_users').whereIn('id', userIds)
   const foundUserIds = foundUsers.map(prop('id'))
-  const notFound = difference(ids, foundUserIds)
+  const notFound = difference(userIds, foundUserIds)
 
   let usersFromOSM = []
   if (notFound.length > 0) {
