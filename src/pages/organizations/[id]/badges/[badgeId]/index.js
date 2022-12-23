@@ -60,16 +60,15 @@ export default class EditBadge extends Component {
   async loadData() {
     const { orgId, badgeId } = this.props
     try {
-      const [org, badge, { members }, { managers, owners }] = await Promise.all(
-        [
+      const [org, badge, { data: members }, { data: staff }] =
+        await Promise.all([
           getOrg(orgId),
           apiClient.get(`/organizations/${orgId}/badges/${badgeId}`),
           apiClient.get(`/organizations/${orgId}/members`),
           apiClient.get(`/organizations/${orgId}/staff`),
-        ]
-      )
+        ])
 
-      const assignablePeople = members.concat(managers).concat(owners)
+      const assignablePeople = members.concat(staff)
 
       this.setState({
         org,
