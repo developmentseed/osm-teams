@@ -1,5 +1,6 @@
 const team = require('../../src/models/team')
 const { prop } = require('ramda')
+const logger = require('../../src/lib/logger')
 
 const getId = prop('id')
 const getOsmId = prop('osm_id')
@@ -48,7 +49,7 @@ function routeWrapper(config) {
         req.body = await validate.body.validate(req.body)
       }
     } catch (error) {
-      console.log(error)
+      logger.error(error)
       reply.boom.badRequest(error)
     }
     await handler(req, reply)

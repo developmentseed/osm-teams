@@ -7,6 +7,7 @@ import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import join from 'url-join'
 import Router from 'next/router'
+import logger from '../../../../../../lib/logger'
 
 const URL = process.env.APP_URL
 
@@ -85,7 +86,7 @@ export default class EditBadgeAssignment extends Component {
         assignment,
       })
     } catch (error) {
-      console.error(error)
+      logger.error(error)
       this.setState({
         error,
         loading: false,
@@ -152,7 +153,7 @@ export default class EditBadgeAssignment extends Component {
                 toast.info('Badge updated successfully.')
                 this.loadData()
               } catch (error) {
-                console.log(error)
+                logger.error(error)
                 toast.error(`Unexpected error, please try again later.`)
               }
             }}
@@ -232,7 +233,7 @@ export default class EditBadgeAssignment extends Component {
                         toast.error(
                           `There was an error unassigning the badge. Please try again later.`
                         )
-                        console.log(error)
+                        logger.error(error)
                       }
                     }}
                   >

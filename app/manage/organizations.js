@@ -1,5 +1,6 @@
 const organization = require('../../src/models/organization')
 const Boom = require('@hapi/boom')
+const logger = require('../../src/lib/logger')
 
 /**
  * List organizations that a user is a member of
@@ -10,7 +11,7 @@ async function listMyOrgs(req, reply) {
     const orgs = await organization.listMyOrganizations(user_id)
     reply.send(orgs)
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -28,7 +29,7 @@ async function createOrg(req, reply) {
     const data = await organization.create(body, user_id)
     reply.send(data)
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -76,7 +77,7 @@ async function updateOrg(req, reply) {
     const data = await organization.update(id, body)
     reply.send(data)
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -95,7 +96,7 @@ async function destroyOrg(req, reply) {
     await organization.destroy(id)
     return reply.status(200).send()
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -118,7 +119,7 @@ async function addOwner(req, reply) {
     await organization.addOwner(id, Number(osmId))
     return reply.status(200).send()
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -141,7 +142,7 @@ async function removeOwner(req, reply) {
     await organization.removeOwner(id, Number(osmId))
     return reply.status(200).send()
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -182,7 +183,7 @@ async function removeManager(req, reply) {
     await organization.removeManager(id, Number(osmId))
     return reply.status(200).send()
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }

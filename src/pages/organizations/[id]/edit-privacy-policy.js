@@ -4,6 +4,7 @@ import { prop } from 'ramda'
 import Router from 'next/router'
 import { getOrg, updateOrgPrivacyPolicy } from '../../../lib/org-api'
 import PrivacyPolicyForm from '../../../components/privacy-policy-form'
+import logger from '../../../lib/logger'
 
 const APP_URL = process.env.APP_URL
 
@@ -42,7 +43,7 @@ export default class OrgPrivacyPolicy extends Component {
         loading: false,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         orgId: null,
@@ -78,7 +79,7 @@ export default class OrgPrivacyPolicy extends Component {
                 actions.setSubmitting(false)
                 Router.push(join(APP_URL, `/organizations/${orgId}/edit`))
               } catch (e) {
-                console.error(e)
+                logger.error(e)
                 actions.setSubmitting(false)
                 actions.setStatus(e.message)
               }

@@ -6,6 +6,7 @@ import { dissoc } from 'ramda'
 import EditTeamForm from '../../components/edit-team-form'
 import { getSession } from 'next-auth/react'
 import { getOrgStaff } from '../../models/organization'
+import logger from '../../lib/logger'
 
 const APP_URL = process.env.APP_URL
 
@@ -30,7 +31,7 @@ export default function TeamCreate({ staff }) {
             actions.setSubmitting(false)
             Router.push(join(APP_URL, `/teams/${team.id}`))
           } catch (e) {
-            console.error(e)
+            logger.error(e)
             actions.setSubmitting(false)
             // set the form errors actions.setErrors(e)
             actions.setStatus(e.message)

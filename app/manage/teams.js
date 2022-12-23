@@ -8,6 +8,7 @@ const urlRegex = require('url-regex')
 const { teamsMembersModeratorsHelper } = require('./utils')
 const profile = require('../../src/models/profile')
 const Boom = require('@hapi/boom')
+const logger = require('../../src/lib/logger')
 
 const isUrl = urlRegex({ exact: true })
 const getOsmId = prop('osm_id')
@@ -30,7 +31,7 @@ async function listTeams(req, reply) {
     const enhancedData = await teamsMembersModeratorsHelper(data)
     reply.send(enhancedData)
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -52,7 +53,7 @@ async function getTeam(req, reply) {
 
     return reply.send(Object.assign({}, teamData, { org: associatedOrg }))
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -81,7 +82,7 @@ const getTeamMembers = routeWrapper({
         Object.assign({}, { teamId: id }, { members, moderators })
       )
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       throw Boom.badRequest(err.message)
     }
   },
@@ -98,7 +99,7 @@ async function createTeam(req, reply) {
     const data = await team.create(body, user_id)
     reply.send(data)
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -127,7 +128,7 @@ async function updateTeam(req, reply) {
     }
     reply.send(updatedTeam)
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -149,7 +150,7 @@ async function assignModerator(req, reply) {
     const data = await team.assignModerator(teamId, osmId)
     reply.send(data)
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -171,7 +172,7 @@ async function removeModerator(req, reply) {
     const data = await team.removeModerator(teamId, osmId)
     reply.send(data)
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -187,7 +188,7 @@ async function destroyTeam(req, reply) {
     await team.destroy(id)
     return reply.status(200).send()
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -207,7 +208,7 @@ async function addMember(req, reply) {
     await team.addMember(id, osmId)
     return reply.status(200).send()
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -238,7 +239,7 @@ async function updateMembers(req, reply) {
     await team.updateMembers(id, add, remove)
     return reply.status(200).send()
   } catch (err) {
-    console.error(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -258,7 +259,7 @@ async function removeMember(req, reply) {
     await team.removeMember(id, osmId)
     return reply.status(200).send()
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
@@ -280,7 +281,7 @@ const getJoinInvitations = routeWrapper({
 
       reply.send(invitations)
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       reply.boom.badRequest(e.message)
     }
   },
@@ -305,7 +306,7 @@ const createJoinInvitation = routeWrapper({
         .returning('*')
       reply.send(invitation)
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       throw Boom.badRequest(err.message)
     }
   },
@@ -330,7 +331,7 @@ const deleteJoinInvitation = routeWrapper({
         .del()
       return reply.status(200).send()
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       throw Boom.badRequest(err.message)
     }
   },
@@ -361,7 +362,7 @@ const acceptJoinInvitation = routeWrapper({
         return reply.status(200).send()
       }
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       throw Boom.badRequest(err.message)
     }
   },
@@ -383,7 +384,7 @@ async function joinTeam(req, reply) {
     await team.addMember(id, osmId)
     return reply.status(200).send()
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     throw Boom.badRequest(err.message)
   }
 }
