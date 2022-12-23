@@ -39,7 +39,7 @@ export default class EditBadge extends Component {
   static async getInitialProps({ query }) {
     if (query) {
       return {
-        orgId: query.badgeId,
+        orgId: query.id,
         badgeId: query.badgeId,
       }
     }
