@@ -25,12 +25,12 @@
     "e2e": "NODE_ENV=test start-server-and-test dev http://127.0.0.1:3000/api cy:run",
     "dev": "next dev",
     "migrate": "knex migrate:latest",
+    "rollback:test": "NODE_ENV=test knex migrate:rollback",
     "migrate:test": "NODE_ENV=test knex migrate:latest",
     "test": "NODE_ENV=test start-server-and-test dev http://127.0.0.1:3000/api test:ava",
     "test:ava": "NODE_ENV=test ava",
     "lint": "next lint",
     "build": "next build",
-    "start": "NODE_ENV=production node app/index.js",
     "postinstall": "yarn run next telemetry disable > /dev/null"
   },
   "browserify": {
