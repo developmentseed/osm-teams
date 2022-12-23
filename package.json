@@ -19,7 +19,7 @@
     "docs:update-version": "node -p \"JSON.stringify({'apiFolder': 'src','schemaFolders': ['src'],'definition': {'openapi': '3.0.0','info': {'title': 'OSM Teams API Docs','version': require('./package.json').version}}}, null, 2)\" > next-swagger-doc.json",
     "docs:generate": "yarn next-swagger-doc-cli next-swagger-doc.json",
     "docs:validate": "yarn docs:update-version && yarn docs:generate && swagger-cli validate public/swagger.json",
-    "cy:open": "cypress open",
+    "cy:open": "cypress open --e2e",
     "cy:run": "cypress run",
     "e2e:dev": "NODE_ENV=test start-server-and-test dev http://127.0.0.1:3000/api cy:open",
     "e2e": "NODE_ENV=test start-server-and-test dev http://127.0.0.1:3000/api cy:run",

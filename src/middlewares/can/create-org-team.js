@@ -14,7 +14,7 @@ import { isManager, isOwner } from '../../models/organization'
  */
 export default async function canCreateOrgTeam(req, res, next) {
   const { orgId } = req.query
-  const { user_id: userId } = req.session
+  const userId = req.session?.user_id
 
   // Must be owner or manager
   if (!(await isOwner(orgId, userId)) && !(await isManager(orgId, userId))) {

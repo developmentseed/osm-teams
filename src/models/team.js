@@ -6,10 +6,10 @@ const xml2js = require('xml2js')
 const { unpack } = require('../../app/lib/utils')
 const { prop, isEmpty, difference, concat, assoc } = require('ramda')
 const request = require('request-promise-native')
+const { addZeroPadding } = require('../lib/utils')
 
 const { serverRuntimeConfig } = require('../../next.config')
-
-const DEFAULT_LIMIT = 10
+const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
 /**
  * @swagger
@@ -80,7 +80,7 @@ async function resolveMemberNames(ids) {
       if (process.env.TESTING === 'true') {
         usersFromOSM = notFound.map((id) => ({
           id,
-          name: `User ${id}`,
+          name: `User ${addZeroPadding(id, 3)}`, // use zero-padded number for consistent table sorting during tests
           image: `https://via.placeholder.com/150`,
         }))
       } else {
@@ -185,20 +185,23 @@ async function count({ organizationId }) {
 }
 
 /**
- * Get all teams
+ * Get paginated list of teams
  *
  * @param options
  * @param {int} options.osmId - filter by whether osmId is a member
  * @param {int} options.organizationId - filter by whether team belongs to organization
  * @param {Array[float]} options.bbox - filter for teams whose location is in bbox (xmin, ymin, xmax, ymax)
- * @param {bool} options.disablePagination - Return all fields when true
  * @return {Promise[Array]}
  **/
-async function list(options = {}) {
-  const { bbox, osmId, organizationId, page, disablePagination } = options
+async function paginatedList(options = {}) {
+  const { bbox, osmId, organizationId, page, includePrivate } = options
   const st = knexPostgis(db)
 
   let query = db('team').select(...teamAttributes, st.asGeoJSON('location'))
+
+  if (!includePrivate) {
+    query.where('privacy', 'public')
+  }
 
   if (osmId) {
     query = query.whereIn('id', function () {
@@ -223,13 +226,51 @@ async function list(options = {}) {
   // Always sort by team name
   query = query.orderBy('name')
 
-  return disablePagination
-    ? query
-    : query.paginate({
-        isLengthAware: true,
-        currentPage: page || 1,
-        perPage: DEFAULT_LIMIT,
-      })
+  return query.paginate({
+    isLengthAware: true,
+    currentPage: page || 1,
+    perPage: DEFAULT_PAGE_SIZE,
+  })
+}
+
+/**
+ * Get all teams
+ *
+ * @param options
+ * @param {int} options.osmId - filter by whether osmId is a member
+ * @param {int} options.organizationId - filter by whether team belongs to organization
+ * @param {Array[float]} options.bbox - filter for teams whose location is in bbox (xmin, ymin, xmax, ymax)
+ * @return {Promise[Array]}
+ **/
+async function list(options) {
+  options = options || {}
+  const { osmId, bbox, organizationId } = options
+
+  const st = knexPostgis(db)
+
+  let query = db('team').select(...teamAttributes, st.asGeoJSON('location'))
+
+  if (osmId) {
+    query = query.whereIn('id', function () {
+      this.select('team_id').from('member').where('osm_id', osmId)
+    })
+  }
+
+  if (organizationId) {
+    query = query.whereIn('id', function () {
+      this.select('team_id')
+        .from('organization_team')
+        .where('organization_id', organizationId)
+    })
+  }
+
+  if (bbox) {
+    query = query.where(
+      st.boundingBoxContained('location', st.makeEnvelope(...bbox))
+    )
+  }
+
+  return query
 }
 
 /**
@@ -295,6 +336,7 @@ async function create(data, osmId, trx) {
       location: st.setSRID(st.geomFromGeoJSON(data.location), 4326),
     })
   }
+
   return conn.transaction(async (trx) => {
     const [row] = await trx('team')
       .insert(data)
@@ -535,6 +577,7 @@ module.exports = {
   get,
   count,
   list,
+  paginatedList,
   listMembers,
   listModerators,
   listModeratedBy,

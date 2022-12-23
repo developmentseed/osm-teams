@@ -90,7 +90,7 @@ async function getTeamProfile(req, reply) {
   const { user_id: requesterId } = req.session
 
   if (!teamId) {
-    reply.boom.badRequest('teamId is required parameter')
+    return reply.boom.badRequest('teamId is required parameter')
   }
 
   // try {

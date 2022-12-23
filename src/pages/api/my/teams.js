@@ -35,7 +35,7 @@ handler.get(
     const { page } = req.query
     const { user_id: osmId } = req.session
 
-    return res.send(await Team.list({ osmId, page }))
+    return res.send(await Team.paginatedList({ osmId, page }))
   }
 )
 

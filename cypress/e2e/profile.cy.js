@@ -2,17 +2,17 @@ const { generateSequenceArray } = require('../../src/lib/utils')
 
 const user1 = {
   id: 1,
-  display_name: 'User 1',
+  display_name: 'User 001',
 }
 
 const user2 = {
   id: 2,
-  display_name: 'User 2',
+  display_name: 'User 002',
 }
 
 const user3 = {
   id: 3,
-  display_name: 'User 3',
+  display_name: 'User 003',
 }
 
 /**

@@ -1,6 +1,4 @@
 const organization = require('../../src/models/organization')
-const team = require('../../src/models/team')
-const { map, prop } = require('ramda')
 const Boom = require('@hapi/boom')
 
 /**
@@ -47,65 +45,18 @@ async function getOrg(req, reply) {
     throw Boom.badRequest('organization id is required')
   }
 
-  let [data, isMemberOfOrg] = await Promise.all([
+  let [data, isMember, isManager, isOwner] = await Promise.all([
     organization.get(id),
     organization.isMember(id, user_id),
+    organization.isManager(id, user_id),
+    organization.isOwner(id, user_id),
   ])
-  reply.send({ ...data, isMemberOfOrg })
-}
 
-/**
- * Get an organization's staff
- * Requires id of organization
- */
-async function getOrgStaff(req, reply) {
-  const { id } = req.params
-
-  if (!id) {
-    throw Boom.badRequest('organization id is required')
-  }
-
-  try {
-    let [owners, managers] = await Promise.all([
-      organization.getOwners(id),
-      organization.getManagers(id),
-    ])
-    const ownerIds = map(prop('osm_id'), owners)
-    const managerIds = map(prop('osm_id'), managers)
-    if (ownerIds.length > 0) {
-      owners = await team.resolveMemberNames(ownerIds)
-    }
-    if (managerIds.length > 0) {
-      managers = await team.resolveMemberNames(managerIds)
-    }
-
-    reply.send({ owners, managers })
-  } catch (err) {
-    console.log(err)
-    throw Boom.badRequest(err.message)
-  }
-}
-
-async function getOrgMembers(req, reply) {
-  const { id } = req.params
-
-  if (!id) {
-    throw Boom.badRequest('organization id is required')
-  }
-
-  let { page } = req.query
-
-  try {
-    let members = await organization.getMembers(id, page)
-    const memberIds = map(prop('osm_id'), members)
-    if (memberIds.length > 0) {
-      members = await team.resolveMemberNames(memberIds)
-    }
-
-    reply.send({ members, page })
-  } catch (err) {
-    console.log(err)
-    throw Boom.badRequest(err.message)
+  // User needs to be member or staff to access a private org
+  if (data?.privacy === 'private' && !isMember && !isManager && !isOwner) {
+    throw Boom.unauthorized()
+  } else {
+    reply.send({ ...data, isMember, isManager, isOwner })
   }
 }
 
@@ -246,6 +197,4 @@ module.exports = {
   addManager,
   removeManager,
   listMyOrgs,
-  getOrgStaff,
-  getOrgMembers,
 }

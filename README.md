@@ -42,7 +42,9 @@ Start development server:
     yarn dev
 
 <!-- markdownlint-disable MD034 -->
+
 ✨ You can now login to the app at http://127.0.0.1:3000
+
 <!-- markdownlint-enable MD034 -->
 
 ## Testing
@@ -58,6 +60,8 @@ This project uses Cypress for end-to-end testing. To run once:
 To open Cypress dashboard for interactive development:
 
     yarn e2e:dev
+
+By default, logging level in testing environment is set to 'silent'. Please refer to pino docs for the full [list of log levels](https://getpino.io/#/docs/api?id=level-string).
 
 ## API
 

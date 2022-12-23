@@ -18,6 +18,8 @@ module.exports = defineConfig({
         'db:reset': async () => {
           await db.raw('TRUNCATE TABLE team RESTART IDENTITY CASCADE')
           await db.raw('TRUNCATE TABLE organization RESTART IDENTITY CASCADE')
+          await db.raw('TRUNCATE TABLE users RESTART IDENTITY CASCADE')
+          await db.raw('TRUNCATE TABLE osm_users RESTART IDENTITY CASCADE')
           return null
         },
         'db:seed': async () => {
@@ -52,22 +54,47 @@ module.exports = defineConfig({
           }
           return null
         },
+        'db:seed:add-members-to-team': async ({ teamId, members }) => {
+          for (let i = 0; i < members.length; i++) {
+            const member = members[i]
+            await Team.addMember(teamId, member.id)
+          }
+          return null
+        },
         'db:seed:team-invitations': async (teamInvitations) => {
           return Promise.all(teamInvitations.map(TeamInvitation.create))
         },
-        'db:seed:organizations': async (orgs) => {
-          return Promise.all(
-            orgs.map((org) =>
-              Organization.create(pick(['name'], org), org.ownerId)
+        'db:seed:add-organizations': async (orgs) => {
+          for (let i = 0; i < orgs.length; i++) {
+            const org = orgs[i]
+            await Organization.create(
+              pick(['name', 'privacy'], org),
+              org.ownerId
             )
-          )
+          }
+          return null
         },
-        'db:seed:organization-teams': async ({ orgId, teams, managerId }) => {
-          return Promise.all(
-            teams.map((team) =>
-              Organization.createOrgTeam(orgId, pick(['name'], team), managerId)
+        'db:seed:add-organization-teams': async ({
+          orgId,
+          teams,
+          managerId,
+        }) => {
+          for (let i = 0; i < teams.length; i++) {
+            const team = teams[i]
+            await Organization.createOrgTeam(
+              orgId,
+              pick(['id', 'name', 'privacy'], team),
+              managerId
             )
-          )
+          }
+          return null
+        },
+        'db:seed:add-organization-managers': async ({ orgId, managerIds }) => {
+          for (let i = 0; i < managerIds.length; i++) {
+            const managerId = managerIds[i]
+            await Organization.addManager(orgId, managerId)
+          }
+          return null
         },
       })
     },

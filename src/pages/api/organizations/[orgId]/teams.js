@@ -3,8 +3,8 @@ import { validate } from '../../../../middlewares/validation'
 import Organization from '../../../../models/organization'
 import Team from '../../../../models/team'
 import * as Yup from 'yup'
-import canViewOrgMembers from '../../../../middlewares/can/view-org-members'
 import canCreateOrgTeam from '../../../../middlewares/can/create-org-team'
+import canViewOrgTeams from '../../../../middlewares/can/view-org-teams'
 
 const handler = createBaseHandler()
 
@@ -91,7 +91,7 @@ handler.post(
  *                   $ref: '#/components/schemas/ArrayOfTeams'
  */
 handler.get(
-  canViewOrgMembers,
+  canViewOrgTeams,
   validate({
     query: Yup.object({
       orgId: Yup.number().required().positive().integer(),
@@ -100,7 +100,16 @@ handler.get(
   }),
   async function (req, res) {
     const { orgId, page } = req.query
-    return res.send(await Team.list({ organizationId: orgId, page }))
+    const {
+      org: { isMember, isOwner, isManager },
+    } = req
+    return res.send(
+      await Team.paginatedList({
+        organizationId: orgId,
+        page,
+        includePrivate: isMember || isManager || isOwner,
+      })
+    )
   }
 )
 

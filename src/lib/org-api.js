@@ -57,14 +57,41 @@ export async function getOrg(id) {
 }
 
 /**
+ * getOrgTeams
+ * Get list of teams from the API
+ *
+ * @param {integer} id
+ * @returns {response}
+ */
+export async function getOrgTeams(id) {
+  let res = await fetch(join(ORG_URL, `${id}`, 'teams'))
+
+  if (res.status === 200) {
+    return res.json()
+  }
+  if (res.status === 401) {
+    return { teams: [] }
+  } else {
+    const err = new Error('could not retrieve organization teams')
+    err.status = res.status
+    throw err
+  }
+}
+
+/**
  * getOrgStaff
  * get org staff
  * @param {integer} id
  */
 export async function getOrgStaff(id) {
-  let res = await fetch(join(ORG_URL, `${id}`, 'staff'))
+  let res = await fetch(join(ORG_URL, `${id}`, 'staff?perPage=100'))
   if (res.status === 200) {
-    return res.json()
+    const { data } = await res.json()
+
+    return {
+      managers: data.filter((u) => u.type === 'manager'),
+      owners: data.filter((u) => u.type === 'owner'),
+    }
   }
   if (res.status === 401) {
     return { managers: [], owners: [] }
