@@ -35,9 +35,14 @@ handler.get(
   async function (req, res) {
     const { page } = req.query
     const userId = req.session?.user_id
-    logger.info('req.session', req.session)
 
-    return res.send(await Team.paginatedList({ osmId: Number(userId), page }))
+    return res.send(
+      await Team.paginatedList({
+        osmId: Number(userId),
+        page,
+        includePrivate: true,
+      })
+    )
   }
 )
 
