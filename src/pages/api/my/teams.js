@@ -2,7 +2,6 @@ import * as Yup from 'yup'
 import Team from '../../../models/team'
 import { createBaseHandler } from '../../../middlewares/base-handler'
 import { validate } from '../../../middlewares/validation'
-import logger from '../../../lib/logger'
 
 const handler = createBaseHandler()
 
