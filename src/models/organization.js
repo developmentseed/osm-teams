@@ -40,7 +40,7 @@ async function listMyOrganizations(osmId) {
       'organization_team.organization_id',
       'organization.id'
     )
-    .join('member', 'organization_team.id', 'member.team_id')
+    .join('member', 'organization_team.team_id', 'member.team_id')
     .where('osm_id', osmId)
 
   const managerOrgs = await db('organization_manager')
