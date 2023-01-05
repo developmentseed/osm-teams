@@ -198,6 +198,7 @@ async function count({ organizationId }) {
  **/
 async function paginatedList(options = {}) {
   const { bbox, osmId, organizationId, page, includePrivate } = options
+  logger.info('Team.paginatedList options', options)
   const st = knexPostgis(db)
 
   let query = db('team').select(...teamAttributes, st.asGeoJSON('location'))
