@@ -8,7 +8,6 @@ const {
   getTeamMembers,
   joinTeam,
   listTeams,
-  listMyTeams,
   removeMember,
   removeModerator,
   updateMembers,
@@ -28,11 +27,7 @@ const {
   removeOwner,
   addManager,
   removeManager,
-  createOrgTeam,
-  getOrgTeams,
-  getOrgMembers,
   listMyOrgs,
-  getOrgStaff,
 } = require('./organizations')
 
 const {
@@ -70,7 +65,6 @@ function manageRouter(handler) {
    * List, Create, Read, Update, Delete operations on teams.
    */
   handler.get('api/teams', listTeams)
-  handler.get('/api/my/teams', can('public:authenticated'), listMyTeams)
   handler.post('/api/teams', can('public:authenticated'), createTeam)
   handler.get('/api/teams/:id', can('team:view'), getTeam)
   handler.get(
@@ -127,16 +121,6 @@ function manageRouter(handler) {
   handler.get('/api/organizations/:id', can('public:authenticated'), getOrg)
   handler.put('/api/organizations/:id', can('organization:edit'), updateOrg)
   handler.delete('/api/organizations/:id', can('organization:edit'), destroyOrg)
-  handler.get(
-    '/api/organizations/:id/staff',
-    can('organization:view-members'),
-    getOrgStaff
-  )
-  handler.get(
-    '/api/organizations/:id/members',
-    can('organization:view-members'),
-    getOrgMembers
-  )
 
   handler.put(
     '/api/organizations/:id/addOwner/:osmId',
@@ -158,17 +142,6 @@ function manageRouter(handler) {
     '/api/organizations/:id/removeManager/:osmId',
     can('organization:edit'),
     removeManager
-  )
-
-  handler.post(
-    '/api/organizations/:id/teams',
-    can('organization:create-team'),
-    createOrgTeam
-  )
-  handler.get(
-    '/api/organizations/:id/teams',
-    can('organization:view-members'),
-    getOrgTeams
   )
 
   /**

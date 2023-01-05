@@ -1,6 +1,7 @@
 const { serverRuntimeConfig } = require('../../next.config')
 const jwt = require('jsonwebtoken')
 const db = require('../../src/lib/db')
+const logger = require('../../src/lib/logger')
 
 const APP_URL = process.env.APP_URL
 
@@ -50,7 +51,7 @@ async function loginAccept(req, res) {
    */
   if (state !== req.session.login_csrf) {
     req.session.destroy(function (err) {
-      if (err) console.error(err)
+      if (err) logger.error(err)
       return res.status(500).json('State does not match')
     })
   } else {
@@ -78,7 +79,7 @@ async function loginAccept(req, res) {
       req.session.idToken = result.id_token
       return res.redirect(`${APP_URL}/profile`)
     } catch (error) {
-      console.error(error)
+      logger.error(error)
       return res.status(500).json('Authentication failed')
     }
   }
@@ -91,7 +92,7 @@ async function loginAccept(req, res) {
  */
 function logout(req, res) {
   req.session.destroy(function (err) {
-    if (err) console.error(err)
+    if (err) logger.error(err)
     res.redirect(APP_URL)
   })
 }

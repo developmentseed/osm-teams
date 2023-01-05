@@ -4,7 +4,7 @@ import Popup from 'reactjs-popup'
 
 import ProfileAttributeForm from '../../../components/profile-attribute-form'
 import Button from '../../../components/button'
-import Table from '../../../components/table'
+import Table from '../../../components/tables/table'
 import {
   addOrgMemberAttributes,
   getOrgMemberAttributes,
@@ -12,6 +12,7 @@ import {
   deleteAttribute,
 } from '../../../lib/profiles-api'
 import theme from '../../../styles/theme'
+import logger from '../../../lib/logger'
 
 export default class OrgEditProfile extends Component {
   static async getInitialProps({ query }) {
@@ -111,7 +112,7 @@ export default class OrgEditProfile extends Component {
         loading: false,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         orgId: null,

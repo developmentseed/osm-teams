@@ -2,29 +2,30 @@ import React, { Component } from 'react'
 import Router, { withRouter } from 'next/router'
 import {
   getOrg,
-  getOrgStaff,
-  getOrgTeams,
-  getMembers,
   addManager,
   removeManager,
   addOwner,
   removeOwner,
+  getOrgStaff,
 } from '../../../lib/org-api'
 import { getUserOrgProfile } from '../../../lib/profiles-api'
 import Card from '../../../components/card'
 import Section from '../../../components/section'
 import SectionHeader from '../../../components/section-header'
-import Table from '../../../components/table'
+import Table from '../../../components/tables/table'
 import theme from '../../../styles/theme'
 import AddMemberForm from '../../../components/add-member-form'
 import SvgSquare from '../../../components/svg-square'
 import Button from '../../../components/button'
 import Modal from 'react-modal'
 import ProfileModal from '../../../components/profile-modal'
-import { assoc, propEq, find, contains, prop, map } from 'ramda'
+import { contains, prop, map } from 'ramda'
 import APIClient from '../../../lib/api-client'
 import join from 'url-join'
 import { getSession } from 'next-auth/react'
+import TeamsTable from '../../../components/tables/teams'
+import UsersTable from '../../../components/tables/users'
+import logger from '../../../lib/logger'
 
 const URL = process.env.APP_URL
 
@@ -57,10 +58,12 @@ class Organization extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      org: {
+        status: 'idle',
+      },
       profileInfo: [],
       profileUserId: '',
       teams: [],
-      members: [],
       managers: [],
       owners: [],
       page: 0,
@@ -76,10 +79,8 @@ class Organization extends Component {
   async componentDidMount() {
     this.setState({ session: await getSession() })
     await this.getOrg()
-    await this.getOrgTeams()
     await this.getOrgStaff()
     await this.getBadges()
-    return this.getMembers(0)
   }
 
   async openProfileModal(user) {
@@ -101,7 +102,7 @@ class Organization extends Component {
         modalIsOpen: true,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         team: null,
@@ -125,7 +126,7 @@ class Organization extends Component {
         owners,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         managers: [],
@@ -135,117 +136,32 @@ class Organization extends Component {
     }
   }
 
-  async getMembers(currentPage) {
-    const { id } = this.props
-    try {
-      let { members, page } = await getMembers(id, currentPage)
-      this.setState({
-        members,
-        page: Number(page),
-        loading: false,
-      })
-    } catch (e) {
-      console.error(e)
-      this.setState({
-        error: e,
-        org: null,
-        loading: false,
-      })
-    }
-  }
-
-  async getNextPage() {
-    this.setState({ loading: true })
-    await this.getMembers(this.state.page + 1)
-  }
-
-  async getPrevPage() {
-    this.setState({ loading: true })
-    await this.getMembers(this.state.page - 1)
-  }
-
   async getOrg() {
     const { id } = this.props
+    this.setState({
+      org: {
+        status: 'loading',
+      },
+    })
+
     try {
       let org = await getOrg(id)
       this.setState({
-        org,
+        org: {
+          data: org,
+          status: 'success',
+        },
       })
     } catch (e) {
-      console.error(e)
       this.setState({
-        error: e,
-        org: null,
-        loading: false,
-      })
-    }
-  }
-  async getOrgTeams() {
-    const { id } = this.props
-    try {
-      const teams = await getOrgTeams(id)
-      this.setState({
-        teams,
-      })
-    } catch (e) {
-      console.error(e)
-      this.setState({
-        error: e,
-        teams: [],
-        loading: false,
+        org: {
+          error: e,
+          status: 'error',
+        },
       })
     }
   }
 
-  renderStaff(owners, managers) {
-    const columns = [{ key: 'name' }, { key: 'id' }, { key: 'role' }]
-    const ownerRows = owners.map(assoc('role', 'owner'))
-    const managerRows = managers.map(assoc('role', 'manager'))
-    let allRows = ownerRows
-    managerRows.forEach((row) => {
-      if (!find(propEq('id', row.id))(ownerRows)) {
-        ownerRows.push(row)
-      }
-    })
-
-    return (
-      <Table
-        rows={allRows}
-        columns={columns}
-        emptyPlaceHolder={
-          this.state.loading ? 'Loading...' : 'This organization has no staff.'
-        }
-        onRowClick={(row) => this.openProfileModal(row)}
-      />
-    )
-  }
-
-  renderOrgTeams(teams) {
-    const columns = [{ key: 'name' }, { key: 'id' }, { key: 'members' }]
-    const teamRows = teams.map(({ name, id, members }) => {
-      return {
-        name,
-        id,
-        members: members.length,
-      }
-    })
-
-    return (
-      <Table
-        rows={teamRows}
-        columns={columns}
-        emptyPlaceHolder={
-          this.state.loading ? 'Loading...' : 'This organization has no teams.'
-        }
-        onRowClick={(row) => {
-          Router.push(
-            join(URL, `/team?id=${row.id}`),
-            join(URL, `/teams/${row.id}`)
-          )
-        }}
-      />
-    )
-  }
   async getBadges() {
     try {
       const { id: orgId } = this.props
@@ -255,9 +171,9 @@ class Organization extends Component {
       })
     } catch (e) {
       if (e.statusCode === 401) {
-        console.log("User doesn't have access to organization badges.")
+        logger.error("User doesn't have access to organization badges.")
       } else {
-        console.error(e)
+        logger.error(e)
       }
     }
   }
@@ -287,6 +203,7 @@ class Organization extends Component {
         </Section>
         {this.state.badges && (
           <Table
+            data-cy='badges-table'
             rows={(this.state.badges || []).map((row) => {
               return {
                 ...row,
@@ -305,34 +222,37 @@ class Organization extends Component {
     ) : null
   }
 
-  renderMembers(memberRows) {
-    const columns = [{ key: 'name' }, { key: 'id' }]
-    return (
-      <Table
-        rows={memberRows}
-        columns={columns}
-        emptyPlaceHolder={
-          this.state.loading
-            ? 'Loading...'
-            : 'This organization has no members.'
-        }
-        onRowClick={(row) => this.openProfileModal(row)}
-      />
-    )
-  }
-
   render() {
-    const { org, members, managers, owners, error, teams } = this.state
-    if (!org) return null
+    const { org, managers, owners, error } = this.state
+
+    // Handle org loading errors
+    if (org.status === 'error') {
+      if (org.error.status === 401 || org.error.status === 403) {
+        return (
+          <article className='inner page'>
+            <h1>Unauthorized</h1>
+          </article>
+        )
+      } else if (org.error.status === 404) {
+        return (
+          <article className='inner page'>
+            <h1>Org not found</h1>
+          </article>
+        )
+      }
+    }
+
+    // Do not render page until org is fetched
+    if (org.status !== 'success') {
+      return null
+    }
 
     const userId = parseInt(this.state.session.user_id)
     const ownerIds = map(parseInt, map(prop('id'), owners))
     const managerIds = map(parseInt, map(prop('id'), managers))
-    const isUserOwner = contains(userId, ownerIds)
-    const disabledLabel = !this.state.loading ? 'primary' : 'disabled'
 
-    const isOrgPublic = org.privacy === 'public'
-    const isMemberOfOrg = org.isMemberOfOrg
+    const { isManager, isOwner } = org.data
+    const isStaff = isManager || isOwner
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -358,7 +278,7 @@ class Organization extends Component {
 
     let profileActions = []
 
-    if (this.state.modalIsOpen && isUserOwner) {
+    if (this.state.modalIsOpen && isOwner) {
       const profileId = parseInt(this.state.profileMeta.id)
       const isProfileManager = contains(profileId, managerIds)
       const isProfileOwner = contains(profileId, ownerIds)
@@ -366,7 +286,7 @@ class Organization extends Component {
         profileActions.push({
           name: 'Remove owner',
           onClick: async () => {
-            await removeOwner(org.id, profileId)
+            await removeOwner(org.data.id, profileId)
             this.getOrg()
           },
         })
@@ -376,14 +296,14 @@ class Organization extends Component {
           profileActions.push({
             name: 'Promote to owner',
             onClick: async () => {
-              await addOwner(org.id, profileId)
+              await addOwner(org.data.id, profileId)
               this.getOrg()
             },
           })
           profileActions.push({
             name: 'Remove manager',
             onClick: async () => {
-              await removeManager(org.id, profileId)
+              await removeManager(org.data.id, profileId)
               this.getOrg()
             },
           })
@@ -394,7 +314,10 @@ class Organization extends Component {
         name: 'Assign a Badge',
         onClick: () =>
           Router.push(
-            join(URL, `/organizations/${org.id}/badges/assign/${profileId}`)
+            join(
+              URL,
+              `/organizations/${org.data.id}/badges/assign/${profileId}`
+            )
           ),
       })
     }
@@ -402,14 +325,17 @@ class Organization extends Component {
     return (
       <article className='inner page team'>
         <div className='page__heading'>
-          <h1>{org.name}</h1>
+          <h1>{org.data.name}</h1>
         </div>
         <div className='team__details'>
           <Card>
             <div className='section-actions'>
               <SectionHeader>Org Details</SectionHeader>
-              {isUserOwner ? (
-                <Button variant='small' href={`/organizations/${org.id}/edit`}>
+              {isOwner ? (
+                <Button
+                  variant='small'
+                  href={`/organizations/${org.data.id}/edit`}
+                >
                   Edit
                 </Button>
               ) : (
@@ -418,7 +344,7 @@ class Organization extends Component {
             </div>
             <dl>
               <dt>Bio: </dt>
-              <dd>{org.description}</dd>
+              <dd>{org.data.description}</dd>
             </dl>
           </Card>
         </div>
@@ -426,19 +352,19 @@ class Organization extends Component {
           <Section>
             <SectionHeader>Teams</SectionHeader>
           </Section>
-          <div>{this.renderOrgTeams(teams)}</div>
+          <TeamsTable type='org-teams' orgId={org.data.id} />
         </div>
 
-        {isOrgPublic || isMemberOfOrg ? (
+        {isStaff ? (
           <div className='team__table'>
             <Section>
               <div className='section-actions'>
                 <SectionHeader>Staff Members</SectionHeader>
                 <div>
-                  {isUserOwner && (
+                  {isOwner && (
                     <AddMemberForm
                       onSubmit={async ({ osmId }) => {
-                        await addManager(org.id, osmId)
+                        await addManager(org.data.id, osmId)
                         return this.getOrg()
                       }}
                     />
@@ -446,46 +372,32 @@ class Organization extends Component {
                 </div>
               </div>
             </Section>
-            {this.renderStaff(owners, managers)}
+            <UsersTable
+              type='org-staff'
+              orgId={org.data.id}
+              onRowClick={(row) => this.openProfileModal(row)}
+            />
           </div>
         ) : (
           <div />
         )}
-        {isOrgPublic || isMemberOfOrg ? (
+        {isStaff ? (
           <div className='team__table'>
             <Section>
               <div className='section-actions'>
                 <SectionHeader>Organization Members</SectionHeader>
-                <div>
-                  <span style={{ marginRight: '1rem' }}>
-                    {this.state.page > 0 ? (
-                      <Button
-                        onClick={() => this.getPrevPage()}
-                        disabled={this.state.loading}
-                        variant={`${disabledLabel} small`}
-                      >
-                        Back
-                      </Button>
-                    ) : (
-                      ''
-                    )}
-                  </span>
-                  <Button
-                    onClick={() => this.getNextPage()}
-                    disabled={this.state.loading}
-                    variant={`${disabledLabel} small`}
-                  >
-                    Next
-                  </Button>
-                </div>
               </div>
+              <UsersTable
+                type='org-members'
+                orgId={org.data.id}
+                onRowClick={(row) => this.openProfileModal(row)}
+              />
             </Section>
-            {this.renderMembers(members)}
           </div>
         ) : (
           <div />
         )}
-        {this.renderBadges()}
+        {isStaff && this.renderBadges()}
         <Modal
           style={{
             content: {

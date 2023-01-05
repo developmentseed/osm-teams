@@ -37,9 +37,9 @@ test('moderator id is required to create team', async (t) => {
 
 test('list teams', async (t) => {
   await team.create({ name: 'list teams' }, 1)
-  const list = await team.list()
-  t.true(Array.isArray(list) && list.length > 0)
-  list.forEach((item) => {
+  const data = await team.list()
+  t.true(Array.isArray(data) && data.length > 0)
+  data.forEach((item) => {
     t.truthy(item.name)
     t.truthy(item.id)
   })
@@ -151,10 +151,10 @@ test('update team members', async (t) => {
 test('list teams a user belongs to', async (t) => {
   const created = await team.create({ name: 'boundary team 6' }, 1)
   await team.addMember(created.id, 1)
-  const list = await team.list({ osmId: 1 })
+  const data = await team.list({ osmId: 1 })
 
-  t.true(Array.isArray(list) && list.length > 0)
-  list.forEach((item) => {
+  t.true(Array.isArray(data) && data.length > 0)
+  data.forEach((item) => {
     t.truthy(item.name)
     t.truthy(item.id)
   })

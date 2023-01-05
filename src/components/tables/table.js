@@ -1,5 +1,5 @@
 import React from 'react'
-import theme from '../styles/theme'
+import theme from '../../styles/theme'
 
 function TableHead({ columns }) {
   return (
@@ -57,9 +57,13 @@ function TableBody({
   emptyPlaceHolder,
   showRowNumbers,
 }) {
+  const isEmpty = !rows || rows.length === 0
   return (
-    <tbody className='lh-copy'>
-      {!rows || rows.length === 0 ? (
+    <tbody
+      className='lh-copy'
+      data-cy={isEmpty ? 'empty-table' : 'not-empty-table'}
+    >
+      {isEmpty ? (
         <tr>
           <td key='empty-row' colSpan={columns.length}>
             {emptyPlaceHolder || 'No data available.'}
@@ -89,10 +93,11 @@ export default function Table({
   onRowClick,
   emptyPlaceHolder,
   showRowNumbers,
+  'data-cy': dataCy,
 }) {
   showRowNumbers && columns.unshift({ key: ' ' })
   return (
-    <table>
+    <table data-cy={dataCy}>
       <TableHead columns={columns} />
       <TableBody
         columns={columns}
@@ -108,7 +113,7 @@ export default function Table({
             width: 100%;
             border-spacing: 0;
             max-width: 100%;
-            margin-bottom: calc(${theme.layout.globalSpacing} * 4);
+            margin-bottom: ${theme.layout.globalSpacing};
           }
 
           thead th {

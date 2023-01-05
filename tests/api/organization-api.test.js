@@ -58,10 +58,13 @@ test('get organization staff', async (t) => {
     .send({ name: 'get organization staff' })
     .expect(200)
 
-  const org = await user1Agent.get(`/api/organizations/${res.body.id}/staff`)
+  const {
+    body: {
+      pagination: { total },
+    },
+  } = await user1Agent.get(`/api/organizations/${res.body.id}/staff`)
 
-  t.is(org.body.owners.length, 1)
-  t.is(org.body.managers.length, 1)
+  t.is(total, 1)
 })
 
 /**
@@ -175,7 +178,9 @@ test('remove manager', async (t) => {
 /**
  * Create org team
  */
-test('create an on org team', async (t) => {
+test('create an org team', async (t) => {
+  await resetDb()
+
   const teamName = 'create org team - team 1'
   const res = await user1Agent
     .post('/api/organizations')
@@ -187,14 +192,16 @@ test('create an on org team', async (t) => {
     .send({ name: teamName })
     .expect(200)
 
-  const orgTeams = await team.list({ organizationId: res.body.id })
-  t.is(orgTeams.length, 1)
+  const data = await team.list({ organizationId: res.body.id })
+  t.is(data.length, 1)
 })
 
 /**
  * Get org teams
  */
 test('get org teams', async (t) => {
+  await resetDb()
+
   const teamName1 = 'get org team - team 1'
   const teamName2 = 'get org team - team 2'
   const res = await user1Agent
@@ -205,14 +212,16 @@ test('get org teams', async (t) => {
   await organization.createOrgTeam(res.body.id, { name: teamName1 }, 1)
   await organization.createOrgTeam(res.body.id, { name: teamName2 }, 1)
 
-  const orgTeams = await user1Agent.get(
-    `/api/organizations/${res.body.id}/teams`
-  )
-  t.is(orgTeams.body.length, 2)
-  orgTeams.body.forEach((item) => {
+  const {
+    body: {
+      pagination: { total },
+      data,
+    },
+  } = await user1Agent.get(`/api/organizations/${res.body.id}/teams`)
+
+  t.is(total, 2)
+  data.forEach((item) => {
     t.truthy(item.name)
     t.truthy(item.id)
-    t.truthy(item.members.length)
-    t.truthy(item.moderators.length)
   })
 })

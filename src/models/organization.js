@@ -1,7 +1,9 @@
 const db = require('../lib/db')
 const team = require('./team')
-const { map, prop, includes, has, isNil } = require('ramda')
+const { map, prop, includes, has, isNil, propEq, find } = require('ramda')
 const { unpack, PropertyRequiredError } = require('../../app/lib/utils')
+const { serverRuntimeConfig } = require('../../next.config')
+const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
 // Organization attributes (without profile)
 const orgAttributes = [
@@ -263,6 +265,42 @@ async function getMembers(organizationId, page) {
 }
 
 /**
+ * Get all members and associated teams of an organization
+ * We get all members of all associated teams with this organization
+ * @param {int} organizationId - organization id
+ * @param {object} options - pagination params
+ *
+ */
+async function getMembersPaginated(organizationId, options) {
+  const currentPage = options?.page || 1
+
+  // Sub-query for all org teams
+  const allOrgTeamsQuery = db('organization_team')
+    .select('team_id')
+    .where('organization_id', organizationId)
+
+  // Get list of member of org teams, paginated
+  const result = await db('member')
+    .select('osm_id')
+    .where('team_id', 'in', allOrgTeamsQuery)
+    .groupBy('osm_id')
+    .orderBy('osm_id')
+    .paginate({
+      isLengthAware: true,
+      currentPage,
+      perPage: DEFAULT_PAGE_SIZE,
+    })
+
+  // Resolver member names
+  const data = await team.resolveMemberNames(result.data.map((m) => m.osm_id))
+
+  return {
+    ...result,
+    data,
+  }
+}
+
+/**
  * Checks if an osmId is part of an organization members
  * @param {int} organizationId - organization id
  * @param {int} osmId - id of member we are testing
@@ -390,6 +428,55 @@ async function getOrgStaff(options) {
 }
 
 /**
+ * Get organization staff
+ * @param {Object} options - parameters
+ * @param {Object} options.organizationId - filter by organization
+ * @param {Object} options.osmId - filter by osm id
+ */
+async function getOrgStaffPaginated(organizationId, options = {}) {
+  // Get owners
+  let ownerQuery = db('organization_owner')
+    .select(db.raw("organization_id, osm_id, 'owner' as type"))
+    .where('organization_id', organizationId)
+
+  // Get managers that are not owners
+  let managerQuery = db('organization_manager')
+    .select(db.raw("organization_id, osm_id, 'manager' as type"))
+    .where('organization_id', organizationId)
+    .whereNotIn(
+      'osm_id',
+      db('organization_owner')
+        .select('osm_id')
+        .where('organization_id', organizationId)
+    )
+
+  // Execute query with pagination
+  const result = await ownerQuery.unionAll(managerQuery).paginate({
+    isLengthAware: true,
+    currentPage: options.page || 1,
+    perPage: options.perPage || DEFAULT_PAGE_SIZE,
+  })
+
+  // Get osm user meta from ids
+  const osmUsers = await team.resolveMemberNames(
+    result.data.map((m) => m.osm_id)
+  )
+
+  return {
+    ...result,
+    // Apply OSM display names to results
+    data: result.data.map((u) => {
+      const osmUser = find(propEq('id', u.osm_id))(osmUsers)
+      return {
+        ...u,
+        id: u.osm_id,
+        name: osmUser?.name || '',
+      }
+    }),
+  }
+}
+
+/**
  * isPublic
  * Checks if org privacy is public
  *
@@ -414,6 +501,7 @@ module.exports = {
   getOwners,
   getManagers,
   getMembers,
+  getMembersPaginated,
   isMemberOrStaff,
   isOwner,
   isManager,
@@ -422,5 +510,6 @@ module.exports = {
   createOrgTeam,
   listMyOrganizations,
   getOrgStaff,
+  getOrgStaffPaginated,
   isPublic,
 }

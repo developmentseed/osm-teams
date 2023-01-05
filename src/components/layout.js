@@ -44,7 +44,7 @@ export const globalStyles = css.global`
       'main'
       'footer';
     height: 100vh;
-    overflow: overlay;
+    overflow: auto;
   }
 
   @media screen and (min-width: ${theme.mediaRanges.small}) {
@@ -72,6 +72,10 @@ export const globalStyles = css.global`
     grid-area: main;
     margin-top: calc(${theme.layout.globalSpacing} * 4);
     margin-bottom: calc(${theme.layout.globalSpacing} * 4);
+  }
+
+  .inner.page section {
+    margin-bottom: calc(${theme.layout.globalSpacing} * 2);
   }
 
   .page__heading {
@@ -241,7 +245,7 @@ export const globalStyles = css.global`
 
   #feedback {
     position: fixed;
-    right: -3.5rem;
+    right: -2rem;
     bottom: 12rem;
     z-index: 1200;
     transform: rotate(-90deg);

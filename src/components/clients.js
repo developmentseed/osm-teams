@@ -3,6 +3,7 @@ import Button from './button'
 import Card from './card'
 import theme from '../styles/theme'
 import join from 'url-join'
+import logger from '../lib/logger'
 
 const APP_URL = process.env.APP_URL
 
@@ -120,7 +121,7 @@ class Clients extends Component {
         loading: false,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         clients: [],
@@ -152,8 +153,7 @@ class Clients extends Component {
                   <div>({client.client_id})</div>
                 </div>
                 <Button
-                  size='small'
-                  variant='danger'
+                  variant='danger small'
                   onClick={() => this.deleteClient(client.client_id)}
                 >
                   Delete

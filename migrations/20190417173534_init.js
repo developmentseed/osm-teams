@@ -1,3 +1,5 @@
+const logger = require('../src/lib/logger')
+
 exports.up = async (knex) => {
   await knex.schema.createTable('users', (table) => {
     table.integer('id').primary()
@@ -56,6 +58,6 @@ exports.down = async (knex) => {
     await knex.schema.dropTable('team')
     await knex.schema.dropTable('users')
   } catch (e) {
-    console.error(e)
+    logger.error(e)
   }
 }

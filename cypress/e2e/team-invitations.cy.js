@@ -60,7 +60,7 @@ describe('Team invitation page', () => {
   it('Valid invitation - user is authenticated', () => {
     cy.login({
       id: 1,
-      display_name: 'User 1',
+      display_name: 'User 001',
     })
     cy.visit(
       `/teams/${validInvitation.teamId}/invitations/${validInvitation.uuid}`

@@ -4,6 +4,7 @@ const org = require('../../src/models/organization')
 const { pick, prop, assoc } = require('ramda')
 const { ValidationError, PropertyRequiredError } = require('../lib/utils')
 const Boom = require('@hapi/boom')
+const logger = require('../../src/lib/logger')
 
 /**
  * Gets a user profile in an org
@@ -90,7 +91,7 @@ async function getTeamProfile(req, reply) {
   const { user_id: requesterId } = req.session
 
   if (!teamId) {
-    reply.boom.badRequest('teamId is required parameter')
+    return reply.boom.badRequest('teamId is required parameter')
   }
 
   // try {
@@ -297,7 +298,7 @@ function createProfileKeys(ownerType, profileType) {
       const data = await profile.addProfileKeys(attributesToAdd, ownerType, id)
       return reply.send(data)
     } catch (err) {
-      console.error(err)
+      logger.error(err)
       if (
         err instanceof ValidationError ||
         err instanceof PropertyRequiredError
@@ -324,7 +325,7 @@ async function modifyProfileKey(req, reply) {
     await profile.modifyProfileKey(id, body)
     return reply.status(200).send()
   } catch (err) {
-    console.error(err)
+    logger.error(err)
     if (
       err instanceof ValidationError ||
       err instanceof PropertyRequiredError
@@ -349,7 +350,7 @@ async function deleteProfileKey(req, reply) {
     await profile.deleteProfileKey(id)
     return reply.status(200).send()
   } catch (err) {
-    console.error(err)
+    logger.error(err)
     if (
       err instanceof ValidationError ||
       err instanceof PropertyRequiredError
@@ -379,7 +380,7 @@ function getProfileKeys(ownerType, profileType) {
       )
       return reply.send(data)
     } catch (err) {
-      console.error(err)
+      logger.error(err)
       if (
         err instanceof ValidationError ||
         err instanceof PropertyRequiredError
@@ -410,7 +411,7 @@ function setProfile(profileType) {
       await profile.setProfile(body, profileType, id)
       reply.status(200).send()
     } catch (err) {
-      console.error(err)
+      logger.error(err)
       throw Boom.badImplementation()
     }
   }
@@ -425,7 +426,7 @@ async function getMyProfile(req, reply) {
     const data = await profile.getProfile('user', user_id)
     return reply.send(data)
   } catch (err) {
-    console.error(err)
+    logger.error(err)
     throw Boom.badImplementation()
   }
 }
@@ -437,7 +438,7 @@ async function setMyProfile(req, reply) {
     await profile.setProfile(body, 'user', user_id)
     return reply.status(200).send()
   } catch (err) {
-    console.error(err)
+    logger.error(err)
     throw Boom.badImplementation()
   }
 }
