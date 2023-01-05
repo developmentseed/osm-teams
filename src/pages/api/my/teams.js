@@ -2,6 +2,7 @@ import * as Yup from 'yup'
 import Team from '../../../models/team'
 import { createBaseHandler } from '../../../middlewares/base-handler'
 import { validate } from '../../../middlewares/validation'
+import logger from 'express-pino-logger'
 
 const handler = createBaseHandler()
 
@@ -34,6 +35,7 @@ handler.get(
   async function (req, res) {
     const { page } = req.query
     const userId = req.session?.user_id
+    logger.info('req.session', req.session)
 
     return res.send(await Team.paginatedList({ osmId: userId, page }))
   }
