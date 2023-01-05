@@ -1,7 +1,6 @@
 import nc from 'next-connect'
 import logger from '../lib/logger'
-import { unstable_getServerSession } from 'next-auth/next'
-import { authOptions } from '../pages/api/auth/[...nextauth]'
+import { getToken } from 'next-auth/jwt'
 
 /**
  * This file contains the base handler to be used in all API routes.
@@ -58,7 +57,9 @@ export function createBaseHandler() {
 
   // Add session to request
   baseHandler.use(async (req, res, next) => {
-    req.session = await unstable_getServerSession(req, res, authOptions)
+    const token = await getToken({ req })
+    req.session = { user_id: token.userId || token.sub }
+    logger.info('token', token)
     next()
   })
 
