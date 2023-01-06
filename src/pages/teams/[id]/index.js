@@ -267,7 +267,7 @@ class Team extends Component {
     const isUserModerator =
       contains(parseInt(userId), moderators) ||
       contains(parseInt(userId), orgOwners)
-    const isMember = contains(userId, members)
+    const isMember = contains(Number(userId), members)
 
     const columns = [{ key: 'name' }, { key: 'id' }, { key: 'role' }]
 
