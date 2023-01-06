@@ -200,7 +200,11 @@ async function paginatedList(options = {}) {
   const { bbox, osmId, organizationId, page, includePrivate } = options
   const st = knexPostgis(db)
 
-  let query = db('team').select(...teamAttributes, st.asGeoJSON('location'))
+  let query = db('team').select(
+    ...teamAttributes,
+    st.asGeoJSON('location'),
+    db('member').count().whereRaw('team.id = member.team_id').as('members')
+  )
 
   if (!includePrivate) {
     query.where('privacy', 'public')
