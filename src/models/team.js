@@ -403,9 +403,6 @@ async function updateMembers(teamId, osmIdsToAdd, osmIdstoRemove) {
   osmIdsToAdd = (osmIdsToAdd || []).map((x) => parseInt(x))
   osmIdstoRemove = (osmIdstoRemove || []).map((x) => parseInt(x))
 
-  // Get OSM usernames
-  await resolveMemberNames(osmIdsToAdd)
-
   return db.transaction(async (trx) => {
     if (osmIdsToAdd) {
       const members = await trx('member').where('team_id', teamId)
@@ -439,6 +436,9 @@ async function updateMembers(teamId, osmIdsToAdd, osmIdstoRemove) {
  * @return {promise}
  **/
 async function addMember(teamId, osmId) {
+  // Get OSM username
+  await resolveMemberNames([osmId])
+
   return updateMembers(teamId, [osmId], [])
 }
 
