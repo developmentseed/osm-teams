@@ -58,8 +58,9 @@ export function createBaseHandler() {
   // Add session to request
   baseHandler.use(async (req, res, next) => {
     const token = await getToken({ req })
-    req.session = { user_id: token.userId || token.sub }
-    logger.info('token', token)
+    if (token) {
+      req.session = { user_id: token.userId || token.sub }
+    }
     next()
   })
 
