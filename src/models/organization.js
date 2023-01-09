@@ -279,25 +279,30 @@ async function getMembersPaginated(organizationId, options) {
     .select('team_id')
     .where('organization_id', organizationId)
 
-  // Get list of member of org teams, paginated
-  const result = await db('member')
-    .select('osm_id')
-    .where('team_id', 'in', allOrgTeamsQuery)
-    .groupBy('osm_id')
-    .orderBy('osm_id')
-    .paginate({
-      isLengthAware: true,
-      currentPage,
-      perPage: DEFAULT_PAGE_SIZE,
-    })
+  // Base query for org members
+  let query = db('member')
+    .join('osm_users', 'member.osm_id', 'osm_users.id')
+    .select('member.osm_id as id', 'osm_users.name')
+    .where('member.team_id', 'in', allOrgTeamsQuery)
+    .groupBy('member.osm_id', 'osm_users.name')
+    .orderBy('member.osm_id')
 
-  // Resolver member names
-  const data = await team.resolveMemberNames(result.data.map((m) => m.osm_id))
-
-  return {
-    ...result,
-    data,
+  // Apply search
+  if (options.search) {
+    query = query.whereILike('osm_users.name', `%${options.search}%`)
   }
+
+  // Add pagination
+  query = query.paginate({
+    isLengthAware: true,
+    currentPage,
+    perPage: DEFAULT_PAGE_SIZE,
+  })
+
+  // Run query
+  const result = await query
+
+  return result
 }
 
 /**

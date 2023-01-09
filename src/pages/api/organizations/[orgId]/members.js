@@ -41,12 +41,16 @@ handler.get(
     query: Yup.object({
       orgId: Yup.number().required().positive().integer(),
       page: Yup.number().min(0).integer(),
+      search: Yup.string(),
     }).required(),
   }),
   async function (req, res) {
-    const { orgId, page } = req.query
+    const { orgId, page, search } = req.query
 
-    let members = await Organization.getMembersPaginated(orgId, { page })
+    let members = await Organization.getMembersPaginated(orgId, {
+      page,
+      search,
+    })
 
     const memberIds = map(prop('osm_id'), members)
     if (memberIds.length > 0) {

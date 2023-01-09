@@ -184,5 +184,12 @@ describe('Organization page', () => {
 
     // Item from page 2 is present
     cy.get('[data-cy=org-members-table]').contains('User 207')
+
+    // Add search term
+    cy.get('[data-cy=org-members-table-search-input]').type('User 2')
+    cy.get('[data-cy=org-members-table-search-submit]').click()
+    cy.get('[data-cy=org-members-table-pagination]').contains(
+      'Showing 1-10 of 20'
+    )
   })
 })

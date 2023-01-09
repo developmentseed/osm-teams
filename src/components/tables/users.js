@@ -3,13 +3,47 @@ import Table from './table'
 import { useFetchList } from '../../hooks/use-fetch-list'
 import { useState } from 'react'
 import Pagination from '../pagination'
+import qs from 'qs'
+import { Field, Form, Formik } from 'formik'
+import Button from '../button'
 
-function UsersTable({ type, orgId, onRowClick }) {
+const SearchInput = ({ onSearch, 'data-cy': dataCy }) => (
+  <Formik
+    initialValues={{ search: '' }}
+    onSubmit={({ search }) => onSearch(search)}
+  >
+    <Form className='form-control'>
+      <Field
+        data-cy={`${dataCy}-search-input`}
+        type='text'
+        name='search'
+        id='search'
+        placeholder='Type an username...'
+      />
+      <Button
+        data-cy={`${dataCy}-search-submit`}
+        type='submit'
+        variant='submit'
+      >
+        Search
+      </Button>
+    </Form>
+  </Formik>
+)
+
+function UsersTable({ type, orgId, onRowClick, isSearchable }) {
   const [page, setPage] = useState(1)
+
+  const [search, setSearch] = useState(null)
 
   let apiBasePath
   let emptyMessage
   let columns
+
+  const querystring = qs.stringify({
+    search,
+    page,
+  })
 
   switch (type) {
     case 'org-members':
@@ -33,10 +67,20 @@ function UsersTable({ type, orgId, onRowClick }) {
   const {
     result: { data, pagination },
     isLoading,
-  } = useFetchList(`${apiBasePath}?page=${page}`)
+  } = useFetchList(`${apiBasePath}?${querystring}`)
 
   return (
     <>
+      {isSearchable && (
+        <SearchInput
+          data-cy={`${type}-table`}
+          onSearch={(search) => {
+            // Reset to page 1 and search
+            setPage(1)
+            setSearch(search)
+          }}
+        />
+      )}
       <Table
         data-cy={`${type}-table`}
         rows={data}

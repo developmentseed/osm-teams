@@ -149,6 +149,7 @@ export default function Button({
   if (type === 'submit') {
     return (
       <button
+        data-cy={dataCy}
         type='submit'
         className={classNames}
         disabled={disabled}
