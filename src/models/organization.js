@@ -299,10 +299,7 @@ async function getMembersPaginated(organizationId, options) {
     perPage: DEFAULT_PAGE_SIZE,
   })
 
-  // Run query
-  const result = await query
-
-  return result
+  return query
 }
 
 /**
