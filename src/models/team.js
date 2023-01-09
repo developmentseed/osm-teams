@@ -344,6 +344,9 @@ async function create(data, osmId, trx) {
     })
   }
 
+  // Cache username
+  await resolveMemberNames([osmId])
+
   return conn.transaction(async (trx) => {
     const [row] = await trx('team')
       .insert(data)

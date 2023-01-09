@@ -373,6 +373,7 @@ class Organization extends Component {
               </div>
             </Section>
             <UsersTable
+              isSearchable
               type='org-staff'
               orgId={org.data.id}
               onRowClick={(row) => this.openProfileModal(row)}
