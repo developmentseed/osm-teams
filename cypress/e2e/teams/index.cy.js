@@ -1,7 +1,22 @@
+const user1 = {
+  id: 1,
+  display_name: 'User 001',
+}
+
 describe('Teams page', () => {
   before(() => {
     cy.task('db:reset')
-    cy.task('db:seed')
+    cy.task('db:seed:create-teams', {
+      teams: [
+        {
+          name: 'Team 1',
+        },
+        {
+          name: 'Team 2',
+        },
+      ],
+      moderatorId: user1.id,
+    })
   })
 
   it('Teams index is public and list teams', () => {
