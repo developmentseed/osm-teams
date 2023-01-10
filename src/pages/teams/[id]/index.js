@@ -395,7 +395,7 @@ class Team extends Component {
         </div>
         <div className='team__table'>
           {memberRows.length > 0 ? (
-            <Section>
+            <Section data-cy='team-members-section'>
               <div className='section-actions'>
                 <SectionHeader>Team Members</SectionHeader>
                 <div>
