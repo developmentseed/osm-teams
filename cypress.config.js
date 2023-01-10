@@ -40,10 +40,10 @@ module.exports = defineConfig({
           }
           return null
         },
-        'db:seed:team-invitations': async (teamInvitations) => {
+        'db:seed:create-team-invitations': async (teamInvitations) => {
           return Promise.all(teamInvitations.map(TeamInvitation.create))
         },
-        'db:seed:add-organizations': async (orgs) => {
+        'db:seed:create-organizations': async (orgs) => {
           for (let i = 0; i < orgs.length; i++) {
             const org = orgs[i]
             await Organization.create(
@@ -53,7 +53,7 @@ module.exports = defineConfig({
           }
           return null
         },
-        'db:seed:add-organization-teams': async ({
+        'db:seed:create-organization-teams': async ({
           orgId,
           teams,
           managerId,

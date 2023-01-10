@@ -40,7 +40,7 @@ describe('Team invitation page', () => {
       moderatorId: user1.id,
     })
 
-    cy.task('db:seed:team-invitations', [
+    cy.task('db:seed:create-team-invitations', [
       expiredInvitation,
       validInvitation,
       anotherValidInvitation,
