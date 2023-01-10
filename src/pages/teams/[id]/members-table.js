@@ -3,12 +3,45 @@ import Table from '../../../components/tables/table'
 import { useState } from 'react'
 import Pagination from '../../../components/pagination'
 import { serverRuntimeConfig } from '../../../../next.config.js'
+import { Field, Form, Formik } from 'formik'
+import Button from '../../../components/button'
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
-function MembersTable({ rows, onRowClick }) {
+const SearchInput = ({ onSearch, 'data-cy': dataCy }) => (
+  <Formik
+    initialValues={{ search: '' }}
+    onSubmit={({ search }) => onSearch(search)}
+  >
+    <Form className='form-control'>
+      <Field
+        data-cy={`${dataCy}-search-input`}
+        type='text'
+        name='search'
+        id='search'
+        placeholder='Type an username...'
+      />
+      <Button
+        data-cy={`${dataCy}-search-submit`}
+        type='submit'
+        variant='submit'
+      >
+        Search
+      </Button>
+    </Form>
+  </Formik>
+)
+
+function MembersTable({ rows: allRows, onRowClick }) {
   const [page, setPage] = useState(1)
+  const [search, setSearch] = useState(null)
 
   const columns = [{ key: 'name' }, { key: 'id' }, { key: 'role' }]
+
+  let rows = allRows
+
+  if (search) {
+    rows = rows.filter((r) => r.name.includes(search))
+  }
 
   // Calculate start and end index
   const pageStartIndex = (page - 1) * DEFAULT_PAGE_SIZE
@@ -16,6 +49,14 @@ function MembersTable({ rows, onRowClick }) {
 
   return (
     <>
+      <SearchInput
+        data-cy={`team-members-table`}
+        onSearch={(search) => {
+          // Reset to page 1 and search
+          setPage(1)
+          setSearch(search)
+        }}
+      />
       <Table
         data-cy={`team-members-table`}
         rows={rows.slice(pageStartIndex, pageEndIndex)}
@@ -35,6 +76,10 @@ function MembersTable({ rows, onRowClick }) {
       />
     </>
   )
+}
+
+MembersTable.defaultProps = {
+  rows: [],
 }
 
 MembersTable.propTypes = {

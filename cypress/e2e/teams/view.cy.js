@@ -92,5 +92,15 @@ describe('Teams page', () => {
     cy.get('body').should('contain', 'Team 1')
     cy.get("[data-cy='team-members-section']").should('exist')
     cy.get("[data-cy='team-members-table-pagination']").should('exist')
+    cy.get('[data-cy=team-members-table-pagination]').contains(
+      'Showing 1-10 of 25'
+    )
+
+    // Perform search by username
+    cy.get('[data-cy=team-members-table-search-input]').type('2')
+    cy.get('[data-cy=team-members-table-search-submit]').click()
+    cy.get('[data-cy=team-members-table-pagination]').contains(
+      'Showing 1-8 of 8'
+    )
   })
 })
