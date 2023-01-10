@@ -1,19 +1,39 @@
 import React from 'react'
 import theme from '../../styles/theme'
 
-function TableHead({ columns }) {
+function TableHead({ columns, sort, setSort, onClick }) {
   return (
-    <thead className=''>
-      <tr className=''>
-        {columns.map((column) => {
+    <thead>
+      <tr>
+        {columns.map(({ sortable, label, key }) => {
+          const header = label || key
+
+          const isSorted = sortable && sort.key === header
+          const currentSortDirection = (isSorted && sort.direction) || 'none'
+          const nextSortDirection =
+            currentSortDirection === 'asc' ? 'desc' : 'asc'
+          let sortIcon = ''
+          if (currentSortDirection !== 'none') {
+            sortIcon = currentSortDirection === 'asc' ? '⬆' : '⬇'
+          }
+
           return (
             <th
-              key={`column-${column.key}`}
+              key={`table-head-column-${key}`}
+              data-cy={`table-head-column-${key}`}
               onClick={() => {
-                column.onClick && column.onClick()
+                onClick && onClick()
+
+                if (sortable) {
+                  setSort({
+                    key,
+                    direction: nextSortDirection,
+                  })
+                }
               }}
             >
-              {column.label || column.key}
+              {header}
+              {sortable && ` ${sortIcon}`}
             </th>
           )
         })}
@@ -25,6 +45,7 @@ function TableHead({ columns }) {
 function Row({ columns, row, index, onRowClick, showRowNumber }) {
   return (
     <tr
+      key={`row-${index}`}
       onClick={() => {
         onRowClick && onRowClick(row, index)
       }}
@@ -94,11 +115,13 @@ export default function Table({
   emptyPlaceHolder,
   showRowNumbers,
   'data-cy': dataCy,
+  sort,
+  setSort,
 }) {
   showRowNumbers && columns.unshift({ key: ' ' })
   return (
     <table data-cy={dataCy}>
-      <TableHead columns={columns} />
+      <TableHead columns={columns} sort={sort} setSort={setSort} />
       <TableBody
         columns={columns}
         rows={rows}

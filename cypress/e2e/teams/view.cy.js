@@ -96,6 +96,11 @@ describe('Teams page', () => {
       'Showing 1-10 of 25'
     )
 
+    // Perform sort by username
+    cy.get('[data-cy=table-head-column-name]').click()
+    cy.get('[data-cy=team-members-table]').contains('User 025')
+    cy.get('[data-cy=team-members-table]').contains('User 016')
+
     // Perform search by username
     cy.get('[data-cy=team-members-table-search-input]').type('USER 02')
     cy.get('[data-cy=team-members-table-search-submit]').click()

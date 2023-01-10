@@ -5,6 +5,7 @@ import Pagination from '../../../components/pagination'
 import { serverRuntimeConfig } from '../../../../next.config.js'
 import { Field, Form, Formik } from 'formik'
 import Button from '../../../components/button'
+import * as R from 'ramda'
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
 const SearchInput = ({ onSearch, 'data-cy': dataCy }) => (
@@ -34,10 +35,23 @@ const SearchInput = ({ onSearch, 'data-cy': dataCy }) => (
 function MembersTable({ rows: allRows, onRowClick }) {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState(null)
+  const [sort, setSort] = useState({
+    key: 'name',
+    direction: 'asc',
+  })
 
-  const columns = [{ key: 'name' }, { key: 'id' }, { key: 'role' }]
+  const columns = [
+    { key: 'name', sortable: true },
+    { key: 'id', sortable: true },
+    { key: 'role', sortable: true },
+  ]
 
-  let rows = allRows
+  let rows = R.sort(
+    sort.direction === 'asc'
+      ? R.ascend(R.prop(sort.key))
+      : R.descend(R.prop(sort.key)),
+    allRows
+  )
 
   if (search) {
     rows = rows.filter((r) =>
@@ -66,6 +80,8 @@ function MembersTable({ rows: allRows, onRowClick }) {
         emptyPlaceHolder={'This team has no members.'}
         onRowClick={onRowClick}
         showRowNumbers
+        sort={sort}
+        setSort={setSort}
       />
       <Pagination
         pagination={{
