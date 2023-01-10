@@ -16,11 +16,13 @@ const nonMemberUser = {
 }
 
 const team1 = {
+  id: 1,
   name: 'Team 1',
   privacy: 'public',
 }
 
 const team2 = {
+  id: 2,
   name: 'Team 2',
   privacy: 'private',
 }
@@ -77,5 +79,18 @@ describe('Teams page', () => {
     cy.visit('/teams/2')
     cy.get('body').should('contain', 'Team 2')
     cy.get("[data-cy='team-members-section']").should('not.exist')
+  })
+
+  it('Public team has a paginated team member table', () => {
+    cy.task('db:seed:add-members-to-team', {
+      teamId: team1.id,
+      members: team1Members,
+    })
+
+    // Team 1 is public, should display member list
+    cy.visit('/teams/1')
+    cy.get('body').should('contain', 'Team 1')
+    cy.get("[data-cy='team-members-section']").should('exist')
+    cy.get("[data-cy='team-members-table-pagination']").should('exist')
   })
 })

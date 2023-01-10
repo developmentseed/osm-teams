@@ -10,7 +10,6 @@ import Card from '../../../components/card'
 import Section from '../../../components/section'
 import SectionHeader from '../../../components/section-header'
 import Button from '../../../components/button'
-import Table from '../../../components/tables/table'
 import AddMemberForm from '../../../components/add-member-form'
 import ProfileModal from '../../../components/profile-modal'
 import theme from '../../../styles/theme'
@@ -34,6 +33,7 @@ import {
 import { getOrgStaff } from '../../../lib/org-api'
 import { toast } from 'react-toastify'
 import logger from '../../../lib/logger'
+import MembersTable from './members-table'
 
 const APP_URL = process.env.APP_URL
 const Map = dynamic(() => import('../../../components/team-map'), {
@@ -269,8 +269,6 @@ class Team extends Component {
       contains(parseInt(userId), orgOwners)
     const isMember = contains(Number(userId), members)
 
-    const columns = [{ key: 'name' }, { key: 'id' }, { key: 'role' }]
-
     let memberRows = teamMembers.members.map((member) => {
       const role = contains(parseInt(member.id), moderators)
         ? 'Moderator'
@@ -409,13 +407,11 @@ class Team extends Component {
                   )}
                 </div>
               </div>
-              <Table
+              <MembersTable
                 rows={memberRows}
-                columns={columns}
                 onRowClick={(row) => {
                   this.openProfileModal(row)
                 }}
-                showRowNumbers
               />
               <Modal
                 style={{
