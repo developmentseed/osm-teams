@@ -1,0 +1,81 @@
+version: '3.7'
+
+services:
+  hydra:
+    image: oryd/hydra:v1.9.2
+    ports:
+    - 4444:4444
+    - 4445:4445
+    - 5555:5555
+    command:
+      serve -c /etc/config/hydra/hydra.yml all --dangerous-force-http
+    volumes:
+      -
+        type: bind
+        source: ./hydra-config/dev
+        target: /etc/config/hydra
+    environment:
+     - DSN=postgres://postgres:osm-teams@auth-db/osm-teams?sslmode=disable
+    depends_on:
+      - hydra-migrate
+    restart: always
+    networks:
+      - intranet
+  
+  hydra-migrate:
+    image: oryd/hydra:v1.9.2
+    depends_on:
+      - auth-db
+    command:
+      migrate -c /etc/config/hydra/hydra.yml sql -e --yes
+    volumes:
+      -
+        type: bind
+        source: ./hydra-config/dev
+        target: /etc/config/hydra
+    environment:
+     - DSN=postgres://postgres:osm-teams@auth-db/osm-teams?sslmode=disable
+    
+    restart: on-failure
+    networks:
+      - intranet
+
+  teams: 
+    build: .
+    depends_on:
+    - hydra
+    - auth-db
+    environment:
+     - HYDRA_ADMIN_HOST=http://hydra:4445
+     - HYDRA_TOKEN_HOST=http://hydra:4444
+     - HYDRA_AUTHZ_HOST=http://localhost:4444
+     - DSN=postgres://postgres:osm-teams@auth-db/osm-teams?sslmode=disable
+    ports:
+    - 8989:8989
+    env_file:
+      .env
+    restart: always
+    command:
+      sh -c "npm run migrate && npm start"
+    networks:
+      - intranet
+
+  auth-db:
+    platform: linux/amd64
+    image: postgis/postgis:11-3.3-alpine 
+    restart: 'always'
+    ports:
+        - 5431:5432
+    environment:
+        - ALLOW_IP_RANGE=0.0.0.0/0
+        - POSTGRES_DB=osm-teams
+        - POSTGRES_PASSWORD=osm-teams
+        - PGDATA=/opt/postgres/data
+    volumes:
+        - ./docker-data/hydra-db:/opt/postgres/data
+    networks:
+      - intranet
+
+
+networks:
+  intranet:

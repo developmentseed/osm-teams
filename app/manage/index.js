@@ -3,6 +3,7 @@ const expressPino = require('express-pino-logger')
 const { path } = require('ramda')
 
 const { getClients, createClient, deleteClient } = require('./client')
+const { introspect } = require('./introspect')
 const { login, loginAccept, logout } = require('./login')
 const { can } = require('./permissions')
 const sessionMiddleware = require('./sessions')
@@ -18,9 +19,12 @@ const { getUserManageToken } = require('../lib/profile')
  */
 function manageRouter (nextApp) {
   if (process.env.NODE_ENV !== 'test') {
-    router.use('/api', expressPino({
-      logger: logger.child({ module: 'manage' })
-    }))
+    router.use(
+      '/api',
+      expressPino({
+        logger: logger.child({ module: 'manage' })
+      })
+    )
   }
 
   router.use(sessionMiddleware)
@@ -29,7 +33,9 @@ function manageRouter (nextApp) {
    * Home page
    */
   router.get('/', (req, res) => {
-    return nextApp.render(req, res, '/', { user: path(['session', 'user'], req) })
+    return nextApp.render(req, res, '/', {
+      user: path(['session', 'user'], req)
+    })
   })
 
   /**
@@ -54,6 +60,11 @@ function manageRouter (nextApp) {
     const access_token = manageToken.access_token
     return nextApp.render(req, res, '/clients', { access_token })
   })
+
+  /**
+   * Introspecting a token
+   */
+  router.post('/api/introspect', introspect)
 
   /**
    * Badge pages
