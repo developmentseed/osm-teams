@@ -24,17 +24,15 @@ function MembersTable({ rows, onRowClick }) {
         onRowClick={onRowClick}
         showRowNumbers
       />
-      {rows.length > DEFAULT_PAGE_SIZE && (
-        <Pagination
-          pagination={{
-            perPage: DEFAULT_PAGE_SIZE,
-            total: rows.length,
-            currentPage: page,
-          }}
-          data-cy={`team-members-table-pagination`}
-          setPage={setPage}
-        />
-      )}
+      <Pagination
+        pagination={{
+          perPage: DEFAULT_PAGE_SIZE,
+          total: rows.length,
+          currentPage: page,
+        }}
+        data-cy={`team-members-table-pagination`}
+        setPage={setPage}
+      />
     </>
   )
 }
