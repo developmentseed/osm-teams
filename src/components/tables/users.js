@@ -12,13 +12,14 @@ const SearchInput = ({ onSearch, 'data-cy': dataCy }) => (
     initialValues={{ search: '' }}
     onSubmit={({ search }) => onSearch(search)}
   >
-    <Form className='form-control'>
+    <Form className='form-control justify-start'>
       <Field
         data-cy={`${dataCy}-search-input`}
-        type='text'
+        type='search'
         name='search'
         id='search'
-        placeholder='Type an username...'
+        placeholder='Search username...'
+        style={{ width: '12rem' }}
       />
       <Button
         data-cy={`${dataCy}-search-submit`}
