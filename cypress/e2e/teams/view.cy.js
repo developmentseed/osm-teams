@@ -97,10 +97,10 @@ describe('Teams page', () => {
     )
 
     // Perform search by username
-    cy.get('[data-cy=team-members-table-search-input]').type('2')
+    cy.get('[data-cy=team-members-table-search-input]').type('USER 02')
     cy.get('[data-cy=team-members-table-search-submit]').click()
     cy.get('[data-cy=team-members-table-pagination]').contains(
-      'Showing 1-8 of 8'
+      'Showing 1-6 of 6'
     )
   })
 })

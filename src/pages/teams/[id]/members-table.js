@@ -40,7 +40,9 @@ function MembersTable({ rows: allRows, onRowClick }) {
   let rows = allRows
 
   if (search) {
-    rows = rows.filter((r) => r.name.includes(search))
+    rows = rows.filter((r) =>
+      r.name.toUpperCase().includes(search.toUpperCase())
+    )
   }
 
   // Calculate start and end index
