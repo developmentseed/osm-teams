@@ -48,7 +48,10 @@ const SearchInput = ({ onSearch, 'data-cy': dataCy }) => {
       initialValues={{ search: '' }}
       onSubmit={({ search }) => onSearch(search)}
     >
-      <Form className='form-control justify-start'>
+      <Form
+        className='form-control justify-start'
+        style={{ alignItems: 'stretch' }}
+      >
         <Field
           data-cy={`${dataCy}-search-input`}
           type='search'
@@ -61,9 +64,9 @@ const SearchInput = ({ onSearch, 'data-cy': dataCy }) => {
           data-cy={`${dataCy}-search-submit`}
           type='submit'
           variant='submit'
-        >
-          Search
-        </Button>
+          useIcon='magnifier-left'
+          flat
+        />
         <AutoSubmitSearch />
       </Form>
     </Formik>

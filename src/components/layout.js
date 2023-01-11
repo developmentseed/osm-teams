@@ -216,6 +216,14 @@ export const globalStyles = css.global`
     height: 2.5rem;
   }
 
+  .form-control input#search {
+    margin: 0;
+    padding: 0.375rem 1rem 0.375rem 0.5rem;
+  }
+
+  .form-control input#search + .button {
+    margin-left: -2px;
+  }
   .status--alert {
     font-size: 0.875rem;
     color: ${theme.colors.secondaryColor};
