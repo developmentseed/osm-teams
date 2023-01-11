@@ -16,8 +16,14 @@ const AutoSubmitSearch = () => {
   const { values, touched, submitForm } = useFormikContext()
 
   useEffect(() => {
+    // Check if input was touched. Formik behavior is to update 'touched'
+    // flag on input blur or submit, but we want to submit changes also on
+    // key press. 'touched' is not a useEffect dependency because it is
+    // constantly updated without value changes.
+    const isTouched = touched.search || values?.search.length > 0
+
     // If search is touched
-    if (touched.search) {
+    if (isTouched) {
       // Clear previous timeout, if exists
       if (timerRef.current) {
         clearTimeout(timerRef.current)
@@ -28,7 +34,7 @@ const AutoSubmitSearch = () => {
 
     // Clear timeout on unmount
     return () => timerRef.current && clearTimeout(timerRef.current)
-  }, [values, touched, submitForm])
+  }, [values])
 
   return null
 }
