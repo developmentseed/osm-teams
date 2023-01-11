@@ -31,9 +31,21 @@ describe('Teams page', () => {
     cy.get("[data-cy='teams-table-pagination']").should('exist')
     cy.get('[data-cy=teams-table-pagination]').contains('Showing 1-10 of 35')
 
-    // Perform sort by team name
+    // Sort by team name
     cy.get('[data-cy=table-head-column-name]').click()
-    cy.get('[data-cy=teams-table]').contains('Team 035')
-    cy.get('[data-cy=teams-table]').contains('Team 026')
+    cy.get('[data-cy=teams-table]')
+      .find('tbody tr:nth-child(1) td:nth-child(2)')
+      .contains('Team 035')
+    cy.get('[data-cy=teams-table]')
+      .find('tbody tr:nth-child(10) td:nth-child(2)')
+      .contains('Team 026')
+
+    // Search by team name
+    cy.get('[data-cy=teams-table-search-input]').type('02')
+    cy.get('[data-cy=teams-table-search-submit]').click()
+    cy.get('[data-cy=teams-table]')
+      .find('tbody tr:nth-child(5) td:nth-child(2)')
+      .contains('Team 025')
+    cy.get('[data-cy=teams-table-pagination]').contains('Showing 1-10 of 11')
   })
 })

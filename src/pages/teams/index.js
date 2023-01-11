@@ -10,6 +10,7 @@ import { getTeams } from '../../lib/teams-api'
 import logger from '../../lib/logger'
 import { serverRuntimeConfig } from '../../../next.config.js'
 import Pagination from '../../components/pagination'
+import SearchInput from '../../components/tables/search-input'
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
 const Map = dynamic(import('../../components/list-map'), {
@@ -32,6 +33,7 @@ export default class TeamList extends Component {
         key: 'name',
         direction: 'asc',
       },
+      search: '',
     }
   }
 
@@ -59,7 +61,7 @@ export default class TeamList extends Component {
   }
 
   renderTeams() {
-    const { teams, sortOptions, page } = this.state
+    const { teams, sortOptions, page, search } = this.state
     if (!teams) return null
 
     const columns = [
@@ -75,12 +77,26 @@ export default class TeamList extends Component {
       teams
     )
 
+    if (search?.length > 0) {
+      rows = rows.filter((r) =>
+        r.name.toUpperCase().includes(search.toUpperCase())
+      )
+    }
+
     // Calculate start and end index
     const pageStartIndex = (page - 1) * DEFAULT_PAGE_SIZE
     const pageEndIndex = pageStartIndex + DEFAULT_PAGE_SIZE
 
     return (
       <>
+        <SearchInput
+          data-cy='teams-table'
+          placeholder='Search by team name...'
+          onSearch={(search) => {
+            // Reset to page 1 and search
+            this.setState({ page: 1, search })
+          }}
+        />
         <Table
           data-cy={`teams-table`}
           columns={columns}

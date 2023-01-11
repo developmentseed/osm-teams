@@ -3,34 +3,9 @@ import Table from '../../../components/tables/table'
 import { useState } from 'react'
 import Pagination from '../../../components/pagination'
 import { serverRuntimeConfig } from '../../../../next.config.js'
-import { Field, Form, Formik } from 'formik'
-import Button from '../../../components/button'
 import * as R from 'ramda'
+import SearchInput from '../../../components/tables/search-input'
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
-
-const SearchInput = ({ onSearch, 'data-cy': dataCy }) => (
-  <Formik
-    initialValues={{ search: '' }}
-    onSubmit={({ search }) => onSearch(search)}
-  >
-    <Form className='form-control'>
-      <Field
-        data-cy={`${dataCy}-search-input`}
-        type='text'
-        name='search'
-        id='search'
-        placeholder='Type an username...'
-      />
-      <Button
-        data-cy={`${dataCy}-search-submit`}
-        type='submit'
-        variant='submit'
-      >
-        Search
-      </Button>
-    </Form>
-  </Formik>
-)
 
 function MembersTable({ rows: allRows, onRowClick }) {
   const [page, setPage] = useState(1)
@@ -66,7 +41,8 @@ function MembersTable({ rows: allRows, onRowClick }) {
   return (
     <>
       <SearchInput
-        data-cy={`team-members-table`}
+        data-cy='team-members-table'
+        placeholder='Type an username...'
         onSearch={(search) => {
           // Reset to page 1 and search
           setPage(1)
@@ -74,10 +50,10 @@ function MembersTable({ rows: allRows, onRowClick }) {
         }}
       />
       <Table
-        data-cy={`team-members-table`}
+        data-cy='team-members-table'
         rows={rows.slice(pageStartIndex, pageEndIndex)}
         columns={columns}
-        emptyPlaceHolder={'This team has no members.'}
+        emptyPlaceHolder='This team has no members.'
         onRowClick={onRowClick}
         showRowNumbers
         sort={sort}
