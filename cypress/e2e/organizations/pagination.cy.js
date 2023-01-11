@@ -196,5 +196,9 @@ describe('Organization page', () => {
     cy.get('[data-cy=org-members-table-pagination]').contains(
       'Showing 1-10 of 20'
     )
+
+    // Check empty results message after timeout
+    cy.get('[data-cy=org-members-table-search-input]').clear().type('aaaa')
+    cy.get('[data-cy=org-members-table]').contains('Search returned no results')
   })
 })

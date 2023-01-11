@@ -1,40 +1,71 @@
 import T from 'prop-types'
 import Table from './table'
 import { useFetchList } from '../../hooks/use-fetch-list'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Pagination from '../pagination'
 import qs from 'qs'
-import { Field, Form, Formik } from 'formik'
+import { Field, Form, Formik, useFormikContext } from 'formik'
 import Button from '../button'
 
-const SearchInput = ({ onSearch, 'data-cy': dataCy }) => (
-  <Formik
-    initialValues={{ search: '' }}
-    onSubmit={({ search }) => onSearch(search)}
-  >
-    <Form className='form-control justify-start'>
-      <Field
-        data-cy={`${dataCy}-search-input`}
-        type='search'
-        name='search'
-        id='search'
-        placeholder='Search username...'
-        style={{ width: '12rem' }}
-      />
-      <Button
-        data-cy={`${dataCy}-search-submit`}
-        type='submit'
-        variant='submit'
-      >
-        Search
-      </Button>
-    </Form>
-  </Formik>
-)
+/**
+ * This is a helper component to auto-submit search values after a timeout
+ */
+const AutoSubmitSearch = () => {
+  const timerRef = useRef(null)
+
+  const { values, touched, submitForm } = useFormikContext()
+
+  useEffect(() => {
+    // If search is touched
+    if (touched.search) {
+      // Clear previous timeout, if exists
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+      }
+      // Define new timeout
+      timerRef.current = setTimeout(submitForm, 1000)
+    }
+
+    // Clear timeout on unmount
+    return () => timerRef.current && clearTimeout(timerRef.current)
+  }, [values, touched, submitForm])
+
+  return null
+}
+
+/**
+ * The search input
+ */
+const SearchInput = ({ onSearch, 'data-cy': dataCy }) => {
+  return (
+    <Formik
+      initialValues={{ search: '' }}
+      onSubmit={({ search }) => onSearch(search)}
+    >
+      <Form className='form-control justify-start'>
+        <Field
+          data-cy={`${dataCy}-search-input`}
+          type='search'
+          name='search'
+          id='search'
+          placeholder='Search username...'
+          style={{ width: '12rem' }}
+        />
+        <Button
+          data-cy={`${dataCy}-search-submit`}
+          type='submit'
+          variant='submit'
+        >
+          Search
+        </Button>
+        <AutoSubmitSearch />
+      </Form>
+    </Formik>
+  )
+}
 
 function UsersTable({ type, orgId, onRowClick, isSearchable }) {
   const [page, setPage] = useState(1)
-
   const [search, setSearch] = useState(null)
 
   let apiBasePath
@@ -69,6 +100,10 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
     result: { data, pagination },
     isLoading,
   } = useFetchList(`${apiBasePath}?${querystring}`)
+
+  if (!isLoading && search?.length > 0) {
+    emptyMessage = 'Search returned no results.'
+  }
 
   return (
     <>
