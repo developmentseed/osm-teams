@@ -14,13 +14,15 @@ function TableHead({ columns, sort, setSort, onClick }) {
             currentSortDirection === 'asc' ? 'desc' : 'asc'
           let sortIcon = ''
           if (currentSortDirection !== 'none') {
-            sortIcon = currentSortDirection === 'asc' ? '⬆' : '⬇'
+            sortIcon = currentSortDirection === 'asc' ? '▲' : '▼'
           }
 
           return (
             <th
               key={`table-head-column-${key}`}
               data-cy={`table-head-column-${key}`}
+              className={sortable && 'sortable'}
+              title={sortable && `Click to sort by ${key}`}
               onClick={() => {
                 onClick && onClick()
 
@@ -151,6 +153,9 @@ export default function Table({
             letter-spacing: 0.125rem;
             background: ${theme.colors.primaryLite};
             border-bottom: 4px solid ${theme.colors.primaryColor};
+          }
+          thead th.sortable {
+            cursor: pointer;
           }
 
           tbody tr td {

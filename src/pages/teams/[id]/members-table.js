@@ -49,7 +49,7 @@ function MembersTable({ rows: allRows, onRowClick }) {
     <>
       <SearchInput
         data-cy='team-members-table'
-        placeholder='Type an username...'
+        placeholder='Search by username'
         onSearch={(search) => {
           // Reset to page 1 and search
           setPage(1)

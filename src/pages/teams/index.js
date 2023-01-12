@@ -100,7 +100,7 @@ export default class TeamList extends Component {
       <>
         <SearchInput
           data-cy='teams-table'
-          placeholder='Search by team name...'
+          placeholder='Search by team name'
           onSearch={(search) => {
             // Reset to page 1 and search
             this.setState({ page: 1, search })
