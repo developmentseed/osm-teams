@@ -128,21 +128,27 @@ export default class TeamList extends Component {
         {this.renderMap()}
         <fieldset>
           <input
+            name='map-bounds-filter'
+            id='map-bounds-filter'
             type='checkbox'
             checked={searchOnMapMove}
             onChange={(e) => this.setSearchOnMapMove(e)}
           />
-          <span>Filter teams using map bounds</span>
+          <label for='map-bounds-filter'>Filter teams by map</label>
         </fieldset>
         <Section>{this.renderTeams()}</Section>
         <style jsx>
           {`
             fieldset {
               display: inline-block;
-              margin: 1rem 0 2rem;
-              padding: 1.5rem;
+              padding: 0.5rem;
               background: white;
               border-color: ${theme.colors.primaryColor};
+              border-color: #384a9e;
+              position: relative;
+              top: -4rem;
+              left: 1rem;
+              z-index: 1000;
             }
 
             fieldset input[type='checkbox'] {
