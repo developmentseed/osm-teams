@@ -60,6 +60,9 @@ export function createBaseHandler() {
 
   // Add session to request
   baseHandler.use(async (req, res, next) => {
+    /** Handle authorization using either Bearer token auth or
+     * using the next-auth session
+     */
     if (req.headers.authorization) {
       // introspect the token
       const [type, token] = req.headers.authorization.split(' ')
@@ -86,10 +89,11 @@ export function createBaseHandler() {
           throw Boom.badRequest('Invalid token')
         }
       }
-    }
-    const token = await getToken({ req })
-    if (token) {
-      req.session = { user_id: token.userId || token.sub }
+    } else {
+      const token = await getToken({ req })
+      if (token) {
+        req.session = { user_id: token.userId || token.sub }
+      }
     }
     next()
   })
