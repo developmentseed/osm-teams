@@ -117,15 +117,16 @@ export default function Table({
           }
 
           thead th {
-            padding: 0 1rem 1rem;
+            padding: 0.5rem 1rem;
             vertical-align: middle;
             position: relative;
             text-transform: uppercase;
             text-align: left;
             font-family: ${theme.typography.headingFontFamily};
             font-weight: ${theme.typography.baseFontWeight};
-            font-size: 0.875rem 1rem;
+            font-size: 0.875rem;
             letter-spacing: 0.125rem;
+            background: ${theme.colors.primaryLite};
             border-bottom: 4px solid ${theme.colors.primaryColor};
           }
 

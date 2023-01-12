@@ -357,22 +357,20 @@ class Organization extends Component {
 
         {isStaff ? (
           <div className='team__table'>
-            <Section>
-              <div className='section-actions'>
-                <SectionHeader>Staff Members</SectionHeader>
-                <div>
-                  {isOwner && (
-                    <AddMemberForm
-                      onSubmit={async ({ osmId }) => {
-                        await addManager(org.data.id, osmId)
-                        return this.getOrg()
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
-            </Section>
+            <div className='section-actions'>
+              <SectionHeader>Staff Members </SectionHeader>
+              {isOwner && (
+                <AddMemberForm
+                  onSubmit={async ({ osmId }) => {
+                    await addManager(org.data.id, osmId)
+                    return this.getOrg()
+                  }}
+                />
+              )}
+            </div>
+
             <UsersTable
+              isSearchable
               type='org-staff'
               orgId={org.data.id}
               onRowClick={(row) => this.openProfileModal(row)}
@@ -384,10 +382,9 @@ class Organization extends Component {
         {isStaff ? (
           <div className='team__table'>
             <Section>
-              <div className='section-actions'>
-                <SectionHeader>Organization Members</SectionHeader>
-              </div>
+              <SectionHeader>Organization Members</SectionHeader>
               <UsersTable
+                isSearchable
                 type='org-members'
                 orgId={org.data.id}
                 onRowClick={(row) => this.openProfileModal(row)}

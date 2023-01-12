@@ -79,6 +79,11 @@ describe('Organization page', () => {
     cy.get('[data-cy=org-staff-table-pagination]').within(() => {
       cy.contains('Showing 1-3 of 3')
     })
+
+    // Perform search by username
+    cy.get('[data-cy=org-staff-table-search-input]').type('2')
+    cy.get('[data-cy=org-staff-table-search-submit]').click()
+    cy.get('[data-cy=org-staff-table-pagination]').contains('Showing 1-1 of 1')
   })
 
   it('Organization teams and members tables are populated and paginated', () => {
@@ -184,5 +189,16 @@ describe('Organization page', () => {
 
     // Item from page 2 is present
     cy.get('[data-cy=org-members-table]').contains('User 207')
+
+    // Perform search by username
+    cy.get('[data-cy=org-members-table-search-input]').type('User 2')
+    cy.get('[data-cy=org-members-table-search-submit]').click()
+    cy.get('[data-cy=org-members-table-pagination]').contains(
+      'Showing 1-10 of 20'
+    )
+
+    // Check empty results message after timeout
+    cy.get('[data-cy=org-members-table-search-input]').clear().type('aaaa')
+    cy.get('[data-cy=org-members-table]').contains('Search returned no results')
   })
 })

@@ -89,7 +89,7 @@ export const globalStyles = css.global`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    margin-bottom: ${theme.layout.globalSpacing};
+    margin-bottom: 0.5rem;
   }
 
   @media (min-width: ${theme.mediaRanges.medium}) {
@@ -99,7 +99,7 @@ export const globalStyles = css.global`
     }
     .section-actions {
       flex-direction: row;
-      align-items: center;
+      align-items: baseline;
     }
   }
 
@@ -182,7 +182,7 @@ export const globalStyles = css.global`
   }
 
   .form-control {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -192,7 +192,12 @@ export const globalStyles = css.global`
     flex-direction: column;
     align-items: flex-start;
   }
-
+  .justify-start {
+    justify-content: flex-start;
+  }
+  .justify-end {
+    justify-content: flex-end;
+  }
   .form-control :global(label) {
     font-size: 0.875rem;
     margin-bottom: 0.5rem;
@@ -202,7 +207,7 @@ export const globalStyles = css.global`
   .form-control :global(textarea) {
     min-width: 6rem;
     padding: 0.5rem 1rem 0.5rem 0.25rem;
-    margin-right: 1rem;
+    margin-right: 0.5rem;
     border: 2px solid ${theme.colors.primaryColor};
   }
 
@@ -211,6 +216,14 @@ export const globalStyles = css.global`
     height: 2.5rem;
   }
 
+  .form-control input#search {
+    margin: 0;
+    padding: 0.375rem 1rem 0.375rem 0.5rem;
+  }
+
+  .form-control input#search + .button {
+    margin-left: -2px;
+  }
   .status--alert {
     font-size: 0.875rem;
     color: ${theme.colors.secondaryColor};
