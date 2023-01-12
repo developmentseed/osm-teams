@@ -3,8 +3,6 @@ import logger from '../lib/logger'
 import { getToken } from 'next-auth/jwt'
 import Boom from '@hapi/boom'
 
-const AUTH_URL = process.env.AUTH_URL || 'https://auth.mapping.team'
-
 /**
  * This file contains the base handler to be used in all API routes.
  *
@@ -71,7 +69,7 @@ export function createBaseHandler() {
           'Authorization scheme not supported. Only Bearer scheme is supported'
         )
       } else {
-        const result = await fetch(`${AUTH_URL}/api/introspect`, {
+        const result = await fetch(`${process.env.AUTH_URL}/api/introspect`, {
           method: 'POST',
           headers: {
             Accept: 'application/json',

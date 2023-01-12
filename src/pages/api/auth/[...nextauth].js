@@ -2,8 +2,6 @@ import NextAuth from 'next-auth'
 import { mergeDeepRight } from 'ramda'
 const db = require('../../../lib/db')
 
-const HYDRA_URL = process.env.HYDRA_URL || 'https://auth.mapping.team/hyauth'
-
 export const authOptions = {
   // Configure one or more authentication providers
   providers: [
@@ -11,7 +9,7 @@ export const authOptions = {
       id: 'osm-teams',
       name: 'OSM Teams',
       type: 'oauth',
-      wellKnown: `${HYDRA_URL}/.well-known/openid-configuration`,
+      wellKnown: `${process.env.HYDRA_URL}/.well-known/openid-configuration`,
       authorization: { params: { scope: 'openid offline' } },
       idToken: true,
       async profile(profile) {
