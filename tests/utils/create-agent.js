@@ -1,4 +1,3 @@
-const logger = require('../../src/lib/logger')
 const getSessionToken = require('./get-session-token')
 
 async function createAgent(user, http = false) {
