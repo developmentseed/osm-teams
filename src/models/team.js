@@ -344,6 +344,9 @@ async function create(data, osmId, trx) {
     })
   }
 
+  // Cache username
+  await resolveMemberNames([osmId])
+
   return conn.transaction(async (trx) => {
     const [row] = await trx('team')
       .insert(data)
@@ -436,6 +439,9 @@ async function updateMembers(teamId, osmIdsToAdd, osmIdstoRemove) {
  * @return {promise}
  **/
 async function addMember(teamId, osmId) {
+  // Get OSM username
+  await resolveMemberNames([osmId])
+
   return updateMembers(teamId, [osmId], [])
 }
 
