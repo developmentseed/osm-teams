@@ -238,9 +238,6 @@ async function removeManager(id, osmId) {
  * @return {promise}
  */
 async function createOrgTeam(organizationId, data, osmId) {
-  // Cache username
-  await team.resolveMemberNames([osmId])
-
   return db.transaction(async (trx) => {
     const record = await team.create(data, osmId, trx)
     await trx('organization_team').insert({
