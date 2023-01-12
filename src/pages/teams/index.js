@@ -150,6 +150,10 @@ export default class TeamList extends Component {
               left: 1rem;
               z-index: 1000;
             }
+            fieldset input,
+            fieldset label {
+              cursor: pointer;
+            }
 
             fieldset input[type='checkbox'] {
               margin-right: 0.5rem;
