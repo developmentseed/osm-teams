@@ -1,14 +1,12 @@
 import React from 'react'
 import theme from '../../styles/theme'
 
-function TableHead({ columns, sort, setSort, onClick }) {
+function TableHead({ dataCy, columns, sort, setSort, onClick }) {
   return (
     <thead>
       <tr>
         {columns.map(({ sortable, label, key }) => {
-          const header = label || key
-
-          const isSorted = sortable && sort.key === header
+          const isSorted = sortable && sort.key === key
           const currentSortDirection = (isSorted && sort.direction) || 'none'
           const nextSortDirection =
             currentSortDirection === 'asc' ? 'desc' : 'asc'
@@ -20,7 +18,7 @@ function TableHead({ columns, sort, setSort, onClick }) {
           return (
             <th
               key={`table-head-column-${key}`}
-              data-cy={`table-head-column-${key}`}
+              data-cy={`${dataCy}-head-column-${key}`}
               onClick={() => {
                 onClick && onClick()
 
@@ -32,7 +30,7 @@ function TableHead({ columns, sort, setSort, onClick }) {
                 }
               }}
             >
-              {header}
+              {label || key}
               {sortable && ` ${sortIcon}`}
             </th>
           )
@@ -121,7 +119,12 @@ export default function Table({
   showRowNumbers && columns.unshift({ key: ' ' })
   return (
     <table data-cy={dataCy}>
-      <TableHead columns={columns} sort={sort} setSort={setSort} />
+      <TableHead
+        dataCy={dataCy}
+        columns={columns}
+        sort={sort}
+        setSort={setSort}
+      />
       <TableBody
         columns={columns}
         rows={rows}

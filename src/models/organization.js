@@ -279,6 +279,8 @@ async function getMembers(organizationId, page) {
  */
 async function getMembersPaginated(organizationId, options) {
   const currentPage = options?.page || 1
+  const sort = options?.sort || 'name'
+  const order = options?.order || 'asc'
 
   // Sub-query for all org teams
   const allOrgTeamsQuery = db('organization_team')
@@ -291,12 +293,14 @@ async function getMembersPaginated(organizationId, options) {
     .select('member.osm_id as id', 'osm_users.name')
     .where('member.team_id', 'in', allOrgTeamsQuery)
     .groupBy('member.osm_id', 'osm_users.name')
-    .orderBy('member.osm_id')
 
   // Apply search
   if (options.search) {
     query = query.whereILike('osm_users.name', `%${options.search}%`)
   }
+
+  // Apply sort
+  query = query.orderBy(sort, order)
 
   // Add pagination
   query = query.paginate({

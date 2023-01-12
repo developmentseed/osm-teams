@@ -190,6 +190,18 @@ describe('Organization page', () => {
     // Item from page 2 is present
     cy.get('[data-cy=org-members-table]').contains('User 207')
 
+    // Sort by team name
+    cy.get('[data-cy=org-members-table-head-column-name]').click()
+    cy.get('[data-cy=org-members-table]')
+      .find('tbody tr:nth-child(4) td:nth-child(1)')
+      .contains('User 301')
+    cy.get('[data-cy=org-members-table]')
+      .find('tbody tr:nth-child(10) td:nth-child(1)')
+      .contains('User 215')
+
+    // Reset sort
+    cy.get('[data-cy=org-members-table-head-column-name]').click()
+
     // Perform search by username
     cy.get('[data-cy=org-members-table-search-input]').type('User 2')
     cy.get('[data-cy=org-members-table-search-submit]').click()
