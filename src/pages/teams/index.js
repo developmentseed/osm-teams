@@ -77,10 +77,19 @@ export default class TeamList extends Component {
       teams
     )
 
+    // Default empty table message
+    let emptyTableMessage = 'No teams created yet.'
+
     if (search?.length > 0) {
+      // Apply search
       rows = rows.filter((r) =>
         r.name.toUpperCase().includes(search.toUpperCase())
       )
+
+      // Change empty table message when no results are available
+      if (rows.length === 0) {
+        emptyTableMessage = 'Search returned no results.'
+      }
     }
 
     // Calculate start and end index
@@ -104,20 +113,22 @@ export default class TeamList extends Component {
           onRowClick={(row) => {
             Router.push(join(URL, `/teams/${row.id}`))
           }}
-          emptyPlaceHolder={'No teams created yet.'}
+          emptyPlaceHolder={emptyTableMessage}
           showRowNumbers
           sort={sortOptions}
           setSort={(s) => this.setState({ sortOptions: s })}
         />
-        <Pagination
-          data-cy={`teams-table-pagination`}
-          pagination={{
-            perPage: DEFAULT_PAGE_SIZE,
-            total: rows.length,
-            currentPage: page,
-          }}
-          setPage={(p) => this.setState({ page: p })}
-        />
+        {rows?.length > 0 && (
+          <Pagination
+            data-cy='teams-table-pagination'
+            pagination={{
+              perPage: DEFAULT_PAGE_SIZE,
+              total: rows.length,
+              currentPage: page,
+            }}
+            setPage={(p) => this.setState({ page: p })}
+          />
+        )}
       </>
     )
   }
