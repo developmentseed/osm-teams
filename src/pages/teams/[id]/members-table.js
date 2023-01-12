@@ -28,10 +28,17 @@ function MembersTable({ rows: allRows, onRowClick }) {
     allRows
   )
 
+  let emptyTableMessage = 'This team has no members.'
+
   if (search) {
     rows = rows.filter((r) =>
       r.name.toUpperCase().includes(search.toUpperCase())
     )
+
+    // Change empty table message when no results are available
+    if (rows.length === 0) {
+      emptyTableMessage = 'Search returned no results.'
+    }
   }
 
   // Calculate start and end index
@@ -53,7 +60,7 @@ function MembersTable({ rows: allRows, onRowClick }) {
         data-cy='team-members-table'
         rows={rows.slice(pageStartIndex, pageEndIndex)}
         columns={columns}
-        emptyPlaceHolder='This team has no members.'
+        emptyPlaceHolder={emptyTableMessage}
         onRowClick={onRowClick}
         showRowNumbers
         sort={sort}
@@ -65,7 +72,7 @@ function MembersTable({ rows: allRows, onRowClick }) {
           total: rows.length,
           currentPage: page,
         }}
-        data-cy={`team-members-table-pagination`}
+        data-cy='team-members-table-pagination'
         setPage={setPage}
       />
     </>
