@@ -5,6 +5,7 @@ import Pagination from '../../../components/pagination'
 import { serverRuntimeConfig } from '../../../../next.config.js'
 import * as R from 'ramda'
 import SearchInput from '../../../components/tables/search-input'
+import Button from '../../../components/button'
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
 function MembersTable({ rows: allRows, onRowClick }) {
@@ -19,6 +20,43 @@ function MembersTable({ rows: allRows, onRowClick }) {
     { key: 'name', sortable: true },
     { key: 'id', sortable: true },
     { key: 'role', sortable: true },
+    {
+      key: '3rd party',
+      render: ({ name }) => (
+        <>
+          <Button
+            onClick={(e) => {
+              e.stopPropagation()
+              window.open(
+                `https://www.openstreetmap.org/user/${name}`,
+                '_blank'
+              )
+            }}
+          >
+            OSM Profile
+          </Button>
+          <Button
+            onClick={(e) => {
+              e.stopPropagation()
+              window.open(`https://hdyc.neis-one.org/?${name}`, '_blank')
+            }}
+          >
+            HDYC
+          </Button>
+          <Button
+            onClick={(e) => {
+              e.stopPropagation()
+              window.open(
+                `https://osmcha.org/?filters={"users":[{"label":"${name}","value":"${name}"}]}`,
+                '_blank'
+              )
+            }}
+          >
+            OSM Profile
+          </Button>
+        </>
+      ),
+    },
   ]
 
   let rows = R.sort(

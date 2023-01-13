@@ -50,11 +50,9 @@ function Row({ columns, row, index, onRowClick, showRowNumber }) {
         onRowClick && onRowClick(row, index)
       }}
     >
-      {columns.map(({ key }) => {
+      {columns.map(({ key, render }) => {
         let item =
-          typeof row[key] === 'function'
-            ? row[key](row, index, columns)
-            : row[key]
+          typeof render === 'function' ? render(row, index, columns) : row[key]
         if (showRowNumber && key === ' ') {
           item = index + 1
         }
