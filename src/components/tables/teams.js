@@ -5,11 +5,25 @@ import join from 'url-join'
 import { useFetchList } from '../../hooks/use-fetch-list'
 import { useState } from 'react'
 import Pagination from '../pagination'
+import SearchInput from './search-input'
+import qs from 'qs'
 
 const APP_URL = process.env.APP_URL
 
 function TeamsTable({ type, orgId }) {
   const [page, setPage] = useState(1)
+  const [search, setSearch] = useState(null)
+  const [sort, setSort] = useState({
+    key: 'name',
+    direction: 'asc',
+  })
+
+  const querystring = qs.stringify({
+    search,
+    page,
+    sort: sort.key,
+    order: sort.direction,
+  })
 
   let apiBasePath
   let emptyMessage
@@ -33,22 +47,32 @@ function TeamsTable({ type, orgId }) {
   const {
     result: { data, pagination },
     isLoading,
-  } = useFetchList(`${apiBasePath}?page=${page}`)
+  } = useFetchList(`${apiBasePath}?${querystring}`)
 
-  const columns = [{ key: 'name' }, { key: 'members' }]
+  const columns = [
+    { key: 'name', sortable: true },
+    { key: 'members', sortable: true },
+  ]
 
   return (
     <>
+      <SearchInput
+        data-cy={`${type}-table`}
+        onSearch={(search) => {
+          // Reset to page 1 and search
+          setPage(1)
+          setSearch(search)
+        }}
+      />
       <Table
         data-cy={`${type}-table`}
         rows={data}
         columns={columns}
         emptyPlaceHolder={isLoading ? 'Loading...' : emptyMessage}
+        sort={sort}
+        setSort={setSort}
         onRowClick={(row) => {
-          Router.push(
-            join(APP_URL, `/team?id=${row.id}`),
-            join(APP_URL, `/teams/${row.id}`)
-          )
+          Router.push(join(APP_URL, `/teams/${row.id}`))
         }}
       />
       {pagination?.total > 0 && (
