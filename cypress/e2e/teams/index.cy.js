@@ -13,6 +13,11 @@ const TEAMS_COUNT = 35
 const teams = generateSequenceArray(TEAMS_COUNT, 1).map((i) => ({
   id: i,
   name: `Team ${addZeroPadding(i, 3)}`,
+  location: {
+    type: 'Point',
+    // Fake coords under 30 degrees
+    coordinates: [(30 / TEAMS_COUNT) * i, (30 / TEAMS_COUNT) * i],
+  },
 }))
 
 describe('Teams page', () => {

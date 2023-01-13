@@ -30,10 +30,6 @@ export const globalStyles = css.global`
     min-width: ${theme.layout.rowMinWidth};
   }
 
-  .app-container {
-    overflow: hidden;
-  }
-
   .page-layout {
     display: grid;
     position: relative;
@@ -41,10 +37,8 @@ export const globalStyles = css.global`
     grid-template-columns: 100%;
     grid-template-areas:
       'sidebar'
-      'main'
-      'footer';
-    height: 100vh;
-    overflow: auto;
+      'main';
+    min-height: 100vh;
   }
 
   @media screen and (min-width: ${theme.mediaRanges.small}) {
@@ -70,8 +64,9 @@ export const globalStyles = css.global`
 
   .inner.page {
     grid-area: main;
-    margin-top: calc(${theme.layout.globalSpacing} * 4);
-    margin-bottom: calc(${theme.layout.globalSpacing} * 4);
+    margin-top: calc(${theme.layout.globalSpacing} * 2);
+    margin-bottom: calc(${theme.layout.globalSpacing} * 2);
+    overflow: auto;
   }
 
   .inner.page section {
