@@ -5,6 +5,7 @@ import { useState } from 'react'
 import Pagination from '../pagination'
 import qs from 'qs'
 import SearchInput from './search-input'
+import ExternalProfileButton from '../external-profile-button'
 
 function UsersTable({ type, orgId, onRowClick, isSearchable }) {
   const [page, setPage] = useState(1)
@@ -32,6 +33,16 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
       columns = [
         { key: 'name', sortable: true },
         { key: 'id', label: 'OSM ID', sortable: true },
+        {
+          key: 'External Profiles',
+          render: ({ name }) => (
+            <>
+              <ExternalProfileButton type='osm-profile' userId={name} />
+              <ExternalProfileButton type='hdyc' userId={name} />
+              <ExternalProfileButton type='osmcha' userId={name} />
+            </>
+          ),
+        },
       ]
       break
     case 'org-staff':
@@ -41,6 +52,16 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
         { key: 'name', sortable: true },
         { key: 'id', label: 'OSM ID', sortable: true },
         { key: 'type', sortable: true },
+        {
+          key: 'External Profiles',
+          render: ({ name }) => (
+            <>
+              <ExternalProfileButton type='osm-profile' userId={name} />
+              <ExternalProfileButton type='hdyc' userId={name} />
+              <ExternalProfileButton type='osmcha' userId={name} />
+            </>
+          ),
+        },
       ]
       break
     default:
