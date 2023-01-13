@@ -41,8 +41,17 @@ const ButtonStyles = css.global`
   .button.primary {
     color: #ffffff;
     background: ${theme.colors.primaryColor};
-    border: none;
+    border: 2px solid transparent;
     box-shadow: 2px 2px #ffffff, 4px 4px ${theme.colors.primaryColor};
+  }
+  .button.secondary {
+    color: ${theme.colors.primaryColor};
+    background: ${theme.colors.primaryLite};
+    box-shadow: 2px 2px #ffffff, 4px 4px ${theme.colors.primaryColor};
+  }
+  .button.flat {
+    box-shadow: none;
+    position: relative;
   }
 
   /* Button size modifiers
@@ -145,6 +154,7 @@ export default function Button({
 }) {
   let classes = [`button`, variant, className]
   if (disabled) classes.push('disabled')
+  if (flat) classes.push('flat')
   let classNames = classes.join(' ')
   if (type === 'submit') {
     return (
@@ -162,16 +172,16 @@ export default function Button({
         <style jsx>{ButtonStyles}</style>
         <style jsx>{`
           .button {
-            box-shadow: ${flat && 'none'};
-            position: relative;
+            min-width: 1.75rem;
+            min-height: 1.75rem;
           }
           .button::after {
             content: '';
-            position: absolute;
+            position: ${useIcon && 'absolute'};
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: ${useIcon && '100%'};
+            height: ${useIcon && '100%'};
             mask: ${useIcon
               ? `url(${join(URL, `/static/icon-${useIcon}.svg`)})`
               : 'none'};
@@ -199,16 +209,16 @@ export default function Button({
         <style jsx>{ButtonStyles}</style>
         <style jsx>{`
           .button {
-            box-shadow: ${flat && 'none'};
-            position: relative;
+            min-width: 1.75rem;
+            min-height: 1.75rem;
           }
           .button::after {
             content: '';
-            position: absolute;
+            position: ${useIcon && 'absolute'};
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: ${useIcon && '100%'};
+            height: ${useIcon && '100%'};
             mask: ${useIcon
               ? `url(${join(URL, `/static/icon-${useIcon}.svg`)})`
               : 'none'};
@@ -234,18 +244,16 @@ export default function Button({
       <style jsx>{ButtonStyles}</style>
       <style jsx>{`
         .button {
-          box-shadow: ${flat && 'none'};
-          position: relative;
           min-width: 1.75rem;
           min-height: 1.75rem;
         }
         .button::after {
           content: '';
-          position: absolute;
+          position: ${useIcon && 'absolute'};
           top: 0;
           left: 0;
-          width: 100%;
-          height: 100%;
+          width: ${useIcon && '100%'};
+          height: ${useIcon && '100%'};
           mask: ${useIcon
             ? `url(${join(URL, `/static/icon-${useIcon}.svg`)})`
             : 'none'};

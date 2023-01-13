@@ -75,6 +75,7 @@ function Pagination({ pagination, setPage, 'data-cy': dataCy }) {
             onClick={() => setPage(page)}
             key={`page-${page}`}
             disabled={page === '...'}
+            variant={currentPage === page ? 'primary' : 'secondary'}
             data-cy={`page-${page}-button`}
             className='small'
             flat
