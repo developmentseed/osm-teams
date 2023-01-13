@@ -66,6 +66,7 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
             setPage(1)
             setSearch(search)
           }}
+          placeholder='Search by username'
         />
       )}
       <Table

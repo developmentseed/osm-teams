@@ -2,6 +2,7 @@ import * as Yup from 'yup'
 import Team from '../../../models/team'
 import { createBaseHandler } from '../../../middlewares/base-handler'
 import { validate } from '../../../middlewares/validation'
+import isAuthenticated from '../../../middlewares/can/authenticated'
 
 const handler = createBaseHandler()
 
@@ -26,6 +27,7 @@ const handler = createBaseHandler()
  *                   $ref: '#/components/schemas/ArrayOfTeams'
  */
 handler.get(
+  isAuthenticated,
   validate({
     query: Yup.object({
       page: Yup.number().min(0).integer(),

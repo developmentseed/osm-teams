@@ -53,7 +53,7 @@ const SearchInput = ({ onSearch, placeholder, 'data-cy': dataCy }) => {
           name='search'
           id='search'
           placeholder={placeholder}
-          style={{ width: '12rem' }}
+          style={{ width: '14rem' }}
         />
         <Button
           data-cy={`${dataCy}-search-submit`}

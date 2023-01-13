@@ -4,9 +4,11 @@ const { resetDb, disconnectDb } = require('../utils/db-helpers')
 const createAgent = require('../utils/create-agent')
 
 let user1Agent
+let user1HttpAgent
 test.before(async () => {
   await resetDb()
   user1Agent = await createAgent({ id: 1 })
+  user1HttpAgent = await createAgent({ id: 1, http: true })
 })
 
 test.after.always(disconnectDb)
@@ -252,7 +254,13 @@ test('get my teams list', async (t) => {
       data: teams,
     },
   } = await user1Agent.get(`/api/my/teams`).expect(200)
+
   t.is(total, 2)
   t.is(teams[0].name, 'Team 1')
   t.is(teams[1].name, 'Team 2')
+
+  const httpApiResponse = await user1HttpAgent.get(`/api/my/teams`).expect(200)
+
+  // Has to be the same
+  t.deepEqual(httpApiResponse.body.data, teams)
 })
