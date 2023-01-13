@@ -52,17 +52,26 @@ describe('Profile page', () => {
 
   it('Teams list is paginated', () => {
     // Add teams with user1 as creator
-    cy.task('db:seed:teams', { teams: user1teams, moderatorId: user1.id })
+    cy.task('db:seed:create-teams', {
+      teams: user1teams,
+      moderatorId: user1.id,
+    })
 
     // Add teams with user2 and make user1 member
-    cy.task('db:seed:teams', { teams: user2teams, moderatorId: user2.id })
-    cy.task('db:seed:add-team-member', {
+    cy.task('db:seed:create-teams', {
+      teams: user2teams,
+      moderatorId: user2.id,
+    })
+    cy.task('db:seed:add-member-to-teams', {
       teams: user2teams,
       memberId: user1.id,
     })
 
     // Add teams with user3 with no relation with user 1
-    cy.task('db:seed:teams', { teams: user3teams, moderatorId: user3.id })
+    cy.task('db:seed:create-teams', {
+      teams: user3teams,
+      moderatorId: user3.id,
+    })
 
     // Log in and visit profile
     cy.login(user1)

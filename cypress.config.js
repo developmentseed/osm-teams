@@ -5,10 +5,6 @@ const Organization = require('./src/models/organization')
 const TeamInvitation = require('./src/models/team-invitation')
 const { pick } = require('ramda')
 
-const user1 = {
-  id: 1,
-}
-
 module.exports = defineConfig({
   e2e: {
     baseUrl: 'http://127.0.0.1:3000/',
@@ -22,24 +18,7 @@ module.exports = defineConfig({
           await db.raw('TRUNCATE TABLE osm_users RESTART IDENTITY CASCADE')
           return null
         },
-        'db:seed': async () => {
-          // Add teams in series
-          await Team.create(
-            {
-              name: 'Team 1',
-            },
-            user1.id
-          )
-          await Team.create(
-            {
-              name: 'Team 2',
-              privacy: 'private',
-            },
-            user1.id
-          )
-          return null
-        },
-        'db:seed:teams': async ({ teams, moderatorId }) => {
+        'db:seed:create-teams': async ({ teams, moderatorId }) => {
           let createdTeams = []
           for (let i = 0; i < teams.length; i++) {
             const team = teams[i]
@@ -47,7 +26,7 @@ module.exports = defineConfig({
           }
           return createdTeams
         },
-        'db:seed:add-team-member': async ({ teams, memberId }) => {
+        'db:seed:add-member-to-teams': async ({ memberId, teams }) => {
           for (let i = 0; i < teams.length; i++) {
             const team = teams[i]
             await Team.addMember(team.id, memberId)
@@ -61,10 +40,10 @@ module.exports = defineConfig({
           }
           return null
         },
-        'db:seed:team-invitations': async (teamInvitations) => {
+        'db:seed:create-team-invitations': async (teamInvitations) => {
           return Promise.all(teamInvitations.map(TeamInvitation.create))
         },
-        'db:seed:add-organizations': async (orgs) => {
+        'db:seed:create-organizations': async (orgs) => {
           for (let i = 0; i < orgs.length; i++) {
             const org = orgs[i]
             await Organization.create(
@@ -74,7 +53,7 @@ module.exports = defineConfig({
           }
           return null
         },
-        'db:seed:add-organization-teams': async ({
+        'db:seed:create-organization-teams': async ({
           orgId,
           teams,
           managerId,
