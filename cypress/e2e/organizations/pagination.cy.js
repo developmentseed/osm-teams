@@ -146,6 +146,7 @@ describe('Organization page', () => {
     cy.get('[data-cy=org-teams-table]')
       .find('tbody tr:nth-child(9) td:nth-child(1)')
       .contains('Team 027')
+    cy.get('[data-cy=org-teams-table-search-input]').clear()
 
     // Verify index, then click on last page button
     cy.get('[data-cy=org-teams-table-pagination]').within(() => {
