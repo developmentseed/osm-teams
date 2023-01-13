@@ -7,21 +7,19 @@ Install requirements:
 - [nvm](https://github.com/creationix/nvm)
 - [Docker](https://www.docker.com)
 
-Visit your [OpenStreetMap settings](https://www.openstreetmap.org/account/edit) page and [register an OAuth2 app](https://www.openstreetmap.org/oauth2/applications) with the following settings:
+Setup local authentication:
 
-- Name: `OSM Teams Dev` (or another name of your preference)
-- Redirect URIs: `http://127.0.0.1:3000/api/auth/callback/openstreetmap`
-- Confidential application: `false`
-- Permissions: `Read user preferences` only
+- Visit [auth.mapping.team](https://auth.mapping.team) and sign in
+- Go to clients page at <https://auth.mapping.team/clients>
+- Create a new app with the following settings:
+  - Name: `OSM Teams Dev` (or another name of your preference)
+  - Redirect URIs: `http://127.0.0.1:3000/api/auth/callback/osm-teams`
+- Copy client id and secret to a newly created file named `.env.local` in the repository root, following this example:
 
-Example:
-
-![OSM Client App](oauth2-osm-client-app.png "OAuth 2 page at OSM Website")
-
-Create an `.env.local` file and add environment variables `OSM_CONSUMER_KEY` and `OSM_CONSUMER_SECRET` obtained at OAuth2 page at OpenStreetMap website. The `.env.local` file should be like the following:
-
-    OSM_CONSUMER_KEY=<osm-oauth2-client-id>
-    OSM_CONSUMER_SECRET=<osm-oauth2-client-secret>
+```sh
+    OSM_CONSUMER_KEY=<client-id>
+    OSM_CONSUMER_SECRET=<client-secret>
+```
 
 Start development and test databases with Docker:
 
@@ -44,7 +42,9 @@ Start development server:
     yarn dev
 
 <!-- markdownlint-disable MD034 -->
+
 ✨ You can now login to the app at http://127.0.0.1:3000
+
 <!-- markdownlint-enable MD034 -->
 
 ## Testing
@@ -60,6 +60,8 @@ This project uses Cypress for end-to-end testing. To run once:
 To open Cypress dashboard for interactive development:
 
     yarn e2e:dev
+
+By default, logging level in testing environment is set to 'silent'. Please refer to pino docs for the full [list of log levels](https://getpino.io/#/docs/api?id=level-string).
 
 ## API
 

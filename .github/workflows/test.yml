@@ -1,6 +1,9 @@
 name: Test
 
 on:
+  push:
+    branches:
+      - 'develop'
   pull_request:
     types:
       - opened
@@ -38,6 +41,9 @@ jobs:
 
       - name: Lint
         run: yarn lint
+
+      - name: Validate Swagger Docs
+        run: yarn docs:validate
 
       - name: Docker - Pull
         run: docker-compose pull

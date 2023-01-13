@@ -285,7 +285,7 @@ export default function Sidebar() {
         ) : (
           <Button
             className='global-menu__link login'
-            onClick={() => signIn('openstreetmap')}
+            onClick={() => signIn('osm-teams')}
           >
             Sign in
           </Button>

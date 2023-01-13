@@ -181,7 +181,7 @@ export default function Home() {
           </p>
           {status === 'authenticated' ? (
             <div className='welcome__user'>
-              <h2>Welcome, {session.user.username}!</h2>
+              <h2>Welcome, {session?.user?.name || 'mapper'}!</h2>
               <ul className='welcome__user--actions'>
                 <li>
                   <a href={join(APP_URL, '/teams/create')}>Create New Team</a>
@@ -207,7 +207,7 @@ export default function Home() {
               </Button>
             </div>
           ) : (
-            <Button onClick={() => signIn('openstreetmap')}>Sign in →</Button>
+            <Button onClick={() => signIn('osm-teams')}>Sign in →</Button>
           )}
         </div>
         <div className='map-bg' />

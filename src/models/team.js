@@ -1,12 +1,44 @@
 const db = require('../lib/db')
+const logger = require('../lib/logger')
 const knexPostgis = require('knex-postgis')
 const join = require('url-join')
 const xml2js = require('xml2js')
 const { unpack } = require('../../app/lib/utils')
-const { prop, isEmpty } = require('ramda')
+const { prop, isEmpty, difference, concat, assoc } = require('ramda')
 const request = require('request-promise-native')
+const { addZeroPadding } = require('../lib/utils')
 
 const { serverRuntimeConfig } = require('../../next.config')
+const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     NewTeam:
+ *       type: object
+ *       required:
+ *         - name
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: The team's name.
+ *           example: Local Mappers
+ *     Team:
+ *       allOf:
+ *         - type: object
+ *           properties:
+ *             id:
+ *               type: integer
+ *               description: The team ID.
+ *               example: 10
+ *         - $ref: '#/components/schemas/NewTeam'
+ *     ArrayOfTeams:
+ *       type: array
+ *       items:
+ *         $ref: '#/components/schemas/Team'
+ *
+ */
 
 /**
  * This doesn't include the profile column, which we get separately
@@ -34,48 +66,67 @@ const teamAttributes = [
  *
  */
 async function resolveMemberNames(ids) {
-  // The following avoids hitting OSM API when testing. We use TESTING variable
-  // instead of NODE_EN because the server run in development mode while
-  // executing E2E tests.
-  if (process.env.TESTING === 'true') {
-    return ids.map((id) => ({
-      id,
-      name: `User ${id}`,
-      image: `https://via.placeholder.com/150`,
-    }))
-  }
+  // TODO Quick fix, we need to do proper type validation
+  const userIds = ids.map((i) => parseInt(i))
 
-  try {
-    const resp = await request(
-      join(serverRuntimeConfig.OSM_API, `/api/0.6/users?users=${ids.join(',')}`)
-    )
-    var parser = new xml2js.Parser()
+  // get the display names from the database table first
+  const foundUsers = await db('osm_users').whereIn('id', userIds)
+  const foundUserIds = foundUsers.map(prop('id'))
+  const notFound = difference(userIds, foundUserIds)
 
-    return new Promise((resolve, reject) => {
-      parser.parseString(resp, (err, xml) => {
-        if (err) {
-          reject(err)
-        }
+  let usersFromOSM = []
+  if (notFound.length > 0) {
+    try {
+      // The following avoids hitting OSM API when testing. We use TESTING variable
+      // instead of NODE_EN because the server run in development mode while
+      // executing E2E tests.
+      if (process.env.TESTING === 'true') {
+        usersFromOSM = notFound.map((id) => ({
+          id,
+          name: `User ${addZeroPadding(id, 3)}`, // use zero-padded number for consistent table sorting during tests
+          image: `https://via.placeholder.com/150`,
+        }))
+      } else {
+        const resp = await request(
+          join(
+            serverRuntimeConfig.OSM_API,
+            `/api/0.6/users?users=${notFound.join(',')}`
+          )
+        )
+        var parser = new xml2js.Parser()
 
-        let users = xml.osm.user.map((user) => {
-          let img = prop('img', user)
-          if (img) {
-            img = img[0]['$'].href
-          }
-          return {
-            id: user['$'].id,
-            name: user['$'].display_name,
-            img,
-          }
+        usersFromOSM = await new Promise((resolve, reject) => {
+          parser.parseString(resp, (err, xml) => {
+            if (err) {
+              reject(err)
+            }
+
+            let users = xml.osm.user.map((user) => {
+              let img = prop('img', user)
+              if (img) {
+                img = img[0]['$'].href
+              }
+              return {
+                id: user['$'].id,
+                name: user['$'].display_name,
+                image: img,
+              }
+            })
+            resolve(users)
+          })
         })
+      }
 
-        resolve(users)
+      let usersToInsert = usersFromOSM.map((u) => {
+        return assoc('updated_at', db.fn.now(), u)
       })
-    })
-  } catch (e) {
-    console.error(e)
-    throw new Error('Could not resolve usernames')
+      await db('osm_users').insert(usersToInsert)
+    } catch (e) {
+      logger.error(e)
+      throw new Error('Could not resolve user names from OSM')
+    }
   }
+  return concat(usersFromOSM, foundUsers)
 }
 
 /**
@@ -112,6 +163,91 @@ async function getMembers(id) {
  */
 async function getModerators(id) {
   return db('moderator').where('team_id', id)
+}
+
+/**
+ * Get team count
+ *
+ * @param options
+ * @param {int} options.organizationId - filter by whether team belongs to organization
+ * @return {int}
+ **/
+async function count({ organizationId }) {
+  let query = db('team').count('id')
+
+  if (organizationId) {
+    query = query.whereIn('id', function () {
+      this.select('team_id')
+        .from('organization_team')
+        .where('organization_id', organizationId)
+    })
+  }
+
+  const [{ count }] = await query
+  return parseInt(count)
+}
+
+/**
+ * Get paginated list of teams
+ *
+ * @param options
+ * @param {int} options.osmId - filter by whether osmId is a member
+ * @param {int} options.organizationId - filter by whether team belongs to organization
+ * @param {Array[float]} options.bbox - filter for teams whose location is in bbox (xmin, ymin, xmax, ymax)
+ * @return {Promise[Array]}
+ **/
+async function paginatedList(options = {}) {
+  const currentPage = options?.page || 1
+  const sort = options?.sort || 'name'
+  const order = options?.order || 'asc'
+  const perPage = options?.perPage || DEFAULT_PAGE_SIZE
+
+  const { bbox, osmId, organizationId, includePrivate } = options
+  const st = knexPostgis(db)
+
+  let query = db('team').select(
+    ...teamAttributes,
+    st.asGeoJSON('location'),
+    db('member').count().whereRaw('team.id = member.team_id').as('members')
+  )
+
+  // Apply search
+  if (options.search) {
+    query = query.whereILike('name', `%${options.search}%`)
+  }
+
+  if (!includePrivate) {
+    query.where('privacy', 'public')
+  }
+
+  if (osmId) {
+    query = query.whereIn('id', function () {
+      this.select('team_id').from('member').where('osm_id', osmId)
+    })
+  }
+
+  if (organizationId) {
+    query = query.whereIn('id', function () {
+      this.select('team_id')
+        .from('organization_team')
+        .where('organization_id', organizationId)
+    })
+  }
+
+  if (bbox) {
+    query = query.where(
+      st.boundingBoxContained('location', st.makeEnvelope(...bbox))
+    )
+  }
+
+  // Apply sort
+  query = query.orderBy(sort, order)
+
+  return query.paginate({
+    isLengthAware: true,
+    currentPage,
+    perPage,
+  })
 }
 
 /**
@@ -218,6 +354,9 @@ async function create(data, osmId, trx) {
     })
   }
 
+  // Cache username
+  await resolveMemberNames([osmId])
+
   return conn.transaction(async (trx) => {
     const [row] = await trx('team')
       .insert(data)
@@ -310,6 +449,9 @@ async function updateMembers(teamId, osmIdsToAdd, osmIdstoRemove) {
  * @return {promise}
  **/
 async function addMember(teamId, osmId) {
+  // Get OSM username
+  await resolveMemberNames([osmId])
+
   return updateMembers(teamId, [osmId], [])
 }
 
@@ -456,7 +598,9 @@ async function isInvitationValid(teamId, invitationId) {
 
 module.exports = {
   get,
+  count,
   list,
+  paginatedList,
   listMembers,
   listModerators,
   listModeratedBy,

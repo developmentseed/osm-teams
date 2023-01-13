@@ -2,6 +2,8 @@ const db = require('../lib/db')
 const team = require('./team')
 const { map, prop, includes, has, isNil } = require('ramda')
 const { unpack, PropertyRequiredError } = require('../../app/lib/utils')
+const { serverRuntimeConfig } = require('../../next.config')
+const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
 // Organization attributes (without profile)
 const orgAttributes = [
@@ -38,7 +40,7 @@ async function listMyOrganizations(osmId) {
       'organization_team.organization_id',
       'organization.id'
     )
-    .join('member', 'organization_team.id', 'member.team_id')
+    .join('member', 'organization_team.team_id', 'member.team_id')
     .where('osm_id', osmId)
 
   const managerOrgs = await db('organization_manager')
@@ -88,6 +90,9 @@ async function create(data, osmId) {
   if (!osmId) throw new Error('owner osm id is required as second argument')
 
   if (!data.name) throw new Error('data.name property is required')
+
+  // Cache username
+  await team.resolveMemberNames([osmId])
 
   return db.transaction(async (trx) => {
     const [row] = await trx('organization')
@@ -184,6 +189,9 @@ async function removeOwner(id, osmId) {
  * @return {promise}
  */
 async function addManager(id, osmId) {
+  // Cache username
+  await team.resolveMemberNames([osmId])
+
   const isAlreadyManager = await isManager(id, osmId)
 
   // Only ids that are not already in manager list should be added. Duplicate requests should fail silently
@@ -259,6 +267,49 @@ async function getMembers(organizationId, page) {
   if (page) {
     query = query.limit(50).offset(page * 20)
   }
+  return query
+}
+
+/**
+ * Get all members and associated teams of an organization
+ * We get all members of all associated teams with this organization
+ * @param {int} organizationId - organization id
+ * @param {object} options - pagination params
+ *
+ */
+async function getMembersPaginated(organizationId, options) {
+  const currentPage = options?.page || 1
+  const sort = options?.sort || 'name'
+  const order = options?.order || 'asc'
+  const perPage = options?.perPage || DEFAULT_PAGE_SIZE
+
+  // Sub-query for all org teams
+  const allOrgTeamsQuery = db('organization_team')
+    .select('team_id')
+    .where('organization_id', organizationId)
+
+  // Base query for org members
+  let query = db('member')
+    .join('osm_users', 'member.osm_id', 'osm_users.id')
+    .select('member.osm_id as id', 'osm_users.name')
+    .where('member.team_id', 'in', allOrgTeamsQuery)
+    .groupBy('member.osm_id', 'osm_users.name')
+
+  // Apply search
+  if (options.search) {
+    query = query.whereILike('osm_users.name', `%${options.search}%`)
+  }
+
+  // Apply sort
+  query = query.orderBy(sort, order)
+
+  // Add pagination
+  query = query.paginate({
+    isLengthAware: true,
+    currentPage,
+    perPage,
+  })
+
   return query
 }
 
@@ -390,6 +441,73 @@ async function getOrgStaff(options) {
 }
 
 /**
+ * Get organization staff
+ * @param {Object} options - parameters
+ * @param {Object} options.organizationId - filter by organization
+ * @param {Object} options.osmId - filter by osm id
+ */
+async function getOrgStaffPaginated(organizationId, options = {}) {
+  const currentPage = options?.page || 1
+  const sort = options?.sort || 'name'
+  const order = options?.order || 'asc'
+  const perPage = options?.perPage || DEFAULT_PAGE_SIZE
+
+  // Get owners
+  let ownerQuery = db('organization_owner')
+    .join('osm_users', 'organization_owner.osm_id', 'osm_users.id')
+    .select(
+      'organization_owner.organization_id',
+      'organization_owner.osm_id as id',
+      db.raw("'owner' as type"),
+      'osm_users.name'
+    )
+    .where('organization_owner.organization_id', organizationId)
+
+  // Apply search to owners sub-query
+  if (options.search) {
+    ownerQuery = ownerQuery.whereILike('osm_users.name', `%${options.search}%`)
+  }
+
+  // Get managers that are not owners
+  let managerQuery = db('organization_manager')
+    .join('osm_users', 'organization_manager.osm_id', 'osm_users.id')
+    .select(
+      'organization_manager.organization_id',
+      'organization_manager.osm_id as id',
+      db.raw("'manager' as type"),
+      'osm_users.name'
+    )
+    .where('organization_manager.organization_id', organizationId)
+    .whereNotIn(
+      'organization_manager.osm_id',
+      db('organization_owner')
+        .select('organization_owner.osm_id')
+        .where('organization_id', organizationId)
+    )
+
+  // Apply search managers sub-query
+  if (options.search) {
+    managerQuery = managerQuery.whereILike(
+      'osm_users.name',
+      `%${options.search}%`
+    )
+  }
+
+  // Unite owner and manager queries
+  let staffQuery = ownerQuery.unionAll(managerQuery)
+
+  // Apply sort
+  staffQuery = staffQuery.orderBy(sort, order)
+
+  // Execute staff query with pagination
+  return await staffQuery.paginate({
+    isLengthAware: true,
+    currentPage,
+    perPage,
+  })
+}
+
+/**
  * isPublic
  * Checks if org privacy is public
  *
@@ -414,6 +532,7 @@ module.exports = {
   getOwners,
   getManagers,
   getMembers,
+  getMembersPaginated,
   isMemberOrStaff,
   isOwner,
   isManager,
@@ -422,5 +541,6 @@ module.exports = {
   createOrgTeam,
   listMyOrganizations,
   getOrgStaff,
+  getOrgStaffPaginated,
   isPublic,
 }

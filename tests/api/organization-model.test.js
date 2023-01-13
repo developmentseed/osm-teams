@@ -218,15 +218,29 @@ test('remove managers', async (t) => {
  * Test creating a team as part of an organization
  */
 test('create an organization team', async (t) => {
-  // setup
-  const orgName = 'organization team'
-  const teamName = 'org team 1'
-  const user = 1
-  const org = await organization.create({ name: orgName }, user)
-  await organization.createOrgTeam(org.id, { name: teamName }, user)
+  await resetDb()
 
-  // tests
-  const teams = await team.list({ organizationId: org.id })
-  t.is(teams.length, 1)
-  t.is(teams[0].name, teamName)
+  // Seed data
+  const user1 = {
+    id: 1,
+  }
+  const org1 = {
+    name: 'Org 1',
+  }
+  const orgTeam1 = {
+    name: 'org team 1',
+  }
+
+  // Create org
+  const org = await organization.create(org1, user1.id)
+
+  // Create org team
+  await organization.createOrgTeam(org.id, orgTeam1, user1.id)
+
+  // Query org teams
+  const data = await team.list({ organizationId: org.id })
+
+  // Test result
+  t.is(data.length, 1)
+  t.is(data[0].name, orgTeam1.name)
 })

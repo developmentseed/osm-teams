@@ -11,6 +11,7 @@ import {
   getTeamAttributes,
   getTeamProfile,
 } from '../../../lib/profiles-api'
+import logger from '../../../lib/logger'
 
 const APP_URL = process.env.APP_URL
 export default class TeamEdit extends Component {
@@ -50,7 +51,7 @@ export default class TeamEdit extends Component {
         loading: false,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         team: null,
@@ -69,7 +70,7 @@ export default class TeamEdit extends Component {
         throw new Error('Could not delete team')
       }
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
       })
@@ -177,7 +178,7 @@ export default class TeamEdit extends Component {
                 actions.setSubmitting(false)
                 Router.push(join(APP_URL, `/teams/${team.id}`))
               } catch (e) {
-                console.error(e)
+                logger.error(e)
                 actions.setSubmitting(false)
                 // set the form errors actions.setErrors(e)
                 actions.setStatus(e.message)

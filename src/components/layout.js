@@ -30,10 +30,6 @@ export const globalStyles = css.global`
     min-width: ${theme.layout.rowMinWidth};
   }
 
-  .app-container {
-    overflow: hidden;
-  }
-
   .page-layout {
     display: grid;
     position: relative;
@@ -41,10 +37,8 @@ export const globalStyles = css.global`
     grid-template-columns: 100%;
     grid-template-areas:
       'sidebar'
-      'main'
-      'footer';
-    height: 100vh;
-    overflow: overlay;
+      'main';
+    min-height: 100vh;
   }
 
   @media screen and (min-width: ${theme.mediaRanges.small}) {
@@ -70,8 +64,13 @@ export const globalStyles = css.global`
 
   .inner.page {
     grid-area: main;
-    margin-top: calc(${theme.layout.globalSpacing} * 4);
-    margin-bottom: calc(${theme.layout.globalSpacing} * 4);
+    margin-top: calc(${theme.layout.globalSpacing} * 2);
+    margin-bottom: calc(${theme.layout.globalSpacing} * 2);
+    overflow: auto;
+  }
+
+  .inner.page section {
+    margin-bottom: calc(${theme.layout.globalSpacing} * 2);
   }
 
   .page__heading {
@@ -85,7 +84,7 @@ export const globalStyles = css.global`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    margin-bottom: ${theme.layout.globalSpacing};
+    margin-bottom: 0.5rem;
   }
 
   @media (min-width: ${theme.mediaRanges.medium}) {
@@ -95,7 +94,7 @@ export const globalStyles = css.global`
     }
     .section-actions {
       flex-direction: row;
-      align-items: center;
+      align-items: baseline;
     }
   }
 
@@ -178,17 +177,22 @@ export const globalStyles = css.global`
   }
 
   .form-control {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: stretch;
   }
 
   .form-control__vertical {
     flex-direction: column;
     align-items: flex-start;
   }
-
+  .justify-start {
+    justify-content: flex-start;
+  }
+  .justify-end {
+    justify-content: flex-end;
+  }
   .form-control :global(label) {
     font-size: 0.875rem;
     margin-bottom: 0.5rem;
@@ -198,7 +202,7 @@ export const globalStyles = css.global`
   .form-control :global(textarea) {
     min-width: 6rem;
     padding: 0.5rem 1rem 0.5rem 0.25rem;
-    margin-right: 1rem;
+    margin-right: 0.5rem;
     border: 2px solid ${theme.colors.primaryColor};
   }
 
@@ -207,6 +211,15 @@ export const globalStyles = css.global`
     height: 2.5rem;
   }
 
+  .form-control input#search {
+    margin-block: revert;
+    margin: 0;
+    padding: 0.375rem 1rem 0.375rem 0.5rem;
+  }
+
+  .form-control input#search + .button {
+    margin-left: -2px;
+  }
   .status--alert {
     font-size: 0.875rem;
     color: ${theme.colors.secondaryColor};
@@ -241,7 +254,7 @@ export const globalStyles = css.global`
 
   #feedback {
     position: fixed;
-    right: -3.5rem;
+    right: -2rem;
     bottom: 12rem;
     z-index: 1200;
     transform: rotate(-90deg);

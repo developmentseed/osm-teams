@@ -84,9 +84,14 @@ export async function getOrgTeams(id) {
  * @param {integer} id
  */
 export async function getOrgStaff(id) {
-  let res = await fetch(join(ORG_URL, `${id}`, 'staff'))
+  let res = await fetch(join(ORG_URL, `${id}`, 'staff?perPage=100'))
   if (res.status === 200) {
-    return res.json()
+    const { data } = await res.json()
+
+    return {
+      managers: data.filter((u) => u.type === 'manager'),
+      owners: data.filter((u) => u.type === 'owner'),
+    }
   }
   if (res.status === 401) {
     return { managers: [], owners: [] }

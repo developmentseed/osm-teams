@@ -13,6 +13,7 @@ const InternalOAuthError = require('passport-oauth').InternalOAuthError
 const OSMStrategy = require('passport-openstreetmap').Strategy
 
 const { serverRuntimeConfig } = require('../../next.config')
+const logger = require('../../src/lib/logger')
 
 // get an authentication token pair from openstreetmap
 function openstreetmap(req, res) {
@@ -118,7 +119,7 @@ function openstreetmap(req, res) {
             }
           })
           .catch((e) => {
-            console.error(e)
+            logger.error(e)
             return res.redirect('/')
           })
       } else {

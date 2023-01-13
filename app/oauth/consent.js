@@ -7,6 +7,7 @@ const url = require('url')
 const db = require('../../src/lib/db')
 const { serverRuntimeConfig } = require('../../next.config')
 const { path } = require('ramda')
+const logger = require('../../src/lib/logger')
 
 async function idTokenExtraParams(sub) {
   const [user] = await db('users').where('id', sub)
@@ -95,7 +96,7 @@ function postConsent() {
         })
         res.redirect(accept.redirect_to)
       } catch (e) {
-        console.error(e)
+        logger.error(e)
         next(e)
       }
     }

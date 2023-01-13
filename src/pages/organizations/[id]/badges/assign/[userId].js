@@ -7,6 +7,7 @@ import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import join from 'url-join'
 import Router from 'next/router'
+import logger from '../../../../../lib/logger'
 
 const URL = process.env.APP_URL
 
@@ -73,7 +74,7 @@ export default class NewBadgeAssignment extends Component {
         badges,
       })
     } catch (error) {
-      console.error(error)
+      logger.error(error)
       this.setState({
         error,
         loading: false,
@@ -136,7 +137,7 @@ export default class NewBadgeAssignment extends Component {
                   )
                 )
               } catch (error) {
-                console.log(error)
+                logger.error(error)
 
                 if (error.message === 'User is already assigned to badge.') {
                   toast.error(

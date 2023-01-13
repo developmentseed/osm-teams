@@ -10,7 +10,6 @@ import Card from '../../../components/card'
 import Section from '../../../components/section'
 import SectionHeader from '../../../components/section-header'
 import Button from '../../../components/button'
-import Table from '../../../components/table'
 import AddMemberForm from '../../../components/add-member-form'
 import ProfileModal from '../../../components/profile-modal'
 import theme from '../../../styles/theme'
@@ -34,6 +33,8 @@ import {
 import { getOrgStaff } from '../../../lib/org-api'
 import { toast } from 'react-toastify'
 import { RoleLabel } from '../../../components/label'
+import logger from '../../../lib/logger'
+import MembersTable from './members-table'
 
 const APP_URL = process.env.APP_URL
 const Map = dynamic(() => import('../../../components/team-map'), {
@@ -80,7 +81,7 @@ class Team extends Component {
         })
       }
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       toast.error(e)
     }
   }
@@ -91,7 +92,7 @@ class Team extends Component {
       await createTeamJoinInvitation(id)
       this.getTeamJoinLink()
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       toast.error(e)
     }
   }
@@ -107,9 +108,7 @@ class Team extends Component {
 
       let orgOwners = []
       if (team.org) {
-        // Get organization owners
-        const { owners } = await getOrgStaff(team.org.organization_id)
-        orgOwners = owners.map((owner) => parseInt(owner.id))
+        orgOwners = (await getOrgStaff(team.org.organization_id)).owners
       }
       this.setState({
         team,
@@ -119,7 +118,7 @@ class Team extends Component {
         loading: false,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         team: null,
@@ -147,7 +146,7 @@ class Team extends Component {
         modalIsOpen: true,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         team: null,
@@ -170,7 +169,7 @@ class Team extends Component {
       await joinTeam(id, osmId)
       await this.getTeam(id)
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
       })
@@ -193,7 +192,7 @@ class Team extends Component {
       await assignModerator(id, osmId)
       await this.getTeam()
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         loading: false,
@@ -207,7 +206,7 @@ class Team extends Component {
       await removeModerator(id, osmId)
       await this.getTeam()
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         loading: false,
@@ -224,7 +223,7 @@ class Team extends Component {
       }
       await this.getTeam()
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         team: null,
@@ -269,9 +268,7 @@ class Team extends Component {
     const isUserModerator =
       contains(parseInt(userId), moderators) ||
       contains(parseInt(userId), orgOwners)
-    const isMember = contains(userId, members)
-
-    const columns = [{ key: 'name' }, { key: 'id' }, { key: 'role' }]
+    const isMember = contains(Number(userId), members)
 
     let memberRows = teamMembers.members.map((member) => {
       const role = contains(parseInt(member.id), moderators)
@@ -331,9 +328,7 @@ class Team extends Component {
             <div className='section-actions'>
               <SectionHeader>Team Details</SectionHeader>
               {isUserModerator ? (
-                <Button variant='small' href={`/teams/${team.id}/edit`}>
-                  Edit
-                </Button>
+                <Button href={`/teams/${team.id}/edit`}>Edit</Button>
               ) : (
                 ''
               )}
@@ -405,7 +400,7 @@ class Team extends Component {
         </div>
         <div className='team__table'>
           {memberRows.length > 0 ? (
-            <Section>
+            <Section data-cy='team-members-section'>
               <div className='section-actions'>
                 <SectionHeader>Team Members</SectionHeader>
                 <div>
@@ -419,13 +414,11 @@ class Team extends Component {
                   )}
                 </div>
               </div>
-              <Table
+              <MembersTable
                 rows={memberRows}
-                columns={columns}
                 onRowClick={(row) => {
                   this.openProfileModal(row)
                 }}
-                showRowNumbers
               />
               <Modal
                 style={{

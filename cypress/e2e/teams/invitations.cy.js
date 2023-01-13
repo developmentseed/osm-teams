@@ -1,3 +1,8 @@
+const user1 = {
+  id: 1,
+  display_name: 'User 001',
+}
+
 const expiredInvitation = {
   uuid: '0a875c3c-ba7c-4132-b08e-427a965177f5',
   teamId: 1,
@@ -23,8 +28,19 @@ const nonexistentInvitation = {
 describe('Team invitation page', () => {
   before(() => {
     cy.task('db:reset')
-    cy.task('db:seed')
-    cy.task('db:seed:team-invitations', [
+    cy.task('db:seed:create-teams', {
+      teams: [
+        {
+          name: 'Team 1',
+        },
+        {
+          name: 'Team 2',
+        },
+      ],
+      moderatorId: user1.id,
+    })
+
+    cy.task('db:seed:create-team-invitations', [
       expiredInvitation,
       validInvitation,
       anotherValidInvitation,
@@ -60,7 +76,7 @@ describe('Team invitation page', () => {
   it('Valid invitation - user is authenticated', () => {
     cy.login({
       id: 1,
-      display_name: 'User 1',
+      display_name: 'User 001',
     })
     cy.visit(
       `/teams/${validInvitation.teamId}/invitations/${validInvitation.uuid}`

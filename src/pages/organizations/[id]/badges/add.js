@@ -7,8 +7,9 @@ import Button from '../../../../components/button'
 import Router from 'next/router'
 import { getRandomColor } from '../../../../lib/utils'
 import { toast } from 'react-toastify'
+import logger from '../../../../lib/logger'
 
-const URL = process.APP_URL
+const URL = process.env.APP_URL
 
 const apiClient = new APIClient()
 
@@ -60,7 +61,7 @@ export default class AddBadge extends Component {
         org,
       })
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       this.setState({
         error: e,
         org: null,
@@ -101,7 +102,7 @@ export default class AddBadge extends Component {
                 })
                 Router.push(join(URL, `/organizations/${orgId}`))
               } catch (error) {
-                console.log(error)
+                logger.error(error)
                 toast.error(
                   `There was an error creating badge '${name}'. Please try again later.`
                 )

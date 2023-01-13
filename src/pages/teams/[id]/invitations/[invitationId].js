@@ -21,7 +21,7 @@ export default function TeamInvitationPage({ errorCode, errorMessage }) {
       <article className='inner page'>
         <section>
           <h1>Please sign in</h1>
-          <Button onClick={() => signIn('openstreetmap')}>Sign in →</Button>
+          <Button onClick={() => signIn('osm-teams')}>Sign in →</Button>
         </section>
       </article>
     )

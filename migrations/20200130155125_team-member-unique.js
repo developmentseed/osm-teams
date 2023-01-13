@@ -1,3 +1,5 @@
+const logger = require('../src/lib/logger')
+
 /* Add a unique constraint on the member table so the same team_id and
 osm_id cannot be added more than once. */
 
@@ -13,7 +15,7 @@ exports.up = async (knex) => {
       table.unique(columns, keyName)
     )
   } catch (e) {
-    console.error(e)
+    logger.error(e)
   }
 }
 
@@ -25,6 +27,6 @@ exports.down = async (knex) => {
       table.dropUnique(columns, keyName)
     )
   } catch (e) {
-    console.error(e)
+    logger.error(e)
   }
 }

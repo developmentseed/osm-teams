@@ -43,7 +43,7 @@ export default css`
       'main'
       'footer';
     height: 100vh;
-    overflow: overlay;
+    overflow: auto;
   }
 
   .inner {

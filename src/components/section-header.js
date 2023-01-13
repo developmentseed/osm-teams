@@ -12,7 +12,8 @@ export default function SectionHeader({ children }) {
             font-family: ${theme.typography.headingFontFamily};
             font-weight: ${theme.typography.baseFontWeight};
             text-transform: uppercase;
-            letter-spacing: 0.0125rem;
+            letter-spacing: 0.75px;
+            margin-bottom: 0.5rem;
           }
         `}
       </style>

@@ -21,7 +21,7 @@ describe('Check protected routes', () => {
   protectedRoutes.forEach((testRoute) => {
     it(`Route ${testRoute} needs authentication`, () => {
       cy.visit(testRoute)
-      cy.get('body').should('contain', 'Sign in with openstreetmap')
+      cy.get('body').should('contain', 'Sign in with OSM Teams')
     })
   })
 
@@ -30,7 +30,7 @@ describe('Check protected routes', () => {
       // Authorized visit, should redirect to sign in
       cy.login({
         id: 1,
-        display_name: 'User 1',
+        display_name: 'User 001',
       })
       cy.visit(testRoute)
       cy.get('body').should('not.contain', 'Sign in')
