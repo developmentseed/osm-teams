@@ -185,7 +185,7 @@ export const globalStyles = css.global`
     margin-bottom: 0.5rem;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: stretch;
   }
 
   .form-control__vertical {
@@ -217,6 +217,7 @@ export const globalStyles = css.global`
   }
 
   .form-control input#search {
+    margin-block: revert;
     margin: 0;
     padding: 0.375rem 1rem 0.375rem 0.5rem;
   }
