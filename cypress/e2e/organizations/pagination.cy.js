@@ -80,6 +80,12 @@ describe('Organization page', () => {
       cy.contains('Showing 1-3 of 3')
     })
 
+    // Sort by user id
+    cy.get('[data-cy=org-staff-table-head-column-type]').click()
+    cy.get('[data-cy=org-staff-table]')
+      .find('tbody tr:nth-child(3) td:nth-child(1)')
+      .contains('User 003')
+
     // Perform search by username
     cy.get('[data-cy=org-staff-table-search-input]').type('2')
     cy.get('[data-cy=org-staff-table-search-submit]').click()

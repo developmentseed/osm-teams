@@ -41,15 +41,19 @@ handler.get(
       page: Yup.number().min(0).integer(),
       perPage: Yup.number().min(1).max(100).integer(),
       search: Yup.string(),
+      sort: Yup.mixed().oneOf(['id', 'name', 'type']),
+      order: Yup.mixed().oneOf(['asc', 'desc']),
     }).required(),
   }),
   async function (req, res) {
-    const { orgId, page, perPage, search } = req.query
+    const { orgId, page, perPage, search, sort, order } = req.query
 
     const staff = await Organization.getOrgStaffPaginated(orgId, {
       page,
       perPage,
       search,
+      sort,
+      order,
     })
 
     return res.send(staff)

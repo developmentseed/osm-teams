@@ -41,6 +41,7 @@ handler.get(
     query: Yup.object({
       orgId: Yup.number().required().positive().integer(),
       page: Yup.number().min(0).integer(),
+      perPage: Yup.number().min(1).max(100).integer(),
       search: Yup.string(),
       sort: Yup.mixed().oneOf(['name', 'id']),
       order: Yup.mixed().oneOf(['asc', 'desc']),
