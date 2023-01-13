@@ -97,7 +97,7 @@ describe('Teams page', () => {
     )
 
     // Perform sort by username
-    cy.get('[data-cy=table-head-column-name]').click()
+    cy.get('[data-cy=team-members-table-head-column-name]').click()
     cy.get('[data-cy=team-members-table]').contains('User 025')
     cy.get('[data-cy=team-members-table]').contains('User 016')
 

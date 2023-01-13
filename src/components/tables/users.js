@@ -9,6 +9,10 @@ import SearchInput from './search-input'
 function UsersTable({ type, orgId, onRowClick, isSearchable }) {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState(null)
+  const [sort, setSort] = useState({
+    key: 'name',
+    direction: 'asc',
+  })
 
   let apiBasePath
   let emptyMessage
@@ -17,21 +21,26 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
   const querystring = qs.stringify({
     search,
     page,
+    sort: sort.key,
+    order: sort.direction,
   })
 
   switch (type) {
     case 'org-members':
       apiBasePath = `/organizations/${orgId}/members`
       emptyMessage = 'No members yet.'
-      columns = [{ key: 'name' }, { key: 'id', label: 'OSM ID' }]
+      columns = [
+        { key: 'name', sortable: true },
+        { key: 'id', label: 'OSM ID', sortable: true },
+      ]
       break
     case 'org-staff':
       apiBasePath = `/organizations/${orgId}/staff`
       emptyMessage = 'No staff found.'
       columns = [
-        { key: 'name' },
-        { key: 'id', label: 'OSM ID' },
-        { key: 'type' },
+        { key: 'name', sortable: true },
+        { key: 'id', label: 'OSM ID', sortable: true },
+        { key: 'type', sortable: true },
       ]
       break
     default:
@@ -61,6 +70,8 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
         />
       )}
       <Table
+        sort={sort}
+        setSort={setSort}
         data-cy={`${type}-table`}
         rows={data}
         columns={columns}

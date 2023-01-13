@@ -279,6 +279,9 @@ async function getMembers(organizationId, page) {
  */
 async function getMembersPaginated(organizationId, options) {
   const currentPage = options?.page || 1
+  const sort = options?.sort || 'name'
+  const order = options?.order || 'asc'
+  const perPage = options?.perPage || DEFAULT_PAGE_SIZE
 
   // Sub-query for all org teams
   const allOrgTeamsQuery = db('organization_team')
@@ -291,18 +294,20 @@ async function getMembersPaginated(organizationId, options) {
     .select('member.osm_id as id', 'osm_users.name')
     .where('member.team_id', 'in', allOrgTeamsQuery)
     .groupBy('member.osm_id', 'osm_users.name')
-    .orderBy('member.osm_id')
 
   // Apply search
   if (options.search) {
     query = query.whereILike('osm_users.name', `%${options.search}%`)
   }
 
+  // Apply sort
+  query = query.orderBy(sort, order)
+
   // Add pagination
   query = query.paginate({
     isLengthAware: true,
     currentPage,
-    perPage: DEFAULT_PAGE_SIZE,
+    perPage,
   })
 
   return query
@@ -442,12 +447,17 @@ async function getOrgStaff(options) {
  * @param {Object} options.osmId - filter by osm id
  */
 async function getOrgStaffPaginated(organizationId, options = {}) {
+  const currentPage = options?.page || 1
+  const sort = options?.sort || 'name'
+  const order = options?.order || 'asc'
+  const perPage = options?.perPage || DEFAULT_PAGE_SIZE
+
   // Get owners
   let ownerQuery = db('organization_owner')
     .join('osm_users', 'organization_owner.osm_id', 'osm_users.id')
     .select(
       'organization_owner.organization_id',
-      'organization_owner.osm_id',
+      'organization_owner.osm_id as id',
       db.raw("'owner' as type"),
       'osm_users.name'
     )
@@ -463,7 +473,7 @@ async function getOrgStaffPaginated(organizationId, options = {}) {
     .join('osm_users', 'organization_manager.osm_id', 'osm_users.id')
     .select(
       'organization_manager.organization_id',
-      'organization_manager.osm_id',
+      'organization_manager.osm_id as id',
       db.raw("'manager' as type"),
       'osm_users.name'
     )
@@ -486,11 +496,14 @@ async function getOrgStaffPaginated(organizationId, options = {}) {
   // Unite owner and manager queries
   let staffQuery = ownerQuery.unionAll(managerQuery)
 
+  // Apply sort
+  staffQuery = staffQuery.orderBy(sort, order)
+
   // Execute staff query with pagination
   return await staffQuery.paginate({
     isLengthAware: true,
-    currentPage: options.page || 1,
-    perPage: options.perPage || DEFAULT_PAGE_SIZE,
+    currentPage,
+    perPage,
   })
 }
 

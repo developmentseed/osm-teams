@@ -32,7 +32,7 @@ describe('Teams page', () => {
     cy.get('[data-cy=teams-table-pagination]').contains('Showing 1-10 of 35')
 
     // Sort by team name
-    cy.get('[data-cy=table-head-column-name]').click()
+    cy.get('[data-cy=teams-table-head-column-name]').click()
     cy.get('[data-cy=teams-table]')
       .find('tbody tr:nth-child(1) td:nth-child(2)')
       .contains('Team 035')
