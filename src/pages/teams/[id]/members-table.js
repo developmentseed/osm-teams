@@ -1,11 +1,14 @@
 import T from 'prop-types'
 import Table from '../../../components/tables/table'
 import { useState } from 'react'
+import join from 'url-join'
+
 import Pagination from '../../../components/pagination'
 import { serverRuntimeConfig } from '../../../../next.config.js'
 import * as R from 'ramda'
 import SearchInput from '../../../components/tables/search-input'
 import Button from '../../../components/button'
+const URL = process.env.APP_URL
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
 function MembersTable({ rows: allRows, onRowClick }) {
@@ -21,7 +24,7 @@ function MembersTable({ rows: allRows, onRowClick }) {
     { key: 'id', sortable: true },
     { key: 'role', sortable: true },
     {
-      key: '3rd party',
+      key: 'External Profiles',
       render: ({ name }) => (
         <>
           <Button
@@ -29,18 +32,43 @@ function MembersTable({ rows: allRows, onRowClick }) {
               e.stopPropagation()
               window.open(
                 `https://www.openstreetmap.org/user/${name}`,
-                '_blank'
+                '_blank',
+                'noreferrer'
               )
             }}
+            flat
+            size='small'
+            className='unstyled small'
+            title='View profile on OSM'
           >
-            OSM Profile
+            <img
+              src={`${join(URL, `/static/osm_logo.png`)}`}
+              alt='OSM Logo'
+              width='16'
+              height='16'
+            />
+            OSM
           </Button>
           <Button
             onClick={(e) => {
               e.stopPropagation()
-              window.open(`https://hdyc.neis-one.org/?${name}`, '_blank')
+              window.open(
+                `https://hdyc.neis-one.org/?${name}`,
+                '_blank',
+                'noreferrer'
+              )
             }}
+            flat
+            size='small'
+            className='unstyled small'
+            title='View profile on HDYC'
           >
+            <img
+              src={`${join(URL, `/static/neis-one-logo.png`)}`}
+              alt='How Do You Contribute Logo'
+              width='16'
+              height='16'
+            />
             HDYC
           </Button>
           <Button
@@ -48,11 +76,22 @@ function MembersTable({ rows: allRows, onRowClick }) {
               e.stopPropagation()
               window.open(
                 `https://osmcha.org/?filters={"users":[{"label":"${name}","value":"${name}"}]}`,
-                '_blank'
+                '_blank',
+                'noreferrer'
               )
             }}
+            flat
+            size='small'
+            className='unstyled small'
+            title='View profile on OSMCha'
           >
-            OSM Profile
+            <img
+              src={`${join(URL, `/static/icon-osmcha-logo.svg`)}`}
+              alt='OSMCha Logo'
+              width='16'
+              height='16'
+            />
+            OSMCha
           </Button>
         </>
       ),
