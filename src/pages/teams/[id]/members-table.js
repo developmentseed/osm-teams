@@ -1,14 +1,12 @@
 import T from 'prop-types'
 import Table from '../../../components/tables/table'
 import { useState } from 'react'
-import join from 'url-join'
 
 import Pagination from '../../../components/pagination'
 import { serverRuntimeConfig } from '../../../../next.config.js'
 import * as R from 'ramda'
 import SearchInput from '../../../components/tables/search-input'
-import Button from '../../../components/button'
-const URL = process.env.APP_URL
+import ExternalProfileButton from '../../../components/external-profile-button'
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
 function MembersTable({ rows: allRows, onRowClick }) {
@@ -27,72 +25,9 @@ function MembersTable({ rows: allRows, onRowClick }) {
       key: 'External Profiles',
       render: ({ name }) => (
         <>
-          <Button
-            onClick={(e) => {
-              e.stopPropagation()
-              window.open(
-                `https://www.openstreetmap.org/user/${name}`,
-                '_blank',
-                'noreferrer'
-              )
-            }}
-            flat
-            size='small'
-            className='unstyled small'
-            title='View profile on OSM'
-          >
-            <img
-              src={`${join(URL, `/static/osm_logo.png`)}`}
-              alt='OSM Logo'
-              width='16'
-              height='16'
-            />
-            OSM
-          </Button>
-          <Button
-            onClick={(e) => {
-              e.stopPropagation()
-              window.open(
-                `https://hdyc.neis-one.org/?${name}`,
-                '_blank',
-                'noreferrer'
-              )
-            }}
-            flat
-            size='small'
-            className='unstyled small'
-            title='View profile on HDYC'
-          >
-            <img
-              src={`${join(URL, `/static/neis-one-logo.png`)}`}
-              alt='How Do You Contribute Logo'
-              width='16'
-              height='16'
-            />
-            HDYC
-          </Button>
-          <Button
-            onClick={(e) => {
-              e.stopPropagation()
-              window.open(
-                `https://osmcha.org/?filters={"users":[{"label":"${name}","value":"${name}"}]}`,
-                '_blank',
-                'noreferrer'
-              )
-            }}
-            flat
-            size='small'
-            className='unstyled small'
-            title='View profile on OSMCha'
-          >
-            <img
-              src={`${join(URL, `/static/icon-osmcha-logo.svg`)}`}
-              alt='OSMCha Logo'
-              width='16'
-              height='16'
-            />
-            OSMCha
-          </Button>
+          <ExternalProfileButton type='osm-profile' userId={name} />
+          <ExternalProfileButton type='hdyc' userId={name} />
+          <ExternalProfileButton type='osmcha' userId={name} />
         </>
       ),
     },
