@@ -33,10 +33,20 @@ export function createBaseHandler() {
     attachParams: true,
     onError: (err, req, res) => {
       logger.error(err)
+
       // Handle Boom errors
       if (err.isBoom) {
         const { statusCode, payload } = err.output
         return res.status(statusCode).json(payload)
+      }
+
+      // Handle Yup validation errors
+      if (err.name === 'ValidationError') {
+        return res.status(400).json({
+          statusCode: 400,
+          error: 'Validation Error',
+          message: err.message,
+        })
       }
 
       // Generic error
