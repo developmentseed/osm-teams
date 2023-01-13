@@ -63,6 +63,7 @@ function TeamsTable({ type, orgId }) {
           setPage(1)
           setSearch(search)
         }}
+        placeholder='Search by team name'
       />
       <Table
         data-cy={`${type}-table`}
