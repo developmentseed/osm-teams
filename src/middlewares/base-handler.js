@@ -48,6 +48,11 @@ export function createBaseHandler() {
       })
     },
     onNoMatch: (req, res) => {
+      if (req.method === 'OPTIONS') {
+        logger.info('OPTIONS request')
+        res.send(200).end()
+      }
+
       res.status(404).json({
         statusCode: 404,
         error: 'Not Found',
