@@ -58,11 +58,6 @@ export function createBaseHandler() {
 
   // Add session to request
   baseHandler.use(async (req, res, next) => {
-    if (req.method === 'OPTIONS') {
-      res.status(200).end()
-      return
-    }
-
     /** Handle authorization using either Bearer token auth or
      * using the next-auth session
      */

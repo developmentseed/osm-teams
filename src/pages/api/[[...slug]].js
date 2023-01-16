@@ -14,6 +14,10 @@ handler.get('api/', (_, res) => {
   res.status(200).json({ version: packageJson.version })
 })
 
+handler.options('api/*', (_, res) => {
+  res.status(200).end()
+})
+
 manageRouter(handler)
 
 export default handler
