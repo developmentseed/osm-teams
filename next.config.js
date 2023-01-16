@@ -3,6 +3,27 @@ const vercelUrl =
   `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
 
 module.exports = {
+  async headers() {
+    return [
+      {
+        // matching all API routes
+        // link: https://vercel.com/guides/how-to-enable-cors#enabling-cors-in-a-next.js-app
+        source: '/api/:path*',
+        headers: [
+          { key: 'Access-Control-Allow-Credentials', value: 'true' },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: '*',
+          },
+        ],
+      },
+    ]
+  },
   serverRuntimeConfig: {
     DEFAULT_PAGE_SIZE: 10,
     NODE_ENV: process.env.NODE_ENV || 'development',
