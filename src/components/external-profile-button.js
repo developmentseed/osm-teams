@@ -1,4 +1,3 @@
-import Button from './button'
 import join from 'url-join'
 const URL = process.env.APP_URL
 
@@ -36,14 +35,15 @@ const ExternalProfileButton = ({ type, userId }) => {
   }
 
   return (
-    <Button
+    <a
       onClick={(e) => {
         e.stopPropagation()
-        window.open(targetLink, '_blank', 'noreferrer')
       }}
+      href={targetLink}
+      rel='noopener noreferrer'
+      target='_blank'
       flat
-      size='small'
-      className='unstyled small'
+      className='button unstyled small'
       title={title}
     >
       <img
@@ -53,7 +53,7 @@ const ExternalProfileButton = ({ type, userId }) => {
         height='16'
       />
       {label}
-    </Button>
+    </a>
   )
 }
 
