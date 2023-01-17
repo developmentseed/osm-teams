@@ -15,7 +15,7 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
     key: 'name',
     direction: 'asc',
   })
-
+  const MAX_BADGES_COLUMN = 3
   let apiBasePath
   let emptyMessage
   let columns
@@ -39,11 +39,16 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
           render: ({ badges }) => (
             <>
               {badges?.length > 0 &&
-                badges.map((b) => (
-                  <Badge color={b.color} key={b.id}>
+                badges.slice(0, MAX_BADGES_COLUMN).map((b) => (
+                  <Badge dot color={b.color} key={b.id}>
                     {b.name}
                   </Badge>
                 ))}
+              {badges?.length > MAX_BADGES_COLUMN && (
+                <Badge color='#222'>
+                  +{badges.slice(MAX_BADGES_COLUMN).length}
+                </Badge>
+              )}
             </>
           ),
         },
