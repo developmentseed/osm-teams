@@ -28,10 +28,11 @@ const BADGES_COUNT = 30
 const org1Badges = generateSequenceArray(BADGES_COUNT, 1).map((i) => ({
   id: i,
   name: `Badge ${addZeroPadding(i, 3)}`,
-  color: `rgba(255,0,0,${i / BADGES_COUNT})`,
+  color: `rgba(255,0,0,${1 - i / BADGES_COUNT})`,
 }))
 
-const [org1Badge1, org1Badge2, org1Badge3] = org1Badges
+const [org1Badge1, org1Badge2, org1Badge3, org1Badge4, org1Badge5, org1Badge6] =
+  org1Badges
 
 describe('Organization page', () => {
   before(() => {
@@ -59,21 +60,29 @@ describe('Organization page', () => {
       badges: org1Badges,
     })
 
-    // Assign badge 1 to the first five users
+    // Assign badges to overlapping groups of users
     cy.task('db:seed:assign-badge-to-users', {
       badgeId: org1Badge1.id,
       users: org1Team1Members.slice(0, 4),
     })
-
-    // Assign badge 2 to five users, starting at user 3
     cy.task('db:seed:assign-badge-to-users', {
       badgeId: org1Badge2.id,
       users: org1Team1Members.slice(2, 7),
     })
-
-    // Assign badge 3 to five users, starting at user 5
     cy.task('db:seed:assign-badge-to-users', {
       badgeId: org1Badge3.id,
+      users: org1Team1Members.slice(2, 7),
+    })
+    cy.task('db:seed:assign-badge-to-users', {
+      badgeId: org1Badge4.id,
+      users: org1Team1Members.slice(2, 7),
+    })
+    cy.task('db:seed:assign-badge-to-users', {
+      badgeId: org1Badge5.id,
+      users: org1Team1Members.slice(4, 9),
+    })
+    cy.task('db:seed:assign-badge-to-users', {
+      badgeId: org1Badge6.id,
       users: org1Team1Members.slice(4, 9),
     })
   })
@@ -91,6 +100,6 @@ describe('Organization page', () => {
       .contains('Badge 003')
     cy.get('[data-cy=org-members-table]')
       .find('tbody tr:nth-child(10) td:nth-child(3)')
-      .contains('Badge 003')
+      .contains('Badge 005')
   })
 })
