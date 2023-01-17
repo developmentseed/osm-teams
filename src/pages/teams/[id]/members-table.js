@@ -1,10 +1,12 @@
 import T from 'prop-types'
 import Table from '../../../components/tables/table'
 import { useState } from 'react'
+
 import Pagination from '../../../components/pagination'
 import { serverRuntimeConfig } from '../../../../next.config.js'
 import * as R from 'ramda'
 import SearchInput from '../../../components/tables/search-input'
+import ExternalProfileButton from '../../../components/external-profile-button'
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
 function MembersTable({ rows: allRows, onRowClick }) {
@@ -19,6 +21,16 @@ function MembersTable({ rows: allRows, onRowClick }) {
     { key: 'name', sortable: true },
     { key: 'id', sortable: true },
     { key: 'role', sortable: true },
+    {
+      key: 'External Profiles',
+      render: ({ name }) => (
+        <>
+          <ExternalProfileButton type='osm-profile' userId={name} />
+          <ExternalProfileButton type='hdyc' userId={name} />
+          <ExternalProfileButton type='osmcha' userId={name} />
+        </>
+      ),
+    },
   ]
 
   let rows = R.sort(

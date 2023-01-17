@@ -310,7 +310,33 @@ async function getMembersPaginated(organizationId, options) {
     perPage,
   })
 
-  return query
+  // Execute query
+  const membersPage = await query
+
+  // Query badges assigned to the users in the list
+  const userBadges = await db('user_badges')
+    .select(
+      'user_badges.user_id',
+      'user_badges.badge_id',
+      'organization_badge.name',
+      'organization_badge.color'
+    )
+    .join('organization_badge', 'user_badges.badge_id', 'organization_badge.id')
+    .whereIn(
+      'user_badges.user_id',
+      membersPage.data.map((u) => u.id)
+    )
+    .whereRaw(
+      `user_badges.valid_until IS NULL OR user_badges.valid_until > NOW()`
+    )
+
+  return {
+    ...membersPage,
+    data: membersPage.data.map((m) => ({
+      ...m,
+      badges: userBadges.filter((b) => b.user_id === m.id),
+    })),
+  }
 }
 
 /**

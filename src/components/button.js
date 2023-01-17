@@ -8,8 +8,11 @@ const URL = process.env.APP_URL
 
 const ButtonStyles = css.global`
   .button {
-    display: inline-block;
+    display: inline-flex;
     text-align: center;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
     white-space: nowrap;
     vertical-align: middle;
     line-height: 1.5rem;
@@ -38,11 +41,27 @@ const ButtonStyles = css.global`
     box-shadow: 0 0;
   }
 
+  /* Button variations
+   ========================================================================== */
+
   .button.primary {
     color: #ffffff;
     background: ${theme.colors.primaryColor};
     border: none;
     box-shadow: 2px 2px #ffffff, 4px 4px ${theme.colors.primaryColor};
+  }
+
+  .borderless {
+    border: none;
+    box-shadow: none;
+  }
+  .transparent {
+    background: transparent;
+  }
+  .unstyled {
+    background: transparent;
+    border: none;
+    box-shadow: none;
   }
 
   /* Button size modifiers
