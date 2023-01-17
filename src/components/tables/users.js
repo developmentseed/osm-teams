@@ -1,5 +1,6 @@
 import T from 'prop-types'
 import Table from './table'
+import Badge from '../badge'
 import { useFetchList } from '../../hooks/use-fetch-list'
 import { useState } from 'react'
 import Pagination from '../pagination'
@@ -38,7 +39,11 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
           render: ({ badges }) => (
             <>
               {badges?.length > 0 &&
-                badges.map((b) => <div key={b.id}>{b.name}</div>)}
+                badges.map((b) => (
+                  <Badge color={b.color} key={b.id}>
+                    {b.name}
+                  </Badge>
+                ))}
             </>
           ),
         },
