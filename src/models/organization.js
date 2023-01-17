@@ -318,7 +318,8 @@ async function getMembersPaginated(organizationId, options) {
     .select(
       'user_badges.user_id',
       'user_badges.badge_id',
-      'organization_badge.name'
+      'organization_badge.name',
+      'organization_badge.color'
     )
     .join('organization_badge', 'user_badges.badge_id', 'organization_badge.id')
     .whereIn(
