@@ -7,6 +7,9 @@ import { serverRuntimeConfig } from '../../../../next.config.js'
 import * as R from 'ramda'
 import SearchInput from '../../../components/tables/search-input'
 import ExternalProfileButton from '../../../components/external-profile-button'
+import Badge from '../../../components/badge'
+import { makeTitleCase } from '../../../../app/lib/utils'
+import theme from '../../../styles/theme'
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
 function MembersTable({ rows: allRows, onRowClick }) {
@@ -17,10 +20,27 @@ function MembersTable({ rows: allRows, onRowClick }) {
     direction: 'asc',
   })
 
+  const roleBgColor = {
+    member: theme.colors.primaryColor,
+    moderator: theme.colors.secondaryColor,
+    manager: theme.colors.infoColor,
+    owner: theme.colors.secondaryColor,
+    undefined: theme.colors.primaryDark,
+  }
+
   const columns = [
     { key: 'name', sortable: true },
     { key: 'id', sortable: true },
-    { key: 'role', sortable: true },
+    {
+      key: 'role',
+      label: 'role',
+      sortable: true,
+      render: ({ role }) => (
+        <Badge color={roleBgColor[role.toLowerCase()]}>
+          {makeTitleCase(role)}
+        </Badge>
+      ),
+    },
     {
       key: 'External Profiles',
       render: ({ name }) => (
