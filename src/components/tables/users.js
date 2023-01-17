@@ -34,6 +34,15 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
         { key: 'name', sortable: true },
         { key: 'id', label: 'OSM ID', sortable: true },
         {
+          key: 'badges',
+          render: ({ badges }) => (
+            <>
+              {badges?.length > 0 &&
+                badges.map((b) => <div key={b.id}>{b.name}</div>)}
+            </>
+          ),
+        },
+        {
           key: 'External Profiles',
           render: ({ name }) => (
             <>

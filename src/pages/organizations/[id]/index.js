@@ -180,7 +180,10 @@ class Organization extends Component {
 
   renderBadges() {
     const { id: orgId } = this.props
-    const columns = [{ key: 'name' }, { key: 'color' }]
+    const columns = [
+      { key: 'name' },
+      { key: 'color', render: ({ color }) => <SvgSquare color={color} /> },
+    ]
 
     // Do not render section if badges list cannot be fetched. This might happen
     // on network error but also when the user doesn't have privileges.
@@ -204,12 +207,7 @@ class Organization extends Component {
         {this.state.badges && (
           <Table
             data-cy='badges-table'
-            rows={(this.state.badges || []).map((row) => {
-              return {
-                ...row,
-                color: () => <SvgSquare color={row.color} />,
-              }
-            })}
+            rows={this.state.badges || []}
             columns={columns}
             onRowClick={({ id: badgeId }) =>
               Router.push(
@@ -358,7 +356,7 @@ class Organization extends Component {
         {isStaff ? (
           <div className='team__table'>
             <div className='section-actions'>
-              <SectionHeader>Staff Members </SectionHeader>
+              <SectionHeader>Staff Members</SectionHeader>
               {isOwner && (
                 <AddMemberForm
                   onSubmit={async ({ osmId }) => {
