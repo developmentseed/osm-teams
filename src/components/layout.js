@@ -191,6 +191,9 @@ export const globalStyles = css.global`
     flex-direction: column;
     align-items: flex-start;
   }
+  .form-control__vertical label {
+    font-weight: 600;
+  }
   .justify-start {
     justify-content: flex-start;
   }
@@ -256,19 +259,27 @@ export const globalStyles = css.global`
     max-width: 100%;
   }
 
+  // FEEDBACK BUTTON
   #feedback {
-    position: fixed;
-    right: -2rem;
-    bottom: 12rem;
-    z-index: 1200;
-    transform: rotate(-90deg);
-    background: ${theme.colors.secondaryColor};
-    color: white;
-    overflow: hidden;
+    display: none;
   }
-  #feedback:hover {
-    opacity: 1;
-    background: #e04d2d;
+  @media screen and (min-width: ${theme.mediaRanges.small}) {
+    #feedback {
+      display: inline-flex;
+      position: fixed;
+      right: -2rem;
+      bottom: 6rem;
+      z-index: 1200;
+      transform: rotate(-90deg);
+      background: ${theme.colors.secondaryColor};
+      color: white;
+      overflow: hidden;
+      box-shadow: none;
+    }
+    #feedback:hover {
+      opacity: 1;
+      background: #e04d2d;
+    }
   }
 `
 function Layout(props) {
