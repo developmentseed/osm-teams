@@ -172,7 +172,7 @@ export default function EditTeamForm({
               <div className='form-control form-control__vertical'>
                 <label htmlFor='organization'>Add to Organization</label>
                 <Field as='select' name='organization'>
-                  <option value=''>No organization</option>
+                  <option value=''>Select organization</option>
                   {uniqueOrgs.map(({ organization_id, name }) => {
                     return (
                       <option key={organization_id} value={organization_id}>
