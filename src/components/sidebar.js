@@ -89,6 +89,7 @@ const sidebarStyles = css.global`
   .global-menu__link.login {
     text-align: center;
     background: white;
+    box-shadow: none;
   }
   .global-menu__link:active {
     background-color: rgba(244, 244, 244, 0.1);
@@ -158,7 +159,7 @@ const sidebarStyles = css.global`
     }
 
     .global-menu__link.login {
-      transform: rotate(-90deg) translateX(2rem);
+      transform: rotate(-90deg) translateX(1rem);
     }
 
     .global-menu {
@@ -201,7 +202,6 @@ const sidebarStyles = css.global`
     }
     .global-menu__link.login {
       transform: none;
-      margin-bottom: 2rem;
     }
   }
 `
