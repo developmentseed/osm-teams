@@ -193,7 +193,7 @@ class Organization extends Component {
             <SectionHeader>Badges</SectionHeader>
             <div>
               <Button
-                variant='primary small'
+                variant='primary'
                 onClick={() =>
                   Router.push(join(URL, `/organizations/${orgId}/badges/add`))
                 }
@@ -330,10 +330,7 @@ class Organization extends Component {
             <div className='section-actions'>
               <SectionHeader>Org Details</SectionHeader>
               {isOwner ? (
-                <Button
-                  variant='small'
-                  href={`/organizations/${org.data.id}/edit`}
-                >
+                <Button href={`/organizations/${org.data.id}/edit`}>
                   Edit
                 </Button>
               ) : (
