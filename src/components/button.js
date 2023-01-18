@@ -12,7 +12,6 @@ const ButtonStyles = css.global`
     text-align: center;
     justify-content: center;
     align-items: center;
-    gap: 0.25rem;
     white-space: nowrap;
     vertical-align: middle;
     line-height: 1.5rem;
@@ -193,6 +192,7 @@ export default function Button({
           .button {
             min-width: 1.75rem;
             min-height: 1.75rem;
+            gap: ${useIcon && '0.25rem'};
           }
           .button::after {
             content: '';
@@ -230,6 +230,7 @@ export default function Button({
           .button {
             min-width: 1.75rem;
             min-height: 1.75rem;
+            gap: ${useIcon && '0.25rem'};
           }
           .button::after {
             content: '';
@@ -265,6 +266,7 @@ export default function Button({
         .button {
           min-width: 1.75rem;
           min-height: 1.75rem;
+          gap: ${useIcon && '0.25rem'};
         }
         .button::after {
           content: '';

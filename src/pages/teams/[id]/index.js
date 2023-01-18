@@ -6,7 +6,6 @@ import dynamic from 'next/dynamic'
 import { getSession } from 'next-auth/react'
 import { withRouter } from 'next/router'
 
-import Card from '../../../components/card'
 import Section from '../../../components/section'
 import SectionHeader from '../../../components/section-header'
 import Button from '../../../components/button'
@@ -317,7 +316,7 @@ class Team extends Component {
           )}
         </div>
         <div className='team__details'>
-          <Card>
+          <Section>
             <div className='section-actions'>
               <SectionHeader>Team Details</SectionHeader>
               {isUserModerator ? (
@@ -389,7 +388,7 @@ class Team extends Component {
             ) : (
               ''
             )}
-          </Card>
+          </Section>
         </div>
         <div className='team__table'>
           {memberRows.length > 0 ? (
@@ -445,6 +444,7 @@ class Team extends Component {
               display: grid;
               grid-template-columns: repeat(12, 1fr);
               grid-gap: ${theme.layout.globalSpacing};
+              align-content: baseline;
             }
 
             .page__heading {
@@ -453,7 +453,6 @@ class Team extends Component {
 
             .team__details {
               grid-column: 1 / span 12;
-              margin-bottom: 4rem;
             }
 
             .team__editing_policy {
@@ -461,35 +460,19 @@ class Team extends Component {
               display: block;
             }
 
-            @media (min-width: ${theme.mediaRanges.medium}) {
-              .team__details {
-                grid-column: 1 / span 6;
-              }
-            }
-
             dl {
-              line-height: calc(${theme.layout.globalSpacing} * 2);
-              display: flex;
-              flex-flow: row wrap;
-              margin-bottom: 2rem;
+              display: grid;
+              grid-template-columns: 12rem 1fr;
+              gap: 0.25rem 1rem;
             }
 
             dt {
               font-family: ${theme.typography.headingFontFamily};
               text-transform: uppercase;
-              flex-basis: 50%;
-              margin-right: ${theme.layout.globalSpacing};
-            }
-
-            dd {
-              margin: 0;
-              flex-basis: 40%;
-              flex-grow: 1;
             }
 
             .team__table {
               grid-column: 1 / span 12;
-              padding-bottom: 2rem;
             }
           `}
         </style>

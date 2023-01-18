@@ -71,10 +71,14 @@ export const globalStyles = css.global`
 
   .inner.page section {
     margin-bottom: calc(${theme.layout.globalSpacing} * 2);
+    background: white;
+    padding: 2rem;
+    border: 2px solid ${theme.colors.primaryColor};
   }
 
   .page__heading {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: ${theme.layout.globalSpacing};
@@ -84,6 +88,7 @@ export const globalStyles = css.global`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    align-items: baseline;
     margin-bottom: 0.5rem;
   }
 
@@ -94,7 +99,6 @@ export const globalStyles = css.global`
     }
     .section-actions {
       flex-direction: row;
-      align-items: baseline;
     }
   }
 

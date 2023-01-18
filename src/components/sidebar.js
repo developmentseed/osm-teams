@@ -140,7 +140,7 @@ const sidebarStyles = css.global`
     }
 
     .page__headline {
-      margin: 2rem 0;
+      margin: 2rem 1rem;
     }
 
     .page__sidebar nav {

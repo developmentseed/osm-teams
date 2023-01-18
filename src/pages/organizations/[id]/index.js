@@ -9,7 +9,6 @@ import {
   getOrgStaff,
 } from '../../../lib/org-api'
 import { getUserOrgProfile } from '../../../lib/profiles-api'
-import Card from '../../../components/card'
 import Section from '../../../components/section'
 import SectionHeader from '../../../components/section-header'
 import Table from '../../../components/tables/table'
@@ -203,19 +202,20 @@ class Organization extends Component {
               </Button>
             </div>
           </div>
+
+          {this.state.badges && (
+            <Table
+              data-cy='badges-table'
+              rows={this.state.badges || []}
+              columns={columns}
+              onRowClick={({ id: badgeId }) =>
+                Router.push(
+                  join(URL, `/organizations/${orgId}/badges/${badgeId}`)
+                )
+              }
+            />
+          )}
         </Section>
-        {this.state.badges && (
-          <Table
-            data-cy='badges-table'
-            rows={this.state.badges || []}
-            columns={columns}
-            onRowClick={({ id: badgeId }) =>
-              Router.push(
-                join(URL, `/organizations/${orgId}/badges/${badgeId}`)
-              )
-            }
-          />
-        )}
       </SectionWrapper>
     ) : null
   }
@@ -326,7 +326,7 @@ class Organization extends Component {
           <h1>{org.data.name}</h1>
         </div>
         <div className='team__details'>
-          <Card>
+          <Section>
             <div className='section-actions'>
               <SectionHeader>Org Details</SectionHeader>
               {isOwner ? (
@@ -344,35 +344,37 @@ class Organization extends Component {
               <dt>Bio: </dt>
               <dd>{org.data.description}</dd>
             </dl>
-          </Card>
+          </Section>
         </div>
         <div className='team__table'>
           <Section>
             <SectionHeader>Teams</SectionHeader>
+            <TeamsTable type='org-teams' orgId={org.data.id} />
           </Section>
-          <TeamsTable type='org-teams' orgId={org.data.id} />
         </div>
 
         {isStaff ? (
           <div className='team__table'>
-            <div className='section-actions'>
-              <SectionHeader>Staff Members</SectionHeader>
-              {isOwner && (
-                <AddMemberForm
-                  onSubmit={async ({ osmId }) => {
-                    await addManager(org.data.id, osmId)
-                    return this.getOrg()
-                  }}
-                />
-              )}
-            </div>
+            <Section>
+              <div className='section-actions'>
+                <SectionHeader>Staff Members</SectionHeader>
+                {isOwner && (
+                  <AddMemberForm
+                    onSubmit={async ({ osmId }) => {
+                      await addManager(org.data.id, osmId)
+                      return this.getOrg()
+                    }}
+                  />
+                )}
+              </div>
 
-            <UsersTable
-              isSearchable
-              type='org-staff'
-              orgId={org.data.id}
-              onRowClick={(row) => this.openProfileModal(row)}
-            />
+              <UsersTable
+                isSearchable
+                type='org-staff'
+                orgId={org.data.id}
+                onRowClick={(row) => this.openProfileModal(row)}
+              />
+            </Section>
           </div>
         ) : (
           <div />
@@ -421,6 +423,7 @@ class Organization extends Component {
               display: grid;
               grid-template-columns: repeat(12, 1fr);
               grid-gap: ${theme.layout.globalSpacing};
+              align-content: baseline;
             }
 
             .page__heading {
@@ -429,7 +432,6 @@ class Organization extends Component {
 
             .team__details {
               grid-column: 1 / span 12;
-              margin-bottom: 4rem;
             }
 
             .team__editing_policy {
@@ -437,30 +439,15 @@ class Organization extends Component {
               display: block;
             }
 
-            @media (min-width: ${theme.mediaRanges.medium}) {
-              .team__details {
-                grid-column: 1 / span 6;
-              }
-            }
-
             dl {
-              line-height: calc(${theme.layout.globalSpacing} * 2);
-              display: flex;
-              flex-flow: row wrap;
-              margin-bottom: 2rem;
+              display: grid;
+              grid-template-columns: 12rem 1fr;
+              gap: 0.25rem 1rem;
             }
 
             dt {
               font-family: ${theme.typography.headingFontFamily};
               text-transform: uppercase;
-              flex-basis: 20%;
-              margin-right: ${theme.layout.globalSpacing};
-            }
-
-            dd {
-              margin: 0;
-              flex-basis: 70%;
-              flex-grow: 1;
             }
 
             .team__table {

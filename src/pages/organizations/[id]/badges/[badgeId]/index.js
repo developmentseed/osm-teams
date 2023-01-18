@@ -208,7 +208,6 @@ export default class EditBadge extends Component {
                       value='update'
                     />
                     <Button
-                      variant='disable small'
                       href={`/organizations/${self.props.orgId}`}
                       value='Go to organization page'
                     />
