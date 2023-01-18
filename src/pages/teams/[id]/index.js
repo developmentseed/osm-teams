@@ -378,7 +378,9 @@ class Team extends Component {
               <div style={{ marginTop: '1rem' }}>
                 <SectionHeader>Join Link</SectionHeader>
                 {joinLink ? (
-                  <div>{joinLink}</div>
+                  <fieldset style={{ borderColor: '#384A9E' }}>
+                    {joinLink}
+                  </fieldset>
                 ) : (
                   <Button onClick={() => this.createJoinLink()}>
                     Create Join Link
@@ -416,9 +418,9 @@ class Team extends Component {
                 style={{
                   content: {
                     maxWidth: '400px',
-                    maxHeight: '400px',
+                    maxHeight: '600px',
                     left: 'calc(50% - 200px)',
-                    top: 'calc(50% - 200px)',
+                    top: 'calc(50% - 300px)',
                   },
                   overlay: {
                     zIndex: 10000,
@@ -462,7 +464,7 @@ class Team extends Component {
 
             dl {
               display: grid;
-              grid-template-columns: 12rem 1fr;
+              grid-template-columns: 6rem 1fr;
               gap: 0.25rem 1rem;
             }
 

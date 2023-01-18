@@ -398,10 +398,10 @@ class Organization extends Component {
         <Modal
           style={{
             content: {
-              maxWidth: '400px',
-              maxHeight: '400px',
-              left: 'calc(50% - 200px)',
-              top: 'calc(50% - 200px)',
+              maxWidth: '600px',
+              maxHeight: '600px',
+              left: 'calc(50% - 300px)',
+              top: 'calc(50% - 300px)',
             },
             overlay: {
               zIndex: 10000,
@@ -441,7 +441,7 @@ class Organization extends Component {
 
             dl {
               display: grid;
-              grid-template-columns: 12rem 1fr;
+              grid-template-columns: 6rem 1fr;
               gap: 0.25rem 1rem;
             }
 
