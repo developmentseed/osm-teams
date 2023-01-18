@@ -7,6 +7,8 @@ import Pagination from '../pagination'
 import qs from 'qs'
 import SearchInput from './search-input'
 import ExternalProfileButton from '../external-profile-button'
+import { makeTitleCase } from '../../../app/lib/utils'
+import theme from '../../styles/theme'
 
 function UsersTable({ type, orgId, onRowClick, isSearchable }) {
   const [page, setPage] = useState(1)
@@ -15,7 +17,15 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
     key: 'name',
     direction: 'asc',
   })
+
   const MAX_BADGES_COLUMN = 3
+  const roleBgColor = {
+    member: theme.colors.primaryColor,
+    moderator: theme.colors.infoColor,
+    manager: theme.colors.infoColor,
+    owner: theme.colors.secondaryColor,
+    undefined: theme.colors.primaryDark,
+  }
   let apiBasePath
   let emptyMessage
   let columns
@@ -70,7 +80,16 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
       columns = [
         { key: 'name', sortable: true },
         { key: 'id', label: 'OSM ID', sortable: true },
-        { key: 'type', sortable: true },
+        {
+          key: 'type',
+          label: 'role',
+          sortable: true,
+          render: ({ type }) => (
+            <Badge color={roleBgColor[type.toLowerCase()]}>
+              {makeTitleCase(type)}
+            </Badge>
+          ),
+        },
         {
           key: 'External Profiles',
           render: ({ name }) => (
