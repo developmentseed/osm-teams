@@ -10,6 +10,7 @@ import theme from '../../../../../styles/theme'
 import Table from '../../../../../components/tables/table'
 import { toDateString } from '../../../../../lib/utils'
 import logger from '../../../../../lib/logger'
+import Link from 'next/link'
 
 const URL = process.env.APP_URL
 
@@ -147,12 +148,13 @@ export default class EditBadge extends Component {
 
     return (
       <article className='inner page'>
-        <div className='page__heading'>
-          <h1>{this.state.org.name}</h1>
-        </div>
+        <Link href={join(URL, `/organizations/${orgId}`)}>
+          ← Back to Organization Page
+        </Link>
         <section>
+          <h3>{this.state.org.name}</h3>
           <div className='page__heading'>
-            <h2>Edit Badge</h2>
+            <h1>Edit badge</h1>
           </div>
           <Formik
             initialValues={{ name: badge.name, color: badge.color }}

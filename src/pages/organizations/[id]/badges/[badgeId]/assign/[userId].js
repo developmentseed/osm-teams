@@ -8,6 +8,9 @@ import { toast } from 'react-toastify'
 import join from 'url-join'
 import Router from 'next/router'
 import logger from '../../../../../../lib/logger'
+import Link from 'next/link'
+import theme from '../../../../../../styles/theme'
+import Badge from '../../../../../../components/badge'
 
 const URL = process.env.APP_URL
 
@@ -108,10 +111,11 @@ export default class EditBadgeAssignment extends Component {
 
     return (
       <>
-        <div className='page__heading'>
-          <h1>Badge Assignment</h1>
-        </div>
+        <Link href={join(URL, `/organizations/${orgId}/badges/${badgeId}`)}>
+          ← Back to Badge
+        </Link>
         <Section>
+          <h1>Badge Assignment</h1>
           <Formik
             initialValues={{
               assignedAt:
@@ -160,12 +164,20 @@ export default class EditBadgeAssignment extends Component {
             render={({ isSubmitting, values, errors }) => {
               return (
                 <Form>
-                  <div className='page__heading'>
-                    <h2>User: {userId} (OSM id)</h2>
-                  </div>
-                  <div className='page__heading'>
-                    <h2>Badge: {badge && badge.name}</h2>
-                  </div>
+                  <dl>
+                    <dt>OSM User ID:</dt>
+                    <dd> {userId}</dd>
+                    {badge && (
+                      <>
+                        <dt>Badge:</dt>
+                        <dd style={{ color: badge.color }}>
+                          <Badge dot color={badge.color}>
+                            {badge.name}
+                          </Badge>
+                        </dd>
+                      </>
+                    )}
+                  </dl>
                   <div className='form-control form-control__vertical'>
                     <label htmlFor='assignedAt'>Assigned At (required)</label>
                     <Field
@@ -196,7 +208,6 @@ export default class EditBadgeAssignment extends Component {
                       value={badge ? 'Update' : 'Assign'}
                     />
                     <Button
-                      variant='small'
                       href={`/organizations/${orgId}`}
                       value='Go to organization view'
                     />
@@ -255,6 +266,23 @@ export default class EditBadgeAssignment extends Component {
             </div>
           </Section>
         )}
+        <style jsx>
+          {`
+            dl {
+              display: grid;
+              grid-template-columns: max-content 1fr;
+              gap: 0.25rem 1rem;
+            }
+
+            dt {
+              font-family: ${theme.typography.headingFontFamily};
+              text-transform: uppercase;
+            }
+            dd {
+              font-weight: ${theme.typography.baseFontSemiBold};
+            }
+          `}
+        </style>
       </>
     )
   }

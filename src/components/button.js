@@ -127,7 +127,8 @@ const ButtonStyles = css.global`
   }
 
   .button.submit {
-    background-color: ${theme.colors.primaryLite};
+    color: #fff;
+    background-color: ${theme.colors.primaryColor};
   }
 
   .button.disabled {
@@ -207,9 +208,7 @@ export default function Button({
             mask-repeat: no-repeat;
             mask-position: center;
             z-index: 2;
-            background-color: ${useIcon
-              ? theme.colors.primaryColor
-              : 'initial'};
+            background-color: ${useIcon ? theme.colors.primaryLite : 'initial'};
           }
         `}</style>
       </button>

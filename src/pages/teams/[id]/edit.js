@@ -12,6 +12,7 @@ import {
   getTeamProfile,
 } from '../../../lib/profiles-api'
 import logger from '../../../lib/logger'
+import Link from 'next/link'
 
 const APP_URL = process.env.APP_URL
 export default class TeamEdit extends Component {
@@ -141,6 +142,9 @@ export default class TeamEdit extends Component {
 
     return (
       <article className='inner page'>
+        <Link href={join(APP_URL, `/teams/${team.id}`)}>
+          ← Back to Team Page
+        </Link>
         <section>
           <div className='page__heading'>
             <h1>Edit Team</h1>

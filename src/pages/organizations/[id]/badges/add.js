@@ -8,6 +8,7 @@ import Router from 'next/router'
 import { getRandomColor } from '../../../../lib/utils'
 import { toast } from 'react-toastify'
 import logger from '../../../../lib/logger'
+import Link from 'next/link'
 
 const URL = process.env.APP_URL
 
@@ -83,12 +84,13 @@ export default class AddBadge extends Component {
 
     return (
       <article className='inner page'>
+        <Link href={join(URL, `/organizations/${orgId}`)}>
+          ← Back to Organization Page
+        </Link>
         <section>
+          <h3>{this.state.org.name}</h3>
           <div className='page__heading'>
-            <h1>{this.state.org.name}</h1>
-          </div>
-          <div className='page__heading'>
-            <h2>New badge</h2>
+            <h1>New badge</h1>
           </div>
 
           <Formik

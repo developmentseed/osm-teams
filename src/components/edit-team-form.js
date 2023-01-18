@@ -187,7 +187,7 @@ export default function EditTeamForm({
             )}
             {extraOrgTeamFields.length > 0 ? (
               <>
-                <h2>Org Attributes</h2>
+                <h2>Organization Attributes</h2>
                 {extraOrgTeamFields}
               </>
             ) : (

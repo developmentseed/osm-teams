@@ -8,6 +8,8 @@ import { toast } from 'react-toastify'
 import join from 'url-join'
 import Router from 'next/router'
 import logger from '../../../../../lib/logger'
+import Link from 'next/link'
+import theme from '../../../../../styles/theme'
 
 const URL = process.env.APP_URL
 
@@ -96,9 +98,9 @@ export default class NewBadgeAssignment extends Component {
 
     return (
       <>
-        <div className='page__heading'>
-          <h1>Badge Assignment</h1>
-        </div>
+        <Link href={join(URL, `/organizations/${orgId}`)}>
+          ← Back to Organization Page
+        </Link>
         <Section>
           <Formik
             initialValues={{
@@ -152,8 +154,12 @@ export default class NewBadgeAssignment extends Component {
               return (
                 <Form>
                   <div className='page__heading'>
-                    <h2>User: {userId} (OSM id)</h2>
+                    <h1>Badge Assignment</h1>
                   </div>
+                  <dl>
+                    <dt>OSM User ID:</dt>
+                    <dd>{userId}</dd>
+                  </dl>
 
                   <div className='form-control form-control__vertical'>
                     <label htmlFor='badgeId'>Badge:</label>
@@ -199,7 +205,6 @@ export default class NewBadgeAssignment extends Component {
                       value='Assign'
                     />
                     <Button
-                      variant='small'
                       href={`/organizations/${orgId}`}
                       value='Go to organization view'
                     />
@@ -209,6 +214,24 @@ export default class NewBadgeAssignment extends Component {
             }}
           />
         </Section>
+        <style jsx>
+          {`
+            dl {
+              display: grid;
+              grid-template-columns: max-content 1fr;
+              gap: 0.25rem 1rem;
+            }
+
+            dt {
+              font-family: ${theme.typography.headingFontFamily};
+              text-transform: uppercase;
+            }
+
+            .team__table {
+              grid-column: 1 / span 12;
+            }
+          `}
+        </style>
       </>
     )
   }
