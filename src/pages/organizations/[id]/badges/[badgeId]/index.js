@@ -208,7 +208,6 @@ export default class EditBadge extends Component {
                       value='update'
                     />
                     <Button
-                      variant='disable small'
                       href={`/organizations/${self.props.orgId}`}
                       value='Go to organization page'
                     />
@@ -271,7 +270,7 @@ export default class EditBadge extends Component {
         <style jsx global>
           {`
             .danger-zone {
-              border: 1px solid ${theme.colors.secondaryColor};
+              border: 2px solid ${theme.colors.secondaryColor} !important;
               background: white;
               margin: 4rem 0;
               padding: 2rem;

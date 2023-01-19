@@ -194,7 +194,7 @@ export default class OrgEdit extends Component {
             }
 
             .danger-zone {
-              border: 1px solid ${theme.colors.secondaryColor};
+              border: 2px solid ${theme.colors.secondaryColor} !important;
               background: white;
               margin: 4rem 0;
               padding: 2rem;

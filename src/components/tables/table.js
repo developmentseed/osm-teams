@@ -118,64 +118,88 @@ export default function Table({
 }) {
   showRowNumbers && columns.unshift({ key: ' ' })
   return (
-    <table data-cy={dataCy}>
-      <TableHead
-        dataCy={dataCy}
-        columns={columns}
-        sort={sort}
-        setSort={setSort}
-      />
-      <TableBody
-        columns={columns}
-        rows={rows}
-        onRowClick={onRowClick}
-        emptyPlaceHolder={emptyPlaceHolder}
-        showRowNumbers={showRowNumbers}
-      />
-      <style jsx global>
-        {`
-          table {
-            border-collapse: collapse;
-            width: 100%;
-            border-spacing: 0;
-            max-width: 100%;
-            margin-bottom: ${theme.layout.globalSpacing};
-          }
+    <div className='table-wrapper'>
+      <table data-cy={dataCy}>
+        <TableHead
+          dataCy={dataCy}
+          columns={columns}
+          sort={sort}
+          setSort={setSort}
+        />
+        <TableBody
+          columns={columns}
+          rows={rows}
+          onRowClick={onRowClick}
+          emptyPlaceHolder={emptyPlaceHolder}
+          showRowNumbers={showRowNumbers}
+        />
+        <style jsx global>
+          {`
+            .table-wrapper {
+              display: grid;
+              grid-template-columns: minmax(0, 1fr);
+              overflow-x: scroll;
+              position: relative;
+            }
+            table {
+              border-collapse: collapse;
+              border-spacing: 0;
+              margin-bottom: ${theme.layout.globalSpacing};
+              table-layout: fixed;
+              white-space: pre;
+              overflow-x: scroll;
+            }
+            thead th {
+              padding: 0.5rem 1rem;
+              vertical-align: middle;
+              position: relative;
+              text-transform: uppercase;
+              text-align: left;
+              font-family: ${theme.typography.headingFontFamily};
+              font-weight: ${theme.typography.baseFontWeight};
+              font-size: 0.875rem;
+              letter-spacing: 0.125rem;
+              background: ${theme.colors.primaryLite};
+              border-bottom: 4px solid ${theme.colors.primaryColor};
+            }
+            thead th.sortable {
+              cursor: pointer;
+            }
 
-          thead th {
-            padding: 0.5rem 1rem;
-            vertical-align: middle;
-            position: relative;
-            text-transform: uppercase;
-            text-align: left;
-            font-family: ${theme.typography.headingFontFamily};
-            font-weight: ${theme.typography.baseFontWeight};
-            font-size: 0.875rem;
-            letter-spacing: 0.125rem;
-            background: ${theme.colors.primaryLite};
-            border-bottom: 4px solid ${theme.colors.primaryColor};
-          }
-          thead th.sortable {
-            cursor: pointer;
-          }
+            tbody tr td {
+              padding: 0.875rem;
+              border-bottom: 1px solid ${theme.colors.baseColorLight};
+              font-size: 0.9rem;
+            }
 
-          tbody tr td {
-            padding: 0.875rem;
-            border-bottom: 1px solid ${theme.colors.baseColorLight};
-            font-size: 0.9rem;
-          }
+            tbody tr {
+              background: #fff;
+              ${onRowClick && 'cursor: pointer'}
+            }
 
-          tbody tr {
-            background: #fff;
-            ${onRowClick && 'cursor: pointer'}
-          }
-
-          ${onRowClick &&
-          `tbody tr:hover {
-            background: ${theme.colors.primaryLite};
-          }`}
-        `}
-      </style>
-    </table>
+            ${onRowClick &&
+            `tbody tr:hover td {
+                background: ${theme.colors.primaryLite};
+              }
+            `}
+            @media (max-width: ${theme.mediaRanges.medium}) {
+              table {
+                border-collapse: separate;
+              }
+              td:first-child,
+              th:first-child {
+                position: sticky;
+                left: 0;
+                z-index: 2;
+                border-right: 2px solid ${theme.colors.primaryLite};
+              }
+              td:first-child {
+                background: #fff;
+              }
+            }
+          `}
+        </style>
+      </table>
+    </div>
   )
 }

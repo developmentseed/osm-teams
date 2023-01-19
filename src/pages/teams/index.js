@@ -166,7 +166,7 @@ export default class TeamList extends Component {
     return (
       <Map
         markers={centers}
-        style={{ height: '300px' }}
+        style={{ height: '360px' }}
         onBoundsChange={this.onMapBoundsChange.bind(this)}
       />
     )
@@ -185,7 +185,7 @@ export default class TeamList extends Component {
     const { searchOnMapMove } = this.state
     return (
       <div className='inner page'>
-        <h2>Teams</h2>
+        <h1>Explore All Teams</h1>
         {this.renderMap()}
         <fieldset>
           <input

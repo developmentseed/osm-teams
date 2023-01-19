@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Formik, Field, Form } from 'formik'
 import descriptionPopup from './description-popup'
 import urlRegex from 'url-regex'
@@ -38,6 +38,7 @@ export default function EditTeamForm({
   teamTags = [],
   profileValues,
 }) {
+  const [orgTeam, setOrgTeam] = useState(false)
   if (profileValues) {
     initialValues.tags = {}
     profileValues.forEach(({ id, value }) => {
@@ -168,22 +169,32 @@ export default function EditTeamForm({
                 non-members.
               </small>
             </div>
-            {staff && isCreateForm ? (
+            {staff && isCreateForm && (
               <div className='form-control form-control__vertical'>
-                <label htmlFor='organization'>Add to Organization</label>
-                <Field as='select' name='organization'>
-                  <option value=''>No organization</option>
-                  {uniqueOrgs.map(({ organization_id, name }) => {
-                    return (
-                      <option key={organization_id} value={organization_id}>
-                        {name}
-                      </option>
-                    )
-                  })}
-                </Field>
+                <label htmlFor='orgTeam-checkbox'>
+                  <input
+                    id='orgTeam-checkbox'
+                    name='orgTeam-checkbox'
+                    type='checkbox'
+                    checked={orgTeam}
+                    style={{ minWidth: '1rem' }}
+                    onChange={(e) => setOrgTeam(e.target.checked)}
+                  />
+                  This team belongs to an organization
+                </label>
+                {orgTeam && (
+                  <Field as='select' name='organization'>
+                    <option value=''>Select organization</option>
+                    {uniqueOrgs.map(({ organization_id, name }) => {
+                      return (
+                        <option key={organization_id} value={organization_id}>
+                          {name}
+                        </option>
+                      )
+                    })}
+                  </Field>
+                )}
               </div>
-            ) : (
-              ''
             )}
             {extraOrgTeamFields.length > 0 ? (
               <>
