@@ -170,7 +170,7 @@ export default class EditBadgeAssignment extends Component {
                     {badge && (
                       <>
                         <dt>Badge:</dt>
-                        <dd style={{ color: badge.color }}>
+                        <dd>
                           <Badge dot color={badge.color}>
                             {badge.name}
                           </Badge>
