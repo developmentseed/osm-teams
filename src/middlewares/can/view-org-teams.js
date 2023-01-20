@@ -11,20 +11,32 @@ import Organization from '../../models/organization'
  */
 export default async function canViewOrgTeams(req, res, next) {
   const { orgId } = req.query
+
+  if (!orgId) {
+    throw Boom.badRequest('organization id not provided')
+  }
+
+  let org = await Organization.get(orgId)
+
   const userId = req.session?.user_id
 
-  let [org, isMember, isManager, isOwner] = await Promise.all([
-    Organization.get(orgId),
-    Organization.isMember(orgId, userId),
-    Organization.isManager(orgId, userId),
-    Organization.isOwner(orgId, userId),
-  ])
-
-  if (org?.privacy === 'public' || isMember || isManager || isOwner) {
-    // Add org and permission flags to request
-    req.org = { ...org, isMember, isManager, isOwner }
-    return next()
+  if (userId) {
+    let [isMember, isManager, isOwner] = await Promise.all([
+      Organization.isMember(orgId, userId),
+      Organization.isManager(orgId, userId),
+      Organization.isOwner(orgId, userId),
+    ])
+    if (org?.privacy === 'public' || isMember || isManager || isOwner) {
+      // Add org and permission flags to request
+      req.org = { ...org, isMember, isManager, isOwner }
+      return next()
+    }
   } else {
-    throw Boom.unauthorized()
+    if (org?.privacy === 'public') {
+      req.org = { ...org }
+      return next()
+    }
   }
+
+  throw Boom.unauthorized()
 }

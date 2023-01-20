@@ -16,6 +16,10 @@ export default async function canCreateOrgTeam(req, res, next) {
   const { orgId } = req.query
   const userId = req.session?.user_id
 
+  if (!userId || !orgId) {
+    throw Boom.badRequest('could not identify organization or user')
+  }
+
   // Must be owner or manager
   if (!(await isOwner(orgId, userId)) && !(await isManager(orgId, userId))) {
     throw Boom.unauthorized()

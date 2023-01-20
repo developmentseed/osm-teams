@@ -12,10 +12,14 @@ export default async function canViewOrgMembers(req, res, next) {
   const { orgId } = req.query
   const userId = req.session?.user_id
 
+  if (!orgId) {
+    throw Boom.badRequest('organization id not provided')
+  }
+
   if (await isPublic(orgId)) {
     // Can view if org is public
     return next()
-  } else if (await isMemberOrStaff(orgId, userId)) {
+  } else if (userId && (await isMemberOrStaff(orgId, userId))) {
     // Can view if is member or staff
     return next()
   } else {
