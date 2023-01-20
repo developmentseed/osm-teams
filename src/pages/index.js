@@ -3,7 +3,7 @@ import css from 'styled-jsx/css'
 import Button from '../components/button'
 import join from 'url-join'
 import theme from '../styles/theme'
-import { useSession, signOut, signIn } from 'next-auth/react'
+import { useSession, signIn } from 'next-auth/react'
 
 const OSM_NAME = process.env.OSM_NAME
 const APP_URL = process.env.APP_URL
@@ -181,7 +181,7 @@ export default function Home() {
           </p>
           {status === 'authenticated' ? (
             <div className='welcome__user'>
-              <h2>Welcome, {session.user.username}!</h2>
+              <h2>Welcome, {session?.user?.name || 'mapper'}!</h2>
               <ul className='welcome__user--actions'>
                 <li>
                   <a href={join(APP_URL, '/teams/create')}>Create New Team</a>
@@ -202,9 +202,6 @@ export default function Home() {
                   </a>
                 </li>
               </ul>
-              <Button variant='danger' onClick={signOut}>
-                Logout
-              </Button>
             </div>
           ) : (
             <Button onClick={() => signIn('osm-teams')}>Sign in →</Button>

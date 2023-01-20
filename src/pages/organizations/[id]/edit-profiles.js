@@ -13,6 +13,7 @@ import {
 } from '../../../lib/profiles-api'
 import theme from '../../../styles/theme'
 import logger from '../../../lib/logger'
+import Link from 'next/link'
 
 export default class OrgEditProfile extends Component {
   static async getInitialProps({ query }) {
@@ -158,6 +159,9 @@ export default class OrgEditProfile extends Component {
 
     return (
       <article className='inner page'>
+        <Link href={`/organizations/${orgId}/edit`}>
+          ← Back to Edit Organization
+        </Link>
         <section>
           <h2>Current Attributes</h2>
           <p>

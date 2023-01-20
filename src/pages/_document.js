@@ -8,7 +8,7 @@ export default function Document() {
       <Head>
         <link
           rel='stylesheet'
-          href='https://fonts.googleapis.com/css?family=Inconsolata:400,700|Work+Sans:400,700&display=optional'
+          href='https://fonts.googleapis.com/css?family=Inconsolata:400,700|Work+Sans:400,600,700&display=optional'
         />
         <link
           rel='stylesheet'

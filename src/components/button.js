@@ -6,10 +6,12 @@ import Link from 'next/link'
 
 const URL = process.env.APP_URL
 
-const style = css.global`
+const ButtonStyles = css.global`
   .button {
-    display: inline-block;
+    display: inline-flex;
     text-align: center;
+    justify-content: center;
+    align-items: center;
     white-space: nowrap;
     vertical-align: middle;
     line-height: 1.5rem;
@@ -38,11 +40,36 @@ const style = css.global`
     box-shadow: 0 0;
   }
 
+  /* Button variations
+   ========================================================================== */
+
   .button.primary {
     color: #ffffff;
     background: ${theme.colors.primaryColor};
-    border: none;
+    border: 2px solid transparent;
     box-shadow: 2px 2px #ffffff, 4px 4px ${theme.colors.primaryColor};
+  }
+  .button.secondary {
+    color: ${theme.colors.primaryColor};
+    background: ${theme.colors.primaryLite};
+    box-shadow: 2px 2px #ffffff, 4px 4px ${theme.colors.primaryColor};
+  }
+  .button.flat {
+    box-shadow: none;
+    position: relative;
+  }
+
+  .borderless {
+    border: none;
+    box-shadow: none;
+  }
+  .transparent {
+    background: transparent;
+  }
+  .unstyled {
+    background: transparent;
+    border: none;
+    box-shadow: none;
   }
 
   /* Button size modifiers
@@ -100,7 +127,8 @@ const style = css.global`
   }
 
   .button.submit {
-    background: ${theme.colors.primaryLite};
+    color: #fff;
+    background-color: ${theme.colors.primaryColor};
   }
 
   .button.disabled {
@@ -145,10 +173,12 @@ export default function Button({
 }) {
   let classes = [`button`, variant, className]
   if (disabled) classes.push('disabled')
+  if (flat) classes.push('flat')
   let classNames = classes.join(' ')
   if (type === 'submit') {
     return (
       <button
+        data-cy={dataCy}
         type='submit'
         className={classNames}
         disabled={disabled}
@@ -158,7 +188,29 @@ export default function Button({
         value='value'
       >
         {children || value}
-        <style jsx>{style}</style>
+        <style jsx>{ButtonStyles}</style>
+        <style jsx>{`
+          .button {
+            min-width: 1.75rem;
+            min-height: 1.75rem;
+            gap: ${useIcon && '0.25rem'};
+          }
+          .button::after {
+            content: '';
+            position: ${useIcon && 'absolute'};
+            top: 0;
+            left: 0;
+            width: ${useIcon && '100%'};
+            height: ${useIcon && '100%'};
+            mask: ${useIcon
+              ? `url(${join(URL, `/static/icon-${useIcon}.svg`)})`
+              : 'none'};
+            mask-repeat: no-repeat;
+            mask-position: center;
+            z-index: 2;
+            background-color: ${useIcon ? theme.colors.primaryLite : 'initial'};
+          }
+        `}</style>
       </button>
     )
   }
@@ -172,7 +224,31 @@ export default function Button({
         id={id}
       >
         {children || value}
-        <style jsx>{style}</style>
+        <style jsx>{ButtonStyles}</style>
+        <style jsx>{`
+          .button {
+            min-width: 1.75rem;
+            min-height: 1.75rem;
+            gap: ${useIcon && '0.25rem'};
+          }
+          .button::after {
+            content: '';
+            position: ${useIcon && 'absolute'};
+            top: 0;
+            left: 0;
+            width: ${useIcon && '100%'};
+            height: ${useIcon && '100%'};
+            mask: ${useIcon
+              ? `url(${join(URL, `/static/icon-${useIcon}.svg`)})`
+              : 'none'};
+            mask-repeat: no-repeat;
+            mask-position: center;
+            z-index: 2;
+            background-color: ${useIcon
+              ? theme.colors.primaryColor
+              : 'initial'};
+          }
+        `}</style>
       </Link>
     )
   }
@@ -184,15 +260,27 @@ export default function Button({
       disabled={disabled}
     >
       {children}
-      <style jsx>{style}</style>
+      <style jsx>{ButtonStyles}</style>
       <style jsx>{`
         .button {
-          box-shadow: ${flat && 'none'};
-          background-image: ${useIcon
+          min-width: 1.75rem;
+          min-height: 1.75rem;
+          gap: ${useIcon && '0.25rem'};
+        }
+        .button::after {
+          content: '';
+          position: ${useIcon && 'absolute'};
+          top: 0;
+          left: 0;
+          width: ${useIcon && '100%'};
+          height: ${useIcon && '100%'};
+          mask: ${useIcon
             ? `url(${join(URL, `/static/icon-${useIcon}.svg`)})`
             : 'none'};
-          min-height: ${useIcon && '1.75rem'};
-          min-width: ${useIcon && '1.75rem'};
+          mask-repeat: no-repeat;
+          mask-position: center;
+          z-index: 2;
+          background-color: ${useIcon ? theme.colors.primaryColor : 'initial'};
         }
       `}</style>
     </div>

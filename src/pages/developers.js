@@ -18,7 +18,7 @@ class Developers extends Component {
         <h2>Resources</h2>
         <ul>
           <li>
-            <a href={`${URL}/api/docs`}>API Docs</a>
+            <a href={`${URL}/docs/api`}>API Docs</a>
           </li>
           <li>
             <a href={`${URL}/clients`}>Connect a new application</a>

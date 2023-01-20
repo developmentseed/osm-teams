@@ -197,7 +197,12 @@ async function count({ organizationId }) {
  * @return {Promise[Array]}
  **/
 async function paginatedList(options = {}) {
-  const { bbox, osmId, organizationId, page, includePrivate } = options
+  const currentPage = options?.page || 1
+  const sort = options?.sort || 'name'
+  const order = options?.order || 'asc'
+  const perPage = options?.perPage || DEFAULT_PAGE_SIZE
+
+  const { bbox, osmId, organizationId, includePrivate } = options
   const st = knexPostgis(db)
 
   let query = db('team').select(
@@ -205,6 +210,11 @@ async function paginatedList(options = {}) {
     st.asGeoJSON('location'),
     db('member').count().whereRaw('team.id = member.team_id').as('members')
   )
+
+  // Apply search
+  if (options.search) {
+    query = query.whereILike('name', `%${options.search}%`)
+  }
 
   if (!includePrivate) {
     query.where('privacy', 'public')
@@ -230,13 +240,13 @@ async function paginatedList(options = {}) {
     )
   }
 
-  // Always sort by team name
-  query = query.orderBy('name')
+  // Apply sort
+  query = query.orderBy(sort, order)
 
   return query.paginate({
     isLengthAware: true,
-    currentPage: page || 1,
-    perPage: DEFAULT_PAGE_SIZE,
+    currentPage,
+    perPage,
   })
 }
 
@@ -344,6 +354,9 @@ async function create(data, osmId, trx) {
     })
   }
 
+  // Cache username
+  await resolveMemberNames([osmId])
+
   return conn.transaction(async (trx) => {
     const [row] = await trx('team')
       .insert(data)
@@ -436,6 +449,9 @@ async function updateMembers(teamId, osmIdsToAdd, osmIdstoRemove) {
  * @return {promise}
  **/
 async function addMember(teamId, osmId) {
+  // Get OSM username
+  await resolveMemberNames([osmId])
+
   return updateMembers(teamId, [osmId], [])
 }
 

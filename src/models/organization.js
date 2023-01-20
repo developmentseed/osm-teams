@@ -1,6 +1,6 @@
 const db = require('../lib/db')
 const team = require('./team')
-const { map, prop, includes, has, isNil, propEq, find } = require('ramda')
+const { map, prop, includes, has, isNil } = require('ramda')
 const { unpack, PropertyRequiredError } = require('../../app/lib/utils')
 const { serverRuntimeConfig } = require('../../next.config')
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
@@ -90,6 +90,9 @@ async function create(data, osmId) {
   if (!osmId) throw new Error('owner osm id is required as second argument')
 
   if (!data.name) throw new Error('data.name property is required')
+
+  // Cache username
+  await team.resolveMemberNames([osmId])
 
   return db.transaction(async (trx) => {
     const [row] = await trx('organization')
@@ -186,6 +189,9 @@ async function removeOwner(id, osmId) {
  * @return {promise}
  */
 async function addManager(id, osmId) {
+  // Cache username
+  await team.resolveMemberNames([osmId])
+
   const isAlreadyManager = await isManager(id, osmId)
 
   // Only ids that are not already in manager list should be added. Duplicate requests should fail silently
@@ -273,30 +279,63 @@ async function getMembers(organizationId, page) {
  */
 async function getMembersPaginated(organizationId, options) {
   const currentPage = options?.page || 1
+  const sort = options?.sort || 'name'
+  const order = options?.order || 'asc'
+  const perPage = options?.perPage || DEFAULT_PAGE_SIZE
 
   // Sub-query for all org teams
   const allOrgTeamsQuery = db('organization_team')
     .select('team_id')
     .where('organization_id', organizationId)
 
-  // Get list of member of org teams, paginated
-  const result = await db('member')
-    .select('osm_id')
-    .where('team_id', 'in', allOrgTeamsQuery)
-    .groupBy('osm_id')
-    .orderBy('osm_id')
-    .paginate({
-      isLengthAware: true,
-      currentPage,
-      perPage: DEFAULT_PAGE_SIZE,
-    })
+  // Base query for org members
+  let query = db('member')
+    .join('osm_users', 'member.osm_id', 'osm_users.id')
+    .select('member.osm_id as id', 'osm_users.name')
+    .where('member.team_id', 'in', allOrgTeamsQuery)
+    .groupBy('member.osm_id', 'osm_users.name')
 
-  // Resolver member names
-  const data = await team.resolveMemberNames(result.data.map((m) => m.osm_id))
+  // Apply search
+  if (options.search) {
+    query = query.whereILike('osm_users.name', `%${options.search}%`)
+  }
+
+  // Apply sort
+  query = query.orderBy(sort, order)
+
+  // Add pagination
+  query = query.paginate({
+    isLengthAware: true,
+    currentPage,
+    perPage,
+  })
+
+  // Execute query
+  const membersPage = await query
+
+  // Query badges assigned to the users in the list
+  const userBadges = await db('user_badges')
+    .select(
+      'user_badges.user_id',
+      'user_badges.badge_id',
+      'organization_badge.name',
+      'organization_badge.color'
+    )
+    .join('organization_badge', 'user_badges.badge_id', 'organization_badge.id')
+    .whereIn(
+      'user_badges.user_id',
+      membersPage.data.map((u) => u.id)
+    )
+    .whereRaw(
+      `user_badges.valid_until IS NULL OR user_badges.valid_until > NOW()`
+    )
 
   return {
-    ...result,
-    data,
+    ...membersPage,
+    data: membersPage.data.map((m) => ({
+      ...m,
+      badges: userBadges.filter((b) => b.user_id === m.id),
+    })),
   }
 }
 
@@ -434,46 +473,64 @@ async function getOrgStaff(options) {
  * @param {Object} options.osmId - filter by osm id
  */
 async function getOrgStaffPaginated(organizationId, options = {}) {
+  const currentPage = options?.page || 1
+  const sort = options?.sort || 'name'
+  const order = options?.order || 'asc'
+  const perPage = options?.perPage || DEFAULT_PAGE_SIZE
+
   // Get owners
   let ownerQuery = db('organization_owner')
-    .select(db.raw("organization_id, osm_id, 'owner' as type"))
-    .where('organization_id', organizationId)
+    .join('osm_users', 'organization_owner.osm_id', 'osm_users.id')
+    .select(
+      'organization_owner.organization_id',
+      'organization_owner.osm_id as id',
+      db.raw("'owner' as type"),
+      'osm_users.name'
+    )
+    .where('organization_owner.organization_id', organizationId)
+
+  // Apply search to owners sub-query
+  if (options.search) {
+    ownerQuery = ownerQuery.whereILike('osm_users.name', `%${options.search}%`)
+  }
 
   // Get managers that are not owners
   let managerQuery = db('organization_manager')
-    .select(db.raw("organization_id, osm_id, 'manager' as type"))
-    .where('organization_id', organizationId)
+    .join('osm_users', 'organization_manager.osm_id', 'osm_users.id')
+    .select(
+      'organization_manager.organization_id',
+      'organization_manager.osm_id as id',
+      db.raw("'manager' as type"),
+      'osm_users.name'
+    )
+    .where('organization_manager.organization_id', organizationId)
     .whereNotIn(
-      'osm_id',
+      'organization_manager.osm_id',
       db('organization_owner')
-        .select('osm_id')
+        .select('organization_owner.osm_id')
         .where('organization_id', organizationId)
     )
 
-  // Execute query with pagination
-  const result = await ownerQuery.unionAll(managerQuery).paginate({
-    isLengthAware: true,
-    currentPage: options.page || 1,
-    perPage: options.perPage || DEFAULT_PAGE_SIZE,
-  })
-
-  // Get osm user meta from ids
-  const osmUsers = await team.resolveMemberNames(
-    result.data.map((m) => m.osm_id)
-  )
-
-  return {
-    ...result,
-    // Apply OSM display names to results
-    data: result.data.map((u) => {
-      const osmUser = find(propEq('id', u.osm_id))(osmUsers)
-      return {
-        ...u,
-        id: u.osm_id,
-        name: osmUser?.name || '',
-      }
-    }),
+  // Apply search managers sub-query
+  if (options.search) {
+    managerQuery = managerQuery.whereILike(
+      'osm_users.name',
+      `%${options.search}%`
+    )
   }
+
+  // Unite owner and manager queries
+  let staffQuery = ownerQuery.unionAll(managerQuery)
+
+  // Apply sort
+  staffQuery = staffQuery.orderBy(sort, order)
+
+  // Execute staff query with pagination
+  return await staffQuery.paginate({
+    isLengthAware: true,
+    currentPage,
+    perPage,
+  })
 }
 
 /**

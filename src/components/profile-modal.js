@@ -10,12 +10,19 @@ const ModalStyles = css`
   .modal__body {
     display: flex;
     flex-flow: column nowrap;
+    flex: 1;
     gap: 1rem;
+    width: 100%;
   }
   .modal__header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
+    position: sticky;
+    top: -2rem;
+    background: white;
+    padding-top: 2rem;
+    margin-top: -2rem;
   }
   .user__item {
     display: flex;
@@ -153,25 +160,14 @@ export default function ProfileModal({
         </dl>
         <style jsx>{`
           dl {
-            line-height: calc(${theme.layout.globalSpacing} * 1.5);
-            display: flex;
-            flex-flow: row wrap;
-            margin-bottom: 2rem;
+            display: grid;
+            grid-template-columns: 4rem 1fr;
+            grid-gap: 0.25rem 1rem;
           }
 
           dt {
             font-family: ${theme.typography.headingFontFamily};
             text-transform: uppercase;
-            flex-basis: 40%;
-            margin-right: ${theme.layout.globalSpacing};
-          }
-
-          dd {
-            margin: 0;
-            flex-basis: 50%;
-            flex-grow: 1;
-            align-self: center;
-            margin-bottom: ${theme.layout.globalSpacing};
           }
         `}</style>
       </>

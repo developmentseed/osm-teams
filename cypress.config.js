@@ -3,11 +3,8 @@ const db = require('./src/lib/db')
 const Team = require('./src/models/team')
 const Organization = require('./src/models/organization')
 const TeamInvitation = require('./src/models/team-invitation')
+const Badge = require('./src/models/badge')
 const { pick } = require('ramda')
-
-const user1 = {
-  id: 1,
-}
 
 module.exports = defineConfig({
   e2e: {
@@ -20,26 +17,13 @@ module.exports = defineConfig({
           await db.raw('TRUNCATE TABLE organization RESTART IDENTITY CASCADE')
           await db.raw('TRUNCATE TABLE users RESTART IDENTITY CASCADE')
           await db.raw('TRUNCATE TABLE osm_users RESTART IDENTITY CASCADE')
+          await db.raw(
+            'TRUNCATE TABLE organization_badge RESTART IDENTITY CASCADE'
+          )
+          await db.raw('TRUNCATE TABLE user_badges RESTART IDENTITY CASCADE')
           return null
         },
-        'db:seed': async () => {
-          // Add teams in series
-          await Team.create(
-            {
-              name: 'Team 1',
-            },
-            user1.id
-          )
-          await Team.create(
-            {
-              name: 'Team 2',
-              privacy: 'private',
-            },
-            user1.id
-          )
-          return null
-        },
-        'db:seed:teams': async ({ teams, moderatorId }) => {
+        'db:seed:create-teams': async ({ teams, moderatorId }) => {
           let createdTeams = []
           for (let i = 0; i < teams.length; i++) {
             const team = teams[i]
@@ -47,7 +31,7 @@ module.exports = defineConfig({
           }
           return createdTeams
         },
-        'db:seed:add-team-member': async ({ teams, memberId }) => {
+        'db:seed:add-member-to-teams': async ({ memberId, teams }) => {
           for (let i = 0; i < teams.length; i++) {
             const team = teams[i]
             await Team.addMember(team.id, memberId)
@@ -61,10 +45,10 @@ module.exports = defineConfig({
           }
           return null
         },
-        'db:seed:team-invitations': async (teamInvitations) => {
+        'db:seed:create-team-invitations': async (teamInvitations) => {
           return Promise.all(teamInvitations.map(TeamInvitation.create))
         },
-        'db:seed:add-organizations': async (orgs) => {
+        'db:seed:create-organizations': async (orgs) => {
           for (let i = 0; i < orgs.length; i++) {
             const org = orgs[i]
             await Organization.create(
@@ -74,7 +58,7 @@ module.exports = defineConfig({
           }
           return null
         },
-        'db:seed:add-organization-teams': async ({
+        'db:seed:create-organization-teams': async ({
           orgId,
           teams,
           managerId,
@@ -93,6 +77,23 @@ module.exports = defineConfig({
           for (let i = 0; i < managerIds.length; i++) {
             const managerId = managerIds[i]
             await Organization.addManager(orgId, managerId)
+          }
+          return null
+        },
+        'db:seed:create-organization-badges': async ({ orgId, badges }) => {
+          for (let i = 0; i < badges.length; i++) {
+            const badge = badges[i]
+            await db('organization_badge').insert({
+              organization_id: orgId,
+              ...pick(['id', 'name', 'color'], badge),
+            })
+          }
+          return null
+        },
+        'db:seed:assign-badge-to-users': async ({ badgeId, users }) => {
+          for (let i = 0; i < users.length; i++) {
+            const user = users[i]
+            await Badge.assignUserBadge(badgeId, user.id, new Date())
           }
           return null
         },

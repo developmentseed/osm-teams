@@ -6,11 +6,9 @@ import dynamic from 'next/dynamic'
 import { getSession } from 'next-auth/react'
 import { withRouter } from 'next/router'
 
-import Card from '../../../components/card'
 import Section from '../../../components/section'
 import SectionHeader from '../../../components/section-header'
 import Button from '../../../components/button'
-import Table from '../../../components/tables/table'
 import AddMemberForm from '../../../components/add-member-form'
 import ProfileModal from '../../../components/profile-modal'
 import theme from '../../../styles/theme'
@@ -34,6 +32,7 @@ import {
 import { getOrgStaff } from '../../../lib/org-api'
 import { toast } from 'react-toastify'
 import logger from '../../../lib/logger'
+import MembersTable from './members-table'
 
 const APP_URL = process.env.APP_URL
 const Map = dynamic(() => import('../../../components/team-map'), {
@@ -269,8 +268,6 @@ class Team extends Component {
       contains(parseInt(userId), orgOwners)
     const isMember = contains(Number(userId), members)
 
-    const columns = [{ key: 'name' }, { key: 'id' }, { key: 'role' }]
-
     let memberRows = teamMembers.members.map((member) => {
       const role = contains(parseInt(member.id), moderators)
         ? 'Moderator'
@@ -319,7 +316,7 @@ class Team extends Component {
           )}
         </div>
         <div className='team__details'>
-          <Card>
+          <Section>
             <div className='section-actions'>
               <SectionHeader>Team Details</SectionHeader>
               {isUserModerator ? (
@@ -381,7 +378,9 @@ class Team extends Component {
               <div style={{ marginTop: '1rem' }}>
                 <SectionHeader>Join Link</SectionHeader>
                 {joinLink ? (
-                  <div>{joinLink}</div>
+                  <fieldset style={{ borderColor: '#384A9E' }}>
+                    {joinLink}
+                  </fieldset>
                 ) : (
                   <Button onClick={() => this.createJoinLink()}>
                     Create Join Link
@@ -391,11 +390,11 @@ class Team extends Component {
             ) : (
               ''
             )}
-          </Card>
+          </Section>
         </div>
         <div className='team__table'>
           {memberRows.length > 0 ? (
-            <Section>
+            <Section data-cy='team-members-section'>
               <div className='section-actions'>
                 <SectionHeader>Team Members</SectionHeader>
                 <div>
@@ -409,21 +408,19 @@ class Team extends Component {
                   )}
                 </div>
               </div>
-              <Table
+              <MembersTable
                 rows={memberRows}
-                columns={columns}
                 onRowClick={(row) => {
                   this.openProfileModal(row)
                 }}
-                showRowNumbers
               />
               <Modal
                 style={{
                   content: {
                     maxWidth: '400px',
-                    maxHeight: '400px',
+                    maxHeight: '600px',
                     left: 'calc(50% - 200px)',
-                    top: 'calc(50% - 200px)',
+                    top: 'calc(50% - 300px)',
                   },
                   overlay: {
                     zIndex: 10000,
@@ -449,6 +446,7 @@ class Team extends Component {
               display: grid;
               grid-template-columns: repeat(12, 1fr);
               grid-gap: ${theme.layout.globalSpacing};
+              align-content: baseline;
             }
 
             .page__heading {
@@ -457,7 +455,6 @@ class Team extends Component {
 
             .team__details {
               grid-column: 1 / span 12;
-              margin-bottom: 4rem;
             }
 
             .team__editing_policy {
@@ -465,35 +462,19 @@ class Team extends Component {
               display: block;
             }
 
-            @media (min-width: ${theme.mediaRanges.medium}) {
-              .team__details {
-                grid-column: 1 / span 6;
-              }
-            }
-
             dl {
-              line-height: calc(${theme.layout.globalSpacing} * 2);
-              display: flex;
-              flex-flow: row wrap;
-              margin-bottom: 2rem;
+              display: grid;
+              grid-template-columns: 6rem 1fr;
+              gap: 0.25rem 1rem;
             }
 
             dt {
               font-family: ${theme.typography.headingFontFamily};
               text-transform: uppercase;
-              flex-basis: 50%;
-              margin-right: ${theme.layout.globalSpacing};
-            }
-
-            dd {
-              margin: 0;
-              flex-basis: 40%;
-              flex-grow: 1;
             }
 
             .team__table {
               grid-column: 1 / span 12;
-              padding-bottom: 2rem;
             }
           `}
         </style>

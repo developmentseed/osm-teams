@@ -31,6 +31,7 @@ export default function AddMemberForm({ onSubmit }) {
               id='osmId'
               placeholder='OSM ID'
               value={values.osmId}
+              style={{ width: '6rem' }}
             />
             {status && status.msg && <div>{status.msg}</div>}
             <Button type='submit' variant='submit' disabled={isSubmitting}>

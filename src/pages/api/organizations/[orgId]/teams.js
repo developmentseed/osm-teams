@@ -96,10 +96,14 @@ handler.get(
     query: Yup.object({
       orgId: Yup.number().required().positive().integer(),
       page: Yup.number().min(0).integer(),
+      perPage: Yup.number().min(1).max(100).integer(),
+      search: Yup.string(),
+      sort: Yup.mixed().oneOf(['name', 'members']),
+      order: Yup.mixed().oneOf(['asc', 'desc']),
     }).required(),
   }),
   async function (req, res) {
-    const { orgId, page } = req.query
+    const { orgId, page, perPage, search, sort, order } = req.query
     const {
       org: { isMember, isOwner, isManager },
     } = req
@@ -107,6 +111,10 @@ handler.get(
       await Team.paginatedList({
         organizationId: orgId,
         page,
+        perPage,
+        search,
+        sort,
+        order,
         includePrivate: isMember || isManager || isOwner,
       })
     )

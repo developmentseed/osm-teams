@@ -61,7 +61,7 @@ const publicOrgPublicTeam2 = {
 describe('Organizations page: Permissions', () => {
   before(() => {
     cy.task('db:reset')
-    cy.task('db:seed:add-organizations', [privateOrg, publicOrg])
+    cy.task('db:seed:create-organizations', [privateOrg, publicOrg])
   })
 
   it('Org is private', () => {
@@ -99,7 +99,7 @@ describe('Organizations page: Permissions', () => {
     cy.get('[data-cy=badges-table]').should('not.exist')
 
     // Create org teams
-    cy.task('db:seed:add-organization-teams', {
+    cy.task('db:seed:create-organization-teams', {
       orgId: privateOrg.id,
       teams: [
         privateOrgPrivateTeam,
@@ -134,7 +134,7 @@ describe('Organizations page: Permissions', () => {
 
   it('Org is public', () => {
     // Create org teams
-    cy.task('db:seed:add-organization-teams', {
+    cy.task('db:seed:create-organization-teams', {
       orgId: publicOrg.id,
       teams: [publicOrgPrivateTeam, publicOrgPublicTeam1, publicOrgPublicTeam2],
       managerId: managerUser.id,

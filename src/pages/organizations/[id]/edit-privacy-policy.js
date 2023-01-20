@@ -5,6 +5,7 @@ import Router from 'next/router'
 import { getOrg, updateOrgPrivacyPolicy } from '../../../lib/org-api'
 import PrivacyPolicyForm from '../../../components/privacy-policy-form'
 import logger from '../../../lib/logger'
+import Link from 'next/link'
 
 const APP_URL = process.env.APP_URL
 
@@ -67,6 +68,9 @@ export default class OrgPrivacyPolicy extends Component {
 
     return (
       <article className='inner page'>
+        <Link href={`/organizations/${orgId}/edit`}>
+          ← Back to Edit Organization
+        </Link>
         <section>
           <div className='page__heading'>
             <h1>Edit Privacy Policy</h1>

@@ -9,7 +9,6 @@ import {
   getOrgStaff,
 } from '../../../lib/org-api'
 import { getUserOrgProfile } from '../../../lib/profiles-api'
-import Card from '../../../components/card'
 import Section from '../../../components/section'
 import SectionHeader from '../../../components/section-header'
 import Table from '../../../components/tables/table'
@@ -180,7 +179,10 @@ class Organization extends Component {
 
   renderBadges() {
     const { id: orgId } = this.props
-    const columns = [{ key: 'name' }, { key: 'color' }]
+    const columns = [
+      { key: 'name' },
+      { key: 'color', render: ({ color }) => <SvgSquare color={color} /> },
+    ]
 
     // Do not render section if badges list cannot be fetched. This might happen
     // on network error but also when the user doesn't have privileges.
@@ -191,7 +193,7 @@ class Organization extends Component {
             <SectionHeader>Badges</SectionHeader>
             <div>
               <Button
-                variant='primary small'
+                variant='primary'
                 onClick={() =>
                   Router.push(join(URL, `/organizations/${orgId}/badges/add`))
                 }
@@ -200,24 +202,20 @@ class Organization extends Component {
               </Button>
             </div>
           </div>
-        </Section>
-        {this.state.badges && (
-          <Table
-            data-cy='badges-table'
-            rows={(this.state.badges || []).map((row) => {
-              return {
-                ...row,
-                color: () => <SvgSquare color={row.color} />,
+
+          {this.state.badges && (
+            <Table
+              data-cy='badges-table'
+              rows={this.state.badges || []}
+              columns={columns}
+              onRowClick={({ id: badgeId }) =>
+                Router.push(
+                  join(URL, `/organizations/${orgId}/badges/${badgeId}`)
+                )
               }
-            })}
-            columns={columns}
-            onRowClick={({ id: badgeId }) =>
-              Router.push(
-                join(URL, `/organizations/${orgId}/badges/${badgeId}`)
-              )
-            }
-          />
-        )}
+            />
+          )}
+        </Section>
       </SectionWrapper>
     ) : null
   }
@@ -236,7 +234,7 @@ class Organization extends Component {
       } else if (org.error.status === 404) {
         return (
           <article className='inner page'>
-            <h1>Org not found</h1>
+            <h1>Organization not found</h1>
           </article>
         )
       }
@@ -264,7 +262,7 @@ class Organization extends Component {
       } else if (error.status === 404) {
         return (
           <article className='inner page'>
-            <h1>Org not found</h1>
+            <h1>Organization not found</h1>
           </article>
         )
       } else {
@@ -328,14 +326,11 @@ class Organization extends Component {
           <h1>{org.data.name}</h1>
         </div>
         <div className='team__details'>
-          <Card>
+          <Section>
             <div className='section-actions'>
-              <SectionHeader>Org Details</SectionHeader>
+              <SectionHeader>Organization Details</SectionHeader>
               {isOwner ? (
-                <Button
-                  variant='small'
-                  href={`/organizations/${org.data.id}/edit`}
-                >
+                <Button href={`/organizations/${org.data.id}/edit`}>
                   Edit
                 </Button>
               ) : (
@@ -346,13 +341,13 @@ class Organization extends Component {
               <dt>Bio: </dt>
               <dd>{org.data.description}</dd>
             </dl>
-          </Card>
+          </Section>
         </div>
         <div className='team__table'>
           <Section>
             <SectionHeader>Teams</SectionHeader>
+            <TeamsTable type='org-teams' orgId={org.data.id} />
           </Section>
-          <TeamsTable type='org-teams' orgId={org.data.id} />
         </div>
 
         {isStaff ? (
@@ -360,23 +355,23 @@ class Organization extends Component {
             <Section>
               <div className='section-actions'>
                 <SectionHeader>Staff Members</SectionHeader>
-                <div>
-                  {isOwner && (
-                    <AddMemberForm
-                      onSubmit={async ({ osmId }) => {
-                        await addManager(org.data.id, osmId)
-                        return this.getOrg()
-                      }}
-                    />
-                  )}
-                </div>
+                {isOwner && (
+                  <AddMemberForm
+                    onSubmit={async ({ osmId }) => {
+                      await addManager(org.data.id, osmId)
+                      return this.getOrg()
+                    }}
+                  />
+                )}
               </div>
+
+              <UsersTable
+                isSearchable
+                type='org-staff'
+                orgId={org.data.id}
+                onRowClick={(row) => this.openProfileModal(row)}
+              />
             </Section>
-            <UsersTable
-              type='org-staff'
-              orgId={org.data.id}
-              onRowClick={(row) => this.openProfileModal(row)}
-            />
           </div>
         ) : (
           <div />
@@ -384,10 +379,9 @@ class Organization extends Component {
         {isStaff ? (
           <div className='team__table'>
             <Section>
-              <div className='section-actions'>
-                <SectionHeader>Organization Members</SectionHeader>
-              </div>
+              <SectionHeader>Organization Members</SectionHeader>
               <UsersTable
+                isSearchable
                 type='org-members'
                 orgId={org.data.id}
                 onRowClick={(row) => this.openProfileModal(row)}
@@ -401,10 +395,10 @@ class Organization extends Component {
         <Modal
           style={{
             content: {
-              maxWidth: '400px',
-              maxHeight: '400px',
-              left: 'calc(50% - 200px)',
-              top: 'calc(50% - 200px)',
+              maxWidth: '600px',
+              maxHeight: '600px',
+              left: 'calc(50% - 300px)',
+              top: 'calc(50% - 300px)',
             },
             overlay: {
               zIndex: 10000,
@@ -426,6 +420,7 @@ class Organization extends Component {
               display: grid;
               grid-template-columns: repeat(12, 1fr);
               grid-gap: ${theme.layout.globalSpacing};
+              align-content: baseline;
             }
 
             .page__heading {
@@ -434,7 +429,6 @@ class Organization extends Component {
 
             .team__details {
               grid-column: 1 / span 12;
-              margin-bottom: 4rem;
             }
 
             .team__editing_policy {
@@ -442,30 +436,15 @@ class Organization extends Component {
               display: block;
             }
 
-            @media (min-width: ${theme.mediaRanges.medium}) {
-              .team__details {
-                grid-column: 1 / span 6;
-              }
-            }
-
             dl {
-              line-height: calc(${theme.layout.globalSpacing} * 2);
-              display: flex;
-              flex-flow: row wrap;
-              margin-bottom: 2rem;
+              display: grid;
+              grid-template-columns: 6rem 1fr;
+              gap: 0.25rem 1rem;
             }
 
             dt {
               font-family: ${theme.typography.headingFontFamily};
               text-transform: uppercase;
-              flex-basis: 20%;
-              margin-right: ${theme.layout.globalSpacing};
-            }
-
-            dd {
-              margin: 0;
-              flex-basis: 70%;
-              flex-grow: 1;
             }
 
             .team__table {

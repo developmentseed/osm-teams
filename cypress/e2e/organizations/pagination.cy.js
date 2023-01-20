@@ -48,7 +48,7 @@ const orgTeam3Members = generateSequenceArray(15, 300).map((i) => ({
 describe('Organization page', () => {
   before(() => {
     cy.task('db:reset')
-    cy.task('db:seed:add-organizations', [org1])
+    cy.task('db:seed:create-organizations', [org1])
   })
 
   it('Display message when organization has no teams', () => {
@@ -79,13 +79,24 @@ describe('Organization page', () => {
     cy.get('[data-cy=org-staff-table-pagination]').within(() => {
       cy.contains('Showing 1-3 of 3')
     })
+
+    // Sort by user id
+    cy.get('[data-cy=org-staff-table-head-column-type]').click()
+    cy.get('[data-cy=org-staff-table]')
+      .find('tbody tr:nth-child(3) td:nth-child(1)')
+      .contains('User 003')
+
+    // Perform search by username
+    cy.get('[data-cy=org-staff-table-search-input]').type('2')
+    cy.get('[data-cy=org-staff-table-search-submit]').click()
+    cy.get('[data-cy=org-staff-table-pagination]').contains('Showing 1-1 of 1')
   })
 
   it('Organization teams and members tables are populated and paginated', () => {
     cy.login(user1)
 
     // Add org teams
-    cy.task('db:seed:add-organization-teams', {
+    cy.task('db:seed:create-organization-teams', {
       orgId: org1.id,
       teams: orgTeams,
       managerId: user1.id,
@@ -116,6 +127,26 @@ describe('Organization page', () => {
      * ORG TEAMS
      */
     cy.get('[data-cy=org-teams-table]').contains('Org 1 Team 010')
+
+    // Sort by name
+    cy.get('[data-cy=org-teams-table-head-column-name]').click()
+    cy.get('[data-cy=org-teams-table]')
+      .find('tbody tr:nth-child(4) td:nth-child(1)')
+      .contains('Team 032')
+
+    // Reset sort
+    cy.get('[data-cy=org-teams-table-head-column-name]').click()
+
+    // Perform search by username
+    cy.get('[data-cy=org-teams-table-search-input]').type('02')
+    cy.get('[data-cy=org-teams-table-search-submit]').click()
+    cy.get('[data-cy=org-teams-table-pagination]').contains(
+      'Showing 1-10 of 11'
+    )
+    cy.get('[data-cy=org-teams-table]')
+      .find('tbody tr:nth-child(9) td:nth-child(1)')
+      .contains('Team 027')
+    cy.get('[data-cy=org-teams-table-search-input]').clear()
 
     // Verify index, then click on last page button
     cy.get('[data-cy=org-teams-table-pagination]').within(() => {
@@ -184,5 +215,28 @@ describe('Organization page', () => {
 
     // Item from page 2 is present
     cy.get('[data-cy=org-members-table]').contains('User 207')
+
+    // Sort by user name
+    cy.get('[data-cy=org-members-table-head-column-name]').click()
+    cy.get('[data-cy=org-members-table]')
+      .find('tbody tr:nth-child(4) td:nth-child(1)')
+      .contains('User 301')
+    cy.get('[data-cy=org-members-table]')
+      .find('tbody tr:nth-child(10) td:nth-child(1)')
+      .contains('User 215')
+
+    // Reset sort
+    cy.get('[data-cy=org-members-table-head-column-name]').click()
+
+    // Perform search by username
+    cy.get('[data-cy=org-members-table-search-input]').type('User 2')
+    cy.get('[data-cy=org-members-table-search-submit]').click()
+    cy.get('[data-cy=org-members-table-pagination]').contains(
+      'Showing 1-10 of 20'
+    )
+
+    // Check empty results message after timeout
+    cy.get('[data-cy=org-members-table-search-input]').clear().type('aaaa')
+    cy.get('[data-cy=org-members-table]').contains('Search returned no results')
   })
 })

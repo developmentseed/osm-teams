@@ -1,6 +1,7 @@
 import nc from 'next-connect'
 import logger from '../lib/logger'
 import { getToken } from 'next-auth/jwt'
+import Boom from '@hapi/boom'
 
 /**
  * This file contains the base handler to be used in all API routes.
@@ -33,10 +34,20 @@ export function createBaseHandler() {
     attachParams: true,
     onError: (err, req, res) => {
       logger.error(err)
+
       // Handle Boom errors
       if (err.isBoom) {
         const { statusCode, payload } = err.output
         return res.status(statusCode).json(payload)
+      }
+
+      // Handle Yup validation errors
+      if (err.name === 'ValidationError') {
+        return res.status(400).json({
+          statusCode: 400,
+          error: 'Validation Error',
+          message: err.message,
+        })
       }
 
       // Generic error
@@ -47,6 +58,11 @@ export function createBaseHandler() {
       })
     },
     onNoMatch: (req, res) => {
+      if (req.method === 'OPTIONS') {
+        logger.info('OPTIONS request')
+        return res.status(200).end()
+      }
+
       res.status(404).json({
         statusCode: 404,
         error: 'Not Found',
@@ -57,9 +73,41 @@ export function createBaseHandler() {
 
   // Add session to request
   baseHandler.use(async (req, res, next) => {
-    const token = await getToken({ req })
-    req.session = { user_id: token.userId || token.sub }
-    logger.info('token', token)
+    /** Handle authorization using either Bearer token auth or
+     * using the next-auth session
+     */
+    if (req.headers.authorization) {
+      // introspect the token
+      const [type, token] = req.headers.authorization.split(' ')
+      if (type !== 'Bearer') {
+        throw Boom.badRequest(
+          'Authorization scheme not supported. Only Bearer scheme is supported'
+        )
+      } else {
+        const result = await fetch(`${process.env.AUTH_URL}/api/introspect`, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            token: token,
+          }),
+        }).then((response) => {
+          return response.json()
+        })
+        if (result && result.active) {
+          req.session = { user_id: result.sub }
+        } else {
+          throw Boom.unauthorized('Invalid token')
+        }
+      }
+    } else {
+      const token = await getToken({ req })
+      if (token) {
+        req.session = { user_id: token.userId || token.sub }
+      }
+    }
     next()
   })
 

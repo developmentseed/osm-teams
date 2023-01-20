@@ -7,6 +7,7 @@ import EditOrgForm from '../../../components/edit-org-form'
 import Button from '../../../components/button'
 import theme from '../../../styles/theme'
 import logger from '../../../lib/logger'
+import Link from 'next/link'
 
 const APP_URL = process.env.APP_URL
 
@@ -110,7 +111,7 @@ export default class OrgEdit extends Component {
       if (error.status >= 400 && error.status < 500) {
         return (
           <article className='inner'>
-            <h1>Org not found</h1>
+            <h1>Organization not found</h1>
           </article>
         )
       } else if (error.status >= 500) {
@@ -126,9 +127,12 @@ export default class OrgEdit extends Component {
 
     return (
       <article className='inner page'>
+        <Link href={join(APP_URL, `/organizations/${org.id}`)}>
+          ← Back to Organization
+        </Link>
         <section>
           <div className='page__heading'>
-            <h1>Edit Org</h1>
+            <h1>Edit Organization</h1>
           </div>
           <EditOrgForm
             initialValues={pick(
@@ -151,7 +155,7 @@ export default class OrgEdit extends Component {
         </section>
         <section>
           <div className='page__heading'>
-            <h2>Org Attributes</h2>
+            <h2>Organization Attributes</h2>
           </div>
           <div>
             <span style={{ marginRight: '1rem' }}>
@@ -181,8 +185,8 @@ export default class OrgEdit extends Component {
         <section className='danger-zone'>
           <h2>Danger Zone 🎸</h2>
           <p>
-            Delete this org, org information and all memberships associated to
-            this team
+            Delete this organization, organization information and all
+            memberships associated with this organization
           </p>
           {this.renderDeleter()}
         </section>
@@ -194,7 +198,7 @@ export default class OrgEdit extends Component {
             }
 
             .danger-zone {
-              border: 1px solid ${theme.colors.secondaryColor};
+              border: 2px solid ${theme.colors.secondaryColor} !important;
               background: white;
               margin: 4rem 0;
               padding: 2rem;

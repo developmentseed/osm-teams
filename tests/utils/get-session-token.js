@@ -5,7 +5,7 @@ async function getSessionToken(userObj, secret) {
   const token = { ...userObj, userId: userObj.id }
 
   // Function logic derived from https://github.com/nextauthjs/next-auth/blob/5c1826a8d1f8d8c2d26959d12375704b0a693bfc/packages/next-auth/src/jwt/index.ts#L113-L121
-  const encryptionSecret = await await hkdf(
+  const encryptionSecret = await hkdf(
     'sha256',
     secret,
     '',
