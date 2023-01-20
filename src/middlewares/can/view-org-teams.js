@@ -18,11 +18,6 @@ export default async function canViewOrgTeams(req, res, next) {
 
   let org = await Organization.get(orgId)
 
-  if (org?.privacy === 'public') {
-    req.org = { ...org }
-    return next()
-  }
-
   const userId = req.session?.user_id
 
   if (userId) {
@@ -31,9 +26,14 @@ export default async function canViewOrgTeams(req, res, next) {
       Organization.isManager(orgId, userId),
       Organization.isOwner(orgId, userId),
     ])
-    if (isMember || isManager || isOwner) {
+    if (org?.privacy === 'public' || isMember || isManager || isOwner) {
       // Add org and permission flags to request
       req.org = { ...org, isMember, isManager, isOwner }
+      return next()
+    }
+  } else {
+    if (org?.privacy === 'public') {
+      req.org = { ...org }
       return next()
     }
   }
