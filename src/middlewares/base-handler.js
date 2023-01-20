@@ -99,7 +99,7 @@ export function createBaseHandler() {
         if (result && result.active) {
           req.session = { user_id: result.sub }
         } else {
-          throw Boom.badRequest('Invalid token')
+          throw Boom.unauthorized('Invalid token')
         }
       }
     } else {
