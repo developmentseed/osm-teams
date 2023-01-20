@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
 ## [v2.1.0] - 2023-01-19
 
 ### Added
@@ -18,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Add badges to org members table](https://github.com/developmentseed/osm-teams/pull/384)
 * [Add username table](https://github.com/developmentseed/osm-teams/pull/347)
 * [Add external links buttons to the team view](https://github.com/developmentseed/osm-teams/pull/378)
+* [Add backlinks](https://github.com/developmentseed/osm-teams/pull/392)
 
 ### Changed
 
@@ -27,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Add role label to users and members table](https://github.com/developmentseed/osm-teams/pull/389)
 * [Update pagination button styles](https://github.com/developmentseed/osm-teams/pull/377)
 * [Limit badges column to 3 badges in users table](https://github.com/developmentseed/osm-teams/pull/386)
+* [Update table, page, layout styles](https://github.com/developmentseed/osm-teams/pull/391)
 
 ### Fixed
 
@@ -39,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Fix token Validation for API calls](https://github.com/developmentseed/osm-teams/pull/372)
 * [Fix API Docs URL link](https://github.com/developmentseed/osm-teams/pull/380)
 * [Allow CORS in API](https://github.com/developmentseed/osm-teams/pull/381)
+* [Return 401 error if token is invalid](https://github.com/developmentseed/osm-teams/pull/393)
+* [Code guards when org/user are undefined](https://github.com/developmentseed/osm-teams/pull/396)
 
 **Full Changelog**: <https://github.com/developmentseed/osm-teams/compare/v2.0.0...v2.1.0>
 
