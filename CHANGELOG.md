@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 ## [v2.1.0] - 2023-01-19
 
+Hydra configuration now is restored, API can be used similarly to before v2. Get an access token or create a
+client on https://auth.mapping.team and use these tokens to create API requests to https://mapping.team
+
 ### Added
 
 * [Add pagination to organization teams table](https://github.com/developmentseed/osm-teams/pull/342)
