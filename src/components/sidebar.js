@@ -173,7 +173,7 @@ const sidebarStyles = css.global`
   }
   @media screen and (min-width: ${theme.mediaRanges.large}) {
     .page__sidebar {
-      align-items: baseline;
+      align-items: center;
       overflow: hidden;
     }
 

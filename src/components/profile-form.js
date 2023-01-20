@@ -16,6 +16,7 @@ import { getTeam } from '../lib/teams-api'
 import Button from '../components/button'
 import { propOr, prop } from 'ramda'
 import logger from '../lib/logger'
+import Link from 'next/link'
 
 function GenderSelectField(props) {
   const [field, meta, { setValue, setTouched }] = useField(props.name)
@@ -230,6 +231,7 @@ export default class ProfileForm extends Component {
 
     return (
       <article className='inner page'>
+        <Link href={returnUrl}>← Back to Team Page</Link>
         <section>
           <h1>Edit your profile details</h1>
           <Formik
@@ -379,6 +381,7 @@ export default class ProfileForm extends Component {
                           }
                         />
                         {org.privacy_policy.consentText}
+                        <span className='form--required'>*</span>
                       </div>
                     </div>
                   ) : (
@@ -387,7 +390,7 @@ export default class ProfileForm extends Component {
                   {status && status.msg && <div>{status.msg}</div>}
                   <div
                     style={{ marginTop: '1rem' }}
-                    className='form-control form-control__vertical'
+                    className='section-actions'
                   >
                     <Button
                       type='submit'
@@ -395,6 +398,9 @@ export default class ProfileForm extends Component {
                       disabled={!consentChecked || isSubmitting}
                     >
                       {addProfileText}
+                    </Button>
+                    <Button variant='secondary' href={returnUrl}>
+                      Cancel
                     </Button>
                   </div>
                 </Form>

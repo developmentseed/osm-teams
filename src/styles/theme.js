@@ -33,6 +33,7 @@ let typography = {
   baseFontFamily: "'Work Sans', sans-serif",
   baseFontStyle: 'normal',
   baseFontRegular: 400,
+  baseFontSemiBold: 600,
   baseFontBold: 700,
   baseFontWeight: 400,
   baseFontSize: '1rem',

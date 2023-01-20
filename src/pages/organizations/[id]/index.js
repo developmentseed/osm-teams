@@ -234,7 +234,7 @@ class Organization extends Component {
       } else if (org.error.status === 404) {
         return (
           <article className='inner page'>
-            <h1>Org not found</h1>
+            <h1>Organization not found</h1>
           </article>
         )
       }
@@ -262,7 +262,7 @@ class Organization extends Component {
       } else if (error.status === 404) {
         return (
           <article className='inner page'>
-            <h1>Org not found</h1>
+            <h1>Organization not found</h1>
           </article>
         )
       } else {
@@ -328,7 +328,7 @@ class Organization extends Component {
         <div className='team__details'>
           <Section>
             <div className='section-actions'>
-              <SectionHeader>Org Details</SectionHeader>
+              <SectionHeader>Organization Details</SectionHeader>
               {isOwner ? (
                 <Button href={`/organizations/${org.data.id}/edit`}>
                   Edit

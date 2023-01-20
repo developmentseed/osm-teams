@@ -82,7 +82,7 @@ export default function EditOrgForm({
                 <option value='false'>No</option>
               </Field>
               <small className='pt1'>
-                This overrides the org teams visibility setting.
+                This overrides the organization teams visibility setting.
               </small>
             </div>
             <div className='form-control form-control__vertical'>
