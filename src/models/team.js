@@ -251,35 +251,21 @@ async function paginatedList(options = {}) {
 }
 
 /**
- * Get all teams
+ * Get all public teams.
  *
  * @param options
- * @param {int} options.osmId - filter by whether osmId is a member
- * @param {int} options.organizationId - filter by whether team belongs to organization
  * @param {Array[float]} options.bbox - filter for teams whose location is in bbox (xmin, ymin, xmax, ymax)
- * @return {Promise[Array]}
+ * @return {[Array]} Array of teams
  **/
-async function list(options) {
-  options = options || {}
-  const { osmId, bbox, organizationId } = options
+async function list({ bbox }) {
+  // TODO: this method should be merged to the paginatedList() method when possible
+  // for consistency, as they both return a list of teams.
 
   const st = knexPostgis(db)
 
-  let query = db('team').select(...teamAttributes, st.asGeoJSON('location'))
-
-  if (osmId) {
-    query = query.whereIn('id', function () {
-      this.select('team_id').from('member').where('osm_id', osmId)
-    })
-  }
-
-  if (organizationId) {
-    query = query.whereIn('id', function () {
-      this.select('team_id')
-        .from('organization_team')
-        .where('organization_id', organizationId)
-    })
-  }
+  let query = db('team')
+    .select(...teamAttributes, st.asGeoJSON('location'))
+    .where('privacy', 'public')
 
   if (bbox) {
     query = query.where(
