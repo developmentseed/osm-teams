@@ -37,7 +37,7 @@ test('moderator id is required to create team', async (t) => {
 
 test('list teams', async (t) => {
   await team.create({ name: 'list teams' }, 1)
-  const data = await team.list()
+  const { data } = await team.paginatedList()
   t.true(Array.isArray(data) && data.length > 0)
   data.forEach((item) => {
     t.truthy(item.name)

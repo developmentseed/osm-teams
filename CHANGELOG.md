@@ -5,11 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [v2.1.1] - 2023-01-26
+
+### Fixed
+
+* [Unauthenticated request returns all team information](<https://github.com/developmentseed/osm-teams/pull/#398>)
+
+**Full Changelog**: <https://github.com/developmentseed/osm-teams/compare/v2.1.0...v2.1.1>
+
 ## [v2.1.0] - 2023-01-19
 
 Hydra configuration now is restored, API can be used similarly to before v2. Get an access token or create a
-client on https://auth.mapping.team and use these tokens to create API requests to https://mapping.team
+client on <https://auth.mapping.team> and use these tokens to create API requests to <https://mapping.team>
 
 ### Added
 

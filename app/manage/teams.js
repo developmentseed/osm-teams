@@ -5,7 +5,6 @@ const crypto = require('crypto')
 const { routeWrapper } = require('./utils')
 const { prop, map, dissoc } = require('ramda')
 const urlRegex = require('url-regex')
-const { teamsMembersModeratorsHelper } = require('./utils')
 const profile = require('../../src/models/profile')
 const Boom = require('@hapi/boom')
 const logger = require('../../src/lib/logger')
@@ -13,27 +12,21 @@ const logger = require('../../src/lib/logger')
 const isUrl = urlRegex({ exact: true })
 const getOsmId = prop('osm_id')
 
-async function listTeams(req, reply) {
+async function listTeams(req, res) {
   const { osmId, bbox } = req.query
   let bounds = bbox
   if (bbox) {
     bounds = bbox.split(',').map((num) => parseFloat(num))
     if (bounds.length !== 4) {
-      reply.boom.badRequest('error in bbox param')
+      throw Boom.badRequest('error in bbox param')
     }
   }
 
-  try {
-    const data = await team.list({
-      osmId,
-      bbox: bounds,
-    })
-    const enhancedData = await teamsMembersModeratorsHelper(data)
-    reply.send(enhancedData)
-  } catch (err) {
-    logger.error(err)
-    throw Boom.badRequest(err.message)
-  }
+  const data = await team.list({
+    osmId,
+    bbox: bounds,
+  })
+  return res.send(data)
 }
 
 async function getTeam(req, reply) {
