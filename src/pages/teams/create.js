@@ -4,7 +4,8 @@ import Router from 'next/router'
 import { createTeam, createOrgTeam } from '../../lib/teams-api'
 import { dissoc } from 'ramda'
 import EditTeamForm from '../../components/edit-team-form'
-import { getSession } from 'next-auth/react'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '../api/auth/[...nextauth]'
 import { getOrgStaff } from '../../models/organization'
 import logger from '../../lib/logger'
 
@@ -48,7 +49,7 @@ export default function TeamCreate({ staff }) {
 }
 
 export async function getServerSideProps(ctx) {
-  const session = await getSession(ctx)
+  const session = await getServerSession(ctx.req, ctx.res, authOptions)
 
   // Get organizations the user is part of
   const staff = await getOrgStaff({ osmId: session.user_id })

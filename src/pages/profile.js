@@ -1,13 +1,15 @@
 import React from 'react'
 import Router from 'next/router'
 import join from 'url-join'
-import { getSession, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
+import { getServerSession } from 'next-auth/next'
 import Section from '../components/section'
 import SectionHeader from '../components/section-header'
 import Table from '../components/tables/table'
 import { assoc, flatten, propEq, find } from 'ramda'
 import { listMyOrganizations } from '../models/organization'
 import TeamsTable from '../components/tables/teams'
+import { authOptions } from './api/auth/[...nextauth]'
 
 const URL = process.env.APP_URL
 
@@ -78,7 +80,7 @@ export default function Profile({ orgs }) {
 }
 
 export async function getServerSideProps(ctx) {
-  const session = await getSession(ctx)
+  const session = await getServerSession(ctx.req, ctx.res, authOptions)
   const userId = session.user_id
 
   // Get orgs
