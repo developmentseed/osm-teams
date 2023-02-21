@@ -67,7 +67,7 @@
     "leaflet": "^1.7.1",
     "leaflet-control-geocoder": "^1.13.0",
     "next": "^13.0.1",
-    "next-auth": "^4.18.4",
+    "next-auth": "^4.18.8",
     "next-connect": "^0.13.0",
     "next-swagger-doc": "^0.3.6",
     "node-fetch": "^2.6.7",
