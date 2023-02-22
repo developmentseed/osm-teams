@@ -11,6 +11,7 @@ import Badge from '../../../components/badge'
 import { makeTitleCase } from '../../../../app/lib/utils'
 import theme from '../../../styles/theme'
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
+const BASE_PATH = process.env.BASE_PATH
 
 function MembersTable({ rows: allRows, onRowClick }) {
   const [page, setPage] = useState(1)
@@ -43,10 +44,13 @@ function MembersTable({ rows: allRows, onRowClick }) {
     },
     {
       key: 'External Profiles',
-      render: ({ name }) => (
+      render: ({ id, name }) => (
         <>
           <ExternalProfileButton type='osm-profile' userId={name} />
-          <ExternalProfileButton type='hdyc' userId={name} />
+          <ExternalProfileButton
+            type={BASE_PATH !== '' ? 'scoreboard' : 'hdyc'}
+            userId={BASE_PATH !== '' ? id : name}
+          />
           <ExternalProfileButton type='osmcha' userId={name} />
         </>
       ),

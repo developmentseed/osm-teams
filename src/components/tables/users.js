@@ -9,6 +9,7 @@ import SearchInput from './search-input'
 import ExternalProfileButton from '../external-profile-button'
 import { makeTitleCase } from '../../../app/lib/utils'
 import theme from '../../styles/theme'
+const BASE_PATH = process.env.BASE_PATH
 
 function UsersTable({ type, orgId, onRowClick, isSearchable }) {
   const [page, setPage] = useState(1)
@@ -64,10 +65,13 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
         },
         {
           key: 'External Profiles',
-          render: ({ name }) => (
+          render: ({ id, name }) => (
             <>
               <ExternalProfileButton type='osm-profile' userId={name} />
-              <ExternalProfileButton type='hdyc' userId={name} />
+              <ExternalProfileButton
+                type={BASE_PATH !== '' ? 'scoreboard' : 'hdyc'}
+                userId={BASE_PATH !== '' ? id : name}
+              />
               <ExternalProfileButton type='osmcha' userId={name} />
             </>
           ),
@@ -92,10 +96,13 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
         },
         {
           key: 'External Profiles',
-          render: ({ name }) => (
+          render: ({ id, name }) => (
             <>
               <ExternalProfileButton type='osm-profile' userId={name} />
-              <ExternalProfileButton type='hdyc' userId={name} />
+              <ExternalProfileButton
+                type={BASE_PATH !== '' ? 'scoreboard' : 'hdyc'}
+                userId={BASE_PATH !== '' ? id : name}
+              />
               <ExternalProfileButton type='osmcha' userId={name} />
             </>
           ),
