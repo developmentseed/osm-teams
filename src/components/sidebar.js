@@ -6,6 +6,7 @@ import NavLink from '../components/Link'
 import NextLink from 'next/link'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import Button from './button'
+import { Flex } from '@chakra-ui/react'
 
 const URL = process.env.APP_URL
 
@@ -246,7 +247,7 @@ export default function Sidebar() {
     </Fragment>
   )
   return (
-    <div className='page__sidebar'>
+    <Flex direction='column' bg='brand.600'>
       <div className='page__headline'>
         <h1 className='page__title'>
           <NextLink href='/' title='Visit the home page'>
@@ -292,6 +293,6 @@ export default function Sidebar() {
         )}
       </nav>
       <style jsx>{sidebarStyles}</style>
-    </div>
+    </Flex>
   )
 }

@@ -46,6 +46,9 @@
     ]
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.5.1",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
     "@hapi/boom": "^10.0.0",
     "body-parser": "^1.19.1",
     "chance": "^1.1.8",
@@ -60,6 +63,7 @@
     "express-promise-router": "^3.0.3",
     "express-session": "^1.17.2",
     "formik": "^2.2.9",
+    "framer-motion": "^9.0.4",
     "jsonwebtoken": "^8.5.0",
     "knex": "^2.3.0",
     "knex-paginate": "^3.0.2",
