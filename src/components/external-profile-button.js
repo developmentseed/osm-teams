@@ -1,5 +1,6 @@
 import join from 'url-join'
 const URL = process.env.APP_URL
+const BASE_PATH = process.env.BASE_PATH
 
 const ExternalProfileButton = ({ type, userId }) => {
   let targetLink
@@ -10,7 +11,10 @@ const ExternalProfileButton = ({ type, userId }) => {
 
   switch (type) {
     case 'osm-profile':
-      targetLink = `https://www.openstreetmap.org/user/${userId}`
+      targetLink =
+        BASE_PATH !== ''
+          ? join(BASE_PATH, `/user/${userId}`)
+          : `https://www.openstreetmap.org/user/${userId}`
       title = 'View profile on OSM'
       label = 'OSM'
       altText = 'OSM Logo'
@@ -24,7 +28,13 @@ const ExternalProfileButton = ({ type, userId }) => {
       logoImg = 'neis-one-logo.png'
       break
     case 'osmcha':
-      targetLink = `https://osmcha.org/?filters={"users":[{"label":"${userId}","value":"${userId}"}]}`
+      targetLink =
+        BASE_PATH !== ''
+          ? join(
+              BASE_PATH,
+              `/osmcha/?filters={"users":[{"label":"${userId}","value":"${userId}"}]}`
+            )
+          : `https://osmcha.org/?filters={"users":[{"label":"${userId}","value":"${userId}"}]}`
       title = 'View profile on OSMCha'
       label = 'OSMCha'
       altText = 'OSMCha Logo'
