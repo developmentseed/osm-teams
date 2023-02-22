@@ -8,7 +8,6 @@ import {
 import Head from 'next/head'
 import Sidebar from '../components/sidebar'
 import Layout from '../components/layout.js'
-import Button from '../components/button'
 import { ToastContainer } from 'react-toastify'
 import { SessionProvider } from 'next-auth/react'
 import join from 'url-join'
@@ -67,13 +66,6 @@ export default function App({
         <Layout>
           <Sidebar />
           <Component {...pageProps} />
-          <Button
-            href='https://forms.gle/mQQX37FcvfVMoiCW7'
-            variant='danger'
-            id='feedback'
-          >
-            Feedback
-          </Button>
         </Layout>
         <ToastContainer position='bottom-right' />
       </SessionProvider>
