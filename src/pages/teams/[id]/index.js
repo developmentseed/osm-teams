@@ -33,6 +33,7 @@ import { getOrgStaff } from '../../../lib/org-api'
 import { toast } from 'react-toastify'
 import logger from '../../../lib/logger'
 import MembersTable from './members-table'
+import Link from 'next/link'
 
 const APP_URL = process.env.APP_URL
 const Map = dynamic(() => import('../../../components/team-map'), {
@@ -352,9 +353,9 @@ class Team extends Component {
               <dl>
                 <dt>Organization:</dt>
                 <dd>
-                  <a href={`/organizations/${team.org.organization_id}`}>
+                  <Link href={`/organizations/${team.org.organization_id}`}>
                     {team.org.name}
-                  </a>
+                  </Link>
                 </dd>
                 {teamProfile
                   ? teamProfile.map((key) => {
