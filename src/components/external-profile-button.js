@@ -27,6 +27,13 @@ const ExternalProfileButton = ({ type, userId }) => {
       altText = 'How Do You Contribute Logo'
       logoImg = 'neis-one-logo.png'
       break
+    case 'scoreboard':
+      targetLink = join(BASE_PATH, `scoreboard/users/${userId}`)
+      title = 'View user profile on Scoreboard'
+      label = 'Scoreboard'
+      altText = 'Scoreboard Logo'
+      logoImg = 'scoreboard-logo.png'
+      break
     case 'osmcha':
       targetLink =
         BASE_PATH !== ''
