@@ -38,6 +38,7 @@ import logger from '../../../lib/logger'
 import MembersTable from './members-table'
 import Link from 'next/link'
 import InpageHeader from '../../../components/inpage-header'
+import { getOrgBadges } from '../../../lib/badges-api'
 
 const APP_URL = process.env.APP_URL
 const Map = dynamic(() => import('../../../components/team-map'), {
@@ -106,18 +107,21 @@ class Team extends Component {
       let team = await getTeam(id)
       let teamMembers = { moderators: [], members: [] }
       let teamProfile = []
+      let orgBadges = []
       teamMembers = await getTeamMembers(id)
       teamProfile = await getTeamProfile(id)
 
       let orgOwners = []
       if (team.org) {
         orgOwners = (await getOrgStaff(team.org.organization_id)).owners
+        orgBadges = await getOrgBadges(team.org.organization_id)
       }
       this.setState({
         team,
         teamProfile,
         teamMembers,
         orgOwners,
+        orgBadges,
         loading: false,
       })
     } catch (e) {
@@ -266,6 +270,8 @@ class Team extends Component {
     const userId = this.state.session?.user_id
     const members = map(prop('id'), teamMembers.members)
     const moderators = map(prop('osm_id'), teamMembers.moderators)
+
+    logger.info(this.state)
 
     // TODO: moderators is an array of ints while members are an array of strings. fix this.
     const isUserModerator =
