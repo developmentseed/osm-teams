@@ -19,16 +19,14 @@ import Button from '../../../components/button'
 import Modal from 'react-modal'
 import ProfileModal from '../../../components/profile-modal'
 import { contains, prop, map } from 'ramda'
-import APIClient from '../../../lib/api-client'
 import join from 'url-join'
 import { getSession } from 'next-auth/react'
+import { getOrgBadges, getUserBadges } from '../../../lib/badges-api'
 import TeamsTable from '../../../components/tables/teams'
 import UsersTable from '../../../components/tables/users'
 import logger from '../../../lib/logger'
 
 const URL = process.env.APP_URL
-
-const apiClient = new APIClient()
 
 export function SectionWrapper(props) {
   return (
@@ -72,7 +70,6 @@ class Organization extends Component {
 
     this.closeProfileModal = this.closeProfileModal.bind(this)
     this.renderBadges = this.renderBadges.bind(this)
-    this.getBadges = this.getBadges.bind(this)
   }
 
   async componentDidMount() {
@@ -90,9 +87,9 @@ class Organization extends Component {
       const profileInfo = await getUserOrgProfile(id, user.id)
 
       // Fetch badges for this organization
-      const profileBadges = (
-        await apiClient.get(`/user/${user.id}/badges`)
-      ).badges.filter((b) => b.organization_id === parseInt(id))
+      const profileBadges = (await getUserBadges(user.id)).badges.filter(
+        (b) => b.organization_id === parseInt(id)
+      )
 
       this.setState({
         profileInfo,
@@ -164,16 +161,17 @@ class Organization extends Component {
   async getBadges() {
     try {
       const { id: orgId } = this.props
-      const badges = await apiClient.get(`/organizations/${orgId}/badges`)
+      const badges = await getOrgBadges(orgId)
       this.setState({
         badges,
       })
     } catch (e) {
-      if (e.statusCode === 401) {
-        logger.error("User doesn't have access to organization badges.")
-      } else {
-        logger.error(e)
-      }
+      this.setState({
+        org: {
+          error: e,
+          status: 'error',
+        },
+      })
     }
   }
 
