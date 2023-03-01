@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Formik, Field, Form } from 'formik'
 import descriptionPopup from './description-popup'
 import urlRegex from 'url-regex'
-import Button from '../components/button'
+import { Button } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 import { uniqBy, prop } from 'ramda'
 

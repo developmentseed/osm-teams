@@ -1,6 +1,6 @@
 import React from 'react'
 import { Formik, Field, Form } from 'formik'
-import Button from '../components/button'
+import { Button } from '@chakra-ui/react'
 
 function validateBody(value) {
   if (!value) return 'Body of privacy policy is required'

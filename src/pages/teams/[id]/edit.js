@@ -4,7 +4,7 @@ import Router from 'next/router'
 import { pick, split } from 'ramda'
 import { getTeam, updateTeam, destroyTeam } from '../../../lib/teams-api'
 import EditTeamForm from '../../../components/edit-team-form'
-import Button from '../../../components/button'
+import { Button } from '@chakra-ui/react'
 import theme from '../../../styles/theme'
 import {
   getOrgTeamAttributes,

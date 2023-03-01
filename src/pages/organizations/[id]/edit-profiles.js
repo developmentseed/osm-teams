@@ -3,7 +3,7 @@ import { assoc, isEmpty } from 'ramda'
 import Popup from 'reactjs-popup'
 
 import ProfileAttributeForm from '../../../components/profile-attribute-form'
-import Button from '../../../components/button'
+import { Button } from '@chakra-ui/react'
 import Table from '../../../components/tables/table'
 import {
   addOrgMemberAttributes,

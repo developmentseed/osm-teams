@@ -5,7 +5,7 @@ import { getSession, signIn } from 'next-auth/react'
 import * as TeamInvitation from '../../../../models/team-invitation'
 import * as Team from '../../../../models/team'
 import logger from '../../../../lib/logger'
-import Button from '../../../../components/button'
+import { Button } from '@chakra-ui/react'
 
 const routeSchema = yup
   .object({

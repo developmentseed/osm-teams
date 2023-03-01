@@ -3,7 +3,7 @@ import css from 'styled-jsx/css'
 import { isEmpty } from 'ramda'
 import theme from '../styles/theme'
 import Popup from 'reactjs-popup'
-import Button from './button'
+import { Button } from '@chakra-ui/react'
 import SvgSquare from '../components/svg-square'
 
 const ModalStyles = css`

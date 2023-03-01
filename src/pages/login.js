@@ -1,5 +1,5 @@
-import Button from '../components/button'
 import React, { Component } from 'react'
+import { Button } from '@chakra-ui/react'
 
 const OSM_NAME = process.env.OSM_NAME
 class Login extends Component {

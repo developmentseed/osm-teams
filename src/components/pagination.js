@@ -1,6 +1,6 @@
 import React from 'react'
 import T from 'prop-types'
-import Button from './button'
+import { Button } from '@chakra-ui/react'
 
 const PAGE_INDEX_START = 1
 

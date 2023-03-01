@@ -13,7 +13,7 @@ import {
 } from '../lib/profiles-api'
 import { getOrg } from '../lib/org-api'
 import { getTeam } from '../lib/teams-api'
-import Button from '../components/button'
+import { Button } from '@chakra-ui/react'
 import { propOr, prop } from 'ramda'
 import logger from '../lib/logger'
 import Link from 'next/link'

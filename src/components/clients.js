@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Button from './button'
+import { Button } from '@chakra-ui/react'
 import Card from './card'
 import theme from '../styles/theme'
 import join from 'url-join'

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Button from '../components/button'
+import { Button } from '@chakra-ui/react'
 import Link from 'next/link'
 
 class Consent extends Component {

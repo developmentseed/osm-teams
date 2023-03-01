@@ -1,7 +1,7 @@
 import React from 'react'
 import { Formik, Field, Form } from 'formik'
 import { assoc } from 'ramda'
-import Button from './button'
+import { Button } from '@chakra-ui/react'
 import logger from '../lib/logger'
 
 const validate = (values) => {

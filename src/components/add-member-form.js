@@ -1,6 +1,6 @@
 import React from 'react'
 import { Formik, Field, Form } from 'formik'
-import Button from './button'
+import { Button } from '@chakra-ui/react'
 import logger from '../lib/logger'
 
 export default function AddMemberForm({ onSubmit }) {

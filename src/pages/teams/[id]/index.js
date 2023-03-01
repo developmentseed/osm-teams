@@ -8,7 +8,7 @@ import { withRouter } from 'next/router'
 
 import Section from '../../../components/section'
 import SectionHeader from '../../../components/section-header'
-import Button from '../../../components/button'
+import { Button, Heading } from '@chakra-ui/react'
 import AddMemberForm from '../../../components/add-member-form'
 import ProfileModal from '../../../components/profile-modal'
 import theme from '../../../styles/theme'
@@ -306,7 +306,7 @@ class Team extends Component {
     return (
       <article className='inner page team'>
         <div className='page__heading'>
-          <h1>{team.name}</h1>
+          <Heading>{team.name}</Heading>
           {isMember ? (
             <Button variant='primary' href={`/teams/${team.id}/profile`}>
               Edit Your Profile

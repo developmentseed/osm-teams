@@ -1,6 +1,6 @@
 import React from 'react'
 import { Formik, Field, Form } from 'formik'
-import Button from '../components/button'
+import { Button } from '@chakra-ui/react'
 
 function validateName(value) {
   if (!value) return 'Name field is required'
