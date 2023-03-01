@@ -1,11 +1,13 @@
 import React from 'react'
 import Error from 'next/error'
 import * as yup from 'yup'
-import { getSession, signIn } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
+import { getServerSession } from 'next-auth'
 import * as TeamInvitation from '../../../../models/team-invitation'
 import * as Team from '../../../../models/team'
 import logger from '../../../../lib/logger'
 import { Button } from '@chakra-ui/react'
+import { authOptions } from '../../../api/auth/[...nextauth]'
 
 const routeSchema = yup
   .object({
@@ -77,7 +79,7 @@ export async function getServerSideProps(ctx) {
   }
 
   // Check if user is authenticated
-  const session = await getSession(ctx)
+  const session = await getServerSession(ctx.req, ctx.res, authOptions)
 
   if (!session) {
     return {
