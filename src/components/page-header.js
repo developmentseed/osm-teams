@@ -37,9 +37,9 @@ export default function PageHeader() {
   const isAuthenticated = status === 'authenticated'
 
   return (
-    <Box bg='white' as='header' borderBottom={'2px'} borderColor='base.600'>
+    <Box bg='brand.500' as='header' borderBottom={'2px'} borderColor='base.600'>
       <Container
-        color='brand.600'
+        color='white'
         px={4}
         maxW='container.xl'
         position='relative'
@@ -63,6 +63,7 @@ export default function PageHeader() {
             <Box>
               <NavLink href='/' passHref legacyBehavior>
                 <Heading
+                  color='white'
                   fontFamily='mono'
                   size='md'
                   as='a'
@@ -81,6 +82,9 @@ export default function PageHeader() {
                 <NavLink href={link.url} passHref key={link.url} legacyBehavior>
                   <Button
                     as='a'
+                    variant='outline'
+                    color='white'
+                    textTransform={'lowercase'}
                     _hover={{ background: 'brand.600', textDecoration: 'none' }}
                   >
                     {link.name}
@@ -95,6 +99,10 @@ export default function PageHeader() {
                 <Menu>
                   <MenuButton
                     as={Button}
+                    variant='outline'
+                    color='white'
+                    textTransform={'lowercase'}
+                    _hover={{ background: 'brand.600', textDecoration: 'none' }}
                     size={'sm'}
                     mr={4}
                     leftIcon={<AddIcon />}
@@ -176,7 +184,7 @@ export default function PageHeader() {
         {isOpen ? (
           <Drawer isOpen={isOpen} placement='left' onClose={onClose}>
             <DrawerOverlay />
-            <DrawerContent bg='brand.500' color='white'>
+            <DrawerContent bg='brand.500' color='white' zIndex='3000'>
               <DrawerCloseButton />
               <DrawerBody>
                 <Box>
