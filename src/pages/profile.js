@@ -1,10 +1,10 @@
 import React from 'react'
 import Router from 'next/router'
+import { Box, Heading, Container } from '@chakra-ui/react'
 import join from 'url-join'
 import { useSession } from 'next-auth/react'
 import { getServerSession } from 'next-auth/next'
-import Section from '../components/section'
-import SectionHeader from '../components/section-header'
+
 import Table from '../components/tables/table'
 import { assoc, flatten, propEq, find } from 'ramda'
 import { listMyOrganizations } from '../models/organization'
@@ -15,7 +15,7 @@ const URL = process.env.APP_URL
 
 function OrganizationsSection({ orgs }) {
   if (orgs.length === 0) {
-    return <p className='inner page'>No orgs</p>
+    return <p>No orgs</p>
   }
 
   const memberOrgs = orgs.memberOrgs.map(assoc('role', 'member'))
@@ -49,7 +49,7 @@ function OrganizationsSection({ orgs }) {
 }
 
 export default function Profile({ orgs }) {
-  const { status } = useSession({
+  const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
       Router.push('/')
@@ -61,21 +61,58 @@ export default function Profile({ orgs }) {
   const hasOrgs = flatten(Object.values(orgs)).length > 0
 
   return (
-    <div className='inner page'>
-      <div className='page__heading'>
-        <h1>Teams & Organizations</h1>
-      </div>
-      {hasOrgs ? (
-        <Section>
-          <SectionHeader>Your Organizations</SectionHeader>
-          <OrganizationsSection orgs={orgs} />
-        </Section>
-      ) : null}
-      <Section>
-        <SectionHeader>Your Teams</SectionHeader>
-        <TeamsTable type='my-teams' />
-      </Section>
-    </div>
+    <Box as='main' mb={8}>
+      <Box as='section' bg='brand.700' color='white' pt={12} pb={16} mb={-8}>
+        <Container maxW='container.xl'>
+          <Heading size='lg' color='white'>
+            Welcome, {session?.user.name}
+          </Heading>
+        </Container>
+      </Box>
+      <Container maxW='container.xl'>
+        <Box
+          border={'2px'}
+          borderColor='brand.600'
+          p={4}
+          bg='white'
+          boxShadow='4px 4px 0 0 var(--chakra-colors-brand-600)'
+        >
+          <Heading
+            colorScheme='brand'
+            fontFamily='mono'
+            fontSize='lg'
+            textTransform={'uppercase'}
+            letterSpacing='0.5px'
+            mb={1}
+          >
+            My Teams
+          </Heading>
+          <TeamsTable type='my-teams' />
+        </Box>
+        {hasOrgs ? (
+          <Box
+            border={'2px'}
+            borderColor='brand.600'
+            p={4}
+            mt={8}
+            bg='white'
+            boxShadow='4px 4px 0 0 var(--chakra-colors-brand-600)'
+          >
+            <Heading
+              colorScheme='brand'
+              fontFamily='mono'
+              fontSize='lg'
+              textTransform={'uppercase'}
+              letterSpacing='0.5px'
+              mb={1}
+            >
+              My Organizations
+            </Heading>
+            <OrganizationsSection orgs={orgs} />
+          </Box>
+        ) : null}
+      </Container>
+    </Box>
   )
 }
 
