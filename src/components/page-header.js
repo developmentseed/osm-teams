@@ -27,7 +27,6 @@ import NavLink from '../components/Link'
 
 const Links = [
   { url: '/teams', name: 'Explore' },
-  { url: '/profile', name: 'Dashboard' },
   { url: '/developers', name: 'About' },
 ]
 
@@ -91,6 +90,19 @@ export default function PageHeader() {
                   </Button>
                 </NavLink>
               ))}
+              {isAuthenticated && (
+                <NavLink href={'/profile'} passHref legacyBehavior>
+                  <Button
+                    as='a'
+                    variant='outline'
+                    color='white'
+                    textTransform={'lowercase'}
+                    _hover={{ background: 'brand.600', textDecoration: 'none' }}
+                  >
+                    Dashboard
+                  </Button>
+                </NavLink>
+              )}
             </HStack>
           </HStack>
           <Flex alignItems={'center'} ml={'auto'}>
@@ -186,10 +198,16 @@ export default function PageHeader() {
             <DrawerOverlay />
             <DrawerContent bg='brand.500' color='white' zIndex='3000'>
               <DrawerCloseButton />
-              <DrawerBody>
+              <DrawerBody py={4}>
                 <Box>
                   <NavLink href='/'>
-                    <Heading color='white' size='lg'>
+                    <Heading
+                      color='white'
+                      fontFamily='mono'
+                      size='md'
+                      as='a'
+                      _hover={{ textDecoration: 'none' }}
+                    >
                       OSM Teams
                     </Heading>
                   </NavLink>

@@ -86,7 +86,7 @@ export default function Home() {
       >
         <Code
           width='100%'
-          fonFamily='heading'
+          fonFamily='mono'
           marginBottom='1rem'
           lineHeight={1}
           transition={'text-shadow 0.5s ease'}
@@ -97,16 +97,22 @@ export default function Home() {
         >
           {title}
         </Code>
-        <Text pb='8' fontFamily='heading'>
+        <Text pb='8' fontFamily='mono'>
           Create teams of {OSM_NAME} users and import them into your apps.
           Making maps better, together. Enable teams in OpenStreetMap
           applications, or build your team here. It’s dangerous to map alone!
         </Text>
         {status === 'authenticated' ? (
           <Box border='1px' borderStyle={'dashed'} borderWidth={2} p={8}>
-            <Heading size='lg' color='white'>
+            <Code
+              fontSize='xl'
+              fonFamily='mono'
+              marginBottom='1rem'
+              colorScheme={'white'}
+              whiteSpace='pre'
+            >
               Welcome, {session?.user?.name || 'mapper'}
-            </Heading>
+            </Code>
             <UnorderedList
               display='flex'
               flexDir='column'
