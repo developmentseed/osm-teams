@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import dynamic from 'next/dynamic'
 import Router from 'next/router'
-import Section from '../../components/section'
+import { Box, Checkbox, Container, Heading } from '@chakra-ui/react'
 import Table from '../../components/tables/table'
-import theme from '../../styles/theme'
 import join from 'url-join'
 import { pick, map, sort, descend, ascend, prop } from 'ramda'
 import { getTeams } from '../../lib/teams-api'
@@ -166,7 +165,11 @@ export default class TeamList extends Component {
     return (
       <Map
         markers={centers}
-        style={{ height: '360px' }}
+        style={{
+          height: '360px',
+          border: '2px solid #354797',
+          boxShadow: '4px 4px 0 0 var(--chakra-colors-brand-600)',
+        }}
         onBoundsChange={this.onMapBoundsChange.bind(this)}
       />
     )
@@ -184,44 +187,44 @@ export default class TeamList extends Component {
   render() {
     const { searchOnMapMove } = this.state
     return (
-      <div className='inner page'>
-        <h1>Explore All Teams</h1>
-        {this.renderMap()}
-        <fieldset>
-          <input
+      <Box as='main'>
+        <Box as='section' bg='brand.700' color='white' pt={12} pb={16} mb={-8}>
+          <Container maxW='container.xl'>
+            <Heading color='white'>Explore All Teams</Heading>
+          </Container>
+        </Box>
+        <Container maxW='container.xl' as='section'>
+          {this.renderMap()}
+          <Checkbox
+            border={'2px'}
+            marginTop={'-4rem'}
+            marginLeft={'1rem'}
+            position='absolute'
+            zIndex='2000'
+            borderColor='brand.600'
+            p={2}
+            bg='white'
             name='map-bounds-filter'
             id='map-bounds-filter'
             type='checkbox'
+            colorScheme={'brand'}
             checked={searchOnMapMove}
             onChange={(e) => this.setSearchOnMapMove(e)}
-          />
-          <label for='map-bounds-filter'>Filter teams by map</label>
-        </fieldset>
-        <Section>{this.renderTeams()}</Section>
-        <style jsx>
-          {`
-            fieldset {
-              display: inline-block;
-              padding: 0.5rem;
-              background: white;
-              border-color: ${theme.colors.primaryColor};
-              border-color: #384a9e;
-              position: relative;
-              top: -4rem;
-              left: 1rem;
-              z-index: 1000;
-            }
-            fieldset input,
-            fieldset label {
-              cursor: pointer;
-            }
-
-            fieldset input[type='checkbox'] {
-              margin-right: 0.5rem;
-            }
-          `}
-        </style>
-      </div>
+          >
+            Filter teams by map
+          </Checkbox>
+          <Box
+            border={'2px'}
+            borderColor='brand.600'
+            p={4}
+            mt={8}
+            bg='white'
+            boxShadow='4px 4px 0 0 var(--chakra-colors-brand-600)'
+          >
+            {this.renderTeams()}
+          </Box>
+        </Container>
+      </Box>
     )
   }
 }
