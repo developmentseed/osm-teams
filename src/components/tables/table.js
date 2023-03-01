@@ -1,10 +1,18 @@
 import React from 'react'
-import theme from '../../styles/theme'
+import {
+  Table as BaseTable,
+  Thead,
+  Tr,
+  Td,
+  Th,
+  Tbody,
+  Box,
+} from '@chakra-ui/react'
 
 function TableHead({ dataCy, columns, sort, setSort, onClick }) {
   return (
-    <thead>
-      <tr>
+    <Thead>
+      <Tr>
         {columns.map(({ sortable, label, key }) => {
           const isSorted = sortable && sort.key === key
           const currentSortDirection = (isSorted && sort.direction) || 'none'
@@ -16,7 +24,7 @@ function TableHead({ dataCy, columns, sort, setSort, onClick }) {
           }
 
           return (
-            <th
+            <Th
               key={`table-head-column-${key}`}
               data-cy={`${dataCy}-head-column-${key}`}
               className={sortable && 'sortable'}
@@ -31,20 +39,31 @@ function TableHead({ dataCy, columns, sort, setSort, onClick }) {
                   })
                 }
               }}
+              padding='0.5rem 1rem'
+              verticalAlign='middle'
+              position='relative'
+              textTransform='uppercase'
+              textAlign='left'
+              fontFamily='mono'
+              fontWeight='base'
+              fontSize='sm'
+              letterSpacing='0.125rem'
+              background='brand.50'
+              borderBottom='4px solid var(--chakra-colors-brand-600)'
             >
               {label || key}
               {sortable && ` ${sortIcon}`}
-            </th>
+            </Th>
           )
         })}
-      </tr>
-    </thead>
+      </Tr>
+    </Thead>
   )
 }
 
 function Row({ columns, row, index, onRowClick, showRowNumber }) {
   return (
-    <tr
+    <Tr
       key={`row-${index}`}
       onClick={() => {
         onRowClick && onRowClick(row, index)
@@ -57,15 +76,28 @@ function Row({ columns, row, index, onRowClick, showRowNumber }) {
           item = index + 1
         }
         return (
-          <td
+          <Td
             width={showRowNumber && key === ' ' && '1rem'}
+            padding='0.875rem'
+            borderBottom={1}
+            borderColor='base.100'
+            fontSize='0.9rem'
+            _first={[
+              null,
+              {
+                position: 'sticky',
+                left: '0',
+                zIndex: '2',
+                borderRight: '2px solid var(--chakra-colors-brand-100)',
+              },
+            ]}
             key={`row-${index}-key-${key}`}
           >
             {item}
-          </td>
+          </Td>
         )
       })}
-    </tr>
+    </Tr>
   )
 }
 
@@ -78,16 +110,16 @@ function TableBody({
 }) {
   const isEmpty = !rows || rows.length === 0
   return (
-    <tbody
+    <Tbody
       className='lh-copy'
       data-cy={isEmpty ? 'empty-table' : 'not-empty-table'}
     >
       {isEmpty ? (
-        <tr>
-          <td key='empty-row' colSpan={columns.length}>
+        <Tr>
+          <Td key='empty-row' colSpan={columns.length}>
             {emptyPlaceHolder || 'No data available.'}
-          </td>
-        </tr>
+          </Td>
+        </Tr>
       ) : (
         rows.map((row, index) => {
           return (
@@ -102,7 +134,7 @@ function TableBody({
           )
         })
       )}
-    </tbody>
+    </Tbody>
   )
 }
 
@@ -118,8 +150,22 @@ export default function Table({
 }) {
   showRowNumbers && columns.unshift({ key: ' ' })
   return (
-    <div className='table-wrapper'>
-      <table data-cy={dataCy}>
+    <Box
+      display='grid'
+      gridTemplateColumns='minmax(0, 1fr)'
+      overflowS='scroll'
+      position='relative'
+      my={2}
+    >
+      <BaseTable
+        data-cy={dataCy}
+        borderCollapse={['collapse', 'separate']}
+        borderSpacing='0'
+        marginBottom={2}
+        tableLayout='fixed'
+        whiteSpace='pre'
+        overflowX='scroll'
+      >
         <TableHead
           dataCy={dataCy}
           columns={columns}
@@ -133,43 +179,10 @@ export default function Table({
           emptyPlaceHolder={emptyPlaceHolder}
           showRowNumbers={showRowNumbers}
         />
-        <style jsx global>
+        {/* <style jsx global>
           {`
-            .table-wrapper {
-              display: grid;
-              grid-template-columns: minmax(0, 1fr);
-              overflow-x: scroll;
-              position: relative;
-            }
-            table {
-              border-collapse: collapse;
-              border-spacing: 0;
-              margin-bottom: ${theme.layout.globalSpacing};
-              table-layout: fixed;
-              white-space: pre;
-              overflow-x: scroll;
-            }
-            thead th {
-              padding: 0.5rem 1rem;
-              vertical-align: middle;
-              position: relative;
-              text-transform: uppercase;
-              text-align: left;
-              font-family: ${theme.typography.headingFontFamily};
-              font-weight: ${theme.typography.baseFontWeight};
-              font-size: 0.875rem;
-              letter-spacing: 0.125rem;
-              background: ${theme.colors.primaryLite};
-              border-bottom: 4px solid ${theme.colors.primaryColor};
-            }
             thead th.sortable {
               cursor: pointer;
-            }
-
-            tbody tr td {
-              padding: 0.875rem;
-              border-bottom: 1px solid ${theme.colors.baseColorLight};
-              font-size: 0.9rem;
             }
 
             tbody tr {
@@ -183,9 +196,6 @@ export default function Table({
               }
             `}
             @media (max-width: ${theme.mediaRanges.medium}) {
-              table {
-                border-collapse: separate;
-              }
               td:first-child,
               th:first-child {
                 position: sticky;
@@ -198,8 +208,8 @@ export default function Table({
               }
             }
           `}
-        </style>
-      </table>
-    </div>
+        </style> */}
+      </BaseTable>
+    </Box>
   )
 }
