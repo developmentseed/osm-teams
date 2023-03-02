@@ -1,6 +1,6 @@
 import join from 'url-join'
 const URL = process.env.APP_URL
-const BASE_PATH = process.env.BASE_PATH
+const OSM_DOMAIN = process.env.OSM_DOMAIN
 const OSMCHA_URL = process.env.OSMCHA_URL
 const SCOREBOARD_URL = process.env.SCOREBOARD_URL
 const HDYC_URL = process.env.HDYC_URL
@@ -14,10 +14,7 @@ const ExternalProfileButton = ({ type, userId }) => {
 
   switch (type) {
     case 'osm-profile':
-      targetLink =
-        BASE_PATH !== ''
-          ? join(BASE_PATH, `/user/${userId}`)
-          : `https://www.openstreetmap.org/user/${userId}`
+      targetLink = join(OSM_DOMAIN, `/user/${userId}`)
       title = 'View profile on OSM'
       label = 'OSM'
       altText = 'OSM Logo'
