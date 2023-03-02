@@ -5,7 +5,6 @@ import { pick } from 'ramda'
 import { getOrg, updateOrg, destroyOrg } from '../../../lib/org-api'
 import EditOrgForm from '../../../components/edit-org-form'
 import { Button } from '@chakra-ui/react'
-import theme from '../../../styles/theme'
 import logger from '../../../lib/logger'
 import Link from 'next/link'
 
@@ -168,7 +167,7 @@ export default class OrgEdit extends Component {
             </span>
             <span style={{ marginRight: '1rem' }}>
               <Button
-                variant='primary'
+                as={Link}
                 href={`/organizations/${org.id}/edit-team-profiles`}
               >
                 Edit Team Attributes
@@ -190,7 +189,7 @@ export default class OrgEdit extends Component {
           </p>
           {this.renderDeleter()}
         </section>
-        <style jsx global>
+        {/* <style jsx global>
           {`
             .form-control {
               flex-direction: column;
@@ -208,7 +207,7 @@ export default class OrgEdit extends Component {
               margin-right: 2rem;
             }
           `}
-        </style>
+        </style> */}
       </article>
     )
   }

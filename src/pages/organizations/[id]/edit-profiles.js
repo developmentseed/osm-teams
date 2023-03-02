@@ -11,7 +11,7 @@ import {
   modifyAttribute,
   deleteAttribute,
 } from '../../../lib/profiles-api'
-import theme from '../../../styles/theme'
+
 import logger from '../../../lib/logger'
 import Link from 'next/link'
 
@@ -82,7 +82,7 @@ export default class OrgEditProfile extends Component {
             Delete
           </li>
         </ul>
-        <style jsx>
+        {/* <style jsx>
           {`
             ul {
               list-style: none;
@@ -98,7 +98,7 @@ export default class OrgEditProfile extends Component {
               color: ${theme.colors.secondaryColor};
             }
           `}
-        </style>
+        </style> */}
       </Popup>
     )
   }

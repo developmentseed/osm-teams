@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Formik, Field, Form } from 'formik'
 import descriptionPopup from './description-popup'
 import urlRegex from 'url-regex'
-import { Button } from '@chakra-ui/react'
+import { Button, Heading } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 import { uniqBy, prop } from 'ramda'
 
@@ -122,7 +122,7 @@ export default function EditTeamForm({
 
         return (
           <Form>
-            <h2>Details</h2>
+            <Heading variant='sectionHead'>Details</Heading>
             <div className='form-control form-control__vertical'>
               <label htmlFor='name'>
                 Name<span className='form--required'>*</span>
@@ -198,7 +198,9 @@ export default function EditTeamForm({
             )}
             {extraOrgTeamFields.length > 0 ? (
               <>
-                <h2>Organization Attributes</h2>
+                <Heading as='h3' size='sm'>
+                  Organization Attributes
+                </Heading>
                 {extraOrgTeamFields}
               </>
             ) : (
@@ -206,13 +208,15 @@ export default function EditTeamForm({
             )}
             {extraTeamFields.length > 0 ? (
               <>
-                <h2>Other Team Attributes</h2>
+                <Heading as='h3' size='sm'>
+                  Other Team Attributes
+                </Heading>
                 {extraTeamFields}
               </>
             ) : (
               ''
             )}
-            <h2>Location</h2>
+            <Heading variant='sectionHead'>Location</Heading>
             <div className='form-control form-control__vertical'>
               <FormMap
                 style={{ height: '300px', width: '100%' }}
@@ -225,7 +229,7 @@ export default function EditTeamForm({
               {status && status.errors && renderErrors(status.errors)}
               <Button
                 disabled={isSubmitting}
-                variant='primary'
+                variant='solid'
                 onClick={() => {
                   if (Object.keys(errors).length) {
                     setErrors(errors)
@@ -236,8 +240,9 @@ export default function EditTeamForm({
                   return submitForm()
                 }}
                 type='submit'
-                value='submit'
-              />
+              >
+                Submit
+              </Button>
             </div>
           </Form>
         )

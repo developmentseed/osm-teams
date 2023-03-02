@@ -1,9 +1,8 @@
 import React, { useRef } from 'react'
 import css from 'styled-jsx/css'
 import { isEmpty } from 'ramda'
-import theme from '../styles/theme'
 import Popup from 'reactjs-popup'
-import { Button } from '@chakra-ui/react'
+import { Button, CloseButton } from '@chakra-ui/react'
 import SvgSquare from '../components/svg-square'
 
 const ModalStyles = css`
@@ -75,26 +74,15 @@ const popupStyles = css`
   }
 
   li:hover {
-    background: ${theme.colors.baseColorLight};
-    color: ${theme.colors.secondaryColor};
+    background: 'blackAlpha.300';
+    color: 'red.600';
   }
 `
 
 function renderActions(actions) {
   return (
     <Popup
-      trigger={
-        <span
-          className='button'
-          style={{
-            cursor: 'pointer',
-            alignSelf: 'start',
-            fontSize: '0.875rem',
-          }}
-        >
-          Edit user access
-        </span>
-      }
+      trigger={<Button size='sm'>Edit user access</Button>}
       position='bottom left'
       on='click'
       closeOnDocumentClick
@@ -158,7 +146,7 @@ export default function ProfileModal({
               }
             })}
         </dl>
-        <style jsx>{`
+        {/* <style jsx>{`
           dl {
             display: grid;
             grid-template-columns: 4rem 1fr;
@@ -169,7 +157,7 @@ export default function ProfileModal({
             font-family: ${theme.typography.headingFontFamily};
             text-transform: uppercase;
           }
-        `}</style>
+        `}</style> */}
       </>
     )
   }
@@ -189,12 +177,7 @@ export default function ProfileModal({
           )}
           <h3>{user.name}</h3>
         </div>
-        <Button
-          flat
-          useIcon='close'
-          variant='small'
-          onClick={() => onClose()}
-        />
+        <CloseButton onClick={() => onClose()} />
       </div>
       {!isEmpty(actions) && renderActions(actions, ref)}
       {profileContent}

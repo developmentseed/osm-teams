@@ -2,14 +2,13 @@ import React, { Component } from 'react'
 import * as Yup from 'yup'
 import { Formik, Field, Form } from 'formik'
 import APIClient from '../../../../../lib/api-client'
-import { Button } from '@chakra-ui/react'
+import { Box, Button } from '@chakra-ui/react'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import join from 'url-join'
 import Router from 'next/router'
 import logger from '../../../../../lib/logger'
 import Link from 'next/link'
-import theme from '../../../../../styles/theme'
 
 const URL = process.env.APP_URL
 
@@ -25,19 +24,6 @@ function ButtonWrapper({ children }) {
       }
     }`}</style>
     </div>
-  )
-}
-
-function Section({ children }) {
-  return (
-    <section>
-      {children}
-      <style jsx global>{`
-      section {
-        margin-bottom: 20px;
-      }
-    }`}</style>
-    </section>
   )
 }
 
@@ -101,7 +87,7 @@ export default class NewBadgeAssignment extends Component {
         <Link href={join(URL, `/organizations/${orgId}`)}>
           ← Back to Organization Page
         </Link>
-        <Section>
+        <Box mb={8}>
           <Formik
             initialValues={{
               assignedAt: format(Date.now(), 'yyyy-MM-dd'),
@@ -213,8 +199,8 @@ export default class NewBadgeAssignment extends Component {
               )
             }}
           />
-        </Section>
-        <style jsx>
+        </Box>
+        {/* <style jsx>
           {`
             dl {
               display: grid;
@@ -231,7 +217,7 @@ export default class NewBadgeAssignment extends Component {
               grid-column: 1 / span 12;
             }
           `}
-        </style>
+        </style> */}
       </>
     )
   }

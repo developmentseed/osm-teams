@@ -3,7 +3,7 @@ import { assoc, isEmpty } from 'ramda'
 import Popup from 'reactjs-popup'
 
 import ProfileAttributeForm from '../../../components/profile-attribute-form'
-import { Button } from '@chakra-ui/react'
+import { Box, Button, Container, Flex, Heading } from '@chakra-ui/react'
 import Table from '../../../components/tables/table'
 import {
   addTeamMemberAttributes,
@@ -11,9 +11,10 @@ import {
   modifyAttribute,
   deleteAttribute,
 } from '../../../lib/profiles-api'
-import theme from '../../../styles/theme'
+
 import logger from '../../../lib/logger'
 import Link from 'next/link'
+import InpageHeader from '../../../components/inpage-header'
 
 export default class TeamEditProfile extends Component {
   static async getInitialProps({ query }) {
@@ -82,7 +83,7 @@ export default class TeamEditProfile extends Component {
             Delete
           </li>
         </ul>
-        <style jsx>
+        {/* <style jsx>
           {`
             ul {
               list-style: none;
@@ -98,7 +99,7 @@ export default class TeamEditProfile extends Component {
               color: ${theme.colors.secondaryColor};
             }
           `}
-        </style>
+        </style> */}
       </Popup>
     )
   }
@@ -158,83 +159,94 @@ export default class TeamEditProfile extends Component {
     )
 
     return (
-      <article className='inner page'>
-        <Link href={`/teams/${teamId}/edit`}>← Back to Edit Team</Link>
-        <section>
-          <h2>Current Attributes</h2>
-          <p>
-            Members of your team will be able to add these attributes to their
-            profile.
-          </p>
-          {memberAttributes && isEmpty(memberAttributes) ? (
-            "You haven't added any attributes yet!"
-          ) : (
-            <Table rows={rows} columns={columns} />
-          )}
-        </section>
-        <section>
-          {this.state.isModifying ? (
-            <>
-              <h2>Modify attribute</h2>
-              <ProfileAttributeForm
-                initialValues={this.state.rowToModify}
-                onSubmit={async (attribute) => {
-                  await modifyAttribute(attribute.id, attribute)
-                  this.setState({ isModifying: false })
-                  return this.getAttributes()
-                }}
-              />
-              {CancelButton}
-            </>
-          ) : (
-            ''
-          )}
-          {this.state.isAdding ? (
-            <>
-              <h2>Add an attribute</h2>
-              <p>Add an attribute to your team member&apos;s profile</p>
-              <ProfileAttributeForm
-                onSubmit={async (attributes) => {
-                  await addTeamMemberAttributes(teamId, attributes)
-                  this.setState({ isAdding: false })
-                  return this.getAttributes()
-                }}
-              />
-              {CancelButton}
-            </>
-          ) : (
-            !(this.state.isModifying || this.state.isDeleting) && (
-              <Button
-                onClick={() =>
-                  this.setState({
-                    isAdding: true,
-                    isModifying: false,
-                  })
-                }
-              >
-                Add attribute
-              </Button>
-            )
-          )}
-          {this.state.isDeleting ? (
-            <>
-              <Button
-                variant='danger'
-                onClick={async () => {
-                  await deleteAttribute(this.state.rowToDelete.id)
-                  this.setState({ isDeleting: false })
-                  return this.getAttributes()
-                }}
-              >
-                Confirm Delete
-              </Button>
-              <span style={{ marginLeft: '1rem' }}>{CancelButton}</span>
-            </>
-          ) : (
-            ''
-          )}
-        </section>
-      </article>
+      <Box as='main' mb={16}>
+        <InpageHeader>
+          <Link href={`/teams/${teamId}/edit`}>← Back to Edit Team</Link>
+          <Heading color='white'>Editing Team Attributes</Heading>
+        </InpageHeader>
+        <Container maxW='container.xl' as='section'>
+          <Box layerStyle='shadowed' as='article'>
+            <Heading as='h2' size='md'>
+              Current Attributes
+            </Heading>
+            <p>
+              Members of your team will be able to add these attributes to their
+              profile.
+            </p>
+            {memberAttributes && isEmpty(memberAttributes) ? (
+              "You haven't added any attributes yet!"
+            ) : (
+              <Table rows={rows} columns={columns} />
+            )}
+          </Box>
+          <Box layerStyle={'shadowed'} as='section'>
+            {this.state.isModifying ? (
+              <>
+                <Heading size='md' as='h3'>
+                  Modify attribute
+                </Heading>
+                <ProfileAttributeForm
+                  initialValues={this.state.rowToModify}
+                  onSubmit={async (attribute) => {
+                    await modifyAttribute(attribute.id, attribute)
+                    this.setState({ isModifying: false })
+                    return this.getAttributes()
+                  }}
+                />
+                {CancelButton}
+              </>
+            ) : (
+              ''
+            )}
+            {this.state.isAdding ? (
+              <>
+                <Heading size='md' as='h3'>
+                  Add an attribute
+                </Heading>
+                <p>Add an attribute to your team member&apos;s profile</p>
+                <ProfileAttributeForm
+                  onSubmit={async (attributes) => {
+                    await addTeamMemberAttributes(teamId, attributes)
+                    this.setState({ isAdding: false })
+                    return this.getAttributes()
+                  }}
+                />
+                {CancelButton}
+              </>
+            ) : (
+              !(this.state.isModifying || this.state.isDeleting) && (
+                <Button
+                  onClick={() =>
+                    this.setState({
+                      isAdding: true,
+                      isModifying: false,
+                    })
+                  }
+                >
+                  Add attribute
+                </Button>
+              )
+            )}
+            {this.state.isDeleting ? (
+              <Flex gap={4}>
+                <Button
+                  colorScheme='red'
+                  onClick={async () => {
+                    await deleteAttribute(this.state.rowToDelete.id)
+                    this.setState({ isDeleting: false })
+                    return this.getAttributes()
+                  }}
+                >
+                  Confirm Delete
+                </Button>
+                {CancelButton}
+              </Flex>
+            ) : (
+              ''
+            )}
+          </Box>
+        </Container>
+      </Box>
     )
   }
 }

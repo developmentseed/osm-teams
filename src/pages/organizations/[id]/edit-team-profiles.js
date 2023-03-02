@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { assoc, isEmpty } from 'ramda'
 import Popup from 'reactjs-popup'
-
+import { Box, Flex, Heading } from '@chakra-ui/react'
 import ProfileAttributeForm from '../../../components/profile-attribute-form'
 import { Button } from '@chakra-ui/react'
 import Table from '../../../components/tables/table'
@@ -14,6 +14,7 @@ import {
 import theme from '../../../styles/theme'
 import logger from '../../../lib/logger'
 import Link from 'next/link'
+import InpageHeader from '../../../components/inpage-header'
 
 export default class OrgEditTeamProfile extends Component {
   static async getInitialProps({ query }) {
@@ -158,12 +159,17 @@ export default class OrgEditTeamProfile extends Component {
     )
 
     return (
-      <article className='inner page'>
-        <Link href={`/organizations/${orgId}/edit`}>
-          ← Back to Edit Organization
-        </Link>
-        <section>
-          <h2>Current Attributes</h2>
+      <Box as='main' mb={16}>
+        <InpageHeader>
+          <Link href={`/organizations/${orgId}/edit`}>
+            ← Back to Edit Organization
+          </Link>
+          <Heading color='white'>Editing Organization Team Attributes</Heading>
+        </InpageHeader>
+        <Box layerStyle='shadowed' as='section'>
+          <Heading as='h2' size='md'>
+            Current Attributes
+          </Heading>
           <p>
             Teams of your organization will be able to add these attributes to
             their team details.
@@ -173,11 +179,13 @@ export default class OrgEditTeamProfile extends Component {
           ) : (
             <Table rows={rows} columns={columns} />
           )}
-        </section>
-        <section>
+        </Box>
+        <Box layerStyle='shadowed' as='section'>
           {this.state.isModifying ? (
             <>
-              <h2>Modify attribute</h2>
+              <Heading as='h2' size='md'>
+                Modify Attributes
+              </Heading>
               <ProfileAttributeForm
                 formType='org'
                 initialValues={this.state.rowToModify}
@@ -194,7 +202,9 @@ export default class OrgEditTeamProfile extends Component {
           )}
           {this.state.isAdding ? (
             <>
-              <h2>Add an attribute</h2>
+              <Heading size='md' as='h3'>
+                Add an attribute
+              </Heading>
               <p>
                 Add an attribute to your organization&apos;s teams&apos; details
               </p>
@@ -223,9 +233,9 @@ export default class OrgEditTeamProfile extends Component {
             )
           )}
           {this.state.isDeleting ? (
-            <>
+            <Flex gap={4}>
               <Button
-                variant='danger'
+                colorScheme='red'
                 onClick={async () => {
                   await deleteAttribute(this.state.rowToDelete.id)
                   this.setState({ isDeleting: false })
@@ -234,13 +244,13 @@ export default class OrgEditTeamProfile extends Component {
               >
                 Confirm Delete
               </Button>
-              <span style={{ marginLeft: '1rem' }}>{CancelButton}</span>
-            </>
+              {CancelButton}
+            </Flex>
           ) : (
             ''
           )}
-        </section>
-      </article>
+        </Box>
+      </Box>
     )
   }
 }

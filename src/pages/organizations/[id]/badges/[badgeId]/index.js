@@ -6,7 +6,7 @@ import { getOrg } from '../../../../../lib/org-api'
 import { Button } from '@chakra-ui/react'
 import Router from 'next/router'
 import { toast } from 'react-toastify'
-import theme from '../../../../../styles/theme'
+
 import Table from '../../../../../components/tables/table'
 import { toDateString } from '../../../../../lib/utils'
 import logger from '../../../../../lib/logger'
@@ -269,7 +269,7 @@ export default class EditBadge extends Component {
             />
           )}
         </section>
-        <style jsx global>
+        {/* <style jsx global>
           {`
             .danger-zone {
               border: 2px solid ${theme.colors.secondaryColor} !important;
@@ -290,7 +290,7 @@ export default class EditBadge extends Component {
               grid-column: 1 / span 12;
             }
           `}
-        </style>
+        </style> */}
       </article>
     )
   }

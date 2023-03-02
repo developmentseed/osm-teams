@@ -20,7 +20,7 @@ export default function Badge({ name, color, dot, children }) {
     <span className={classNames}>
       {children}
       {name}
-      <style jsx>
+      {/* <style jsx>
         {`
           .badge {
             display: inline-flex;
@@ -47,7 +47,7 @@ export default function Badge({ name, color, dot, children }) {
             margin-right: 0.25rem;
           }
         `}
-      </style>
+      </style> */}
     </span>
   )
 }

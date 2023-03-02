@@ -1,12 +1,11 @@
 import React from 'react'
 import Link from 'next/link'
-import theme from '../styles/theme'
 
 const Item = ({ item, children }) => {
   return (
     <Link href={item.href} as={item.as || item.href}>
       {children(item)}
-      <style jsx>
+      {/* <style jsx>
         {`
           a {
             display: flex;
@@ -18,7 +17,7 @@ const Item = ({ item, children }) => {
             background: ${theme.colors.primaryLite};
           }
         `}
-      </style>
+      </style> */}
     </Link>
   )
 }

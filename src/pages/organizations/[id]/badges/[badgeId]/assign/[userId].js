@@ -2,14 +2,13 @@ import React, { Component } from 'react'
 import * as Yup from 'yup'
 import { Formik, Field, Form } from 'formik'
 import APIClient from '../../../../../../lib/api-client'
-import { Button } from '@chakra-ui/react'
+import { Box, Button, Heading } from '@chakra-ui/react'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import join from 'url-join'
 import Router from 'next/router'
 import logger from '../../../../../../lib/logger'
 import Link from 'next/link'
-import theme from '../../../../../../styles/theme'
 import Badge from '../../../../../../components/badge'
 
 const URL = process.env.APP_URL
@@ -26,19 +25,6 @@ function ButtonWrapper({ children }) {
       }
     }`}</style>
     </div>
-  )
-}
-
-function Section({ children }) {
-  return (
-    <section>
-      {children}
-      <style jsx global>{`
-      section {
-        margin-bottom: 20px;
-      }
-    }`}</style>
-    </section>
   )
 }
 
@@ -114,8 +100,8 @@ export default class EditBadgeAssignment extends Component {
         <Link href={join(URL, `/organizations/${orgId}/badges/${badgeId}`)}>
           ← Back to Badge
         </Link>
-        <Section>
-          <h1>Badge Assignment</h1>
+        <Box mb={8}>
+          <Heading>Badge Assignment</Heading>
           <Formik
             initialValues={{
               assignedAt:
@@ -216,9 +202,9 @@ export default class EditBadgeAssignment extends Component {
               )
             }}
           />
-        </Section>
+        </Box>
         {badge && (
-          <Section>
+          <Box mb={8}>
             <div>
               {this.state.isDeleting ? (
                 <>
@@ -264,9 +250,9 @@ export default class EditBadgeAssignment extends Component {
                 />
               )}
             </div>
-          </Section>
+          </Box>
         )}
-        <style jsx>
+        {/* <style jsx>
           {`
             dl {
               display: grid;
@@ -282,7 +268,7 @@ export default class EditBadgeAssignment extends Component {
               font-weight: ${theme.typography.baseFontSemiBold};
             }
           `}
-        </style>
+        </style> */}
       </>
     )
   }
