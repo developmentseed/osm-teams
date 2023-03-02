@@ -220,6 +220,13 @@ export default function PageHeader() {
                       </NavLink>
                     </ListItem>
                   ))}
+                  {isAuthenticated && (
+                    <ListItem>
+                      <NavLink href={'/profile'}>
+                        <span>Dashboard</span>
+                      </NavLink>
+                    </ListItem>
+                  )}
                 </List>
               </DrawerBody>
             </DrawerContent>
