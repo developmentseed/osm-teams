@@ -1,6 +1,9 @@
 import join from 'url-join'
 const URL = process.env.APP_URL
 const BASE_PATH = process.env.BASE_PATH
+const OSMCHA_URL = process.env.OSMCHA_URL
+const SCOREBOARD_URL = process.env.SCOREBOARD_URL
+const HDYC_URL = process.env.HDYC_URL
 
 const ExternalProfileButton = ({ type, userId }) => {
   let targetLink
@@ -21,27 +24,24 @@ const ExternalProfileButton = ({ type, userId }) => {
       logoImg = 'osm_logo.png'
       break
     case 'hdyc':
-      targetLink = `https://hdyc.neis-one.org/?${userId}`
+      targetLink = join(HDYC_URL, `/?${userId}`)
       title = 'View profile on HDYC'
       label = 'HDYC'
       altText = 'How Do You Contribute Logo'
       logoImg = 'neis-one-logo.png'
       break
     case 'scoreboard':
-      targetLink = join(BASE_PATH, `scoreboard/users/${userId}`)
+      targetLink = join(SCOREBOARD_URL, `/users/${userId}`)
       title = 'View user profile on Scoreboard'
       label = 'Scoreboard'
       altText = 'Scoreboard Logo'
-      logoImg = 'scoreboard-logo.png'
+      logoImg = 'scoreboard-logo.svg'
       break
     case 'osmcha':
-      targetLink =
-        BASE_PATH !== ''
-          ? join(
-              BASE_PATH,
-              `/osmcha/?filters={"users":[{"label":"${userId}","value":"${userId}"}]}`
-            )
-          : `https://osmcha.org/?filters={"users":[{"label":"${userId}","value":"${userId}"}]}`
+      targetLink = join(
+        OSMCHA_URL,
+        `/?filters={"users":[{"label":"${userId}","value":"${userId}"}]}`
+      )
       title = 'View profile on OSMCha'
       label = 'OSMCha'
       altText = 'OSMCha Logo'

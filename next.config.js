@@ -40,6 +40,9 @@ module.exports = {
     BASE_PATH: process.env.BASE_PATH || '',
     HYDRA_URL: process.env.HYDRA_URL || 'https://auth.mapping.team/hyauth',
     AUTH_URL: process.env.AUTH_URL || 'https://auth.mapping.team',
+    OSMCHA_URL: process.env.OSMCH_URL || 'https://osmcha.org',
+    SCOREBOARD_URL: process.env.SCOREBOARD_URL || '',
+    HDYC_URL: process.env.HDYC_URL || 'https://hdyc.neis-one.org',
   },
   eslint: {
     dirs: [
