@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { assoc, isEmpty } from 'ramda'
 import Popup from 'reactjs-popup'
-import { Box, Flex, Heading } from '@chakra-ui/react'
+import { Box, Container, Flex, Heading } from '@chakra-ui/react'
 import ProfileAttributeForm from '../../../components/profile-attribute-form'
 import { Button } from '@chakra-ui/react'
 import Table from '../../../components/tables/table'
@@ -146,6 +146,7 @@ export default class OrgEditTeamProfile extends Component {
 
     const CancelButton = (
       <Button
+        variant='outline'
         onClick={() =>
           this.setState({
             isModifying: false,
@@ -166,90 +167,93 @@ export default class OrgEditTeamProfile extends Component {
           </Link>
           <Heading color='white'>Editing Organization Team Attributes</Heading>
         </InpageHeader>
-        <Box layerStyle='shadowed' as='section'>
-          <Heading as='h2' size='md'>
-            Current Attributes
-          </Heading>
-          <p>
-            Teams of your organization will be able to add these attributes to
-            their team details.
-          </p>
-          {teamAttributes && isEmpty(teamAttributes) ? (
-            "You haven't added any attributes yet!"
-          ) : (
-            <Table rows={rows} columns={columns} />
-          )}
-        </Box>
-        <Box layerStyle='shadowed' as='section'>
-          {this.state.isModifying ? (
-            <>
-              <Heading as='h2' size='md'>
-                Modify Attributes
-              </Heading>
-              <ProfileAttributeForm
-                formType='org'
-                initialValues={this.state.rowToModify}
-                onSubmit={async (attribute) => {
-                  await modifyAttribute(attribute.id, attribute)
-                  this.setState({ isModifying: false })
-                  return this.getAttributes()
-                }}
-              />
-              {CancelButton}
-            </>
-          ) : (
-            ''
-          )}
-          {this.state.isAdding ? (
-            <>
-              <Heading size='md' as='h3'>
-                Add an attribute
-              </Heading>
-              <p>
-                Add an attribute to your organization&apos;s teams&apos; details
-              </p>
-              <ProfileAttributeForm
-                formType='org'
-                onSubmit={async (attributes) => {
-                  await addOrgTeamAttributes(orgId, attributes)
-                  this.setState({ isAdding: false })
-                  return this.getAttributes()
-                }}
-              />
-              {CancelButton}
-            </>
-          ) : (
-            !(this.state.isModifying || this.state.isDeleting) && (
-              <Button
-                onClick={() =>
-                  this.setState({
-                    isAdding: true,
-                    isModifying: false,
-                  })
-                }
-              >
-                Add attribute
-              </Button>
-            )
-          )}
-          {this.state.isDeleting ? (
-            <Flex gap={4}>
-              <Button
-                colorScheme='red'
-                onClick={async () => {
-                  await deleteAttribute(this.state.rowToDelete.id)
-                  this.setState({ isDeleting: false })
-                  return this.getAttributes()
-                }}
-              >
-                Confirm Delete
-              </Button>
-              {CancelButton}
-            </Flex>
-          ) : (
-            ''
-          )}
-        </Box>
+        <Container maxW='container.xl' as='section'>
+          <Box layerStyle='shadowed' as='section'>
+            <Heading as='h2' size='md'>
+              Current Attributes
+            </Heading>
+            <p>
+              Teams of your organization will be able to add these attributes to
+              their team details.
+            </p>
+            {teamAttributes && isEmpty(teamAttributes) ? (
+              "You haven't added any attributes yet!"
+            ) : (
+              <Table rows={rows} columns={columns} />
+            )}
+          </Box>
+          <Box layerStyle='shadowed' as='section'>
+            {this.state.isModifying ? (
+              <>
+                <Heading as='h2' size='md'>
+                  Modify Attributes
+                </Heading>
+                <ProfileAttributeForm
+                  formType='org'
+                  initialValues={this.state.rowToModify}
+                  onSubmit={async (attribute) => {
+                    await modifyAttribute(attribute.id, attribute)
+                    this.setState({ isModifying: false })
+                    return this.getAttributes()
+                  }}
+                />
+                {CancelButton}
+              </>
+            ) : (
+              ''
+            )}
+            {this.state.isAdding ? (
+              <>
+                <Heading size='md' as='h3'>
+                  Add an attribute
+                </Heading>
+                <p>
+                  Add an attribute to your organization&apos;s teams&apos;
+                  details
+                </p>
+                <ProfileAttributeForm
+                  formType='org'
+                  onSubmit={async (attributes) => {
+                    await addOrgTeamAttributes(orgId, attributes)
+                    this.setState({ isAdding: false })
+                    return this.getAttributes()
+                  }}
+                />
+                {CancelButton}
+              </>
+            ) : (
+              !(this.state.isModifying || this.state.isDeleting) && (
+                <Button
+                  onClick={() =>
+                    this.setState({
+                      isAdding: true,
+                      isModifying: false,
+                    })
+                  }
+                >
+                  Add attribute
+                </Button>
+              )
+            )}
+            {this.state.isDeleting ? (
+              <Flex gap={4}>
+                <Button
+                  colorScheme='red'
+                  onClick={async () => {
+                    await deleteAttribute(this.state.rowToDelete.id)
+                    this.setState({ isDeleting: false })
+                    return this.getAttributes()
+                  }}
+                >
+                  Confirm Delete
+                </Button>
+                {CancelButton}
+              </Flex>
+            ) : (
+              ''
+            )}
+          </Box>
+        </Container>
       </Box>
     )
   }

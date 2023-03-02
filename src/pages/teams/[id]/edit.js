@@ -212,7 +212,7 @@ export default class TeamEdit extends Component {
             layerStyle='shadowed'
             as='section'
             borderColor='red.500'
-            boxShadowColor='red.500'
+            boxShadow='4px 4px 0 0 var(--chakra-colors-red-500)'
             display='flex'
             flexDirection={'column'}
             alignItems='flex-start'

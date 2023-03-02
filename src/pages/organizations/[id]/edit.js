@@ -4,7 +4,8 @@ import Router from 'next/router'
 import { pick } from 'ramda'
 import { getOrg, updateOrg, destroyOrg } from '../../../lib/org-api'
 import EditOrgForm from '../../../components/edit-org-form'
-import { Button } from '@chakra-ui/react'
+import InpageHeader from '../../../components/inpage-header'
+import { Button, Box, Container, Heading, Flex, Text } from '@chakra-ui/react'
 import logger from '../../../lib/logger'
 import Link from 'next/link'
 
@@ -66,7 +67,7 @@ export default class OrgEdit extends Component {
   renderDeleter() {
     let section = (
       <Button
-        variant='danger'
+        colorScheme={'red'}
         onClick={() => {
           this.setState({
             deleteClickedOnce: true,
@@ -90,7 +91,7 @@ export default class OrgEdit extends Component {
             Cancel
           </Button>
           <Button
-            variant='danger'
+            colorScheme={'red'}
             onClick={() => {
               this.deleteOrg()
             }}
@@ -109,15 +110,15 @@ export default class OrgEdit extends Component {
     if (error) {
       if (error.status >= 400 && error.status < 500) {
         return (
-          <article className='inner'>
-            <h1>Organization not found</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Organization not found</Heading>
+          </InpageHeader>
         )
       } else if (error.status >= 500) {
         return (
-          <article className='inner'>
-            <h1>Error fetching org</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Error Fetching Organization</Heading>
+          </InpageHeader>
         )
       }
     }
@@ -125,71 +126,87 @@ export default class OrgEdit extends Component {
     if (!org) return null
 
     return (
-      <article className='inner page'>
-        <Link href={join(APP_URL, `/organizations/${org.id}`)}>
-          ← Back to Organization
-        </Link>
-        <section>
-          <div className='page__heading'>
-            <h1>Edit Organization</h1>
-          </div>
-          <EditOrgForm
-            initialValues={pick(
-              ['name', 'description', 'privacy', 'teams_can_be_public'],
-              org
-            )}
-            onSubmit={async (values, actions) => {
-              try {
-                await updateOrg(org.id, values)
-                actions.setSubmitting(false)
-                Router.push(join(APP_URL, `/organizations/${org.id}`))
-              } catch (e) {
-                logger.error(e)
-                actions.setSubmitting(false)
-                // set the form errors actions.setErrors(e)
-                actions.setStatus(e.message)
-              }
-            }}
-          />
-        </section>
-        <section>
-          <div className='page__heading'>
-            <h2>Organization Attributes</h2>
-          </div>
-          <div>
-            <span style={{ marginRight: '1rem' }}>
+      <Box as='main' mb={16}>
+        <InpageHeader>
+          <Link href={join(APP_URL, `/organizations/${org.id}`)}>
+            ← Back to Organization
+          </Link>
+          <Heading color='white'>{org.name}</Heading>
+          <Text fontFamily='mono' fontSize='sm' textTransform={'uppercase'}>
+            Editing Organization
+          </Text>
+        </InpageHeader>
+        <Container maxW='container.xl' as='section'>
+          <Box as='article' layerStyle={'shadowed'}>
+            <EditOrgForm
+              initialValues={pick(
+                ['name', 'description', 'privacy', 'teams_can_be_public'],
+                org
+              )}
+              onSubmit={async (values, actions) => {
+                try {
+                  await updateOrg(org.id, values)
+                  actions.setSubmitting(false)
+                  Router.push(join(APP_URL, `/organizations/${org.id}`))
+                } catch (e) {
+                  logger.error(e)
+                  actions.setSubmitting(false)
+                  // set the form errors actions.setErrors(e)
+                  actions.setStatus(e.message)
+                }
+              }}
+            />
+          </Box>
+          <Box layerStyle='shadowed'>
+            <Heading as='h2' variant='sectionHead'>
+              Organization Attributes
+            </Heading>
+            <Flex gap={4}>
               <Button
-                variant='primary'
+                as={Link}
+                variant='outline'
                 href={`/organizations/${org.id}/edit-profiles`}
               >
                 Edit Member Attributes
               </Button>
-            </span>
-            <span style={{ marginRight: '1rem' }}>
+
               <Button
                 as={Link}
+                variant='outline'
                 href={`/organizations/${org.id}/edit-team-profiles`}
               >
                 Edit Team Attributes
               </Button>
-            </span>
-            <Button
-              variant='primary'
-              href={`/organizations/${org.id}/edit-privacy-policy`}
-            >
-              Edit Privacy Policy
-            </Button>
-          </div>
-        </section>
-        <section className='danger-zone'>
-          <h2>Danger Zone 🎸</h2>
-          <p>
-            Delete this organization, organization information and all
-            memberships associated with this organization
-          </p>
-          {this.renderDeleter()}
-        </section>
-        {/* <style jsx global>
+
+              <Button
+                as={Link}
+                variant='outline'
+                href={`/organizations/${org.id}/edit-privacy-policy`}
+              >
+                Edit Privacy Policy
+              </Button>
+            </Flex>
+          </Box>
+          <Box
+            layerStyle='shadowed'
+            as='section'
+            borderColor='red.500'
+            boxShadow='4px 4px 0 0 var(--chakra-colors-red-500)'
+            display='flex'
+            flexDirection={'column'}
+            alignItems='flex-start'
+            gap={2}
+          >
+            <Heading as='h2' variant='sectionHead' size='md' color='red'>
+              Danger Zone
+            </Heading>
+            <p>
+              Delete this organization, organization information and all
+              memberships associated with this organization
+            </p>
+            {this.renderDeleter()}
+          </Box>
+          {/* <style jsx global>
           {`
             .form-control {
               flex-direction: column;
@@ -208,7 +225,8 @@ export default class OrgEdit extends Component {
             }
           `}
         </style> */}
-      </article>
+        </Container>
+      </Box>
     )
   }
 }
