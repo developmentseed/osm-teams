@@ -4,7 +4,6 @@ import {
   Button,
   Card,
   Grid,
-  Heading,
   Text,
   UnorderedList,
   ListItem,

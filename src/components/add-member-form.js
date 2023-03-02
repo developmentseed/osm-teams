@@ -34,7 +34,12 @@ export default function AddMemberForm({ onSubmit }) {
               style={{ width: '6rem' }}
             />
             {status && status.msg && <div>{status.msg}</div>}
-            <Button type='submit' variant='submit' disabled={isSubmitting}>
+            <Button
+              type='submit'
+              variant='outline'
+              colorScheme='brand'
+              disabled={isSubmitting}
+            >
               {addMemberText}
             </Button>
           </Form>

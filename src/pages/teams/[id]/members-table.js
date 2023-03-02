@@ -10,6 +10,7 @@ import ExternalProfileButton from '../../../components/external-profile-button'
 import Badge from '../../../components/badge'
 import { makeTitleCase } from '../../../../app/lib/utils'
 import theme from '../../../styles/theme'
+import { Flex } from '@chakra-ui/react'
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
 function MembersTable({ rows: allRows, onRowClick }) {
@@ -44,11 +45,11 @@ function MembersTable({ rows: allRows, onRowClick }) {
     {
       key: 'External Profiles',
       render: ({ name }) => (
-        <>
+        <Flex>
           <ExternalProfileButton type='osm-profile' userId={name} />
           <ExternalProfileButton type='hdyc' userId={name} />
           <ExternalProfileButton type='osmcha' userId={name} />
-        </>
+        </Flex>
       ),
     },
   ]

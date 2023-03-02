@@ -10,6 +10,7 @@ import { assoc, flatten, propEq, find } from 'ramda'
 import { listMyOrganizations } from '../models/organization'
 import TeamsTable from '../components/tables/teams'
 import { authOptions } from './api/auth/[...nextauth]'
+import InpageHeader from '../components/inpage-header'
 
 const URL = process.env.APP_URL
 
@@ -62,52 +63,19 @@ export default function Profile({ orgs }) {
 
   return (
     <Box as='main' mb={8}>
-      <Box as='section' bg='brand.700' color='white' pt={12} pb={16} mb={-8}>
-        <Container maxW='container.xl'>
-          <Heading size='lg' color='white'>
-            Welcome, {session?.user.name}
-          </Heading>
-        </Container>
-      </Box>
+      <InpageHeader>
+        <Heading size='lg' color='white'>
+          Welcome, {session?.user.name}
+        </Heading>
+      </InpageHeader>
       <Container maxW='container.xl'>
-        <Box
-          border={'2px'}
-          borderColor='brand.600'
-          p={4}
-          bg='white'
-          boxShadow='4px 4px 0 0 var(--chakra-colors-brand-600)'
-        >
-          <Heading
-            colorScheme='brand'
-            fontFamily='mono'
-            fontSize='lg'
-            textTransform={'uppercase'}
-            letterSpacing='0.5px'
-            mb={1}
-          >
-            My Teams
-          </Heading>
+        <Box as='section' layerStyle={'shadowed'}>
+          <Heading variant='sectionHead'>My Teams</Heading>
           <TeamsTable type='my-teams' />
         </Box>
         {hasOrgs ? (
-          <Box
-            border={'2px'}
-            borderColor='brand.600'
-            p={4}
-            mt={8}
-            bg='white'
-            boxShadow='4px 4px 0 0 var(--chakra-colors-brand-600)'
-          >
-            <Heading
-              colorScheme='brand'
-              fontFamily='mono'
-              fontSize='lg'
-              textTransform={'uppercase'}
-              letterSpacing='0.5px'
-              mb={1}
-            >
-              My Organizations
-            </Heading>
+          <Box as='section' layerStyle={'shadowed'} mt={8}>
+            <Heading variant='sectionHead'>My Organizations</Heading>
             <OrganizationsSection orgs={orgs} />
           </Box>
         ) : null}

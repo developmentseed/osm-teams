@@ -15,6 +15,17 @@ const theme = extendTheme(
         },
       },
     },
+    layerStyles: {
+      shadowed: {
+        bg: 'white',
+        border: '2px',
+        borderColor: 'brand.700',
+        p: 6,
+        boxShadow: '4px 4px 0 0 var(--chakra-colors-brand-600)',
+        overflow: 'hidden',
+        mb: 8,
+      },
+    },
     radii: {
       md: '0', // heavy handed override for the border radius, rather than updating on every multipart component 🤷‍♂️
     },
@@ -98,11 +109,24 @@ const theme = extendTheme(
             lineHeight: 'calc(0.5rem + 1em)',
           },
         },
+        variants: {
+          sectionHead: {
+            colorScheme: 'brand',
+            fontFamily: 'mono',
+            fontSize: 'lg',
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+            mb: 1,
+          },
+        },
       },
       Button: {
         baseStyle: {
           fontFamily: 'mono',
-          fontWeight: 'normal',
+          fontWeight: 'bold',
+          _hover: {
+            textDecoration: 'none',
+          },
         },
         defaultProps: {
           size: 'md',

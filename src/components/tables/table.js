@@ -8,6 +8,7 @@ import {
   Tbody,
   Box,
 } from '@chakra-ui/react'
+import { TriangleUpIcon, TriangleDownIcon } from '@chakra-ui/icons'
 
 function TableHead({ dataCy, columns, sort, setSort, onClick }) {
   return (
@@ -20,7 +21,12 @@ function TableHead({ dataCy, columns, sort, setSort, onClick }) {
             currentSortDirection === 'asc' ? 'desc' : 'asc'
           let sortIcon = ''
           if (currentSortDirection !== 'none') {
-            sortIcon = currentSortDirection === 'asc' ? '▲' : '▼'
+            sortIcon =
+              currentSortDirection === 'asc' ? (
+                <TriangleUpIcon />
+              ) : (
+                <TriangleDownIcon />
+              )
           }
 
           return (
@@ -50,9 +56,20 @@ function TableHead({ dataCy, columns, sort, setSort, onClick }) {
               letterSpacing='0.125rem'
               background='brand.50'
               borderBottom='4px solid var(--chakra-colors-brand-600)'
+              cursor={sortable && 'pointer'}
+              _hover={sortable && { fontWeight: 'bold', color: 'brand.500' }}
+              _first={[
+                null,
+                {
+                  position: 'sticky',
+                  left: '0',
+                  zIndex: '2',
+                  borderRight: '2px solid var(--chakra-colors-brand-100)',
+                },
+              ]}
             >
               {label || key}
-              {sortable && ` ${sortIcon}`}
+              {sortable && sortIcon}
             </Th>
           )
         })}
@@ -68,6 +85,7 @@ function Row({ columns, row, index, onRowClick, showRowNumber }) {
       onClick={() => {
         onRowClick && onRowClick(row, index)
       }}
+      role='group'
     >
       {columns.map(({ key, render }) => {
         let item =
@@ -80,13 +98,21 @@ function Row({ columns, row, index, onRowClick, showRowNumber }) {
             width={showRowNumber && key === ' ' && '1rem'}
             padding='0.875rem'
             borderBottom={1}
-            borderColor='base.100'
+            borderColor='brand.800'
             fontSize='0.9rem'
+            _groupHover={
+              onRowClick && {
+                cursor: 'pointer',
+                background: 'brand.50',
+                color: 'brand.500',
+              }
+            }
             _first={[
               null,
               {
                 position: 'sticky',
                 left: '0',
+                background: 'white',
                 zIndex: '2',
                 borderRight: '2px solid var(--chakra-colors-brand-100)',
               },
@@ -153,7 +179,7 @@ export default function Table({
     <Box
       display='grid'
       gridTemplateColumns='minmax(0, 1fr)'
-      overflowS='scroll'
+      overflowX='auto'
       position='relative'
       my={2}
     >
@@ -164,7 +190,6 @@ export default function Table({
         marginBottom={2}
         tableLayout='fixed'
         whiteSpace='pre'
-        overflowX='scroll'
       >
         <TableHead
           dataCy={dataCy}
@@ -179,36 +204,6 @@ export default function Table({
           emptyPlaceHolder={emptyPlaceHolder}
           showRowNumbers={showRowNumbers}
         />
-        {/* <style jsx global>
-          {`
-            thead th.sortable {
-              cursor: pointer;
-            }
-
-            tbody tr {
-              background: #fff;
-              ${onRowClick && 'cursor: pointer'}
-            }
-
-            ${onRowClick &&
-            `tbody tr:hover td {
-                background: ${theme.colors.primaryLite};
-              }
-            `}
-            @media (max-width: ${theme.mediaRanges.medium}) {
-              td:first-child,
-              th:first-child {
-                position: sticky;
-                left: 0;
-                z-index: 2;
-                border-right: 2px solid ${theme.colors.primaryLite};
-              }
-              td:first-child {
-                background: #fff;
-              }
-            }
-          `}
-        </style> */}
       </BaseTable>
     </Box>
   )

@@ -5,13 +5,17 @@ import Modal from 'react-modal'
 import dynamic from 'next/dynamic'
 import { getSession } from 'next-auth/react'
 import { withRouter } from 'next/router'
-
-import Section from '../../../components/section'
-import SectionHeader from '../../../components/section-header'
-import { Button, Heading } from '@chakra-ui/react'
+import {
+  Box,
+  Container,
+  Heading,
+  Button,
+  Text,
+  Flex,
+  Stack,
+} from '@chakra-ui/react'
 import AddMemberForm from '../../../components/add-member-form'
 import ProfileModal from '../../../components/profile-modal'
-import theme from '../../../styles/theme'
 
 import {
   getTeam,
@@ -33,6 +37,8 @@ import { getOrgStaff } from '../../../lib/org-api'
 import { toast } from 'react-toastify'
 import logger from '../../../lib/logger'
 import MembersTable from './members-table'
+import Link from 'next/link'
+import InpageHeader from '../../../components/inpage-header'
 
 const APP_URL = process.env.APP_URL
 const Map = dynamic(() => import('../../../components/team-map'), {
@@ -237,21 +243,21 @@ class Team extends Component {
     if (error) {
       if (error.status === 401 || error.status === 403) {
         return (
-          <article className='inner page'>
-            <h1>Unauthorized</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Unauthorized</Heading>
+          </InpageHeader>
         )
       } else if (error.status === 404) {
         return (
-          <article className='inner page'>
-            <h1>Team not found</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Team not found</Heading>
+          </InpageHeader>
         )
       } else {
         return (
-          <article className='inner page'>
-            <h1>Error: {error.message}</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Error: {error.message}</Heading>
+          </InpageHeader>
         )
       }
     }
@@ -304,79 +310,112 @@ class Team extends Component {
     }
 
     return (
-      <article className='inner page team'>
-        <div className='page__heading'>
-          <Heading>{team.name}</Heading>
-          {isMember ? (
-            <Button variant='primary' href={`/teams/${team.id}/profile`}>
-              Edit Your Profile
-            </Button>
-          ) : (
-            ' '
-          )}
-        </div>
-        <div className='team__details'>
-          <Section>
-            <div className='section-actions'>
-              <SectionHeader>Team Details</SectionHeader>
-              {isUserModerator ? (
-                <Button href={`/teams/${team.id}/edit`}>Edit</Button>
-              ) : (
-                ''
-              )}
-            </div>
-            <dl>
-              {team.bio ? (
-                <>
-                  <dt>Bio: </dt>
-                  <dd>{team.bio}</dd>
-                </>
-              ) : (
-                ''
-              )}
-              {team.hashtag ? (
-                <>
-                  <dt>Hashtag: </dt>
-                  <dd>{team.hashtag}</dd>
-                </>
-              ) : (
-                ''
-              )}
-            </dl>
-            {team.editing_policy && (
-              <a href={team.editing_policy} className='team__editing_policy'>
-                Organized editing policy
-              </a>
-            )}
-            {team.org ? (
-              <dl>
-                <dt>Organization:</dt>
-                <dd>
-                  <a href={`/organizations/${team.org.organization_id}`}>
-                    {team.org.name}
+      <Box as='main' mb={16}>
+        <InpageHeader>
+          <Flex
+            direction={['column', 'row']}
+            justifyContent={'space-between'}
+            gap={4}
+          >
+            <Flex direction='column' gap={2}>
+              <Heading color='white'>{team.name}</Heading>
+              <Flex gap={[4, 8]}>
+                {team.hashtag && (
+                  <Stack as='dl' spacing={1}>
+                    <Text
+                      fontFamily='mono'
+                      as='dt'
+                      fontSize='sm'
+                      textTransform={'uppercase'}
+                    >
+                      Hashtag
+                    </Text>
+                    <Text as='dd'>{team.hashtag}</Text>
+                  </Stack>
+                )}
+                {team.org && (
+                  <Stack as='dl' spacing={1}>
+                    <Text
+                      fontFamily='mono'
+                      as='dt'
+                      fontSize='sm'
+                      textTransform={'uppercase'}
+                    >
+                      Organization
+                    </Text>
+                    <Text as='dd'>
+                      <a href={`/organizations/${team.org.organization_id}`}>
+                        {team.org.name}
+                      </a>
+                    </Text>
+                  </Stack>
+                )}
+                {teamProfile &&
+                  teamProfile.map((key) => {
+                    if (key.value) {
+                      return (
+                        <Stack as='dl' spacing={1} key={key}>
+                          <Text
+                            fontFamily='mono'
+                            as='dt'
+                            fontSize='sm'
+                            textTransform={'uppercase'}
+                          >
+                            {key.name}
+                          </Text>
+                          <Text as='dd'>{key.value}</Text>
+                        </Stack>
+                      )
+                    }
+                  })}
+                {team.editing_policy && (
+                  <a
+                    href={team.editing_policy}
+                    className='team__editing_policy'
+                  >
+                    Organized editing policy
                   </a>
-                </dd>
-                {teamProfile
-                  ? teamProfile.map((key) => {
-                      if (key.value) {
-                        return (
-                          <>
-                            <dt>{key.name}:</dt>
-                            <dd>{key.value}</dd>
-                          </>
-                        )
-                      }
-                    })
-                  : ''}
-              </dl>
-            ) : (
-              ''
-            )}
-            <SectionHeader>Location</SectionHeader>
-            {this.renderMap(team.location)}
+                )}
+              </Flex>
+            </Flex>
+            <Flex gap={4}>
+              {isMember ? (
+                <Button
+                  variant='solid'
+                  as={Link}
+                  href={`/teams/${team.id}/profile`}
+                >
+                  Edit Your Profile
+                </Button>
+              ) : (
+                ' '
+              )}
+              {isUserModerator ? (
+                <Button as={Link} href={`/teams/${team.id}/edit`}>
+                  Edit
+                </Button>
+              ) : (
+                ''
+              )}
+            </Flex>
+          </Flex>
+        </InpageHeader>
+        <Container maxW='container.xl' as='section'>
+          {team.bio && (
+            <Box as='section' layerStyle='shadowed'>
+              <Heading variant='sectionHead'>Team Description</Heading>
+              <Text>{team.bio}</Text>
+            </Box>
+          )}
+
+          <Box my={8}>
+            <Box as='section' layerStyle='shadowed'>
+              <Heading variant='sectionHead'>Location</Heading>
+              {this.renderMap(team.location)}
+            </Box>
             {isUserModerator ? (
               <div style={{ marginTop: '1rem' }}>
-                <SectionHeader>Join Link</SectionHeader>
+                <Heading variant='sectionHead'>Join Link</Heading>
                 {joinLink ? (
                   <fieldset style={{ borderColor: '#384A9E' }}>
                     {joinLink}
@@ -390,95 +429,60 @@ class Team extends Component {
             ) : (
               ''
             )}
-          </Section>
-        </div>
-        <div className='team__table'>
-          {memberRows.length > 0 ? (
-            <Section data-cy='team-members-section'>
-              <div className='section-actions'>
-                <SectionHeader>Team Members</SectionHeader>
-                <div>
-                  {isUserModerator && (
-                    <AddMemberForm
-                      onSubmit={async ({ osmId }) => {
-                        await addMember(team.id, osmId)
-                        return this.getTeam()
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
-              <MembersTable
-                rows={memberRows}
-                onRowClick={(row) => {
-                  this.openProfileModal(row)
-                }}
-              />
-              <Modal
-                style={{
-                  content: {
-                    maxWidth: '400px',
-                    maxHeight: '600px',
-                    left: 'calc(50% - 200px)',
-                    top: 'calc(50% - 300px)',
-                  },
-                  overlay: {
-                    zIndex: 10000,
-                  },
-                }}
-                isOpen={this.state.modalIsOpen}
-              >
-                <ProfileModal
-                  user={this.state.profileMeta}
-                  attributes={this.state.profileInfo}
-                  onClose={this.closeProfileModal}
-                  actions={profileActions}
+          </Box>
+          <Box as='section' layerStyle={'shadowed'}>
+            {memberRows.length > 0 ? (
+              <Box mb={2} data-cy='team-members-section'>
+                <Flex
+                  direction={['column', 'row']}
+                  justifyContent={['space-between']}
+                >
+                  <Heading variant='sectionHead'>Team Members</Heading>
+                  <div>
+                    {isUserModerator && (
+                      <AddMemberForm
+                        onSubmit={async ({ osmId }) => {
+                          await addMember(team.id, osmId)
+                          return this.getTeam()
+                        }}
+                      />
+                    )}
+                  </div>
+                </Flex>
+                <MembersTable
+                  rows={memberRows}
+                  onRowClick={(row) => {
+                    this.openProfileModal(row)
+                  }}
                 />
-              </Modal>
-            </Section>
-          ) : (
-            <div />
-          )}
-        </div>
-        <style jsx>
-          {`
-            .inner.team {
-              display: grid;
-              grid-template-columns: repeat(12, 1fr);
-              grid-gap: ${theme.layout.globalSpacing};
-              align-content: baseline;
-            }
-
-            .page__heading {
-              grid-column: 1 / span 12;
-            }
-
-            .team__details {
-              grid-column: 1 / span 12;
-            }
-
-            .team__editing_policy {
-              margin-bottom: 2rem;
-              display: block;
-            }
-
-            dl {
-              display: grid;
-              grid-template-columns: 6rem 1fr;
-              gap: 0.25rem 1rem;
-            }
-
-            dt {
-              font-family: ${theme.typography.headingFontFamily};
-              text-transform: uppercase;
-            }
-
-            .team__table {
-              grid-column: 1 / span 12;
-            }
-          `}
-        </style>
-      </article>
+                <Modal
+                  style={{
+                    content: {
+                      maxWidth: '400px',
+                      maxHeight: '600px',
+                      left: 'calc(50% - 200px)',
+                      top: 'calc(50% - 300px)',
+                    },
+                    overlay: {
+                      zIndex: 10000,
+                    },
+                  }}
+                  isOpen={this.state.modalIsOpen}
+                >
+                  <ProfileModal
+                    user={this.state.profileMeta}
+                    attributes={this.state.profileInfo}
+                    onClose={this.closeProfileModal}
+                    actions={profileActions}
+                  />
+                </Modal>
+              </Box>
+            ) : (
+              <div />
+            )}
+          </Box>
+        </Container>
+      </Box>
     )
   }
 }

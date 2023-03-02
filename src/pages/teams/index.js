@@ -10,6 +10,7 @@ import logger from '../../lib/logger'
 import { serverRuntimeConfig } from '../../../next.config.js'
 import Pagination from '../../components/pagination'
 import SearchInput from '../../components/tables/search-input'
+import InpageHeader from '../../components/inpage-header'
 const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
 
 const Map = dynamic(import('../../components/list-map'), {
@@ -167,8 +168,9 @@ export default class TeamList extends Component {
         markers={centers}
         style={{
           height: '360px',
-          border: '2px solid #354797',
+          border: '2px solid var(--chakra-colors-brand-700)',
           boxShadow: '4px 4px 0 0 var(--chakra-colors-brand-600)',
+          zIndex: '10',
         }}
         onBoundsChange={this.onMapBoundsChange.bind(this)}
       />
@@ -188,11 +190,9 @@ export default class TeamList extends Component {
     const { searchOnMapMove } = this.state
     return (
       <Box as='main'>
-        <Box as='section' bg='brand.700' color='white' pt={12} pb={16} mb={-8}>
-          <Container maxW='container.xl'>
-            <Heading color='white'>Explore All Teams</Heading>
-          </Container>
-        </Box>
+        <InpageHeader>
+          <Heading color='white'>Explore All Teams</Heading>
+        </InpageHeader>
         <Container maxW='container.xl' as='section'>
           {this.renderMap()}
           <Checkbox
@@ -213,14 +213,7 @@ export default class TeamList extends Component {
           >
             Filter teams by map
           </Checkbox>
-          <Box
-            border={'2px'}
-            borderColor='brand.600'
-            p={4}
-            mt={8}
-            bg='white'
-            boxShadow='4px 4px 0 0 var(--chakra-colors-brand-600)'
-          >
+          <Box as='section' mt={8} layerStyle={'shadowed'}>
             {this.renderTeams()}
           </Box>
         </Container>

@@ -1,3 +1,4 @@
+import { Button } from '@chakra-ui/react'
 import join from 'url-join'
 const URL = process.env.APP_URL
 
@@ -35,16 +36,17 @@ const ExternalProfileButton = ({ type, userId }) => {
   }
 
   return (
-    <a
+    <Button
       onClick={(e) => {
         e.stopPropagation()
       }}
+      as='a'
       href={targetLink}
       rel='noopener noreferrer'
       target='_blank'
-      flat
-      className='button unstyled small'
       title={title}
+      size='sm'
+      variant='ghost'
     >
       <img
         src={`${join(URL, `/static/${logoImg}`)}`}
@@ -53,7 +55,7 @@ const ExternalProfileButton = ({ type, userId }) => {
         height='16'
       />
       {label}
-    </a>
+    </Button>
   )
 }
 
