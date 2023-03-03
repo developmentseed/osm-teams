@@ -166,9 +166,11 @@ export default class ProfileForm extends Component {
 
     if (loading) {
       return (
-        <article className='inner page'>
-          <div>Loading...</div>
-        </article>
+        <Box as='main' mb={16}>
+          <InpageHeader>
+            <Heading color='white'>Loading...</Heading>
+          </InpageHeader>
+        </Box>
       )
     }
 
@@ -405,6 +407,7 @@ export default class ProfileForm extends Component {
                         variant='outline'
                         colorScheme={'red'}
                         href={returnUrl}
+                        as={Link}
                       >
                         Cancel
                       </Button>

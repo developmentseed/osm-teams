@@ -65,26 +65,26 @@ export default function ProfileModal({
   if (!isEmpty(attributes)) {
     profileContent = (
       <Flex direction='column' gap={2} alignItems='flex-start'>
-        <Flex gap={2} alignItems='flex-start' as='dl'>
-          {attributes &&
-            attributes.map((attribute) => {
-              if (attribute.value) {
-                return (
-                  <>
-                    <Text
-                      as='dt'
-                      fontFamily={'mono'}
-                      textTransform='uppercase'
-                      fontSize='sm'
-                    >
-                      {attribute.name}:
-                    </Text>
-                    <Text as='dd'>{attribute.value}</Text>
-                  </>
-                )
-              }
-            })}
-        </Flex>
+        {attributes &&
+          attributes.map((attribute) => {
+            if (attribute.value) {
+              return (
+                <Flex direction='column' gap={2} as='dl' key={attribute.name}>
+                  <Text
+                    as='dt'
+                    fontFamily={'mono'}
+                    fontWeight='bold'
+                    letterSpacing={'0.5px'}
+                    textTransform='uppercase'
+                    fontSize='sm'
+                  >
+                    {attribute.name}:
+                  </Text>
+                  <Text as='dd'>{attribute.value}</Text>
+                </Flex>
+              )
+            }
+          })}
       </Flex>
     )
   }
@@ -95,11 +95,12 @@ export default function ProfileModal({
         alignItems='flex-start'
         justifyContent='space-between'
         position='sticky'
-        top={-4}
+        top={-5}
         bg='white'
-        pt={4}
+        py={4}
         mt={-4}
         w={'100%'}
+        zIndex={15}
       >
         <Flex alignItems='center' gap={2}>
           <Avatar src={user.image} name={user.name} borderRadius='sm' />
