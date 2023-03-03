@@ -131,7 +131,7 @@ export default class AddBadge extends Component {
                     </div>
                     <Flex gap={4}>
                       <Button
-                        disabled={isSubmitting}
+                        isDisabled={isSubmitting}
                         type='submit'
                         value='submit'
                       >
@@ -143,7 +143,6 @@ export default class AddBadge extends Component {
                           Router.push(join(URL, `/organizations/${orgId}`))
                         }}
                         type='submit'
-                        value='cancel'
                       >
                         Cancel
                       </Button>

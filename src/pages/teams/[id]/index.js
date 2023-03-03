@@ -344,9 +344,9 @@ class Team extends Component {
                       Organization
                     </Text>
                     <Text as='dd'>
-                      <a href={`/organizations/${team.org.organization_id}`}>
+                      <Link href={`/organizations/${team.org.organization_id}`}>
                         {team.org.name}
-                      </a>
+                      </Link>
                     </Text>
                   </Stack>
                 )}

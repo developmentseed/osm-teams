@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Button } from '@chakra-ui/react'
+import { Box, Button, Container, Heading } from '@chakra-ui/react'
+import Link from 'next/link'
 
 const OSM_NAME = process.env.OSM_NAME
 class Login extends Component {
@@ -13,18 +14,22 @@ class Login extends Component {
 
   render() {
     return (
-      <section className='inner page'>
-        <h1>Login</h1>
-        <p>
-          Teams uses {OSM_NAME} as your login, connect your {OSM_NAME} account!
-        </p>
-        <br />
-        <Button
-          href={`/oauth/openstreetmap?login_challenge=${this.props.challenge}`}
-        >
-          Login with {OSM_NAME}
-        </Button>
-      </section>
+      <Box>
+        <Container maxW='container.xl'>
+          <Heading>Login</Heading>
+          <p>
+            Teams uses {OSM_NAME} as your login, connect your {OSM_NAME}{' '}
+            account!
+          </p>
+          <br />
+          <Button
+            as={Link}
+            href={`/oauth/openstreetmap?login_challenge=${this.props.challenge}`}
+          >
+            Login with {OSM_NAME}
+          </Button>
+        </Container>
+      </Box>
     )
   }
 }

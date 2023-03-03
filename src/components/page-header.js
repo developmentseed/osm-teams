@@ -68,7 +68,7 @@ export default function PageHeader() {
                   as='a'
                   _hover={{ textDecoration: 'none' }}
                 >
-                  OSM Teams
+                  osm_teams
                 </Heading>
               </NavLink>
             </Box>
@@ -199,19 +199,17 @@ export default function PageHeader() {
             <DrawerContent bg='brand.500' color='white' zIndex='3000'>
               <DrawerCloseButton />
               <DrawerBody py={4}>
-                <Box>
-                  <NavLink href='/'>
-                    <Heading
-                      color='white'
-                      fontFamily='mono'
-                      size='md'
-                      as='a'
-                      _hover={{ textDecoration: 'none' }}
-                    >
-                      OSM Teams
-                    </Heading>
-                  </NavLink>
-                </Box>
+                <NavLink href='/' passHref legacyBehavior>
+                  <Heading
+                    color='white'
+                    fontFamily='mono'
+                    size='md'
+                    as='a'
+                    _hover={{ textDecoration: 'none' }}
+                  >
+                    osm_teams
+                  </Heading>
+                </NavLink>
                 <List spacing='8' mt={16}>
                   {Links.map((link) => (
                     <ListItem key={link.url}>

@@ -38,7 +38,7 @@ export default function AddMemberForm({ onSubmit }) {
               type='submit'
               variant='outline'
               colorScheme='brand'
-              disabled={isSubmitting}
+              isDisabled={isSubmitting}
             >
               {addMemberText}
             </Button>

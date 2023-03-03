@@ -12,7 +12,7 @@ import {
 } from '../lib/profiles-api'
 import { getOrg } from '../lib/org-api'
 import { getTeam } from '../lib/teams-api'
-import { Box, Button, Container, Heading, Text } from '@chakra-ui/react'
+import { Box, Button, Container, Flex, Heading, Text } from '@chakra-ui/react'
 import { propOr, prop } from 'ramda'
 import logger from '../lib/logger'
 import Link from 'next/link'
@@ -394,21 +394,21 @@ export default class ProfileForm extends Component {
                       <div />
                     )}
                     {status && status.msg && <div>{status.msg}</div>}
-                    <div
-                      style={{ marginTop: '1rem' }}
-                      className='section-actions'
-                    >
+                    <Flex gap={4}>
                       <Button
                         type='submit'
-                        variant='submit'
-                        disabled={!consentChecked || isSubmitting}
+                        isDisabled={!consentChecked || isSubmitting}
                       >
                         {addProfileText}
                       </Button>
-                      <Button variant='secondary' href={returnUrl}>
+                      <Button
+                        variant='outline'
+                        colorScheme={'red'}
+                        href={returnUrl}
+                      >
                         Cancel
                       </Button>
-                    </div>
+                    </Flex>
                   </Form>
                 )
               }}

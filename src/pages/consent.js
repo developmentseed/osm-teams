@@ -97,7 +97,6 @@ class Consent extends Component {
           <p>
             <Button
               type='submit'
-              variant='primary'
               id='accept'
               name='submit'
               value='Allow access'
@@ -106,7 +105,8 @@ class Consent extends Component {
             </Button>
             <Button
               type='submit'
-              variant='danger'
+              colorScheme={'red'}
+              variant='outline'
               id='reject'
               name='submit'
               value='Deny access'

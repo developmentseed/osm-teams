@@ -88,8 +88,7 @@ export default function EditOrgForm({
             <div className='form-control form-control__vertical'>
               {status && status.errors && renderErrors(status.errors)}
               <Button
-                disabled={isSubmitting}
-                variant='primary'
+                isDisabled={isSubmitting}
                 onClick={() => {
                   if (Object.keys(errors).length) {
                     setErrors(errors)
@@ -100,8 +99,9 @@ export default function EditOrgForm({
                   return submitForm()
                 }}
                 type='submit'
-                value='submit'
-              />
+              >
+                Submit
+              </Button>
             </div>
           </Form>
         )

@@ -228,7 +228,7 @@ export default function EditTeamForm({
             <div className='form-control form-control__vertical'>
               {status && status.errors && renderErrors(status.errors)}
               <Button
-                disabled={isSubmitting}
+                isDisabled={isSubmitting}
                 variant='solid'
                 onClick={() => {
                   if (Object.keys(errors).length) {
