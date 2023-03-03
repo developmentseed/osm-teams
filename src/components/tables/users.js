@@ -9,7 +9,7 @@ import SearchInput from './search-input'
 import ExternalProfileButton from '../external-profile-button'
 import { makeTitleCase } from '../../../app/lib/utils'
 import theme from '../../styles/theme'
-const BASE_PATH = process.env.BASE_PATH
+
 const SCOREBOARD_URL = process.env.SCOREBOARD_URL
 const HDYC_URL = process.env.HDYC_URL
 
@@ -70,10 +70,10 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
           render: ({ id, name }) => (
             <>
               <ExternalProfileButton type='osm-profile' userId={name} />
-              <ExternalProfileButton
-                type={BASE_PATH !== '' ? 'scoreboard' : 'hdyc'}
-                userId={BASE_PATH !== '' ? id : name}
-              />
+              {SCOREBOARD_URL && (
+                <ExternalProfileButton type='scoreboard' userId={id} />
+              )}
+              {HDYC_URL && <ExternalProfileButton type='hdyc' userId={name} />}
               <ExternalProfileButton type='osmcha' userId={name} />
             </>
           ),
