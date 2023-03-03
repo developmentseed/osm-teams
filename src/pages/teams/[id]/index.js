@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import join from 'url-join'
 import { map, prop, contains, reverse, assoc } from 'ramda'
-import Modal from 'react-modal'
 import dynamic from 'next/dynamic'
 import { getSession } from 'next-auth/react'
 import { withRouter } from 'next/router'
@@ -455,27 +454,13 @@ class Team extends Component {
                     this.openProfileModal(row)
                   }}
                 />
-                <Modal
-                  style={{
-                    content: {
-                      maxWidth: '400px',
-                      maxHeight: '600px',
-                      left: 'calc(50% - 200px)',
-                      top: 'calc(50% - 300px)',
-                    },
-                    overlay: {
-                      zIndex: 10000,
-                    },
-                  }}
+                <ProfileModal
+                  user={this.state.profileMeta}
+                  attributes={this.state.profileInfo}
+                  onClose={this.closeProfileModal}
+                  actions={profileActions}
                   isOpen={this.state.modalIsOpen}
-                >
-                  <ProfileModal
-                    user={this.state.profileMeta}
-                    attributes={this.state.profileInfo}
-                    onClose={this.closeProfileModal}
-                    actions={profileActions}
-                  />
-                </Modal>
+                />
               </Box>
             ) : (
               <div />

@@ -13,7 +13,6 @@ import { Box, Container, Heading, Button, Flex } from '@chakra-ui/react'
 import Table from '../../../components/tables/table'
 import AddMemberForm from '../../../components/add-member-form'
 import SvgSquare from '../../../components/svg-square'
-import Modal from 'react-modal'
 import ProfileModal from '../../../components/profile-modal'
 import { contains, prop, map } from 'ramda'
 import APIClient from '../../../lib/api-client'
@@ -209,15 +208,15 @@ class Organization extends Component {
     if (org.status === 'error') {
       if (org.error.status === 401 || org.error.status === 403) {
         return (
-          <article className='inner page'>
-            <h1>Unauthorized</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Unauthorized</Heading>
+          </InpageHeader>
         )
       } else if (org.error.status === 404) {
         return (
-          <article className='inner page'>
-            <h1>Organization not found</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Organization not found</Heading>
+          </InpageHeader>
         )
       }
     }
@@ -376,28 +375,15 @@ class Organization extends Component {
             <div />
           )}
           {isStaff && this.renderBadges()}
-          <Modal
-            style={{
-              content: {
-                maxWidth: '600px',
-                maxHeight: '600px',
-                left: 'calc(50% - 300px)',
-                top: 'calc(50% - 300px)',
-              },
-              overlay: {
-                zIndex: 10000,
-              },
-            }}
+
+          <ProfileModal
+            user={this.state.profileMeta}
+            badges={this.state.profileBadges}
+            attributes={this.state.profileInfo}
             isOpen={this.state.modalIsOpen}
-          >
-            <ProfileModal
-              user={this.state.profileMeta}
-              badges={this.state.profileBadges}
-              attributes={this.state.profileInfo}
-              onClose={this.closeProfileModal}
-              actions={profileActions}
-            />
-          </Modal>
+            onClose={this.closeProfileModal}
+            actions={profileActions}
+          />
         </Container>
       </Box>
     )

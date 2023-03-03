@@ -3,7 +3,6 @@ import { isEmpty } from 'ramda'
 import {
   Avatar,
   Button,
-  CloseButton,
   Flex,
   Heading,
   Menu,
@@ -12,6 +11,13 @@ import {
   MenuItem,
   Text,
   Wrap,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  ModalOverlay,
+  Modal,
+  ModalFooter,
 } from '@chakra-ui/react'
 import Badge from './badge'
 
@@ -24,7 +30,11 @@ function renderActions(actions) {
       <MenuList>
         {actions.map((action) => {
           return (
-            <MenuItem onClick={() => action.onClick()} key={action.name}>
+            <MenuItem
+              fontSize='sm'
+              onClick={() => action.onClick()}
+              key={action.name}
+            >
               {action.name}
             </MenuItem>
           )
@@ -58,6 +68,7 @@ export default function ProfileModal({
   attributes,
   badges,
   onClose,
+  isOpen,
   actions,
 }) {
   actions = actions || []
@@ -90,29 +101,37 @@ export default function ProfileModal({
   }
   const ref = useRef()
   return (
-    <Flex direction={'column'} as='article' gap={2} alignItems='flex-start'>
-      <Flex
+    <Modal
+      isCentered
+      isOpen={isOpen}
+      onClose={onClose}
+      scrollBehavior={'inside'}
+    >
+      <ModalOverlay />
+      <ModalContent
+        direction={'column'}
+        as='article'
+        gap={2}
         alignItems='flex-start'
-        justifyContent='space-between'
-        position='sticky'
-        top={-5}
-        bg='white'
-        py={4}
-        mt={-4}
-        w={'100%'}
-        zIndex={15}
       >
-        <Flex alignItems='center' gap={2}>
-          <Avatar src={user.image} name={user.name} borderRadius='sm' />
-          <Heading size='sm' as='h3'>
-            {user.name}
-          </Heading>
-        </Flex>
-        <CloseButton onClick={() => onClose()} />
-      </Flex>
-      {!isEmpty(actions) && renderActions(actions, ref)}
-      {profileContent}
-      {renderBadges(badges)}
-    </Flex>
+        <ModalHeader gap={4} display='flex' flexDir={'column'}>
+          <Flex alignItems='center' gap={2}>
+            <Avatar
+              src={user?.image}
+              name={user?.name}
+              size='sm'
+              borderRadius='sm'
+            />
+            <Heading size='sm' as='h3'>
+              {user?.name}
+            </Heading>
+          </Flex>
+          {!isEmpty(actions) && renderActions(actions, ref)}
+          <ModalCloseButton onClick={() => onClose()} />
+        </ModalHeader>
+        <ModalBody>{profileContent}</ModalBody>
+        <ModalFooter>{renderBadges(badges)}</ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }
