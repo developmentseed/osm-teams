@@ -68,6 +68,7 @@ export default class OrgEdit extends Component {
     let section = (
       <Button
         colorScheme={'red'}
+        variant='outline'
         onClick={() => {
           this.setState({
             deleteClickedOnce: true,
@@ -92,6 +93,7 @@ export default class OrgEdit extends Component {
           </Button>
           <Button
             colorScheme={'red'}
+            variant='outline'
             onClick={() => {
               this.deleteOrg()
             }}

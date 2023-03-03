@@ -187,7 +187,9 @@ export default class OrgEditProfile extends Component {
           <Box layerStyle='shadowed' as='section'>
             {this.state.isModifying ? (
               <>
-                <h2>Modify attribute</h2>
+                <Heading as='h3' variant='sectionHead'>
+                  Modify attribute
+                </Heading>
                 <ProfileAttributeForm
                   formType='org'
                   initialValues={this.state.rowToModify}
@@ -204,7 +206,7 @@ export default class OrgEditProfile extends Component {
             )}
             {this.state.isAdding ? (
               <>
-                <Heading size='md' as='h3'>
+                <Heading as='h3' variant='sectionHead'>
                   Add an attribute
                 </Heading>
                 <p>Add an attribute to your org member&apos;s profile</p>

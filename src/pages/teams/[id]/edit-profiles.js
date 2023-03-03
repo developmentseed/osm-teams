@@ -146,6 +146,7 @@ export default class TeamEditProfile extends Component {
 
     const CancelButton = (
       <Button
+        variant='outline'
         onClick={() =>
           this.setState({
             isModifying: false,
@@ -166,7 +167,7 @@ export default class TeamEditProfile extends Component {
         </InpageHeader>
         <Container maxW='container.xl' as='section'>
           <Box layerStyle='shadowed' as='article'>
-            <Heading as='h2' size='md'>
+            <Heading as='h2' variant='sectionHead'>
               Current Attributes
             </Heading>
             <p>
@@ -182,7 +183,7 @@ export default class TeamEditProfile extends Component {
           <Box layerStyle={'shadowed'} as='section'>
             {this.state.isModifying ? (
               <>
-                <Heading size='md' as='h3'>
+                <Heading as='h3' variant='sectionHead'>
                   Modify attribute
                 </Heading>
                 <ProfileAttributeForm
@@ -200,7 +201,7 @@ export default class TeamEditProfile extends Component {
             )}
             {this.state.isAdding ? (
               <>
-                <Heading size='md' as='h3'>
+                <Heading as='h3' variant='sectionHead'>
                   Add an attribute
                 </Heading>
                 <p>Add an attribute to your team member&apos;s profile</p>

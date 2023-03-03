@@ -185,7 +185,7 @@ export default class OrgEditTeamProfile extends Component {
           <Box layerStyle='shadowed' as='section'>
             {this.state.isModifying ? (
               <>
-                <Heading as='h2' size='md'>
+                <Heading as='h2' variant='sectionHead'>
                   Modify Attributes
                 </Heading>
                 <ProfileAttributeForm
@@ -204,7 +204,7 @@ export default class OrgEditTeamProfile extends Component {
             )}
             {this.state.isAdding ? (
               <>
-                <Heading size='md' as='h3'>
+                <Heading as='h3' variant='sectionHead'>
                   Add an attribute
                 </Heading>
                 <p>

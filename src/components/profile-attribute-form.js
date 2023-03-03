@@ -138,7 +138,7 @@ export default function ProfileAttributeForm({
             </div>
             {status && status.msg && <div>{status.msg}</div>}
             <div className='form-control form-control__vertical'>
-              <Button type='submit' variant='submit' disabled={isSubmitting}>
+              <Button type='submit' disabled={isSubmitting}>
                 {addAttributeText}
               </Button>
             </div>

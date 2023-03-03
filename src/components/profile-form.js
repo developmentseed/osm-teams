@@ -314,9 +314,9 @@ export default class ProfileForm extends Component {
                     ) : (
                       ''
                     )}
-                    <h2>
+                    <Heading as='h2' variant='sectionHead'>
                       Details for <b>{teamName}</b>
-                    </h2>
+                    </Heading>
                     {memberAttributes.length > 0
                       ? memberAttributes.map((attribute) => {
                           return (
