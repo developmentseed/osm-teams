@@ -317,10 +317,12 @@ class Organization extends Component {
           </Flex>
         </InpageHeader>
         <Container maxW='container.xl' as='section'>
-          <Box as='section' layerStyle={'shadowed'}>
-            <Heading variant='sectionHead'>Organization Description</Heading>
-            {org.data.description}
-          </Box>
+          {org.data.description && (
+            <Box as='section' layerStyle={'shadowed'}>
+              <Heading variant='sectionHead'>Organization Description</Heading>
+              {org.data.description}
+            </Box>
+          )}
 
           <Box layerStyle={'shadowed'} as='section'>
             <Heading variant='sectionHead'>Teams</Heading>

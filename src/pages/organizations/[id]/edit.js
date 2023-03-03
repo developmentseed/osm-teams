@@ -158,7 +158,7 @@ export default class OrgEdit extends Component {
             />
           </Box>
           <Box layerStyle='shadowed'>
-            <Heading as='h2' variant='sectionHead'>
+            <Heading variant='sectionHead' as='h2'>
               Organization Attributes
             </Heading>
             <Flex gap={4}>
@@ -197,7 +197,7 @@ export default class OrgEdit extends Component {
             alignItems='flex-start'
             gap={2}
           >
-            <Heading as='h2' variant='sectionHead' size='md' color='red'>
+            <Heading variant='sectionHead' as='h2' size='md' color='red'>
               Danger Zone
             </Heading>
             <p>
@@ -206,25 +206,6 @@ export default class OrgEdit extends Component {
             </p>
             {this.renderDeleter()}
           </Box>
-          {/* <style jsx global>
-          {`
-            .form-control {
-              flex-direction: column;
-              align-items: flex-start;
-            }
-
-            .danger-zone {
-              border: 2px solid ${theme.colors.secondaryColor} !important;
-              background: white;
-              margin: 4rem 0;
-              padding: 2rem;
-            }
-
-            .danger-zone .button {
-              margin-right: 2rem;
-            }
-          `}
-        </style> */}
         </Container>
       </Box>
     )

@@ -171,7 +171,7 @@ export default class OrgEditProfile extends Component {
         </InpageHeader>
         <Container maxW='container.xl'>
           <Box layerStyle='shadowed' as='section'>
-            <Heading as='h2' size='md'>
+            <Heading variant='sectionHead' as='h2'>
               Current Attributes
             </Heading>
             <p>
