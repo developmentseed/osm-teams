@@ -1,104 +1,36 @@
 import React, { useRef } from 'react'
-import css from 'styled-jsx/css'
 import { isEmpty } from 'ramda'
-import Popup from 'reactjs-popup'
-import { Button, CloseButton } from '@chakra-ui/react'
-import SvgSquare from '../components/svg-square'
-
-const ModalStyles = css`
-  .modal__body {
-    display: flex;
-    flex-flow: column nowrap;
-    flex: 1;
-    gap: 1rem;
-    width: 100%;
-  }
-  .modal__header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    position: sticky;
-    top: -2rem;
-    background: white;
-    padding-top: 2rem;
-    margin-top: -2rem;
-  }
-  .user__item {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-  }
-  .user__item h3 {
-    font-weight: bold;
-  }
-  .user__item figure {
-    position: relative;
-    height: 3rem;
-    overflow: hidden;
-    margin: 0;
-    border-radius: 0.25rem;
-    aspect-ratio: 1 / 1;
-    background: rgba(23, 23, 23, 0.08);
-  }
-  .user__item figure:before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 2;
-    content: '';
-    box-shadow: inset 0 0 0 1px rgba(23, 23, 23, 0.24);
-    border-radius: 0.25rem;
-    pointer-events: none;
-  }
-  .user__item figure > * {
-    position: relative;
-    height: 100%;
-    width: 100%;
-    z-index: 1;
-    object-fit: cover;
-  }
-`
-const popupStyles = css`
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  li {
-    padding-left: 0.5rem;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-
-  li:hover {
-    background: 'blackAlpha.300';
-    color: 'red.600';
-  }
-`
+import {
+  Avatar,
+  Button,
+  CloseButton,
+  Flex,
+  Heading,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Text,
+  Wrap,
+} from '@chakra-ui/react'
+import Badge from './badge'
 
 function renderActions(actions) {
   return (
-    <Popup
-      trigger={<Button size='sm'>Edit user access</Button>}
-      position='bottom left'
-      on='click'
-      closeOnDocumentClick
-      contentStyle={{ padding: '10px', width: '250px', border: 'none' }}
-    >
-      <ul>
+    <Menu>
+      <MenuButton as={Button} size='sm' variant='outline'>
+        Edit user access
+      </MenuButton>
+      <MenuList>
         {actions.map((action) => {
           return (
-            <li onClick={() => action.onClick()} key={action.name}>
+            <MenuItem onClick={() => action.onClick()} key={action.name}>
               {action.name}
-            </li>
+            </MenuItem>
           )
         })}
-      </ul>
-      <style jsx>{popupStyles}</style>
-    </Popup>
+      </MenuList>
+    </Menu>
   )
 }
 
@@ -108,16 +40,16 @@ function renderBadges(badges) {
   }
 
   return (
-    <table>
-      {badges.map((b) => (
-        <tr key={b.color}>
-          <td>
-            <SvgSquare color={b.color} />
-          </td>
-          <td>{b.name}</td>
-        </tr>
-      ))}
-    </table>
+    <Flex alignItems='flex-start' direction='column' gap={2}>
+      <Heading size='xs'>User Badges</Heading>
+      <Wrap>
+        {badges.map((b) => (
+          <Badge key={b.color} color={b.color} dot>
+            {b.name}
+          </Badge>
+        ))}
+      </Wrap>
+    </Flex>
   )
 }
 
@@ -132,57 +64,54 @@ export default function ProfileModal({
   let profileContent = <dl>User does not have a profile</dl>
   if (!isEmpty(attributes)) {
     profileContent = (
-      <>
-        <dl>
+      <Flex direction='column' gap={2} alignItems='flex-start'>
+        <Flex gap={2} alignItems='flex-start' as='dl'>
           {attributes &&
             attributes.map((attribute) => {
               if (attribute.value) {
                 return (
                   <>
-                    <dt>{attribute.name}:</dt>
-                    <dd>{attribute.value}</dd>
+                    <Text
+                      as='dt'
+                      fontFamily={'mono'}
+                      textTransform='uppercase'
+                      fontSize='sm'
+                    >
+                      {attribute.name}:
+                    </Text>
+                    <Text as='dd'>{attribute.value}</Text>
                   </>
                 )
               }
             })}
-        </dl>
-        {/* <style jsx>{`
-          dl {
-            display: grid;
-            grid-template-columns: 4rem 1fr;
-            grid-gap: 0.25rem 1rem;
-          }
-
-          dt {
-            font-family: ${theme.typography.headingFontFamily};
-            text-transform: uppercase;
-          }
-        `}</style> */}
-      </>
+        </Flex>
+      </Flex>
     )
   }
   const ref = useRef()
   return (
-    <article className='modal__body'>
-      <div className='modal__header'>
-        <div className='user__item'>
-          {user.image ? (
-            <figure>
-              <img src={user.image} />
-            </figure>
-          ) : (
-            <figure>
-              <img />
-            </figure>
-          )}
-          <h3>{user.name}</h3>
-        </div>
+    <Flex direction={'column'} as='article' gap={2} alignItems='flex-start'>
+      <Flex
+        alignItems='flex-start'
+        justifyContent='space-between'
+        position='sticky'
+        top={-4}
+        bg='white'
+        pt={4}
+        mt={-4}
+        w={'100%'}
+      >
+        <Flex alignItems='center' gap={2}>
+          <Avatar src={user.image} name={user.name} borderRadius='sm' />
+          <Heading size='sm' as='h3'>
+            {user.name}
+          </Heading>
+        </Flex>
         <CloseButton onClick={() => onClose()} />
-      </div>
+      </Flex>
       {!isEmpty(actions) && renderActions(actions, ref)}
       {profileContent}
       {renderBadges(badges)}
-      <style jsx>{ModalStyles}</style>
-    </article>
+    </Flex>
   )
 }
