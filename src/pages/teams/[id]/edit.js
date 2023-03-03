@@ -227,25 +227,6 @@ export default class TeamEdit extends Component {
             </p>
             {this.renderDeleter()}
           </Box>
-          {/* <style jsx global>
-          {`
-            .form-control {
-              flex-direction: column;
-              align-items: flex-start;
-            }
-
-            .danger-zone {
-              border: 2px solid ${theme.colors.secondaryColor} !important;
-              background: white;
-              margin: 4rem 0;
-              padding: 2rem;
-            }
-
-            .danger-zone .button {
-              margin-right: 2rem;
-            }
-          `}
-        </style> */}
         </Container>
       </Box>
     )

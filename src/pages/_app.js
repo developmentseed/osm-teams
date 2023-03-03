@@ -6,7 +6,7 @@ import '@fontsource/inconsolata/400.css'
 import '@fontsource/inconsolata/700.css'
 
 import Head from 'next/head'
-import Layout from '../components/layout.js'
+import { Box } from '@chakra-ui/react'
 import { ToastContainer } from 'react-toastify'
 import { SessionProvider } from 'next-auth/react'
 
@@ -26,10 +26,17 @@ export default function App({
           <meta name='viewport' content='width=device-width, initial-scale=1' />
           <meta charSet='utf-8f-8' />
         </Head>
-        <Layout>
+        <Box
+          display='grid'
+          position='relative'
+          gridTemplateRows={'4rem 1fr'}
+          minHeight='100vh'
+          margin='0'
+          padding='0'
+        >
           <PageHeader />
           <Component {...pageProps} />
-        </Layout>
+        </Box>
         <ToastContainer position='bottom-right' />
       </SessionProvider>
     </ChakraProvider>
