@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Formik, Field, Form } from 'formik'
-import descriptionPopup from './description-popup'
 import urlRegex from 'url-regex'
-import { Button, Heading } from '@chakra-ui/react'
+import { Button, Heading, Tooltip } from '@chakra-ui/react'
+import { QuestionOutlineIcon } from '@chakra-ui/icons'
 import dynamic from 'next/dynamic'
 import { uniqBy, prop } from 'ramda'
 
@@ -81,7 +81,13 @@ export default function EditTeamForm({
                   <label htmlFor={`extra-tag-${id}`}>
                     {name}
                     {required ? <span className='form--required'>*</span> : ''}
-                    {description ? descriptionPopup(description) : ''}
+                    {description ? (
+                      <Tooltip label={description} aria-label='tooltip'>
+                        <QuestionOutlineIcon />
+                      </Tooltip>
+                    ) : (
+                      ''
+                    )}
                   </label>
                   <Field
                     type='text'
@@ -106,7 +112,13 @@ export default function EditTeamForm({
                   <label htmlFor={`extra-tag-${id}`}>
                     {name}
                     {required ? <span className='form--required'>*</span> : ''}
-                    {description ? descriptionPopup(description) : ''}
+                    {description ? (
+                      <Tooltip label={description} aria-label='tooltip'>
+                        <QuestionOutlineIcon />
+                      </Tooltip>
+                    ) : (
+                      ''
+                    )}
                   </label>
                   <Field
                     type='text'

@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import CreatableSelect from 'react-select/creatable'
 import * as Yup from 'yup'
 import Router from 'next/router'
-import descriptionPopup from './description-popup'
 import { Formik, Field, useField, Form, ErrorMessage } from 'formik'
 import {
   getOrgMemberAttributes,
@@ -12,7 +11,16 @@ import {
 } from '../lib/profiles-api'
 import { getOrg } from '../lib/org-api'
 import { getTeam } from '../lib/teams-api'
-import { Box, Button, Container, Flex, Heading, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  Heading,
+  Text,
+  Tooltip,
+} from '@chakra-ui/react'
+import { QuestionOutlineIcon } from '@chakra-ui/icons'
 import { propOr, prop } from 'ramda'
 import logger from '../lib/logger'
 import Link from 'next/link'
@@ -285,9 +293,16 @@ export default class ProfileForm extends Component {
                                 ) : (
                                   ''
                                 )}
-                                {attribute.description
-                                  ? descriptionPopup(attribute.description)
-                                  : ''}
+                                {attribute.description ? (
+                                  <Tooltip
+                                    label={attribute.description}
+                                    aria-label='tooltip'
+                                  >
+                                    <QuestionOutlineIcon />
+                                  </Tooltip>
+                                ) : (
+                                  ''
+                                )}
                               </label>
                               {attribute.key_type === 'gender' ? (
                                 <label>
@@ -333,9 +348,16 @@ export default class ProfileForm extends Component {
                                 ) : (
                                   ''
                                 )}
-                                {attribute.description
-                                  ? descriptionPopup(attribute.description)
-                                  : ''}
+                                {attribute.description ? (
+                                  <Tooltip
+                                    label={attribute.description}
+                                    aria-label='tooltip'
+                                  >
+                                    <QuestionOutlineIcon />
+                                  </Tooltip>
+                                ) : (
+                                  ''
+                                )}
                               </label>
                               {attribute.key_type === 'gender' ? (
                                 <label>
