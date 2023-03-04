@@ -1,9 +1,19 @@
 import React, { Component } from 'react'
 import { assoc, isEmpty } from 'ramda'
-import Popup from 'reactjs-popup'
 
 import ProfileAttributeForm from '../../../components/profile-attribute-form'
-import { Box, Button, Container, Heading, Flex } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Container,
+  Heading,
+  Flex,
+  Menu,
+  MenuList,
+  MenuItem,
+  MenuButton,
+  Portal,
+} from '@chakra-ui/react'
 import Table from '../../../components/tables/table'
 import {
   addOrgMemberAttributes,
@@ -46,61 +56,45 @@ export default class OrgEditProfile extends Component {
 
   renderActions(row) {
     return (
-      <Popup
-        trigger={<span>⚙️</span>}
-        position='left top'
-        on='click'
-        closeOnDocumentClick
-        contentStyle={{ padding: '10px', border: 'none' }}
-      >
-        <ul>
-          <li
-            onClick={async () => {
-              this.setState({
-                isModifying: true,
-                isAdding: false,
-                isDeleting: false,
-                rowToModify: assoc(
-                  'required',
-                  row.required === 'true' ? ['required'] : [],
-                  row
-                ),
-              })
-            }}
-          >
-            Modify
-          </li>
-          <li
-            onClick={async () => {
-              this.setState({
-                isModifying: false,
-                isAdding: false,
-                isDeleting: true,
-                rowToDelete: row,
-              })
-            }}
-          >
-            Delete
-          </li>
-        </ul>
-        {/* <style jsx>
-          {`
-            ul {
-              list-style: none;
-              padding: 0;
-              margin: 0;
-            }
-
-            li {
-              padding-left: 0.5rem;
-            }
-
-            li:hover {
-              color: ${theme.colors.secondaryColor};
-            }
-          `}
-        </style> */}
-      </Popup>
+      <Menu>
+        <MenuButton as={Button} size='sm' variant='outline'>
+          Edit
+        </MenuButton>
+        <Portal>
+          <MenuList>
+            <MenuItem
+              fontSize='sm'
+              onClick={async () => {
+                this.setState({
+                  isModifying: true,
+                  isAdding: false,
+                  isDeleting: false,
+                  rowToModify: assoc(
+                    'required',
+                    row.required === 'true' ? ['required'] : [],
+                    row
+                  ),
+                })
+              }}
+            >
+              Modify
+            </MenuItem>
+            <MenuItem
+              fontSize='sm'
+              onClick={async () => {
+                this.setState({
+                  isModifying: false,
+                  isAdding: false,
+                  isDeleting: true,
+                  rowToDelete: row,
+                })
+              }}
+            >
+              Delete
+            </MenuItem>
+          </MenuList>
+        </Portal>
+      </Menu>
     )
   }
 
@@ -132,7 +126,7 @@ export default class OrgEditProfile extends Component {
       { key: 'visibility' },
       { key: 'key_type', label: 'type' },
       { key: 'required' },
-      { key: 'actions' },
+      { key: 'actions', render: this.renderActions },
     ]
 
     let rows = []
