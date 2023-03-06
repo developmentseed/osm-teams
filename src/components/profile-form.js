@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import CreatableSelect from 'react-select/creatable'
 import * as Yup from 'yup'
 import Router from 'next/router'
+import join from 'url-join'
 import { Formik, Field, useField, Form, ErrorMessage } from 'formik'
 import {
   getOrgMemberAttributes,
@@ -25,6 +26,7 @@ import { propOr, prop } from 'ramda'
 import logger from '../lib/logger'
 import Link from 'next/link'
 import InpageHeader from './inpage-header'
+const APP_URL = process.env.APP_URL
 
 function GenderSelectField(props) {
   const [field, meta, { setValue, setTouched }] = useField(props.name)
@@ -130,7 +132,7 @@ export default class ProfileForm extends Component {
       let orgAttributes = []
       let org = {}
       let consentChecked = true
-      const returnUrl = `/teams/${this.props.id}`
+      const returnUrl = join(APP_URL, `/teams/${this.props.id}`)
       const team = await getTeam(id)
       if (team.org) {
         org = await getOrg(team.org.organization_id)

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { assoc, isEmpty } from 'ramda'
+import join from 'url-join'
 
 import ProfileAttributeForm from '../../../components/profile-attribute-form'
 import {
@@ -25,6 +26,7 @@ import {
 import logger from '../../../lib/logger'
 import Link from 'next/link'
 import InpageHeader from '../../../components/inpage-header'
+const APP_URL = process.env.APP_URL
 
 export default class TeamEditProfile extends Component {
   static async getInitialProps({ query }) {
@@ -156,7 +158,9 @@ export default class TeamEditProfile extends Component {
     return (
       <Box as='main' mb={16}>
         <InpageHeader>
-          <Link href={`/teams/${teamId}/edit`}>← Back to Edit Team</Link>
+          <Link href={join(APP_URL, `/teams/${teamId}/edit`)}>
+            ← Back to Edit Team
+          </Link>
           <Heading color='white'>Editing Team Attributes</Heading>
         </InpageHeader>
         <Container maxW='container.xl' as='section'>
