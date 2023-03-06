@@ -8,8 +8,7 @@ const { prop, isEmpty, difference, concat, assoc } = require('ramda')
 const request = require('request-promise-native')
 const { addZeroPadding } = require('../lib/utils')
 
-const { serverRuntimeConfig } = require('../../next.config')
-const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
+const DEFAULT_PAGE_SIZE = process.env.DEFAULT_PAGE_SIZE
 
 /**
  * @swagger
@@ -89,7 +88,7 @@ async function resolveMemberNames(ids) {
       } else {
         const resp = await request(
           join(
-            serverRuntimeConfig.OSM_API,
+            process.env.OSM_API,
             `/api/0.6/users?users=${notFound.join(',')}`
           )
         )
