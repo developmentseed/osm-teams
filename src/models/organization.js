@@ -2,8 +2,7 @@ const db = require('../lib/db')
 const team = require('./team')
 const { map, prop, includes, has, isNil } = require('ramda')
 const { unpack, PropertyRequiredError } = require('../../app/lib/utils')
-const { serverRuntimeConfig } = require('../../next.config')
-const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
+const DEFAULT_PAGE_SIZE = process.env.DEFAULT_PAGE_SIZE
 
 // Organization attributes (without profile)
 const orgAttributes = [
