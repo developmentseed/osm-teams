@@ -27,7 +27,6 @@ module.exports = {
   env: {
     DEFAULT_PAGE_SIZE: 10,
     basePath: process.env.BASE_PATH || '',
-    NODE_ENV: process.env.NODE_ENV || 'development',
     OSM_API:
       process.env.OSM_API ||
       process.env.OSM_DOMAIN ||
