@@ -25,17 +25,25 @@ class Developers extends Component {
               authenticate with the API
             </Text>
             <Heading size='lg'>Resources</Heading>
-            <List color='brand.600'>
+            <List>
               <ListItem>
                 <Link href={`${URL}/docs/api`}>API Docs</Link>
               </ListItem>
               <ListItem>
-                <a href='https://github.com/developmentseed/osm-teams-node-example'>
+                <a
+                  href='https://github.com/developmentseed/osm-teams-node-example'
+                  target='_blank'
+                  rel='noreferrer'
+                >
                   Example Node Integration
                 </a>
               </ListItem>
               <ListItem>
-                <a href='https://github.com/thadk/osm-teams-python-example'>
+                <a
+                  href='https://github.com/thadk/osm-teams-python-example'
+                  target='_blank'
+                  rel='noreferrer'
+                >
                   Example Python Integration
                 </a>
               </ListItem>
