@@ -1,6 +1,5 @@
 import React from 'react'
-import theme from '../styles/theme'
-
+import { Tag } from '@chakra-ui/react'
 const hexToRgb = (hex) =>
   hex
     .replace(
@@ -12,42 +11,29 @@ const hexToRgb = (hex) =>
     .map((x) => parseInt(x, 16))
     .join()
 
-export default function Badge({ name, color, dot, children }) {
-  let classes = [`badge`]
-  if (dot) classes.push('dot')
-  let classNames = classes.join(' ')
+export default function Badge({ color, dot, children }) {
   return (
-    <span className={classNames}>
+    <Tag
+      color={color}
+      bg={`rgba(${hexToRgb(color)}, 0.125)`}
+      size='sm'
+      borderRadius={'full'}
+      boxShadow={`0 0 0 1px rgba(${hexToRgb(color)}, 0.25)`}
+      mr={2}
+      overflow='hidden'
+      _before={
+        dot && {
+          content: '""',
+          bgColor: color,
+          height: 2,
+          width: 2,
+          borderRadius: 'full',
+          boxShadow: '0 0 0 1px var(--chakra-colors-brand-50)',
+          mr: 2,
+        }
+      }
+    >
       {children}
-      {name}
-      <style jsx>
-        {`
-          .badge {
-            display: inline-flex;
-            align-items: center;
-            font-size: 0.75rem;
-            background: rgba(${hexToRgb(color)}, 0.125);
-            padding: 0.125rem 0.5rem;
-            border-radius: 999px;
-            box-shadow: 0 0 0 1px ${theme.colors.primaryLite};
-            font-size: 12px;
-            white-space: nowrap;
-            margin-right: 4px;
-            line-height: initial;
-            position: relative;
-            overflow: hidden;
-          }
-          .badge.dot::before {
-            content: '';
-            background-color: ${color};
-            box-shadow: 0 0 0 1px ${theme.colors.primaryLite};
-            height: 0.5rem;
-            width: 0.5rem;
-            border-radius: 999px;
-            margin-right: 0.25rem;
-          }
-        `}
-      </style>
-    </span>
+    </Tag>
   )
 }

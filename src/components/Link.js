@@ -3,16 +3,21 @@ import Link from 'next/link'
 import React, { Children } from 'react'
 import parse from 'url-parse'
 
-const NavLink = withRouter(({ children, href }) => {
+const NavLink = withRouter(({ children, href, passHref, legacyBehavior }) => {
   return (
-    <ActiveLink href={href} activeClassName='active'>
+    <ActiveLink
+      href={href}
+      passHref={passHref}
+      legacyBehavior={legacyBehavior}
+      activeClassName='active'
+    >
       {children}
     </ActiveLink>
   )
 })
 
 const ActiveLink = withRouter(({ router, children, ...props }) => {
-  const { href, as } = props
+  const { href, as, passHref, legacyBehavior } = props
   const hrefPathname = parse(href).pathname
   const routerPathname = parse(router.asPath).pathname
 
@@ -28,7 +33,14 @@ const ActiveLink = withRouter(({ router, children, ...props }) => {
   delete props.activeClassName
 
   return (
-    <Link {...props} href={href} as={as}>
+    <Link
+      {...props}
+      href={href}
+      passHref={passHref}
+      as={as}
+      legacyBehavior={legacyBehavior}
+      className={className}
+    >
       {React.cloneElement(child, { className })}
     </Link>
   )

@@ -8,7 +8,7 @@ import SearchInput from '../../../components/tables/search-input'
 import ExternalProfileButton from '../../../components/external-profile-button'
 import Badge from '../../../components/badge'
 import { makeTitleCase } from '../../../../app/lib/utils'
-import theme from '../../../styles/theme'
+import { Flex, useToken } from '@chakra-ui/react'
 const SCOREBOARD_URL = process.env.SCOREBOARD_URL
 const HDYC_URL = process.env.HDYC_URL
 const DEFAULT_PAGE_SIZE = process.env.DEFAULT_PAGE_SIZE
@@ -21,14 +21,21 @@ function MembersTable({ rows: allRows, onRowClick }) {
     direction: 'asc',
   })
 
-  const roleBgColor = {
-    member: theme.colors.primaryColor,
-    moderator: theme.colors.secondaryColor,
-    manager: theme.colors.infoColor,
-    owner: theme.colors.secondaryColor,
-    undefined: theme.colors.primaryDark,
-  }
+  const [brand500, brand700, red600, red700, blue400] = useToken('colors', [
+    'brand.500',
+    'brand.700',
+    'red.500',
+    'red.700',
+    'blue.400',
+  ])
 
+  const roleBgColor = {
+    member: brand500,
+    moderator: red600,
+    manager: brand700,
+    owner: red700,
+    undefined: blue400,
+  }
   const columns = [
     { key: 'name', sortable: true },
     { key: 'id', sortable: true },
@@ -45,14 +52,14 @@ function MembersTable({ rows: allRows, onRowClick }) {
     {
       key: 'External Profiles',
       render: ({ id, name }) => (
-        <>
+        <Flex>
           <ExternalProfileButton type='osm-profile' userId={name} />
           {SCOREBOARD_URL && (
             <ExternalProfileButton type='scoreboard' userId={id} />
           )}
           {HDYC_URL && <ExternalProfileButton type='hdyc' userId={name} />}
           <ExternalProfileButton type='osmcha' userId={name} />
-        </>
+        </Flex>
       ),
     },
   ]

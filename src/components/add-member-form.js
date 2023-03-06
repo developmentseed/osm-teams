@@ -1,6 +1,6 @@
 import React from 'react'
 import { Formik, Field, Form } from 'formik'
-import Button from './button'
+import { Button } from '@chakra-ui/react'
 import logger from '../lib/logger'
 
 export default function AddMemberForm({ onSubmit }) {
@@ -34,7 +34,12 @@ export default function AddMemberForm({ onSubmit }) {
               style={{ width: '6rem' }}
             />
             {status && status.msg && <div>{status.msg}</div>}
-            <Button type='submit' variant='submit' disabled={isSubmitting}>
+            <Button
+              type='submit'
+              variant='outline'
+              colorScheme='brand'
+              isDisabled={isSubmitting}
+            >
               {addMemberText}
             </Button>
           </Form>

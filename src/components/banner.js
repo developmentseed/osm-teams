@@ -1,30 +1,18 @@
+import { Flex, Text } from '@chakra-ui/react'
 import React from 'react'
-import theme from '../styles/theme'
 
 export default function PageBanner({ content, variant }) {
   return (
-    <div>
-      <p>{content}</p>
-      <style jsx>
-        {`
-          div {
-            display: flex;
-            align-items: center;
-            padding: 1rem 0.5rem;
-            border-bottom: 4px solid
-              ${variant === 'warning'
-                ? `${theme.colors.secondaryColor}`
-                : `${theme.colors.primaryColor}`};
-          }
-
-          p {
-            font-size: 0.85rem;
-            font-family: ${theme.typography.headingFontFamily};
-            text-transform: uppercase;
-            margin: 0;
-          }
-        `}
-      </style>
-    </div>
+    <Flex
+      alignItems={'center'}
+      px={2}
+      py={4}
+      borderBottomWidth='4px'
+      borderBottomColor={variant === 'warning' ? 'red.500' : 'brand.500'}
+    >
+      <Text size='xs' fontFamily={'mono'} textTransform='uppercase' m={0}>
+        {content}
+      </Text>
+    </Flex>
   )
 }

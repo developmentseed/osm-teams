@@ -1,6 +1,7 @@
 import T from 'prop-types'
 import Table from './table'
 import Badge from '../badge'
+import { useToken } from '@chakra-ui/react'
 import { useFetchList } from '../../hooks/use-fetch-list'
 import { useState } from 'react'
 import Pagination from '../pagination'
@@ -8,7 +9,6 @@ import qs from 'qs'
 import SearchInput from './search-input'
 import ExternalProfileButton from '../external-profile-button'
 import { makeTitleCase } from '../../../app/lib/utils'
-import theme from '../../styles/theme'
 
 const SCOREBOARD_URL = process.env.SCOREBOARD_URL
 const HDYC_URL = process.env.HDYC_URL
@@ -20,14 +20,21 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
     key: 'name',
     direction: 'asc',
   })
+  const [brand500, brand700, red600, red700, blue400] = useToken('colors', [
+    'brand.500',
+    'brand.700',
+    'red.600',
+    'red.700',
+    'blue.400',
+  ])
 
   const MAX_BADGES_COLUMN = 3
   const roleBgColor = {
-    member: theme.colors.primaryColor,
-    moderator: theme.colors.infoColor,
-    manager: theme.colors.infoColor,
-    owner: theme.colors.secondaryColor,
-    undefined: theme.colors.primaryDark,
+    member: brand500,
+    moderator: red600,
+    manager: brand700,
+    owner: red700,
+    undefined: blue400,
   }
   let apiBasePath
   let emptyMessage

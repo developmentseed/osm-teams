@@ -1,11 +1,17 @@
 import React from 'react'
+import { ChakraProvider } from '@chakra-ui/react'
+import '@fontsource/work-sans/400.css'
+import '@fontsource/work-sans/700.css'
+import '@fontsource/inconsolata/400.css'
+import '@fontsource/inconsolata/700.css'
+
 import Head from 'next/head'
-import Sidebar from '../components/sidebar'
-import Layout from '../components/layout.js'
-import Button from '../components/button'
+import { Box } from '@chakra-ui/react'
 import { ToastContainer } from 'react-toastify'
 import { SessionProvider } from 'next-auth/react'
 
+import theme from '../styles/theme'
+import PageHeader from '../components/page-header'
 const BASE_PATH = process.env.BASE_PATH || ''
 
 export default function App({
@@ -13,24 +19,26 @@ export default function App({
   pageProps: { session, ...pageProps },
 }) {
   return (
-    <SessionProvider session={session} basePath={`${BASE_PATH}/api/auth`}>
-      <Head>
-        <title>OSM Teams</title>
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <meta charSet='utf-8f-8' />
-      </Head>
-      <Layout>
-        <Sidebar />
-        <Component {...pageProps} />
-        <Button
-          href='https://forms.gle/mQQX37FcvfVMoiCW7'
-          variant='danger'
-          id='feedback'
+    <ChakraProvider theme={theme}>
+      <SessionProvider session={session} basePath={`${BASE_PATH}/api/auth`}>
+        <Head>
+          <title>OSM Teams</title>
+          <meta name='viewport' content='width=device-width, initial-scale=1' />
+          <meta charSet='utf-8f-8' />
+        </Head>
+        <Box
+          display='grid'
+          position='relative'
+          gridTemplateRows={'4rem 1fr'}
+          minHeight='100vh'
+          margin='0'
+          padding='0'
         >
-          Feedback
-        </Button>
-      </Layout>
-      <ToastContainer position='bottom-right' />
-    </SessionProvider>
+          <PageHeader />
+          <Component {...pageProps} />
+        </Box>
+        <ToastContainer position='bottom-right' />
+      </SessionProvider>
+    </ChakraProvider>
   )
 }

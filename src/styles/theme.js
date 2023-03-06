@@ -1,79 +1,153 @@
-let colors = {
-  baseColor: '#3D3D3D',
-  primaryColor: '#384A9E',
-  primaryLite: '#E8ECFF',
-  primaryDark: '#1E2D72',
-  secondaryColor: '#FF6341',
-  secondaryLite: '#FFE4DE',
-  secondaryDark: '#732C1D',
-  backgroundColor: '#F6F6F6',
+import { cssVar, extendTheme, withDefaultColorScheme } from '@chakra-ui/react'
 
-  dangerColor: '#d85d3f',
-  successColor: '#216869',
-  warningColor: '#ffc700',
-  infoColor: '#5860ff',
-}
-
-colors = {
-  ...colors,
-  linkColor: colors.primaryColor,
-  baseColorLight: '#E1E1E1',
-  // baseAlphaColor: rgba(colors.baseColor, 0.08),
-  // baseColorMed: tint(0.3, colors.baseColor),
-  // primaryDark: shade(0.3, colors.primaryColor),
-  // primaryLight: tint(0.7, colors.primaryColor),
-  // secondaryMed: tint(0.5, colors.secondaryColor),
-  // secondaryPale: tint(0.9, colors.secondaryColor)
-}
-
-let typography = {
-  rootFontSize: '16px',
-  baseFontColor: colors.baseColor,
-  monoFontFamily: "'Inconsolata', monospace",
-  baseFontFamily: "'Work Sans', sans-serif",
-  baseFontStyle: 'normal',
-  baseFontRegular: 400,
-  baseFontSemiBold: 600,
-  baseFontBold: 700,
-  baseFontWeight: 400,
-  baseFontSize: '1rem',
-  baseLineHeight: 1.5,
-}
-
-typography = {
-  ...typography,
-  headingFontFamily: typography.monoFontFamily,
-  headingFontRegular: 400,
-  headingFontBold: 700,
-  headingFontWeight: 700,
-}
-
-let shape = {
-  rounded: '0.25rem',
-  ellipsoid: '320rem',
-  borderWidth: '1px',
-}
-
-let layout = {
-  globalSpacing: '1rem',
-  rowMinWidth: '320px',
-  rowMaxWidth: '1180px',
-}
-
-let mediaRanges = {
-  xsmall: null,
-  small: '544px',
-  medium: '768px',
-  large: '992px',
-  xlarge: '1480px',
-}
-
-const theme = {
-  layout,
-  colors,
-  typography,
-  shape,
-  mediaRanges,
-}
+const theme = extendTheme(
+  {
+    styles: {
+      global: {
+        body: {
+          bg: 'gray.100',
+        },
+        a: {
+          fontFamily: `'Inconsolata', monospace`,
+          _hover: {
+            textDecoration: 'underline',
+          },
+        },
+      },
+    },
+    layerStyles: {
+      shadowed: {
+        bg: 'white',
+        border: '2px',
+        borderColor: 'brand.700',
+        p: 6,
+        boxShadow: '4px 4px 0 0 var(--chakra-colors-brand-600)',
+        overflow: 'hidden',
+        mb: 8,
+      },
+    },
+    radii: {
+      md: '0', // heavy handed override for the border radius, rather than updating on every multipart component 🤷‍♂️
+    },
+    fontSizes: {
+      xs: '0.75rem',
+      sm: '0.875rem',
+      md: '1rem',
+      lg: '1.25rem',
+      xl: '1.5rem',
+      '2xl': '1.75rem',
+      '3xl': '2rem',
+      '4xl': '2.25rem',
+      '5xl': '2.5rem',
+      '6xl': '2.75rem',
+      '7xl': '3rem',
+      '8xl': '3.25rem',
+      '9xl': '3.5rem',
+    },
+    fonts: {
+      body: `'Work Sans', sans-serif`,
+      heading: `'Work Sans', sans-serif`,
+      mono: `'Inconsolata', monospace`,
+    },
+    colors: {
+      gray: {
+        800: '#443F3F', // Text color
+      },
+      brand: {
+        50: '#ECEEF8',
+        100: '#CAD0EC',
+        200: '#A8B2E0',
+        300: '#8794D4',
+        400: '#6576C8',
+        500: '#4358BC',
+        600: '#354797',
+        700: '#283571',
+        800: '#1B234B',
+        900: '#0D1226',
+      },
+      red: {
+        50: '#FFEAE5',
+        100: '#FFC4B8',
+        200: '#FF9F8A',
+        300: '#FF795C',
+        400: '#FF532E',
+        500: '#FF2E00',
+        600: '#CC2500',
+        700: '#991B00',
+        800: '#661200',
+        900: '#330900',
+      },
+    },
+    components: {
+      Heading: {
+        baseStyle: {
+          color: 'brand.600',
+        },
+        sizes: {
+          xs: {
+            lineHeight: 'calc(0.5rem + 1em)',
+          },
+          sm: {
+            lineHeight: 'calc(0.5rem + 1em)',
+          },
+          md: {
+            lineHeight: 'calc(0.5rem + 1em)',
+          },
+          lg: {
+            lineHeight: 'calc(0.5rem + 1em)',
+          },
+          xl: {
+            lineHeight: 'calc(0.5rem + 1em)',
+          },
+          '2xl': {
+            lineHeight: 'calc(0.5rem + 1em)',
+          },
+          '3xl': {
+            lineHeight: 'calc(0.5rem + 1em)',
+          },
+          '4xl': {
+            lineHeight: 'calc(0.5rem + 1em)',
+          },
+        },
+        variants: {
+          sectionHead: {
+            colorScheme: 'brand',
+            fontFamily: 'mono',
+            fontSize: 'lg',
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+            mb: 1,
+          },
+        },
+      },
+      Button: {
+        baseStyle: {
+          fontFamily: 'mono',
+          fontWeight: 'bold',
+          _hover: {
+            textDecoration: 'none',
+          },
+        },
+        defaultProps: {
+          size: 'md',
+          variant: 'solid',
+        },
+      },
+      Card: {
+        sizes: {
+          md: {
+            container: {
+              [cssVar('card-padding').variable]: ['space.4', null, 'space.8'],
+            },
+          },
+        },
+      },
+    },
+  },
+  withDefaultColorScheme({
+    colorScheme: 'brand',
+    components: ['Button', 'Heading'],
+  })
+)
 
 export default theme

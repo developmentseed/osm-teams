@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Button from '../components/button'
+import { Button } from '@chakra-ui/react'
 import Link from 'next/link'
 
 class Consent extends Component {
@@ -97,7 +97,6 @@ class Consent extends Component {
           <p>
             <Button
               type='submit'
-              variant='primary'
               id='accept'
               name='submit'
               value='Allow access'
@@ -106,7 +105,8 @@ class Consent extends Component {
             </Button>
             <Button
               type='submit'
-              variant='danger'
+              colorScheme={'red'}
+              variant='outline'
               id='reject'
               name='submit'
               value='Deny access'

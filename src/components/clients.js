@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import Button from './button'
-import Card from './card'
+import { Button, Card } from '@chakra-ui/react'
 import theme from '../styles/theme'
 import join from 'url-join'
 import logger from '../lib/logger'
@@ -22,7 +21,7 @@ function newClient({ client_id, client_name, client_secret }) {
         <label>client_secret: </label>
         {client_secret}
       </li>
-      <style jsx>
+      {/* <style jsx>
         {`
           ul {
             padding: 0;
@@ -38,7 +37,7 @@ function newClient({ client_id, client_name, client_secret }) {
             font-weight: bold;
           }
         `}
-      </style>
+      </style> */}
     </ul>
   )
 }
