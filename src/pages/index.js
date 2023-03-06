@@ -151,7 +151,7 @@ export default function Home() {
                   color: 'red.500',
                 }}
               >
-                <Link href={join(APP_URL, '/profile')}>Profile</Link>
+                <Link href={join(APP_URL, '/profile')}>Dashboard</Link>
               </ListItem>
             </UnorderedList>
           </Box>

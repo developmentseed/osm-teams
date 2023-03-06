@@ -27,7 +27,7 @@ import NavLink from '../components/Link'
 
 const Links = [
   { url: '/teams', name: 'Explore' },
-  { url: '/developers', name: 'About' },
+  { url: '/developers', name: 'Developers' },
 ]
 
 export default function PageHeader() {
@@ -36,9 +36,15 @@ export default function PageHeader() {
   const isAuthenticated = status === 'authenticated'
 
   return (
-    <Box bg='brand.500' as='header' borderBottom={'2px'} borderColor='base.600'>
+    <Box
+      color='brand.600'
+      bg='white'
+      as='header'
+      borderBottom={'2px'}
+      borderColor='base.600'
+    >
       <Container
-        color='white'
+        color='brand.600'
         px={4}
         maxW='container.xl'
         position='relative'
@@ -55,23 +61,22 @@ export default function PageHeader() {
             icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
             aria-label={'Open Menu'}
             display={{ md: 'none' }}
+            variant='outline'
             mr={2}
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems={'center'}>
-            <Box>
-              <NavLink href='/' passHref legacyBehavior>
-                <Heading
-                  color='white'
-                  fontFamily='mono'
-                  size='md'
-                  as='a'
-                  _hover={{ textDecoration: 'none' }}
-                >
-                  osm_teams
-                </Heading>
-              </NavLink>
-            </Box>
+            <NavLink href='/' passHref legacyBehavior>
+              <Heading
+                color='brand.600'
+                fontFamily='mono'
+                size='sm'
+                as='a'
+                _hover={{ textDecoration: 'none' }}
+              >
+                osm_teams
+              </Heading>
+            </NavLink>
             <HStack
               as={'nav'}
               spacing={8}
@@ -82,9 +87,15 @@ export default function PageHeader() {
                   <Button
                     as='a'
                     variant='outline'
-                    color='white'
                     textTransform={'lowercase'}
-                    _hover={{ background: 'brand.600', textDecoration: 'none' }}
+                    _hover={{ background: 'brand.200', textDecoration: 'none' }}
+                    sx={{
+                      '.active&': {
+                        bg: 'brand.500',
+                        color: 'white',
+                        borderColor: 'brand.500',
+                      },
+                    }}
                   >
                     {link.name}
                   </Button>
@@ -95,9 +106,15 @@ export default function PageHeader() {
                   <Button
                     as='a'
                     variant='outline'
-                    color='white'
                     textTransform={'lowercase'}
-                    _hover={{ background: 'brand.600', textDecoration: 'none' }}
+                    _hover={{ background: 'brand.200', textDecoration: 'none' }}
+                    sx={{
+                      '.active&': {
+                        bg: 'brand.500',
+                        color: 'white',
+                        borderColor: 'brand.500',
+                      },
+                    }}
                   >
                     Dashboard
                   </Button>
@@ -112,16 +129,15 @@ export default function PageHeader() {
                   <MenuButton
                     as={Button}
                     variant='outline'
-                    color='white'
                     textTransform={'lowercase'}
-                    _hover={{ background: 'brand.600', textDecoration: 'none' }}
+                    _hover={{ background: 'brand.200', textDecoration: 'none' }}
                     size={'sm'}
                     mr={4}
                     leftIcon={<AddIcon />}
                   >
                     Add New
                   </MenuButton>
-                  <MenuList bg='brand.600' color='white' zIndex={20}>
+                  <MenuList zIndex={20} layerStyle='shadowed' px={0} py={1}>
                     <MenuItem bg='inherit'>
                       <NavLink href='/teams/create'>
                         <span>New Team</span>
@@ -146,28 +162,18 @@ export default function PageHeader() {
                   >
                     <Avatar size={'sm'} src={session.user.image} />
                   </MenuButton>
-                  <MenuList
-                    bg='brand.600'
-                    color='white'
-                    zIndex={20}
-                    borderRadius={0}
-                  >
+                  <MenuList layerStyle='shadowed' px={0} py={1} zIndex={20}>
                     <MenuItem bg='inherit' _hover={{ cursor: 'default' }}>
                       <Avatar size={'xs'} mr={2} src={session.user.image} />
-                      <Heading color='white' as='h4' size='sm'>
+                      <Heading as='h4' size='sm' fontFamily='mono'>
                         {session.user.name}
                       </Heading>
                     </MenuItem>
                     <MenuDivider />
 
                     <MenuItem bg='inherit'>
-                      <NavLink href='/dashboard'>
-                        <span>Dashboard</span>
-                      </NavLink>
-                    </MenuItem>
-                    <MenuItem bg='inherit'>
                       <NavLink href='/profile'>
-                        <span>Profile</span>
+                        <span>Dashboard</span>
                       </NavLink>
                     </MenuItem>
                     <MenuDivider />
@@ -196,21 +202,21 @@ export default function PageHeader() {
         {isOpen ? (
           <Drawer isOpen={isOpen} placement='left' onClose={onClose}>
             <DrawerOverlay />
-            <DrawerContent bg='brand.500' color='white' zIndex='3000'>
+            <DrawerContent color='brand.600' bg='white' zIndex='3000'>
               <DrawerCloseButton />
               <DrawerBody py={4}>
                 <NavLink href='/' passHref legacyBehavior>
                   <Heading
-                    color='white'
+                    color='brand.600'
                     fontFamily='mono'
-                    size='md'
+                    size='sm'
                     as='a'
                     _hover={{ textDecoration: 'none' }}
                   >
                     osm_teams
                   </Heading>
                 </NavLink>
-                <List spacing='8' mt={16}>
+                <List spacing='8' mt={8}>
                   {Links.map((link) => (
                     <ListItem key={link.url}>
                       <NavLink href={link.url}>
