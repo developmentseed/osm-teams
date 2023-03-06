@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Box, Container, Heading, List, ListItem, Text } from '@chakra-ui/react'
 import InpageHeader from '../components/inpage-header'
+import Link from 'next/link'
 
 const URL = process.env.APP_URL
 
@@ -26,10 +27,7 @@ class Developers extends Component {
             <Heading size='lg'>Resources</Heading>
             <List color='brand.600'>
               <ListItem>
-                <a href={`${URL}/docs/api`}>API Docs</a>
-              </ListItem>
-              <ListItem>
-                <a href={`${URL}/clients`}>Connect a new application</a>
+                <Link href={`${URL}/docs/api`}>API Docs</Link>
               </ListItem>
               <ListItem>
                 <a href='https://github.com/developmentseed/osm-teams-node-example'>
