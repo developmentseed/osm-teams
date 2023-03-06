@@ -36,9 +36,9 @@ export default function PageHeader() {
   const isAuthenticated = status === 'authenticated'
 
   return (
-    <Box bg='brand.500' as='header' borderBottom={'2px'} borderColor='base.600'>
+    <Box bg='white' as='header' borderBottom={'2px'} borderColor='base.600'>
       <Container
-        color='white'
+        color='brand.600'
         px={4}
         maxW='container.xl'
         position='relative'
@@ -59,49 +59,51 @@ export default function PageHeader() {
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems={'center'}>
-            <Box>
-              <NavLink href='/' passHref legacyBehavior>
-                <Heading
-                  color='white'
-                  fontFamily='mono'
-                  size='md'
-                  as='a'
-                  _hover={{ textDecoration: 'none' }}
-                >
-                  osm_teams
-                </Heading>
-              </NavLink>
-            </Box>
+            <NavLink
+              href='/'
+              color='brand.600'
+              fontFamily='mono'
+              _hover={{ textDecoration: 'none' }}
+            >
+              osm_teams
+            </NavLink>
             <HStack
               as={'nav'}
               spacing={8}
               display={{ base: 'none', md: 'flex' }}
             >
               {Links.map((link) => (
-                <NavLink href={link.url} passHref key={link.url} legacyBehavior>
-                  <Button
-                    as='a'
-                    variant='outline'
-                    color='white'
-                    textTransform={'lowercase'}
-                    _hover={{ background: 'brand.600', textDecoration: 'none' }}
-                  >
-                    {link.name}
-                  </Button>
-                </NavLink>
+                <Button
+                  href={link.url}
+                  key={link.url}
+                  as={NavLink}
+                  size='md'
+                  variant='outline'
+                  activeProps={{
+                    background: 'brand.500 !important',
+                    color: 'white !important',
+                    border:
+                      '1px solid var(--chakra-colors-brand-500) !important',
+                  }}
+                >
+                  {link.name}
+                </Button>
               ))}
               {isAuthenticated && (
-                <NavLink href={'/profile'} passHref legacyBehavior>
-                  <Button
-                    as='a'
-                    variant='outline'
-                    color='white'
-                    textTransform={'lowercase'}
-                    _hover={{ background: 'brand.600', textDecoration: 'none' }}
-                  >
-                    Dashboard
-                  </Button>
-                </NavLink>
+                <Button
+                  href={'/profile'}
+                  as={NavLink}
+                  size='md'
+                  variant='outline'
+                  activeProps={{
+                    background: 'brand.500 !important',
+                    color: 'white !important',
+                    border:
+                      '1px solid var(--chakra-colors-brand-500) !important',
+                  }}
+                >
+                  Dashboard
+                </Button>
               )}
             </HStack>
           </HStack>
@@ -112,7 +114,7 @@ export default function PageHeader() {
                   <MenuButton
                     as={Button}
                     variant='outline'
-                    color='white'
+                    color='brand.600'
                     textTransform={'lowercase'}
                     _hover={{ background: 'brand.600', textDecoration: 'none' }}
                     size={'sm'}
@@ -144,7 +146,11 @@ export default function PageHeader() {
                     border={'2px'}
                     borderColor='base.600'
                   >
-                    <Avatar size={'sm'} src={session.user.image} />
+                    <Avatar
+                      size={'sm'}
+                      src={session.user.image}
+                      name={session.user.name}
+                    />
                   </MenuButton>
                   <MenuList
                     bg='brand.600'
@@ -199,17 +205,7 @@ export default function PageHeader() {
             <DrawerContent bg='brand.500' color='white' zIndex='3000'>
               <DrawerCloseButton />
               <DrawerBody py={4}>
-                <NavLink href='/' passHref legacyBehavior>
-                  <Heading
-                    color='white'
-                    fontFamily='mono'
-                    size='md'
-                    as='a'
-                    _hover={{ textDecoration: 'none' }}
-                  >
-                    osm_teams
-                  </Heading>
-                </NavLink>
+                <NavLink href='/'>osm_teams</NavLink>
                 <List spacing='8' mt={16}>
                   {Links.map((link) => (
                     <ListItem key={link.url}>

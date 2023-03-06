@@ -1,49 +1,25 @@
-import { withRouter } from 'next/router'
-import Link from 'next/link'
-import React, { Children } from 'react'
-import parse from 'url-parse'
+import { Link as ChakraLink } from '@chakra-ui/react'
+import { Link as NextLink } from 'next/link'
+import { useRouter } from 'next/router'
+import React from 'react'
 
-const NavLink = withRouter(({ children, href, passHref, legacyBehavior }) => {
-  return (
-    <ActiveLink
-      href={href}
-      passHref={passHref}
-      legacyBehavior={legacyBehavior}
-      activeClassName='active'
-    >
-      {children}
-    </ActiveLink>
-  )
-})
+function NavLink({ href, activeProps, children, ...props }) {
+  const router = useRouter()
+  const isActive = router.pathname === href
 
-const ActiveLink = withRouter(({ router, children, ...props }) => {
-  const { href, as, passHref, legacyBehavior } = props
-  const hrefPathname = parse(href).pathname
-  const routerPathname = parse(router.asPath).pathname
-
-  const child = Children.only(children)
-
-  let className = child.props.className || null
-  if (routerPathname === hrefPathname && props.activeClassName) {
-    className = `${className !== null ? className : ''} ${
-      props.activeClassName
-    }`.trim()
+  if (isActive) {
+    return (
+      <ChakraLink as={NextLink} href={href} {...props} {...activeProps}>
+        {children}
+      </ChakraLink>
+    )
   }
 
-  delete props.activeClassName
-
   return (
-    <Link
-      {...props}
-      href={href}
-      passHref={passHref}
-      as={as}
-      legacyBehavior={legacyBehavior}
-      className={className}
-    >
-      {React.cloneElement(child, { className })}
-    </Link>
+    <ChakraLink as={NextLink} href={href} {...props}>
+      {children}
+    </ChakraLink>
   )
-})
+}
 
 export default NavLink
