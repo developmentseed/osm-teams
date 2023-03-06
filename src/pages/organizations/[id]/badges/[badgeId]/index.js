@@ -145,9 +145,7 @@ export default class EditBadge extends Component {
             ← Back to Organization Page
           </Link>
           <Heading color='white'>Edit badge</Heading>
-          <Text fontFamily='mono' fontSize='sm' textTransform={'uppercase'}>
-            {this.state.org.name}
-          </Text>
+          <Text variant='overline'>{this.state.org.name}</Text>
         </InpageHeader>
         <Container maxW='container.xl' as='section'>
           <Box as='article' layerStyle={'shadowed'}>

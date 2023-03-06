@@ -134,9 +134,7 @@ export default class OrgEdit extends Component {
             ← Back to Organization
           </Link>
           <Heading color='white'>{org.name}</Heading>
-          <Text fontFamily='mono' fontSize='sm' textTransform={'uppercase'}>
-            Editing Organization
-          </Text>
+          <Text variant='overline'>Editing Organization</Text>
         </InpageHeader>
         <Container maxW='container.xl' as='section'>
           <Box as='article' layerStyle={'shadowed'}>

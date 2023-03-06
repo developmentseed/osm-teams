@@ -9,6 +9,7 @@ const theme = extendTheme(
         },
         a: {
           fontFamily: `'Inconsolata', monospace`,
+          color: 'brand.500',
           _hover: {
             textDecoration: 'underline',
           },
@@ -117,6 +118,16 @@ const theme = extendTheme(
             textTransform: 'uppercase',
             letterSpacing: 0.5,
             mb: 1,
+          },
+        },
+      },
+      Text: {
+        variants: {
+          overline: {
+            fontFamily: 'mono',
+            fontSize: 'sm',
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
           },
         },
       },

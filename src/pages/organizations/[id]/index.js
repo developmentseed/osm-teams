@@ -354,16 +354,7 @@ class Organization extends Component {
           )}
           {isStaff ? (
             <Box layerStyle={'shadowed'} as='section'>
-              <Heading
-                colorScheme='brand'
-                fontFamily='mono'
-                fontSize='lg'
-                textTransform={'uppercase'}
-                letterSpacing='0.5px'
-                mb={1}
-              >
-                Organization Members
-              </Heading>
+              <Heading variant='sectionHead'>Organization Members</Heading>
               <UsersTable
                 isSearchable
                 type='org-members'

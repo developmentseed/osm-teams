@@ -77,9 +77,7 @@ export default class AddBadge extends Component {
             ← Back to Organization
           </Link>
           <Heading color='white'>New Badge</Heading>
-          <Text fontFamily='mono' fontSize='sm' textTransform={'uppercase'}>
-            {this.state.org.name}
-          </Text>
+          <Text variant='overline'>{this.state.org.name}</Text>
         </InpageHeader>
         <Container maxW='container.xl' as='section'>
           <Box as='article' layerStyle={'shadowed'}>

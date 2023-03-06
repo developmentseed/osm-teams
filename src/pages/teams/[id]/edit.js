@@ -156,9 +156,7 @@ export default class TeamEdit extends Component {
                 ← Back to Team Page
               </Link>
               <Heading color='white'>{team.name}</Heading>
-              <Text fontFamily='mono' fontSize='sm' textTransform={'uppercase'}>
-                Editing Team
-              </Text>
+              <Text variant='overline'>Editing Team</Text>
             </Flex>
             <Button
               variant='outline'
