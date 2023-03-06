@@ -10,6 +10,9 @@ import SearchInput from './search-input'
 import ExternalProfileButton from '../external-profile-button'
 import { makeTitleCase } from '../../../app/lib/utils'
 
+const SCOREBOARD_URL = process.env.SCOREBOARD_URL
+const HDYC_URL = process.env.HDYC_URL
+
 function UsersTable({ type, orgId, onRowClick, isSearchable }) {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState(null)
@@ -71,10 +74,13 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
         },
         {
           key: 'External Profiles',
-          render: ({ name }) => (
+          render: ({ id, name }) => (
             <>
               <ExternalProfileButton type='osm-profile' userId={name} />
-              <ExternalProfileButton type='hdyc' userId={name} />
+              {SCOREBOARD_URL && (
+                <ExternalProfileButton type='scoreboard' userId={id} />
+              )}
+              {HDYC_URL && <ExternalProfileButton type='hdyc' userId={name} />}
               <ExternalProfileButton type='osmcha' userId={name} />
             </>
           ),
@@ -99,10 +105,13 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
         },
         {
           key: 'External Profiles',
-          render: ({ name }) => (
+          render: ({ id, name }) => (
             <>
               <ExternalProfileButton type='osm-profile' userId={name} />
-              <ExternalProfileButton type='hdyc' userId={name} />
+              {SCOREBOARD_URL && (
+                <ExternalProfileButton type='scoreboard' userId={id} />
+              )}
+              {HDYC_URL && <ExternalProfileButton type='hdyc' userId={name} />}
               <ExternalProfileButton type='osmcha' userId={name} />
             </>
           ),

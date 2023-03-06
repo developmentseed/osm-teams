@@ -24,22 +24,22 @@ module.exports = {
       },
     ]
   },
-  serverRuntimeConfig: {
+  env: {
     DEFAULT_PAGE_SIZE: 10,
-    NODE_ENV: process.env.NODE_ENV || 'development',
-    OSM_DOMAIN: process.env.OSM_DOMAIN || 'https://www.openstreetmap.org',
+    basePath: process.env.BASE_PATH || '',
     OSM_API:
       process.env.OSM_API ||
       process.env.OSM_DOMAIN ||
       'https://www.openstreetmap.org',
-  },
-  basePath: process.env.BASE_PATH || '',
-  env: {
+    OSM_DOMAIN: process.env.OSM_DOMAIN || 'https://www.openstreetmap.org',
     APP_URL: process.env.APP_URL || vercelUrl || 'http://127.0.0.1:3000',
     OSM_NAME: process.env.OSM_NAME || 'OSM',
     BASE_PATH: process.env.BASE_PATH || '',
     HYDRA_URL: process.env.HYDRA_URL || 'https://auth.mapping.team/hyauth',
     AUTH_URL: process.env.AUTH_URL || 'https://auth.mapping.team',
+    OSMCHA_URL: process.env.OSMCH_URL || 'https://osmcha.org',
+    SCOREBOARD_URL: process.env.SCOREBOARD_URL || '',
+    HDYC_URL: process.env.HDYC_URL || 'https://hdyc.neis-one.org',
   },
   eslint: {
     dirs: [

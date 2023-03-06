@@ -7,11 +7,11 @@ import join from 'url-join'
 import { pick, map, sort, descend, ascend, prop } from 'ramda'
 import { getTeams } from '../../lib/teams-api'
 import logger from '../../lib/logger'
-import { serverRuntimeConfig } from '../../../next.config.js'
 import Pagination from '../../components/pagination'
 import SearchInput from '../../components/tables/search-input'
+
 import InpageHeader from '../../components/inpage-header'
-const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
+const DEFAULT_PAGE_SIZE = process.env.DEFAULT_PAGE_SIZE
 
 const Map = dynamic(import('../../components/list-map'), {
   ssr: false,

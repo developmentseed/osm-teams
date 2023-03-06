@@ -3,14 +3,15 @@ import Table from '../../../components/tables/table'
 import { useState } from 'react'
 
 import Pagination from '../../../components/pagination'
-import { serverRuntimeConfig } from '../../../../next.config.js'
 import * as R from 'ramda'
 import SearchInput from '../../../components/tables/search-input'
 import ExternalProfileButton from '../../../components/external-profile-button'
 import Badge from '../../../components/badge'
 import { makeTitleCase } from '../../../../app/lib/utils'
 import { Flex, useToken } from '@chakra-ui/react'
-const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
+const SCOREBOARD_URL = process.env.SCOREBOARD_URL
+const HDYC_URL = process.env.HDYC_URL
+const DEFAULT_PAGE_SIZE = process.env.DEFAULT_PAGE_SIZE
 
 function MembersTable({ rows: allRows, onRowClick }) {
   const [page, setPage] = useState(1)
@@ -50,10 +51,13 @@ function MembersTable({ rows: allRows, onRowClick }) {
     },
     {
       key: 'External Profiles',
-      render: ({ name }) => (
+      render: ({ id, name }) => (
         <Flex>
           <ExternalProfileButton type='osm-profile' userId={name} />
-          <ExternalProfileButton type='hdyc' userId={name} />
+          {SCOREBOARD_URL && (
+            <ExternalProfileButton type='scoreboard' userId={id} />
+          )}
+          {HDYC_URL && <ExternalProfileButton type='hdyc' userId={name} />}
           <ExternalProfileButton type='osmcha' userId={name} />
         </Flex>
       ),

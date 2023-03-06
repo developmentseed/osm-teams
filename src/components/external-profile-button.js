@@ -1,6 +1,10 @@
 import { Button } from '@chakra-ui/react'
 import join from 'url-join'
 const URL = process.env.APP_URL
+const OSM_DOMAIN = process.env.OSM_DOMAIN
+const OSMCHA_URL = process.env.OSMCHA_URL
+const SCOREBOARD_URL = process.env.SCOREBOARD_URL
+const HDYC_URL = process.env.HDYC_URL
 
 const ExternalProfileButton = ({ type, userId }) => {
   let targetLink
@@ -11,21 +15,31 @@ const ExternalProfileButton = ({ type, userId }) => {
 
   switch (type) {
     case 'osm-profile':
-      targetLink = `https://www.openstreetmap.org/user/${userId}`
+      targetLink = join(OSM_DOMAIN, `/user/${userId}`)
       title = 'View profile on OSM'
       label = 'OSM'
       altText = 'OSM Logo'
       logoImg = 'osm_logo.png'
       break
     case 'hdyc':
-      targetLink = `https://hdyc.neis-one.org/?${userId}`
+      targetLink = join(HDYC_URL, `/?${userId}`)
       title = 'View profile on HDYC'
       label = 'HDYC'
       altText = 'How Do You Contribute Logo'
       logoImg = 'neis-one-logo.png'
       break
+    case 'scoreboard':
+      targetLink = join(SCOREBOARD_URL, `/users/${userId}`)
+      title = 'View user profile on Scoreboard'
+      label = 'Scoreboard'
+      altText = 'Scoreboard Logo'
+      logoImg = 'scoreboard-logo.svg'
+      break
     case 'osmcha':
-      targetLink = `https://osmcha.org/?filters={"users":[{"label":"${userId}","value":"${userId}"}]}`
+      targetLink = join(
+        OSMCHA_URL,
+        `/?filters={"users":[{"label":"${userId}","value":"${userId}"}]}`
+      )
       title = 'View profile on OSMCha'
       label = 'OSMCha'
       altText = 'OSMCha Logo'
