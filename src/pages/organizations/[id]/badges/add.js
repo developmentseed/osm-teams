@@ -3,7 +3,19 @@ import join from 'url-join'
 import { Formik, Field, Form } from 'formik'
 import APIClient from '../../../../lib/api-client'
 import { getOrg } from '../../../../lib/org-api'
-import { Box, Button, Container, Flex, Heading, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Heading,
+  Input,
+  VStack,
+  Text,
+} from '@chakra-ui/react'
 import Router from 'next/router'
 import { getRandomColor } from '../../../../lib/utils'
 import { toast } from 'react-toastify'
@@ -20,7 +32,7 @@ function validateName(value) {
 }
 
 function renderError(text) {
-  return <div className='form--error'>{text}</div>
+  return <FormErrorMessage>{text}</FormErrorMessage>
 }
 
 export default class AddBadge extends Component {
@@ -104,31 +116,34 @@ export default class AddBadge extends Component {
               }}
               render={({ isSubmitting, values, errors }) => {
                 return (
-                  <Form>
-                    <div className='form-control form-control__vertical'>
-                      <label htmlFor='name'>
-                        Name<span className='form--required'>*</span>
-                      </label>
+                  <VStack as={Form} gap={2} alignItems='flex-start'>
+                    <FormControl isRequired isInvalid={errors.name}>
+                      <FormLabel htmlFor='name'>Name</FormLabel>
                       <Field
+                        as={Input}
                         type='text'
                         name='name'
+                        id='name'
                         value={values.name}
                         required
                         className={errors.name ? 'form--error' : ''}
                         validate={validateName}
                       />
                       {errors.name && renderError(errors.name)}
-                    </div>
-                    <div className='form-control form-control__vertical'>
-                      <label htmlFor='color'>Color: {values.color}</label>
+                    </FormControl>
+                    <FormControl isRequired isInvalid={errors.color}>
+                      <FormLabel htmlFor='color'>
+                        Color: {values.color}
+                      </FormLabel>
                       <Field
                         type='color'
                         name='color'
+                        id='color'
                         value={values.color}
                         required
                       />
                       {errors.color && renderError(errors.color)}
-                    </div>
+                    </FormControl>
                     <Flex gap={4}>
                       <Button
                         isDisabled={isSubmitting}
@@ -147,7 +162,7 @@ export default class AddBadge extends Component {
                         Cancel
                       </Button>
                     </Flex>
-                  </Form>
+                  </VStack>
                 )
               }}
             />

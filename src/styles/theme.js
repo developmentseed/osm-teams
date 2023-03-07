@@ -1,5 +1,22 @@
 import { cssVar, extendTheme, withDefaultColorScheme } from '@chakra-ui/react'
 
+export const formStyles = {
+  parts: ['container', 'requiredIndicator', 'helperText'],
+  baseStyle: {
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 1,
+      alignItems: 'flex-start',
+      width: 'initial',
+      label: {
+        fontSize: 'sm',
+        fontWeight: 'bold',
+      },
+    },
+  },
+}
+
 const theme = extendTheme(
   {
     styles: {
@@ -79,6 +96,7 @@ const theme = extendTheme(
       },
     },
     components: {
+      Form: formStyles,
       Heading: {
         baseStyle: {
           color: 'brand.600',
