@@ -29,7 +29,7 @@ export default function TeamInvitationPage({
   const router = useRouter()
   useEffect(() => {
     // only redirect on successful invite acceptance
-    if (!errorCode) return
+    if (errorCode) return
     setTimeout(() => {
       router.push(join(APP_URL, `/teams/${teamId}`))
     }, 3000)
