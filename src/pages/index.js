@@ -46,7 +46,7 @@ export default function Home() {
       backgroundImage='radial-gradient(white 5%, transparent 0)'
       backgroundRepeat='repeat'
       backgroundSize='30px 30px'
-      font-family='mono'
+      fontFamily='mono'
       position='relative'
       overflow='inherit'
       _after={{
@@ -85,7 +85,7 @@ export default function Home() {
       >
         <Code
           width='100%'
-          fonFamily='mono'
+          fontFamily='mono'
           marginBottom='1rem'
           lineHeight={1}
           transition={'text-shadow 0.5s ease'}
@@ -105,7 +105,7 @@ export default function Home() {
           <Box border='1px' borderStyle={'dashed'} borderWidth={2} p={8}>
             <Code
               fontSize='xl'
-              fonFamily='mono'
+              fontFamily='mono'
               marginBottom='1rem'
               colorScheme={'white'}
               whiteSpace='pre'
