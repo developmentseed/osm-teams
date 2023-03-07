@@ -1,7 +1,12 @@
 import React from 'react'
 import T from 'prop-types'
-import Button from './button'
-
+import { Flex, Button, Text, IconButton } from '@chakra-ui/react'
+import {
+  FiChevronLeft,
+  FiChevronsLeft,
+  FiChevronRight,
+  FiChevronsRight,
+} from 'react-icons/fi'
 const PAGE_INDEX_START = 1
 
 function listPageOptions(page, lastPage) {
@@ -52,78 +57,71 @@ function Pagination({ pagination, setPage, 'data-cy': dataCy }) {
   const pages = listPageOptions(currentPage + 1, maxPages)
 
   return (
-    <nav data-cy={dataCy}>
-      <Button
+    <Flex
+      data-cy={dataCy}
+      flexWrap='wrap'
+      justifyContent='center'
+      alignItems='center'
+      gap={4}
+    >
+      <IconButton
         data-cy='first-page-button'
+        aria-label='first-page-button'
         onClick={() => setPage(PAGE_INDEX_START)}
-        disabled={currentPage === PAGE_INDEX_START}
-        useIcon='chevron-left--trail'
-        className='small'
-        flat
+        isDisabled={currentPage === PAGE_INDEX_START}
+        icon={<FiChevronsLeft />}
+        variant='outline'
+        size='sm'
       />
-      <Button
+      <IconButton
         data-cy='previous-page-button'
+        aria-label='previous-page-button'
         onClick={() => setPage(currentPage - 1)}
-        disabled={currentPage === PAGE_INDEX_START}
-        useIcon='chevron-left--small'
-        className='small'
-        flat
+        isDisabled={currentPage === PAGE_INDEX_START}
+        icon={<FiChevronLeft />}
+        variant='outline'
+        size='sm'
       />
       {pages.map((page) => {
         return (
           <Button
             onClick={() => setPage(page)}
             key={`page-${page}`}
-            disabled={page === '...'}
-            variant={currentPage === page ? 'primary' : 'secondary'}
+            isDisabled={page === '...'}
+            variant={currentPage === page ? 'solid' : 'outline'}
+            size='sm'
             data-cy={`page-${page}-button`}
-            className='small'
-            flat
           >
             {page}
           </Button>
         )
       })}
-      <Button
+      <IconButton
         data-cy='next-page-button'
+        aria-label='next-page-button'
         onClick={() => setPage(currentPage + 1)}
-        disabled={currentPage === maxPages}
-        useIcon='chevron-right--small'
-        className='small'
-        flat
+        isDisabled={currentPage === maxPages}
+        icon={<FiChevronRight />}
+        variant='outline'
+        size='sm'
       />
-      <Button
+      <IconButton
         data-cy='last-page-button'
+        aria-label='last-page-button'
         onClick={() => setPage(maxPages)}
-        disabled={currentPage === maxPages}
-        useIcon='chevron-right--trail'
-        className='small'
-        flat
+        isDisabled={currentPage === maxPages}
+        icon={<FiChevronsRight />}
+        variant='outline'
+        size='sm'
       />
-      <div>
+      <Text flexBasis='100%' width='100%' textAlign={'center'}>
         Showing {(currentPage - 1) * perPage + 1}-
         {Intl.NumberFormat().format(
           currentPage === maxPages ? total : currentPage * perPage
         )}{' '}
         of {Intl.NumberFormat().format(total)}
-      </div>
-      <style jsx>
-        {`
-          nav {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 1rem;
-          }
-          nav > div:last-child {
-            flex-basis: 100%;
-            width: 100%;
-            text-align: center;
-          }
-        `}
-      </style>
-    </nav>
+      </Text>
+    </Flex>
   )
 }
 

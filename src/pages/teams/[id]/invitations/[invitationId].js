@@ -6,7 +6,7 @@ import { getServerSession } from 'next-auth'
 import * as TeamInvitation from '../../../../models/team-invitation'
 import * as Team from '../../../../models/team'
 import logger from '../../../../lib/logger'
-import Button from '../../../../components/button'
+import { Button } from '@chakra-ui/react'
 import { authOptions } from '../../../api/auth/[...nextauth]'
 
 const routeSchema = yup

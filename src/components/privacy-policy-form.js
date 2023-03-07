@@ -1,6 +1,6 @@
 import React from 'react'
 import { Formik, Field, Form } from 'formik'
-import Button from '../components/button'
+import { Button } from '@chakra-ui/react'
 
 function validateBody(value) {
   if (!value) return 'Body of privacy policy is required'
@@ -70,8 +70,7 @@ export default function PrivacyPolicyForm({ initialValues, onSubmit }) {
             <div className='form-control form-control__vertical'>
               {status && status.errors && renderErrors(status.errors)}
               <Button
-                disabled={isSubmitting}
-                variant='primary'
+                isDisabled={isSubmitting}
                 onClick={() => {
                   if (Object.keys(errors).length) {
                     setErrors(errors)
@@ -82,8 +81,9 @@ export default function PrivacyPolicyForm({ initialValues, onSubmit }) {
                   return submitForm()
                 }}
                 type='submit'
-                value='submit'
-              />
+              >
+                Submit
+              </Button>
             </div>
           </Form>
         )

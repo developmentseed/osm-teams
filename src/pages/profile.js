@@ -1,21 +1,22 @@
 import React from 'react'
 import Router from 'next/router'
+import { Box, Heading, Container } from '@chakra-ui/react'
 import join from 'url-join'
 import { useSession } from 'next-auth/react'
 import { getServerSession } from 'next-auth/next'
-import Section from '../components/section'
-import SectionHeader from '../components/section-header'
+
 import Table from '../components/tables/table'
 import { assoc, flatten, propEq, find } from 'ramda'
 import { listMyOrganizations } from '../models/organization'
 import TeamsTable from '../components/tables/teams'
 import { authOptions } from './api/auth/[...nextauth]'
+import InpageHeader from '../components/inpage-header'
 
 const URL = process.env.APP_URL
 
 function OrganizationsSection({ orgs }) {
   if (orgs.length === 0) {
-    return <p className='inner page'>No orgs</p>
+    return <p>No orgs</p>
   }
 
   const memberOrgs = orgs.memberOrgs.map(assoc('role', 'member'))
@@ -49,7 +50,7 @@ function OrganizationsSection({ orgs }) {
 }
 
 export default function Profile({ orgs }) {
-  const { status } = useSession({
+  const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
       Router.push('/')
@@ -61,21 +62,25 @@ export default function Profile({ orgs }) {
   const hasOrgs = flatten(Object.values(orgs)).length > 0
 
   return (
-    <div className='inner page'>
-      <div className='page__heading'>
-        <h1>Teams & Organizations</h1>
-      </div>
-      {hasOrgs ? (
-        <Section>
-          <SectionHeader>Your Organizations</SectionHeader>
-          <OrganizationsSection orgs={orgs} />
-        </Section>
-      ) : null}
-      <Section>
-        <SectionHeader>Your Teams</SectionHeader>
-        <TeamsTable type='my-teams' />
-      </Section>
-    </div>
+    <Box as='main' mb={8}>
+      <InpageHeader>
+        <Heading size='lg' color='white'>
+          Welcome, {session?.user.name}
+        </Heading>
+      </InpageHeader>
+      <Container maxW='container.xl'>
+        <Box as='section' layerStyle={'shadowed'}>
+          <Heading variant='sectionHead'>My Teams</Heading>
+          <TeamsTable type='my-teams' />
+        </Box>
+        {hasOrgs ? (
+          <Box as='section' layerStyle={'shadowed'} mt={8}>
+            <Heading variant='sectionHead'>My Organizations</Heading>
+            <OrganizationsSection orgs={orgs} />
+          </Box>
+        ) : null}
+      </Container>
+    </Box>
   )
 }
 

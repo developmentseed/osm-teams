@@ -9,14 +9,10 @@ import {
   getOrgStaff,
 } from '../../../lib/org-api'
 import { getUserOrgProfile } from '../../../lib/profiles-api'
-import Section from '../../../components/section'
-import SectionHeader from '../../../components/section-header'
+import { Box, Container, Heading, Button, Flex } from '@chakra-ui/react'
 import Table from '../../../components/tables/table'
-import theme from '../../../styles/theme'
 import AddMemberForm from '../../../components/add-member-form'
 import SvgSquare from '../../../components/svg-square'
-import Button from '../../../components/button'
-import Modal from 'react-modal'
 import ProfileModal from '../../../components/profile-modal'
 import { contains, prop, map } from 'ramda'
 import join from 'url-join'
@@ -25,6 +21,8 @@ import { getOrgBadges, getUserBadges } from '../../../lib/badges-api'
 import TeamsTable from '../../../components/tables/teams'
 import UsersTable from '../../../components/tables/users'
 import logger from '../../../lib/logger'
+import Link from 'next/link'
+import InpageHeader from '../../../components/inpage-header'
 
 const URL = process.env.APP_URL
 
@@ -42,6 +40,7 @@ export function SectionWrapper(props) {
     </div>
   )
 }
+
 class Organization extends Component {
   static async getInitialProps({ query }) {
     if (query) {
@@ -185,36 +184,33 @@ class Organization extends Component {
     // Do not render section if badges list cannot be fetched. This might happen
     // on network error but also when the user doesn't have privileges.
     return this.state.badges ? (
-      <SectionWrapper>
-        <Section>
-          <div className='section-actions'>
-            <SectionHeader>Badges</SectionHeader>
-            <div>
-              <Button
-                variant='primary'
-                onClick={() =>
-                  Router.push(join(URL, `/organizations/${orgId}/badges/add`))
-                }
-              >
-                Add
-              </Button>
-            </div>
-          </div>
+      <Box as='section' layerStyle={'shadowed'}>
+        <Flex justifyContent='space-between'>
+          <Heading variant='sectionHead'>Badges</Heading>
 
-          {this.state.badges && (
-            <Table
-              data-cy='badges-table'
-              rows={this.state.badges || []}
-              columns={columns}
-              onRowClick={({ id: badgeId }) =>
-                Router.push(
-                  join(URL, `/organizations/${orgId}/badges/${badgeId}`)
-                )
-              }
-            />
-          )}
-        </Section>
-      </SectionWrapper>
+          <Button
+            variant='outline'
+            onClick={() =>
+              Router.push(join(URL, `/organizations/${orgId}/badges/add`))
+            }
+          >
+            Add
+          </Button>
+        </Flex>
+
+        {this.state.badges && (
+          <Table
+            data-cy='badges-table'
+            rows={this.state.badges || []}
+            columns={columns}
+            onRowClick={({ id: badgeId }) =>
+              Router.push(
+                join(URL, `/organizations/${orgId}/badges/${badgeId}`)
+              )
+            }
+          />
+        )}
+      </Box>
     ) : null
   }
 
@@ -225,15 +221,15 @@ class Organization extends Component {
     if (org.status === 'error') {
       if (org.error.status === 401 || org.error.status === 403) {
         return (
-          <article className='inner page'>
-            <h1>Unauthorized</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Unauthorized</Heading>
+          </InpageHeader>
         )
       } else if (org.error.status === 404) {
         return (
-          <article className='inner page'>
-            <h1>Organization not found</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Organization not found</Heading>
+          </InpageHeader>
         )
       }
     }
@@ -253,21 +249,21 @@ class Organization extends Component {
     if (error) {
       if (error.status === 401 || error.status === 403) {
         return (
-          <article className='inner page'>
-            <h1>Unauthorized</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Unauthorized</Heading>
+          </InpageHeader>
         )
       } else if (error.status === 404) {
         return (
-          <article className='inner page'>
-            <h1>Organization not found</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Organization not found</Heading>
+          </InpageHeader>
         )
       } else {
         return (
-          <article className='inner page'>
-            <h1>Error: {error.message}</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Error: {error.message}</Heading>
+          </InpageHeader>
         )
       }
     }
@@ -319,40 +315,36 @@ class Organization extends Component {
     }
 
     return (
-      <article className='inner page team'>
-        <div className='page__heading'>
-          <h1>{org.data.name}</h1>
-        </div>
-        <div className='team__details'>
-          <Section>
-            <div className='section-actions'>
-              <SectionHeader>Organization Details</SectionHeader>
-              {isOwner ? (
-                <Button href={`/organizations/${org.data.id}/edit`}>
-                  Edit
-                </Button>
-              ) : (
-                ''
-              )}
-            </div>
-            <dl>
-              <dt>Bio: </dt>
-              <dd>{org.data.description}</dd>
-            </dl>
-          </Section>
-        </div>
-        <div className='team__table'>
-          <Section>
-            <SectionHeader>Teams</SectionHeader>
-            <TeamsTable type='org-teams' orgId={org.data.id} />
-          </Section>
-        </div>
+      <Box as='main' mb={16}>
+        <InpageHeader>
+          <Flex justifyContent={'space-between'}>
+            <Heading color='white'>{org.data.name}</Heading>
+            {isOwner ? (
+              <Button as={Link} href={`/organizations/${org.data.id}/edit`}>
+                Edit
+              </Button>
+            ) : (
+              ''
+            )}
+          </Flex>
+        </InpageHeader>
+        <Container maxW='container.xl' as='section'>
+          {org.data.description && (
+            <Box as='section' layerStyle={'shadowed'}>
+              <Heading variant='sectionHead'>Organization Description</Heading>
+              {org.data.description}
+            </Box>
+          )}
 
-        {isStaff ? (
-          <div className='team__table'>
-            <Section>
-              <div className='section-actions'>
-                <SectionHeader>Staff Members</SectionHeader>
+          <Box layerStyle={'shadowed'} as='section'>
+            <Heading variant='sectionHead'>Teams</Heading>
+            <TeamsTable type='org-teams' orgId={org.data.id} />
+          </Box>
+
+          {isStaff ? (
+            <Box as='section' layerStyle={'shadowed'}>
+              <Flex justifyContent={'space-between'}>
+                <Heading variant='sectionHead'>Staff Members</Heading>
                 {isOwner && (
                   <AddMemberForm
                     onSubmit={async ({ osmId }) => {
@@ -361,7 +353,7 @@ class Organization extends Component {
                     }}
                   />
                 )}
-              </div>
+              </Flex>
 
               <UsersTable
                 isSearchable
@@ -369,88 +361,44 @@ class Organization extends Component {
                 orgId={org.data.id}
                 onRowClick={(row) => this.openProfileModal(row)}
               />
-            </Section>
-          </div>
-        ) : (
-          <div />
-        )}
-        {isStaff ? (
-          <div className='team__table'>
-            <Section>
-              <SectionHeader>Organization Members</SectionHeader>
+            </Box>
+          ) : (
+            <div />
+          )}
+          {isStaff ? (
+            <Box layerStyle={'shadowed'} as='section'>
+              <Heading
+                colorScheme='brand'
+                fontFamily='mono'
+                fontSize='lg'
+                textTransform={'uppercase'}
+                letterSpacing='0.5px'
+                mb={1}
+              >
+                Organization Members
+              </Heading>
               <UsersTable
                 isSearchable
                 type='org-members'
                 orgId={org.data.id}
                 onRowClick={(row) => this.openProfileModal(row)}
               />
-            </Section>
-          </div>
-        ) : (
-          <div />
-        )}
-        {isStaff && this.renderBadges()}
-        <Modal
-          style={{
-            content: {
-              maxWidth: '600px',
-              maxHeight: '600px',
-              left: 'calc(50% - 300px)',
-              top: 'calc(50% - 300px)',
-            },
-            overlay: {
-              zIndex: 10000,
-            },
-          }}
-          isOpen={this.state.modalIsOpen}
-        >
+            </Box>
+          ) : (
+            <div />
+          )}
+          {isStaff && this.renderBadges()}
+
           <ProfileModal
             user={this.state.profileMeta}
             badges={this.state.profileBadges}
             attributes={this.state.profileInfo}
+            isOpen={this.state.modalIsOpen}
             onClose={this.closeProfileModal}
             actions={profileActions}
           />
-        </Modal>
-        <style jsx>
-          {`
-            .inner.team {
-              display: grid;
-              grid-template-columns: repeat(12, 1fr);
-              grid-gap: ${theme.layout.globalSpacing};
-              align-content: baseline;
-            }
-
-            .page__heading {
-              grid-column: 1 / span 12;
-            }
-
-            .team__details {
-              grid-column: 1 / span 12;
-            }
-
-            .team__editing_policy {
-              margin-bottom: 2rem;
-              display: block;
-            }
-
-            dl {
-              display: grid;
-              grid-template-columns: 6rem 1fr;
-              gap: 0.25rem 1rem;
-            }
-
-            dt {
-              font-family: ${theme.typography.headingFontFamily};
-              text-transform: uppercase;
-            }
-
-            .team__table {
-              grid-column: 1 / span 12;
-            }
-          `}
-        </style>
-      </article>
+        </Container>
+      </Box>
     )
   }
 }

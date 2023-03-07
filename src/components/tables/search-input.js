@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { Field, Form, Formik, useFormikContext } from 'formik'
-import Button from '../button'
+import { Button } from '@chakra-ui/react'
 
 /**
  * This is a helper component to auto-submit search values after a timeout
@@ -58,7 +58,7 @@ const SearchInput = ({ onSearch, placeholder, 'data-cy': dataCy }) => {
         <Button
           data-cy={`${dataCy}-search-submit`}
           type='submit'
-          variant='submit'
+          variant='solid'
           useIcon='magnifier-left'
           flat
         />

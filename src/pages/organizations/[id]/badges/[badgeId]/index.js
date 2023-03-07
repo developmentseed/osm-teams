@@ -3,14 +3,15 @@ import join from 'url-join'
 import { Formik, Field, Form } from 'formik'
 import APIClient from '../../../../../lib/api-client'
 import { getOrg } from '../../../../../lib/org-api'
-import Button from '../../../../../components/button'
+import { Box, Button, Container, Flex, Heading, Text } from '@chakra-ui/react'
 import Router from 'next/router'
 import { toast } from 'react-toastify'
-import theme from '../../../../../styles/theme'
+
 import Table from '../../../../../components/tables/table'
 import { toDateString } from '../../../../../lib/utils'
 import logger from '../../../../../lib/logger'
 import Link from 'next/link'
+import InpageHeader from '../../../../../components/inpage-header'
 
 const URL = process.env.APP_URL
 
@@ -22,19 +23,6 @@ function validateName(value) {
 
 function renderError(text) {
   return <div className='form--error'>{text}</div>
-}
-
-function ButtonWrapper({ children }) {
-  return (
-    <div>
-      {children}
-      <style jsx global>{`
-      .button {
-        margin-right: 10px;
-      }
-    }`}</style>
-    </div>
-  )
 }
 
 export default class EditBadge extends Component {
@@ -97,12 +85,10 @@ export default class EditBadge extends Component {
     const users = (badge && badge.users) || []
 
     return (
-      <section>
-        <div className='team__table'>
-          <div className='page__heading'>
-            <h2>Assigned Members</h2>
-          </div>
-        </div>
+      <Box as='article' layerStyle={'shadowed'}>
+        <Heading as='h2' variant={'sectionHead'}>
+          Assigned Members
+        </Heading>
 
         <Table
           rows={users.map((u) => ({
@@ -121,7 +107,7 @@ export default class EditBadge extends Component {
             )
           }
         />
-      </section>
+      </Box>
     )
   }
 
@@ -130,15 +116,21 @@ export default class EditBadge extends Component {
 
     if (this.state.error) {
       return (
-        <article className='inner page'>
-          <div>An unexpected error occurred, please try again later.</div>
-        </article>
+        <Box as='main' mb={16}>
+          <InpageHeader>
+            <Heading color='white'>
+              An unexpected error occurred, please try again later.
+            </Heading>
+          </InpageHeader>
+        </Box>
       )
     } else if (!this.state.org || !this.state.badge) {
       return (
-        <article className='inner page'>
-          <div>Loading...</div>
-        </article>
+        <Box as='main' mb={16}>
+          <InpageHeader>
+            <Heading color='white'>Loading...</Heading>
+          </InpageHeader>
+        </Box>
       )
     }
 
@@ -147,151 +139,147 @@ export default class EditBadge extends Component {
     const { badge } = this.state
 
     return (
-      <article className='inner page'>
-        <Link href={join(URL, `/organizations/${orgId}`)}>
-          ← Back to Organization Page
-        </Link>
-        <section>
-          <h3>{this.state.org.name}</h3>
-          <div className='page__heading'>
-            <h1>Edit badge</h1>
-          </div>
-          <Formik
-            initialValues={{ name: badge.name, color: badge.color }}
-            onSubmit={async ({ name, color }) => {
-              try {
-                await apiClient.patch(
-                  `/organizations/${orgId}/badges/${badgeId}`,
-                  {
-                    name,
-                    color,
-                  }
+      <Box as='main' mb={16}>
+        <InpageHeader>
+          <Link href={join(URL, `/organizations/${orgId}`)}>
+            ← Back to Organization Page
+          </Link>
+          <Heading color='white'>Edit badge</Heading>
+          <Text fontFamily='mono' fontSize='sm' textTransform={'uppercase'}>
+            {this.state.org.name}
+          </Text>
+        </InpageHeader>
+        <Container maxW='container.xl' as='section'>
+          <Box as='article' layerStyle={'shadowed'}>
+            <Formik
+              initialValues={{ name: badge.name, color: badge.color }}
+              onSubmit={async ({ name, color }) => {
+                try {
+                  await apiClient.patch(
+                    `/organizations/${orgId}/badges/${badgeId}`,
+                    {
+                      name,
+                      color,
+                    }
+                  )
+                  toast.success('Badge updated successfully.')
+                } catch (error) {
+                  toast.error(
+                    `There was an error editing badge '${name}'. Please try again later.`
+                  )
+                  logger.error(error)
+                }
+              }}
+              render={({ isSubmitting, values, errors }) => {
+                return (
+                  <Form>
+                    <div className='form-control form-control__vertical'>
+                      <label htmlFor='name'>
+                        Name<span className='form--required'>*</span>
+                      </label>
+                      <Field
+                        type='text'
+                        name='name'
+                        value={values.name}
+                        required
+                        className={errors.name ? 'form--error' : ''}
+                        validate={validateName}
+                      />
+                      {errors.name && renderError(errors.name)}
+                    </div>
+                    <div className='form-control form-control__vertical'>
+                      <label htmlFor='color'>Color: {values.color}</label>
+                      <Field
+                        type='color'
+                        name='color'
+                        value={values.color}
+                        required
+                      />
+                      {errors.color && renderError(errors.color)}
+                    </div>
+                    <Flex gap={4}>
+                      <Button isDisabled={isSubmitting} type='submit'>
+                        Update
+                      </Button>
+                      <Button
+                        variant='outline'
+                        as={Link}
+                        href={`/organizations/${self.props.orgId}`}
+                      >
+                        Return to Organization
+                      </Button>
+                    </Flex>
+                  </Form>
                 )
-                toast.success('Badge updated successfully.')
-              } catch (error) {
-                toast.error(
-                  `There was an error editing badge '${name}'. Please try again later.`
-                )
-                logger.error(error)
-              }
-            }}
-            render={({ isSubmitting, values, errors }) => {
-              return (
-                <Form>
-                  <div className='form-control form-control__vertical'>
-                    <label htmlFor='name'>
-                      Name<span className='form--required'>*</span>
-                    </label>
-                    <Field
-                      type='text'
-                      name='name'
-                      value={values.name}
-                      required
-                      className={errors.name ? 'form--error' : ''}
-                      validate={validateName}
-                    />
-                    {errors.name && renderError(errors.name)}
-                  </div>
-                  <div className='form-control form-control__vertical'>
-                    <label htmlFor='color'>Color: {values.color}</label>
-                    <Field
-                      type='color'
-                      name='color'
-                      value={values.color}
-                      required
-                    />
-                    {errors.color && renderError(errors.color)}
-                  </div>
-                  <ButtonWrapper>
-                    <Button
-                      disabled={isSubmitting}
-                      variant='primary'
-                      type='submit'
-                      value='update'
-                    />
-                    <Button
-                      href={`/organizations/${self.props.orgId}`}
-                      value='Go to organization page'
-                    />
-                  </ButtonWrapper>
-                </Form>
-              )
-            }}
-          />
-        </section>
+              }}
+            />
+          </Box>
 
-        {this.renderAssignedMembers({ orgId, badgeId })}
+          {this.renderAssignedMembers({ orgId, badgeId })}
 
-        <section className='danger-zone'>
-          <h2>Danger zone</h2>
-          <p>Delete this badge and remove it from all assigned members.</p>
-          {this.state.isDeleting ? (
-            <>
+          <Box
+            layerStyle='shadowed'
+            as='section'
+            borderColor='red.500'
+            boxShadow='4px 4px 0 0 var(--chakra-colors-red-500)'
+            display='flex'
+            flexDirection={'column'}
+            alignItems='flex-start'
+            gap={2}
+          >
+            <Heading as='h2' variant='sectionHead' size='md' color='red'>
+              Delete Badge
+            </Heading>
+            <p>Delete this badge and remove it from all assigned members.</p>
+            {this.state.isDeleting ? (
+              <>
+                <Button
+                  onClick={() => {
+                    this.setState({
+                      isDeleting: false,
+                    })
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme='red'
+                  variant='outline'
+                  onClick={async (e) => {
+                    e.preventDefault()
+                    try {
+                      await apiClient.delete(
+                        `/organizations/${orgId}/badges/${badgeId}`
+                      )
+                      Router.push(join(URL, `/organizations/${orgId}`))
+                    } catch (error) {
+                      toast.error(
+                        `There was an error deleting the badge. Please try again later.`
+                      )
+                      logger.error(error)
+                    }
+                  }}
+                >
+                  Confirm Delete
+                </Button>
+              </>
+            ) : (
               <Button
-                onClick={() => {
+                colorScheme={'red'}
+                variant='outline'
+                type='submit'
+                onClick={async () => {
                   this.setState({
-                    isDeleting: false,
+                    isDeleting: true,
                   })
                 }}
               >
-                Cancel
+                Delete
               </Button>
-              <Button
-                variant='danger'
-                onClick={async (e) => {
-                  e.preventDefault()
-                  try {
-                    await apiClient.delete(
-                      `/organizations/${orgId}/badges/${badgeId}`
-                    )
-                    Router.push(join(URL, `/organizations/${orgId}`))
-                  } catch (error) {
-                    toast.error(
-                      `There was an error deleting the badge. Please try again later.`
-                    )
-                    logger.error(error)
-                  }
-                }}
-              >
-                Confirm Delete
-              </Button>
-            </>
-          ) : (
-            <Button
-              variant='danger'
-              type='submit'
-              value='Delete'
-              onClick={async () => {
-                this.setState({
-                  isDeleting: true,
-                })
-              }}
-            />
-          )}
-        </section>
-        <style jsx global>
-          {`
-            .danger-zone {
-              border: 2px solid ${theme.colors.secondaryColor} !important;
-              background: white;
-              margin: 4rem 0;
-              padding: 2rem;
-            }
-
-            .danger-zone .button {
-              margin-right: 2rem;
-            }
-
-            section {
-              margin-bottom: 20px;
-            }
-
-            .assign__table {
-              grid-column: 1 / span 12;
-            }
-          `}
-        </style>
-      </article>
+            )}
+          </Box>
+        </Container>
+      </Box>
     )
   }
 }

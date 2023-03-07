@@ -6,6 +6,8 @@ import { getOrg, updateOrgPrivacyPolicy } from '../../../lib/org-api'
 import PrivacyPolicyForm from '../../../components/privacy-policy-form'
 import logger from '../../../lib/logger'
 import Link from 'next/link'
+import { Box, Container, Heading } from '@chakra-ui/react'
+import InpageHeader from '../../../components/inpage-header'
 
 const APP_URL = process.env.APP_URL
 
@@ -67,30 +69,32 @@ export default class OrgPrivacyPolicy extends Component {
     let initialValues = privacyPolicy || defaultValues
 
     return (
-      <article className='inner page'>
-        <Link href={`/organizations/${orgId}/edit`}>
-          ← Back to Edit Organization
-        </Link>
-        <section>
-          <div className='page__heading'>
-            <h1>Edit Privacy Policy</h1>
-          </div>
-          <PrivacyPolicyForm
-            initialValues={initialValues}
-            onSubmit={async (values, actions) => {
-              try {
-                await updateOrgPrivacyPolicy(orgId, values)
-                actions.setSubmitting(false)
-                Router.push(join(APP_URL, `/organizations/${orgId}/edit`))
-              } catch (e) {
-                logger.error(e)
-                actions.setSubmitting(false)
-                actions.setStatus(e.message)
-              }
-            }}
-          />
-        </section>
-      </article>
+      <Box as='main' mb={16}>
+        <InpageHeader>
+          <Link href={`/organizations/${orgId}/edit`}>
+            ← Back to Edit Organization
+          </Link>
+          <Heading color='white'>Editing Organization Privacy Policy</Heading>
+        </InpageHeader>
+        <Container maxW={'container.xl'} as='section'>
+          <Box layerStyle={'shadowed'} as='article'>
+            <PrivacyPolicyForm
+              initialValues={initialValues}
+              onSubmit={async (values, actions) => {
+                try {
+                  await updateOrgPrivacyPolicy(orgId, values)
+                  actions.setSubmitting(false)
+                  Router.push(join(APP_URL, `/organizations/${orgId}/edit`))
+                } catch (e) {
+                  logger.error(e)
+                  actions.setSubmitting(false)
+                  actions.setStatus(e.message)
+                }
+              }}
+            />
+          </Box>
+        </Container>
+      </Box>
     )
   }
 }
