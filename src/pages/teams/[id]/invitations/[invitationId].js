@@ -29,10 +29,11 @@ export default function TeamInvitationPage({
   const router = useRouter()
   useEffect(() => {
     // only redirect on successful invite acceptance
-    if (errorCode) return
-    setTimeout(() => {
-      router.push(join(APP_URL, `/teams/${teamId}`))
-    }, 3000)
+    if (!errorCode) {
+      setTimeout(() => {
+        router.push(join(APP_URL, `/teams/${teamId}`))
+      }, 3000)
+    }
   }, [])
 
   // Token is valid but user is not authorized
@@ -55,7 +56,9 @@ export default function TeamInvitationPage({
   return (
     <Box as='main' mb={16}>
       <InpageHeader>
-        <Heading color='white'>Invitation accepted successfully</Heading>
+        <Heading color='white' data-cy='invite-accepted'>
+          Invitation accepted successfully
+        </Heading>
       </InpageHeader>
     </Box>
   )
