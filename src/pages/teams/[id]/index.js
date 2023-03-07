@@ -334,10 +334,7 @@ class Team extends Component {
                     </Text>
                     <Text as='dd'>
                       <Link
-                        href={join(
-                          APP_URL,
-                          `/organizations/${team.org.organization_id}`
-                        )}
+                        href={`/organizations/${team.org.organization_id}`}
                         style={{ textDecoration: 'underline' }}
                       >
                         {team.org.name}

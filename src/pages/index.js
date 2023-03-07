@@ -139,10 +139,7 @@ export default function Home() {
                       color: 'red.500',
                     }}
                   >
-                    <Link
-                      style={{ color: 'white ' }}
-                      href={join(APP_URL, link.url)}
-                    >
+                    <Link style={{ color: 'white ' }} href={link.url}>
                       {link.name}
                     </Link>
                   </ListItem>

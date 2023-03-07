@@ -141,7 +141,7 @@ export default class EditBadge extends Component {
     return (
       <Box as='main' mb={16}>
         <InpageHeader>
-          <Link href={join(URL, `/organizations/${orgId}`)}>
+          <Link href={`/organizations/${orgId}`}>
             ← Back to Organization Page
           </Link>
           <Heading color='white'>Edit badge</Heading>

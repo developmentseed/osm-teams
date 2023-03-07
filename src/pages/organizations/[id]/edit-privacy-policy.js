@@ -71,7 +71,7 @@ export default class OrgPrivacyPolicy extends Component {
     return (
       <Box as='main' mb={16}>
         <InpageHeader>
-          <Link href={join(APP_URL, `/organizations/${orgId}/edit`)}>
+          <Link href={`/organizations/${orgId}/edit`}>
             ← Back to Edit Organization
           </Link>
           <Heading color='white'>Editing Organization Privacy Policy</Heading>

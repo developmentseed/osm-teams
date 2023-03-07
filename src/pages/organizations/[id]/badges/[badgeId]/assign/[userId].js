@@ -94,7 +94,7 @@ export default class EditBadgeAssignment extends Component {
     return (
       <Box as='main' mb={16}>
         <InpageHeader>
-          <Link href={join(URL, `/organizations/${orgId}/badges/${badgeId}`)}>
+          <Link href={`/organizations/${orgId}/badges/${badgeId}`}>
             ← Back to Badge
           </Link>
           <Heading color='white'>Badge Assignment</Heading>

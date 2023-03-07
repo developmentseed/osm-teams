@@ -130,9 +130,7 @@ export default class OrgEdit extends Component {
     return (
       <Box as='main' mb={16}>
         <InpageHeader>
-          <Link href={join(APP_URL, `/organizations/${org.id}`)}>
-            ← Back to Organization
-          </Link>
+          <Link href={`/organizations/${org.id}`}>← Back to Organization</Link>
           <Heading color='white'>{org.name}</Heading>
           <Text variant='overline'>Editing Organization</Text>
         </InpageHeader>

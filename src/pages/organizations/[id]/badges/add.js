@@ -73,9 +73,7 @@ export default class AddBadge extends Component {
     return (
       <Box as='main' mb={16}>
         <InpageHeader>
-          <Link href={join(URL, `/organizations/${orgId}`)}>
-            ← Back to Organization
-          </Link>
+          <Link href={`/organizations/${orgId}`}>← Back to Organization</Link>
           <Heading color='white'>New Badge</Heading>
           <Text variant='overline'>{this.state.org.name}</Text>
         </InpageHeader>
@@ -137,9 +135,8 @@ export default class AddBadge extends Component {
                       </Button>
                       <Button
                         variant='outline'
-                        onClick={() => {
-                          Router.push(join(URL, `/organizations/${orgId}`))
-                        }}
+                        as={Link}
+                        href={`/organizations/${orgId}`}
                         type='submit'
                       >
                         Cancel

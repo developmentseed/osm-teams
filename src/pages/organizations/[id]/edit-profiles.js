@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { assoc, isEmpty } from 'ramda'
-import join from 'url-join'
 
 import ProfileAttributeForm from '../../../components/profile-attribute-form'
 import {
@@ -26,8 +25,6 @@ import {
 import logger from '../../../lib/logger'
 import Link from 'next/link'
 import InpageHeader from '../../../components/inpage-header'
-
-const APP_URL = process.env.APP_URL
 
 export default class OrgEditProfile extends Component {
   static async getInitialProps({ query }) {
@@ -159,7 +156,7 @@ export default class OrgEditProfile extends Component {
     return (
       <Box as='main' mb={16}>
         <InpageHeader>
-          <Link href={join(APP_URL, `/organizations/${orgId}/edit`)}>
+          <Link href={`/organizations/${orgId}/edit`}>
             ← Back to Edit Organization
           </Link>
           <Heading color='white'>

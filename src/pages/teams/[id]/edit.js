@@ -152,9 +152,7 @@ export default class TeamEdit extends Component {
             gap={4}
           >
             <Flex direction='column' gap={1}>
-              <Link href={join(APP_URL, `/teams/${team.id}`)}>
-                ← Back to Team Page
-              </Link>
+              <Link href={`/teams/${team.id}`}>← Back to Team Page</Link>
               <Heading color='white'>{team.name}</Heading>
               <Text variant='overline'>Editing Team</Text>
             </Flex>

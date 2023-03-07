@@ -179,7 +179,8 @@ class Organization extends Component {
             size='sm'
             color='gray.500'
             variant='outline'
-            href={join(URL, `/organizations/${orgId}/badges/${badgeId}`)}
+            as={Link}
+            href={`/organizations/${orgId}/badges/${badgeId}`}
           >
             Edit
           </Button>
