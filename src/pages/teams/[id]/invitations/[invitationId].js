@@ -1,13 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import join from 'url-join'
 import Error from 'next/error'
+import { useRouter } from 'next/router'
 import * as yup from 'yup'
 import { signIn } from 'next-auth/react'
 import { getServerSession } from 'next-auth'
 import * as TeamInvitation from '../../../../models/team-invitation'
 import * as Team from '../../../../models/team'
 import logger from '../../../../lib/logger'
-import { Button } from '@chakra-ui/react'
+import { Box, Button, Heading } from '@chakra-ui/react'
 import { authOptions } from '../../../api/auth/[...nextauth]'
+import InpageHeader from '../../../../components/inpage-header'
+
+const APP_URL = process.env.APP_URL
 
 const routeSchema = yup
   .object({
@@ -16,16 +21,29 @@ const routeSchema = yup
   })
   .required()
 
-export default function TeamInvitationPage({ errorCode, errorMessage }) {
+export default function TeamInvitationPage({
+  errorCode,
+  errorMessage,
+  teamId,
+}) {
+  const router = useRouter()
+  useEffect(() => {
+    // only redirect on successful invite acceptance
+    if (!errorCode) return
+    setTimeout(() => {
+      router.push(join(APP_URL, `/teams/${teamId}`))
+    }, 3000)
+  }, [])
+
   // Token is valid but user is not authorized
   if (errorCode === 401) {
     return (
-      <article className='inner page'>
-        <section>
-          <h1>Please sign in</h1>
+      <Box as='main' mb={16}>
+        <InpageHeader>
+          <Heading color='white'>Please sign in</Heading>
           <Button onClick={() => signIn('osm-teams')}>Sign in →</Button>
-        </section>
-      </article>
+        </InpageHeader>
+      </Box>
     )
   }
 
@@ -35,11 +53,11 @@ export default function TeamInvitationPage({ errorCode, errorMessage }) {
   }
 
   return (
-    <article className='inner page'>
-      <section>
-        <h1>Invitation accepted successfully.</h1>
-      </section>
-    </article>
+    <Box as='main' mb={16}>
+      <InpageHeader>
+        <Heading color='white'>Invitation accepted successfully</Heading>
+      </InpageHeader>
+    </Box>
   )
 }
 
@@ -99,5 +117,5 @@ export async function getServerSideProps(ctx) {
     }
   }
 
-  return { props: {} }
+  return { props: { teamId } }
 }
