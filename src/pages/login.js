@@ -24,6 +24,11 @@ class Login extends Component {
           <br />
           <Button
             as={Link}
+            layerStyle={'shadowButton'}
+            _hover={{
+              boxShadow: 'none',
+              textDecoration: 'none',
+            }}
             href={`/oauth/openstreetmap?login_challenge=${this.props.challenge}`}
           >
             Login with {OSM_NAME}

@@ -380,7 +380,13 @@ class Team extends Component {
             <Flex gap={4}>
               {isMember ? (
                 <Button
-                  variant='solid'
+                  variant='outline'
+                  colorScheme='white'
+                  layerStyle='shadowButton'
+                  _hover={{
+                    boxShadow: 'none',
+                    textDecoration: 'none',
+                  }}
                   as={Link}
                   href={`/teams/${team.id}/profile`}
                 >
@@ -390,7 +396,17 @@ class Team extends Component {
                 ' '
               )}
               {isUserModerator ? (
-                <Button as={Link} href={`/teams/${team.id}/edit`}>
+                <Button
+                  variant='outline'
+                  colorScheme='white'
+                  layerStyle='shadowButton'
+                  _hover={{
+                    boxShadow: 'none',
+                    textDecoration: 'none',
+                  }}
+                  as={Link}
+                  href={`/teams/${team.id}/edit`}
+                >
                   Edit
                 </Button>
               ) : (

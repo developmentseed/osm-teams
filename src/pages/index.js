@@ -156,7 +156,16 @@ export default function Home() {
             </UnorderedList>
           </Box>
         ) : (
-          <Button onClick={() => signIn('osm-teams')}>Sign in →</Button>
+          <Button
+            layerStyle={'shadowButton'}
+            _hover={{
+              boxShadow: 'none',
+              textDecoration: 'none',
+            }}
+            onClick={() => signIn('osm-teams')}
+          >
+            Sign in →
+          </Button>
         )}
       </Card>
       <div className='map-bg' />

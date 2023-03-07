@@ -87,8 +87,12 @@ export default function PageHeader() {
                   <Button
                     as='a'
                     variant='outline'
-                    textTransform={'lowercase'}
-                    _hover={{ background: 'brand.200', textDecoration: 'none' }}
+                    size='sm'
+                    layerStyle={'shadowButton'}
+                    _hover={{
+                      boxShadow: 'none',
+                      textDecoration: 'none',
+                    }}
                     sx={{
                       '.active&': {
                         bg: 'brand.500',
@@ -106,8 +110,12 @@ export default function PageHeader() {
                   <Button
                     as='a'
                     variant='outline'
-                    textTransform={'lowercase'}
-                    _hover={{ background: 'brand.200', textDecoration: 'none' }}
+                    size='sm'
+                    layerStyle={'shadowButton'}
+                    _hover={{
+                      boxShadow: 'none',
+                      textDecoration: 'none',
+                    }}
                     sx={{
                       '.active&': {
                         bg: 'brand.500',
@@ -129,8 +137,11 @@ export default function PageHeader() {
                   <MenuButton
                     as={Button}
                     variant='outline'
-                    textTransform={'lowercase'}
-                    _hover={{ background: 'brand.200', textDecoration: 'none' }}
+                    layerStyle={'shadowButton'}
+                    _hover={{
+                      boxShadow: 'none',
+                      textDecoration: 'none',
+                    }}
                     size={'sm'}
                     mr={4}
                     leftIcon={<AddIcon />}

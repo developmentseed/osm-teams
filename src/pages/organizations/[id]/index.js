@@ -307,7 +307,17 @@ class Organization extends Component {
           <Flex justifyContent={'space-between'}>
             <Heading color='white'>{org.data.name}</Heading>
             {isOwner ? (
-              <Button as={Link} href={`/organizations/${org.data.id}/edit`}>
+              <Button
+                variant='outline'
+                colorScheme={'white'}
+                layerStyle={'shadowButton'}
+                _hover={{
+                  boxShadow: 'none',
+                  textDecoration: 'none',
+                }}
+                as={Link}
+                href={`/organizations/${org.data.id}/edit`}
+              >
                 Edit
               </Button>
             ) : (

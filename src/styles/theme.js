@@ -25,6 +25,13 @@ const theme = extendTheme(
         overflow: 'hidden',
         mb: 8,
       },
+      shadowButton: {
+        border: '2px',
+        borderColor: 'currentcolor',
+        boxShadow: '4px 4px 0 0 currentcolor',
+        overflow: 'hidden',
+        textTransform: 'lowercase',
+      },
     },
     radii: {
       md: '0', // heavy handed override for the border radius, rather than updating on every multipart component 🤷‍♂️
