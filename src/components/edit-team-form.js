@@ -1,8 +1,19 @@
 import React, { useState } from 'react'
 import { Formik, Field, Form } from 'formik'
 import urlRegex from 'url-regex'
-import { Button, Heading, Tooltip } from '@chakra-ui/react'
-import { QuestionOutlineIcon } from '@chakra-ui/icons'
+import {
+  Button,
+  Heading,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
+  Input,
+  Textarea,
+  Select,
+  Checkbox,
+  VStack,
+} from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 import { uniqBy, prop } from 'ramda'
 
@@ -19,7 +30,7 @@ function validateName(value) {
 }
 
 function renderError(text) {
-  return <div className='form--error'>{text}</div>
+  return <FormErrorMessage>{text}</FormErrorMessage>
 }
 
 function renderErrors(errors) {
@@ -74,28 +85,20 @@ export default function EditTeamForm({
           extraOrgTeamFields = orgTeamTags.map(
             ({ id, name, required, description }) => {
               return (
-                <div
-                  className='form-control form-control__vertical'
-                  key={`extra-tag-${id}`}
-                >
-                  <label htmlFor={`extra-tag-${id}`}>
-                    {name}
-                    {required ? <span className='form--required'>*</span> : ''}
-                    {description ? (
-                      <Tooltip label={description} aria-label='tooltip'>
-                        <QuestionOutlineIcon />
-                      </Tooltip>
-                    ) : (
-                      ''
-                    )}
-                  </label>
+                <FormControl isRequired={required} key={`extra-tag-${id}`}>
+                  <FormLabel htmlFor={`extra-tag-${id}`}>{name}</FormLabel>
                   <Field
+                    as={Input}
                     type='text'
                     name={`tags.key-${id}`}
+                    id={`extra-tag-${id}`}
                     required={required}
                     value={values.tags[`key-${id}`]}
                   />
-                </div>
+                  {description && (
+                    <FormHelperText>{description}</FormHelperText>
+                  )}
+                </FormControl>
               )
             }
           )
@@ -105,28 +108,20 @@ export default function EditTeamForm({
           extraTeamFields = teamTags.map(
             ({ id, name, required, description }) => {
               return (
-                <div
-                  className='form-control form-control__vertical'
-                  key={`extra-tag-${id}`}
-                >
-                  <label htmlFor={`extra-tag-${id}`}>
-                    {name}
-                    {required ? <span className='form--required'>*</span> : ''}
-                    {description ? (
-                      <Tooltip label={description} aria-label='tooltip'>
-                        <QuestionOutlineIcon />
-                      </Tooltip>
-                    ) : (
-                      ''
-                    )}
-                  </label>
+                <FormControl isRequired={required} key={`extra-tag-${id}`}>
+                  <FormLabel htmlFor={`extra-tag-${id}`}>{name}</FormLabel>
                   <Field
+                    as={Input}
                     type='text'
                     name={`tags.key-${id}`}
+                    id={`extra-tag-${id}`}
                     required={required}
                     value={values.tags[`key-${id}`]}
                   />
-                </div>
+                  {description && (
+                    <FormHelperText>{description}</FormHelperText>
+                  )}
+                </FormControl>
               )
             }
           )
@@ -134,128 +129,145 @@ export default function EditTeamForm({
 
         return (
           <Form>
-            <Heading variant='sectionHead'>Details</Heading>
-            <div className='form-control form-control__vertical'>
-              <label htmlFor='name'>
-                Name<span className='form--required'>*</span>
-              </label>
-              <Field
-                type='text'
-                name='name'
-                required
-                className={errors.name ? 'form--error' : ''}
-                validate={validateName}
-              />
-              {errors.name && renderError(errors.name)}
-            </div>
-            <div className='form-control form-control__vertical'>
-              <label htmlFor='hashtag'>Hashtag</label>
-              <Field type='text' name='hashtag' />
-            </div>
-            <div className='form-control form-control__vertical'>
-              <label htmlFor='bio'>Description</label>
-              <Field component='textarea' name='bio' />
-            </div>
-            <div className='form-control form-control__vertical'>
-              <label htmlFor='editing_policy'>Organized Editing Policy</label>
-              <Field
-                type='url'
-                name='editing_policy'
-                placeholder='https://'
-                validate={validateUrl}
-              />
-              <small className='pt1'>
-                URL to your team&apos;s editing policy if you have one (include
-                http/https)
-              </small>
-              {errors.editing_policy && renderError(errors.editing_policy)}
-            </div>
-            <div className='form-control form-control__vertical'>
-              <label htmlFor='privacy'>Visibility</label>
-              <Field as='select' name='privacy'>
-                <option value='public'>Public</option>
-                <option value='private'>Private</option>
-              </Field>
-              <small className='pt1'>
-                A private team does not show its member list or team details to
-                non-members.
-              </small>
-            </div>
-            {staff && isCreateForm && (
-              <div className='form-control form-control__vertical'>
-                <label htmlFor='orgTeam-checkbox'>
-                  <input
-                    id='orgTeam-checkbox'
-                    name='orgTeam-checkbox'
-                    type='checkbox'
-                    checked={orgTeam}
-                    style={{ minWidth: '1rem' }}
-                    onChange={(e) => setOrgTeam(e.target.checked)}
-                  />
-                  This team belongs to an organization
-                </label>
-                {orgTeam && (
-                  <Field as='select' name='organization'>
-                    <option value=''>Select organization</option>
-                    {uniqueOrgs.map(({ organization_id, name }) => {
-                      return (
-                        <option key={organization_id} value={organization_id}>
-                          {name}
-                        </option>
-                      )
-                    })}
-                  </Field>
-                )}
-              </div>
-            )}
-            {extraOrgTeamFields.length > 0 ? (
-              <>
-                <Heading as='h3' size='sm'>
-                  Organization Attributes
-                </Heading>
-                {extraOrgTeamFields}
-              </>
-            ) : (
-              ''
-            )}
-            {extraTeamFields.length > 0 ? (
-              <>
-                <Heading as='h3' size='sm'>
-                  Other Team Attributes
-                </Heading>
-                {extraTeamFields}
-              </>
-            ) : (
-              ''
-            )}
-            <Heading variant='sectionHead'>Location</Heading>
-            <div className='form-control form-control__vertical'>
+            <VStack alignItems={'flex-start'}>
+              <Heading variant='sectionHead'>Details</Heading>
+              <FormControl isRequired isInvalid={errors.name}>
+                <FormLabel htmlFor='name'>Name</FormLabel>
+                <Field
+                  as={Input}
+                  type='text'
+                  name='name'
+                  id='name'
+                  required
+                  className={errors.name ? 'form--error' : ''}
+                  validate={validateName}
+                />
+                {errors.name && renderError(errors.name)}
+              </FormControl>
+              <FormControl>
+                <FormLabel htmlFor='hashtag'>Hashtag</FormLabel>
+                <Field as={Input} type='text' name='hashtag' id='hashtag' />
+              </FormControl>
+              <FormControl>
+                <FormLabel htmlFor='bio'>Description</FormLabel>
+                <Field
+                  as={Textarea}
+                  name='bio'
+                  id='bio'
+                  placeholder='Enter team description'
+                />
+              </FormControl>
+              <FormControl isInvalid={errors.editing_policy}>
+                <FormLabel htmlFor='editing_policy'>
+                  Organized Editing Policy
+                </FormLabel>
+                <Field
+                  as={Input}
+                  type='url'
+                  name='editing_policy'
+                  id='editing_policy'
+                  placeholder='https://'
+                  validate={validateUrl}
+                />
+                <FormHelperText>
+                  URL to your team&apos;s editing policy if you have one
+                  (include http/https)
+                </FormHelperText>
+                {errors.editing_policy && renderError(errors.editing_policy)}
+              </FormControl>
+              <FormControl>
+                <FormLabel htmlFor='privacy'>Visibility</FormLabel>
+                <Field
+                  as={Select}
+                  id='privacy'
+                  name='privacy'
+                  placeholder='Select Visibility'
+                >
+                  <option value='public'>Public</option>
+                  <option value='private'>Private</option>
+                </Field>
+                <FormHelperText>
+                  A private team does not show its member list or team details
+                  to non-members.
+                </FormHelperText>
+              </FormControl>
+              {staff && isCreateForm && (
+                <FormControl>
+                  <FormLabel htmlFor='orgTeam-checkbox'>
+                    <Checkbox
+                      id='orgTeam-checkbox'
+                      name='orgTeam-checkbox'
+                      type='checkbox'
+                      checked={orgTeam}
+                      style={{ minWidth: '1rem' }}
+                      onChange={(e) => setOrgTeam(e.target.checked)}
+                    />
+                    This team belongs to an organization
+                  </FormLabel>
+                  {orgTeam && (
+                    <Field
+                      as={Select}
+                      name='organization'
+                      placeholder='Select Organization'
+                    >
+                      {uniqueOrgs.map(({ organization_id, name }) => {
+                        return (
+                          <option key={organization_id} value={organization_id}>
+                            {name}
+                          </option>
+                        )
+                      })}
+                    </Field>
+                  )}
+                </FormControl>
+              )}
+              {extraOrgTeamFields.length > 0 ? (
+                <>
+                  <Heading as='h3' size='sm'>
+                    Organization Attributes
+                  </Heading>
+                  {extraOrgTeamFields}
+                </>
+              ) : (
+                ''
+              )}
+              {extraTeamFields.length > 0 ? (
+                <>
+                  <Heading as='h3' size='sm'>
+                    Other Team Attributes
+                  </Heading>
+                  {extraTeamFields}
+                </>
+              ) : (
+                ''
+              )}
+              <Heading variant='sectionHead'>Location</Heading>
               <FormMap
                 style={{ height: '300px', width: '100%' }}
                 name='location'
                 value={values.location}
                 onChange={setFieldValue}
               />
-            </div>
-            <div className='form-control form-control__vertical'>
-              {status && status.errors && renderErrors(status.errors)}
-              <Button
-                isDisabled={isSubmitting}
-                variant='solid'
-                onClick={() => {
-                  if (Object.keys(errors).length) {
-                    setErrors(errors)
-                    return setStatus({
-                      errors,
-                    })
-                  }
-                  return submitForm()
-                }}
-                type='submit'
-              >
-                Submit
-              </Button>
-            </div>
+              <FormControl>
+                <Button
+                  isDisabled={isSubmitting}
+                  variant='solid'
+                  onClick={() => {
+                    if (Object.keys(errors).length) {
+                      setErrors(errors)
+                      return setStatus({
+                        errors,
+                      })
+                    }
+                    return submitForm()
+                  }}
+                  type='submit'
+                >
+                  Submit
+                </Button>
+                {status && status.errors && renderErrors(status.errors)}
+              </FormControl>
+            </VStack>
           </Form>
         )
       }}
