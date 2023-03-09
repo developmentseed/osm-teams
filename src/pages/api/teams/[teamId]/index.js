@@ -27,8 +27,8 @@ const handler = createBaseHandler()
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
+ *              $ref: '#/components/schemas/Team'
+ *
  */
 handler.get(
   validate({
