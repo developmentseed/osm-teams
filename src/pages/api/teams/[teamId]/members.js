@@ -2,13 +2,40 @@ import { createBaseHandler } from '../../../../middlewares/base-handler'
 import { validate } from '../../../../middlewares/validation'
 import Team from '../../../../models/team'
 import * as Yup from 'yup'
-import { map, prop, split } from 'ramda'
+import { split, includes } from 'ramda'
 import canViewTeamMembers from '../../../../middlewares/can/view-team-members'
 
 const handler = createBaseHandler()
 
 const fieldsTransform = Yup.string().transform(split(','))
 
+/**
+ * @swagger
+ * /teams/{id}/members:
+ *   get:
+ *     summary: Get members in a team
+ *     tags:
+ *       - teams
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Team id
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: A list of members
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 pagination:
+ *                   $ref: '#/components/schemas/Pagination'
+ *                 data:
+ *                   $ref: '#/components/schemas/TeamMemberList'
+ */
 handler.get(
   canViewTeamMembers,
   validate({
@@ -18,18 +45,15 @@ handler.get(
     }).required(),
   }),
   async function (req, res) {
-    const { teamId } = req.query
+    const { teamId, fields } = req.query
 
-    // TODO implement
-    // const parsedFields = split(',', fields)
-    // const includeBadges = parsedFields && includes('badges', parsedFields)
-    // const members = await Team.getMembersPaginated(teamId, { includeBadges })
+    const parsedFields = split(',', fields || '')
+    const includeBadges = parsedFields && includes('badges', parsedFields)
+    const members = await Team.getMembersPaginated(teamId, {
+      badges: includeBadges,
+    })
 
-    const memberIds = map(prop('osm_id'), await Team.getMembers(teamId))
-    const members = await Team.resolveMemberNames(memberIds)
-    const moderators = await Team.getModerators(teamId)
-
-    let responseObject = Object.assign({}, { teamId }, { members, moderators })
+    let responseObject = Object.assign({}, { teamId }, { members })
 
     return res.send(responseObject)
   }
