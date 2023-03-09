@@ -12,7 +12,9 @@ import {
   Text,
   Flex,
   Stack,
+  ButtonGroup,
 } from '@chakra-ui/react'
+
 import AddMemberForm from '../../../components/add-member-form'
 import ProfileModal from '../../../components/profile-modal'
 
@@ -38,6 +40,7 @@ import logger from '../../../lib/logger'
 import MembersTable from './members-table'
 import Link from 'next/link'
 import InpageHeader from '../../../components/inpage-header'
+import JoinLink from '../../../components/join-link'
 
 const APP_URL = process.env.APP_URL
 const Map = dynamic(() => import('../../../components/team-map'), {
@@ -312,7 +315,7 @@ class Team extends Component {
       <Box as='main' mb={16}>
         <InpageHeader>
           <Flex
-            direction={['column', 'row']}
+            direction={['column', null, 'row']}
             justifyContent={'space-between'}
             gap={4}
           >
@@ -377,24 +380,32 @@ class Team extends Component {
                 )}
               </Flex>
             </Flex>
-            <Flex gap={4}>
-              {isMember ? (
-                <Button
-                  variant='solid'
-                  as={Link}
-                  href={`/teams/${team.id}/profile`}
-                >
-                  Edit Your Profile
-                </Button>
-              ) : (
-                ' '
-              )}
-              {isUserModerator ? (
-                <Button as={Link} href={`/teams/${team.id}/edit`}>
-                  Edit
-                </Button>
-              ) : (
-                ''
+            <Flex direction='column' alignItems={['stretch', null, 'flex-end']}>
+              <ButtonGroup>
+                {isMember ? (
+                  <Button
+                    variant='solid'
+                    as={Link}
+                    href={`/teams/${team.id}/profile`}
+                  >
+                    Edit Your Profile
+                  </Button>
+                ) : (
+                  ' '
+                )}
+                {isUserModerator ? (
+                  <Button as={Link} href={`/teams/${team.id}/edit`}>
+                    Edit
+                  </Button>
+                ) : (
+                  ''
+                )}
+              </ButtonGroup>
+              {isUserModerator && (
+                <JoinLink
+                  joinLink={joinLink}
+                  createJoinLink={this.createJoinLink}
+                />
               )}
             </Flex>
           </Flex>
@@ -412,22 +423,6 @@ class Team extends Component {
               <Heading variant='sectionHead'>Location</Heading>
               {this.renderMap(team.location)}
             </Box>
-            {isUserModerator ? (
-              <div style={{ marginTop: '1rem' }}>
-                <Heading variant='sectionHead'>Join Link</Heading>
-                {joinLink ? (
-                  <fieldset style={{ borderColor: '#384A9E' }}>
-                    {joinLink}
-                  </fieldset>
-                ) : (
-                  <Button onClick={() => this.createJoinLink()}>
-                    Create Join Link
-                  </Button>
-                )}
-              </div>
-            ) : (
-              ''
-            )}
           </Box>
           <Box as='section' layerStyle={'shadowed'}>
             {memberRows.length > 0 ? (
