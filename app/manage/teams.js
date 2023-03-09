@@ -3,14 +3,13 @@ const db = require('../../src/lib/db')
 const yup = require('yup')
 const crypto = require('crypto')
 const { routeWrapper } = require('./utils')
-const { prop, map, dissoc } = require('ramda')
+const { prop, dissoc } = require('ramda')
 const urlRegex = require('url-regex')
 const profile = require('../../src/models/profile')
 const Boom = require('@hapi/boom')
 const logger = require('../../src/lib/logger')
 
 const isUrl = urlRegex({ exact: true })
-const getOsmId = prop('osm_id')
 
 async function listTeams(req, res) {
   const { osmId, bbox } = req.query
@@ -28,58 +27,6 @@ async function listTeams(req, res) {
   })
   return res.send(data)
 }
-
-async function getTeam(req, reply) {
-  const { id } = req.params
-
-  if (!id) {
-    throw Boom.badRequest('Team id is required')
-  }
-
-  try {
-    const teamData = await team.get(id)
-    const associatedOrg = await team.associatedOrg(id)
-
-    if (!teamData) {
-      throw Boom.notFound()
-    }
-
-    return reply.send(Object.assign({}, teamData, { org: associatedOrg }))
-  } catch (err) {
-    logger.error(err)
-    throw Boom.badRequest(err.message)
-  }
-}
-
-const getTeamMembers = routeWrapper({
-  validate: {
-    params: yup
-      .object({
-        id: yup.number().required().positive().integer(),
-      })
-      .required(),
-  },
-  handler: async (req, reply) => {
-    const { id } = req.params
-
-    if (!id) {
-      throw Boom.badRequest('team id is required')
-    }
-
-    try {
-      const memberIds = map(getOsmId, await team.getMembers(id))
-      const members = await team.resolveMemberNames(memberIds)
-      const moderators = await team.getModerators(id)
-
-      return reply.send(
-        Object.assign({}, { teamId: id }, { members, moderators })
-      )
-    } catch (err) {
-      logger.error(err)
-      throw Boom.badRequest(err.message)
-    }
-  },
-})
 
 async function createTeam(req, reply) {
   const { body } = req
@@ -387,8 +334,6 @@ module.exports = {
   assignModerator,
   createTeam,
   destroyTeam,
-  getTeam,
-  getTeamMembers,
   joinTeam,
   listTeams,
   removeMember,

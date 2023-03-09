@@ -4,7 +4,6 @@ const {
   assignModerator,
   createTeam,
   destroyTeam,
-  getTeam,
   joinTeam,
   listTeams,
   removeMember,
@@ -65,7 +64,6 @@ function manageRouter(handler) {
    */
   handler.get('/api/teams', listTeams)
   handler.post('/api/teams', can('public:authenticated'), createTeam)
-  handler.get('/api/teams/:id', can('team:view'), getTeam)
   handler.put('/api/teams/:id', can('team:edit'), updateTeam)
   handler.delete('/api/teams/:id', can('team:edit'), destroyTeam)
   handler.put('/api/teams/add/:id/:osmId', can('team:edit'), addMember)
