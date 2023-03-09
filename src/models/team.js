@@ -154,6 +154,97 @@ async function getMembers(id) {
 }
 
 /**
+ * Gets the associated organization of a team
+ * if it exists
+ *
+ * @param {int} teamId - team id
+ * @returns an organization id if it exists,
+ * otherwise null
+ */
+async function getAssociatedOrgId(teamId) {
+  const associations = await db('organization_team').where({
+    team_id: teamId,
+  })
+
+  if (associations.length > 0) {
+    return associations[0].organization_id
+  } else {
+    return null
+  }
+}
+
+async function getMembersPaginated(teamId, options) {
+  const currentPage = options?.page || 1
+  const sort = options?.sort || 'name'
+  const order = options?.order || 'asc'
+  const perPage = options?.perPage || DEFAULT_PAGE_SIZE
+
+  // Base query for team members
+  let query = db('member')
+    .join('osm_users', 'member.osm_id', 'osm_users.id')
+    .select('member.osm_id as id', 'osm_users.name')
+    .where('member.team_id', teamId)
+    .groupBy('member.osm_id', 'osm_users.name')
+
+  // Apply search
+  if (options.search) {
+    query = query.whereILike('osm_users.name', `%${options.search}%`)
+  }
+
+  // Apply sort
+  query = query.orderBy(sort, order)
+
+  // Add pagination
+  query = query.paginate({
+    isLengthAware: true,
+    currentPage,
+    perPage,
+  })
+
+  const membersPage = await query
+
+  let response = membersPage
+
+  if (options.badges) {
+    const associatedOrgId = await getAssociatedOrgId(teamId)
+
+    if (!associatedOrgId) return response
+
+    // Query badges assigned to the users in the list
+    const userBadges = await db('user_badges')
+      .select(
+        'user_badges.user_id',
+        'user_badges.badge_id',
+        'organization_badge.name',
+        'organization_badge.color'
+      )
+      .join(
+        'organization_badge',
+        'user_badges.badge_id',
+        'organization_badge.id'
+      )
+      .where('organization_badge.organization_id', associatedOrgId)
+      .whereIn(
+        'user_badges.user_id',
+        membersPage.data.map((u) => u.id)
+      )
+      .whereRaw(
+        `user_badges.valid_until IS NULL OR user_badges.valid_until > NOW()`
+      )
+
+    response = {
+      pagination: membersPage.pagination,
+      data: membersPage.data.map((m) => ({
+        ...m,
+        badges: userBadges.filter((b) => b.user_id === m.id),
+      })),
+    }
+  }
+
+  return response
+}
+
+/**
  * getModerators
  * Get the moderators of a team
  *
@@ -593,6 +684,8 @@ module.exports = {
   update,
   destroy,
   getMembers,
+  getMembersPaginated,
+  getAssociatedOrgId,
   getModerators,
   addMember,
   updateMembers,

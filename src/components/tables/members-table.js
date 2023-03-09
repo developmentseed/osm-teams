@@ -1,19 +1,20 @@
 import T from 'prop-types'
-import Table from '../../../components/tables/table'
+import Table from './table'
 import { useState } from 'react'
 
-import Pagination from '../../../components/pagination'
-import * as R from 'ramda'
-import SearchInput from '../../../components/tables/search-input'
-import ExternalProfileButton from '../../../components/external-profile-button'
-import Badge from '../../../components/badge'
-import { makeTitleCase } from '../../../../app/lib/utils'
+import Pagination from '../pagination'
+import qs from 'qs'
+import SearchInput from './search-input'
+import { useFetchList } from '../../hooks/use-fetch-list'
+import ExternalProfileButton from '../external-profile-button'
+import Badge from '../badge'
+import { makeTitleCase } from '../../../app/lib/utils'
 import { Flex, useToken } from '@chakra-ui/react'
+import { includes, map, prop } from 'ramda'
 const SCOREBOARD_URL = process.env.SCOREBOARD_URL
 const HDYC_URL = process.env.HDYC_URL
-const DEFAULT_PAGE_SIZE = process.env.DEFAULT_PAGE_SIZE
 
-function MembersTable({ rows: allRows, onRowClick }) {
+function MembersTable({ teamId, moderators, onRowClick }) {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState(null)
   const [sort, setSort] = useState({
@@ -36,9 +37,60 @@ function MembersTable({ rows: allRows, onRowClick }) {
     owner: red700,
     undefined: blue400,
   }
+
+  const MAX_BADGES_COLUMN = 3
+  const querystring = qs.stringify({
+    search,
+    page,
+    sort: sort.key,
+    order: sort.direction,
+    fields: 'badges',
+  })
+
+  const { result, isLoading } = useFetchList(
+    `/teams/${teamId}/members?${querystring}`
+  )
+
+  const { members } = result
+  if (!members) {
+    return
+  }
+  const { data, pagination } = members
+
+  const moderatorIds = map(prop('osm_id'), moderators)
+  const memberData = data.map((member) => {
+    const isModerator = includes(member.id, moderatorIds)
+    return {
+      ...member,
+      role: isModerator ? 'moderator' : 'member',
+    }
+  })
+
+  if (!isLoading && search?.length > 0) {
+    emptyTableMessage = 'Search returned no results.'
+  }
+
   const columns = [
     { key: 'name', sortable: true },
     { key: 'id', sortable: true },
+    {
+      key: 'badges',
+      render: ({ badges }) => (
+        <>
+          {badges?.length > 0 &&
+            badges.slice(0, MAX_BADGES_COLUMN).map((b) => (
+              <Badge dot color={b.color} key={b.id}>
+                {b.name}
+              </Badge>
+            ))}
+          {badges?.length > MAX_BADGES_COLUMN && (
+            <Badge color='#222'>
+              +{badges.slice(MAX_BADGES_COLUMN).length}
+            </Badge>
+          )}
+        </>
+      ),
+    },
     {
       key: 'role',
       label: 'role',
@@ -64,29 +116,7 @@ function MembersTable({ rows: allRows, onRowClick }) {
     },
   ]
 
-  let rows = R.sort(
-    sort.direction === 'asc'
-      ? R.ascend(R.prop(sort.key))
-      : R.descend(R.prop(sort.key)),
-    allRows
-  )
-
   let emptyTableMessage = 'This team has no members.'
-
-  if (search) {
-    rows = rows.filter((r) =>
-      r.name.toUpperCase().includes(search.toUpperCase())
-    )
-
-    // Change empty table message when no results are available
-    if (rows.length === 0) {
-      emptyTableMessage = 'Search returned no results.'
-    }
-  }
-
-  // Calculate start and end index
-  const pageStartIndex = (page - 1) * DEFAULT_PAGE_SIZE
-  const pageEndIndex = pageStartIndex + DEFAULT_PAGE_SIZE
 
   return (
     <>
@@ -101,23 +131,21 @@ function MembersTable({ rows: allRows, onRowClick }) {
       />
       <Table
         data-cy='team-members-table'
-        rows={rows.slice(pageStartIndex, pageEndIndex)}
         columns={columns}
-        emptyPlaceHolder={emptyTableMessage}
-        onRowClick={onRowClick}
+        emptyPlaceHolder={isLoading ? 'Loading...' : emptyTableMessage}
         showRowNumbers
+        rows={memberData}
         sort={sort}
         setSort={setSort}
+        onRowClick={onRowClick}
       />
-      <Pagination
-        pagination={{
-          perPage: DEFAULT_PAGE_SIZE,
-          total: rows.length,
-          currentPage: page,
-        }}
-        data-cy='team-members-table-pagination'
-        setPage={setPage}
-      />
+      {pagination?.total > 0 && (
+        <Pagination
+          pagination={pagination}
+          data-cy='team-members-table-pagination'
+          setPage={setPage}
+        />
+      )}
     </>
   )
 }
