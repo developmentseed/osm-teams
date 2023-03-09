@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import join from 'url-join'
 import { map, prop, contains, reverse, assoc } from 'ramda'
 import dynamic from 'next/dynamic'
 import { getSession } from 'next-auth/react'
@@ -12,7 +11,6 @@ import {
   Text,
   Flex,
   Stack,
-  ButtonGroup,
 } from '@chakra-ui/react'
 
 import AddMemberForm from '../../../components/add-member-form'
@@ -26,8 +24,6 @@ import {
   joinTeam,
   assignModerator,
   removeModerator,
-  getTeamJoinInvitations,
-  createTeamJoinInvitation,
 } from '../../../lib/teams-api'
 import {
   getTeamProfile,
@@ -35,14 +31,12 @@ import {
   getUserTeamProfile,
 } from '../../../lib/profiles-api'
 import { getOrgStaff } from '../../../lib/org-api'
-import { toast } from 'react-toastify'
 import logger from '../../../lib/logger'
 import MembersTable from './members-table'
 import Link from 'next/link'
 import InpageHeader from '../../../components/inpage-header'
 import JoinLink from '../../../components/join-link'
 
-const APP_URL = process.env.APP_URL
 const Map = dynamic(() => import('../../../components/team-map'), {
   ssr: false,
 })
@@ -57,7 +51,6 @@ class Team extends Component {
     this.state = {
       profileInfo: [],
       profileUserId: '',
-      joinLink: null,
       loading: true,
       error: undefined,
     }
@@ -67,40 +60,7 @@ class Team extends Component {
 
   async componentDidMount() {
     this.getTeam()
-    this.getTeamJoinLink()
     this.setState({ session: await getSession() })
-  }
-
-  async getTeamJoinLink() {
-    const { id } = this.props
-    try {
-      const invitations = await getTeamJoinInvitations(id)
-      if (invitations.length) {
-        this.setState({
-          joinLink: join(
-            APP_URL,
-            'teams',
-            id,
-            'invitations',
-            invitations[0].id
-          ),
-        })
-      }
-    } catch (e) {
-      logger.error(e)
-      toast.error(e)
-    }
-  }
-
-  async createJoinLink() {
-    const { id } = this.props
-    try {
-      await createTeamJoinInvitation(id)
-      this.getTeamJoinLink()
-    } catch (e) {
-      logger.error(e)
-      toast.error(e)
-    }
   }
 
   async getTeam() {
@@ -239,8 +199,7 @@ class Team extends Component {
   }
 
   render() {
-    const { team, error, teamProfile, teamMembers, orgOwners, joinLink } =
-      this.state
+    const { team, error, teamProfile, teamMembers, orgOwners } = this.state
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -381,10 +340,11 @@ class Team extends Component {
               </Flex>
             </Flex>
             <Flex direction='column' alignItems={['stretch', null, 'flex-end']}>
-              <ButtonGroup>
+              <Flex direction={['column', null, 'row']} gap={2}>
                 {isMember ? (
                   <Button
-                    variant='solid'
+                    variant='outline'
+                    colorScheme='white'
                     as={Link}
                     href={`/teams/${team.id}/profile`}
                   >
@@ -394,19 +354,19 @@ class Team extends Component {
                   ' '
                 )}
                 {isUserModerator ? (
-                  <Button as={Link} href={`/teams/${team.id}/edit`}>
-                    Edit
+                  <Button
+                    variant='outline'
+                    colorScheme='white'
+                    as={Link}
+                    href={`/teams/${team.id}/edit`}
+                  >
+                    Edit Team
                   </Button>
                 ) : (
                   ''
                 )}
-              </ButtonGroup>
-              {isUserModerator && (
-                <JoinLink
-                  joinLink={joinLink}
-                  createJoinLink={this.createJoinLink}
-                />
-              )}
+              </Flex>
+              {isUserModerator && <JoinLink id={team.id} />}
             </Flex>
           </Flex>
         </InpageHeader>
