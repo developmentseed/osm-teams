@@ -65,6 +65,7 @@ function MembersTable({ teamId, moderators, onRowClick }) {
       role: isModerator ? 'moderator' : 'member',
     }
   })
+  let emptyTableMessage = 'This team has no members.'
 
   if (!isLoading && search?.length > 0) {
     emptyTableMessage = 'Search returned no results.'
@@ -115,8 +116,6 @@ function MembersTable({ teamId, moderators, onRowClick }) {
       ),
     },
   ]
-
-  let emptyTableMessage = 'This team has no members.'
 
   return (
     <>
