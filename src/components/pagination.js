@@ -51,9 +51,9 @@ function listPageOptions(page, lastPage) {
 }
 
 function Pagination({ pagination, setPage, 'data-cy': dataCy }) {
-  const { perPage, total, currentPage } = pagination
+  const { perPage, total, currentPage, lastPage } = pagination
 
-  const maxPages = perPage ? Math.ceil(total / perPage) : 0
+  const maxPages = lastPage
   const pages = listPageOptions(currentPage + 1, maxPages)
 
   return (
@@ -117,7 +117,9 @@ function Pagination({ pagination, setPage, 'data-cy': dataCy }) {
       <Text flexBasis='100%' width='100%' textAlign={'center'}>
         Showing {(currentPage - 1) * perPage + 1}-
         {Intl.NumberFormat().format(
-          currentPage === maxPages ? total : currentPage * perPage
+          Number(currentPage) === Number(maxPages)
+            ? total
+            : currentPage * perPage
         )}{' '}
         of {Intl.NumberFormat().format(total)}
       </Text>
