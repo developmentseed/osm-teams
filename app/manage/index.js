@@ -3,13 +3,10 @@ const {
   addMember,
   assignModerator,
   createTeam,
-  destroyTeam,
   joinTeam,
   listTeams,
   removeMember,
   removeModerator,
-  updateMembers,
-  updateTeam,
   getJoinInvitations,
   createJoinInvitation,
   deleteJoinInvitation,
@@ -64,11 +61,8 @@ function manageRouter(handler) {
    */
   handler.get('/api/teams', listTeams)
   handler.post('/api/teams', can('public:authenticated'), createTeam)
-  handler.put('/api/teams/:id', can('team:edit'), updateTeam)
-  handler.delete('/api/teams/:id', can('team:edit'), destroyTeam)
   handler.put('/api/teams/add/:id/:osmId', can('team:edit'), addMember)
   handler.put('/api/teams/remove/:id/:osmId', can('team:edit'), removeMember)
-  handler.patch('/api/teams/:id/members', can('team:edit'), updateMembers)
   handler.put('/api/teams/:id/join', can('team:join'), joinTeam)
   handler.put(
     '/api/teams/:id/assignModerator/:osmId',
