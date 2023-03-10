@@ -51,9 +51,10 @@ function listPageOptions(page, lastPage) {
 }
 
 function Pagination({ pagination, setPage, 'data-cy': dataCy }) {
-  const { perPage, total, currentPage, lastPage } = pagination
+  let { perPage, total, currentPage, lastPage } = pagination
+  currentPage = Number(currentPage)
 
-  const maxPages = lastPage
+  const maxPages = Number(lastPage)
   const pages = listPageOptions(currentPage + 1, maxPages)
 
   return (

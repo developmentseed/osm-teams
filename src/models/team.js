@@ -4,7 +4,7 @@ const knexPostgis = require('knex-postgis')
 const join = require('url-join')
 const xml2js = require('xml2js')
 const { unpack } = require('../../app/lib/utils')
-const { prop, isEmpty, difference, concat, assoc } = require('ramda')
+const { prop, isEmpty, difference, concat, assoc, includes } = require('ramda')
 const request = require('request-promise-native')
 const { addZeroPadding } = require('../lib/utils')
 
@@ -191,8 +191,10 @@ async function getMembersPaginated(teamId, options) {
     query = query.whereILike('osm_users.name', `%${options.search}%`)
   }
 
-  // Apply sort
-  query = query.orderBy(sort, order)
+  // Apply sort if it's one of the sortable keys
+  if (includes(sort, ['name', 'id'])) {
+    query = query.orderBy(sort, order)
+  }
 
   // Add pagination
   query = query.paginate({
@@ -288,7 +290,9 @@ async function count({ organizationId }) {
  **/
 async function paginatedList(options = {}) {
   const currentPage = options?.page || 1
-  const sort = options?.sort || 'name'
+  const sort = includes(options?.sort, ['id', 'name'])
+    ? prop('sort', options)
+    : 'name'
   const order = options?.order || 'asc'
   const perPage = options?.perPage || DEFAULT_PAGE_SIZE
 
