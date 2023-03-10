@@ -24,6 +24,10 @@ export default async function canViewTeamMembers(req, res, next) {
 
   const userId = req.session?.user_id
 
+  if (!userId) {
+    throw Boom.unauthorized()
+  }
+
   try {
     const org = await associatedOrg(id)
     const ownerOfTeam = org && (await isOwner(org.organization_id, userId))
