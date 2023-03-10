@@ -48,12 +48,16 @@ handler.get(
     }).required(),
   }),
   async function getMembers(req, res) {
-    const { teamId, fields } = req.query
+    const { teamId, fields, page, search, sort, order } = req.query
 
     const parsedFields = split(',', fields || '')
     const includeBadges = parsedFields && includes('badges', parsedFields)
     const members = await Team.getMembersPaginated(teamId, {
       badges: includeBadges,
+      page,
+      search,
+      sort,
+      order,
     })
 
     let responseObject = Object.assign({}, { teamId }, { members })

@@ -28,17 +28,13 @@ export default async function canViewTeamMembers(req, res, next) {
     throw Boom.unauthorized()
   }
 
-  try {
-    const org = await associatedOrg(id)
-    const ownerOfTeam = org && (await isOwner(org.organization_id, userId))
+  const org = await associatedOrg(id)
+  const ownerOfTeam = org && (await isOwner(org.organization_id, userId))
 
-    // You can view the members if you're part of the team, or in case of an org team if you're the owner
-    if (ownerOfTeam || (await isMember(id, userId))) {
-      return next()
-    } else {
-      throw Boom.unauthorized()
-    }
-  } catch (e) {
-    throw Boom.badRequest()
+  // You can view the members if you're part of the team, or in case of an org team if you're the owner
+  if (ownerOfTeam || (await isMember(id, userId))) {
+    return next()
+  } else {
+    throw Boom.unauthorized()
   }
 }

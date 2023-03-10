@@ -128,7 +128,7 @@ export async function getTeamModerators(id) {
     return res.json()
   }
   if (res.status === 401) {
-    // If unauthorized, don't display team members
+    // If unauthorized, don't display team moderators
     return []
   } else {
     const err = new Error('could not retrieve team moderators')

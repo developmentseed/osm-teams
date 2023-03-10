@@ -280,7 +280,6 @@ class Team extends Component {
     const moderators = map(prop('osm_id'), teamModerators)
     const owners = map(prop('osm_id'), orgOwners)
 
-    // TODO: moderators is an array of ints while members are an array of strings. fix this.
     const isUserModerator =
       contains(parseInt(userId), moderators) ||
       contains(parseInt(userId), owners)
@@ -434,40 +433,41 @@ class Team extends Component {
               ''
             )}
           </Box>
-          <Box as='section' layerStyle={'shadowed'}>
-            <Box mb={2} data-cy='team-members-section'>
-              <Flex
-                direction={['column', 'row']}
-                justifyContent={['space-between']}
-              >
-                <Heading variant='sectionHead'>Team Members</Heading>
-                <div>
-                  {isUserModerator && (
-                    <AddMemberForm
-                      onSubmit={async ({ osmId }) => {
-                        await addMember(team.id, osmId)
-                        return this.getTeam()
-                      }}
-                    />
-                  )}
-                </div>
-              </Flex>
-              <MembersTable
-                teamId={this.props.id}
-                moderators={teamModerators}
-                onRowClick={(row) => {
-                  this.openProfileModal(row)
-                }}
-              />
-              <ProfileModal
-                user={this.state.profileMeta}
-                attributes={this.state.profileInfo}
-                onClose={this.closeProfileModal}
-                actions={profileActions}
-                isOpen={this.state.modalIsOpen}
-              />
+          {teamModerators.length ? (
+            <Box as='section' layerStyle={'shadowed'}>
+              <Box mb={2} data-cy='team-members-section'>
+                <Flex
+                  direction={['column', 'row']}
+                  justifyContent={['space-between']}
+                >
+                  <Heading variant='sectionHead'>Team Members</Heading>
+                  <div>
+                    {isUserModerator && (
+                      <AddMemberForm
+                        onSubmit={async ({ osmId }) => {
+                          await addMember(team.id, osmId)
+                          return this.getTeam()
+                        }}
+                      />
+                    )}
+                  </div>
+                </Flex>
+                <MembersTable
+                  teamId={this.props.id}
+                  moderators={teamModerators}
+                />
+                <ProfileModal
+                  user={this.state.profileMeta}
+                  attributes={this.state.profileInfo}
+                  onClose={this.closeProfileModal}
+                  actions={profileActions}
+                  isOpen={this.state.modalIsOpen}
+                />
+              </Box>
             </Box>
-          </Box>
+          ) : (
+            <div />
+          )}
         </Container>
       </Box>
     )
