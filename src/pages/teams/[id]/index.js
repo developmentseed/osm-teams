@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import join from 'url-join'
-import { map, prop, contains, reverse } from 'ramda'
+import { map, prop, contains, reverse, isNil } from 'ramda'
 import dynamic from 'next/dynamic'
 import { getSession } from 'next-auth/react'
 import { withRouter } from 'next/router'
@@ -36,7 +36,6 @@ import { getOrgStaff } from '../../../lib/org-api'
 import { toast } from 'react-toastify'
 import logger from '../../../lib/logger'
 import MembersTable from '../../../components/tables/members-table'
-import { getOrgBadges } from '../../../lib/badges-api'
 import Link from 'next/link'
 import InpageHeader from '../../../components/inpage-header'
 
@@ -108,14 +107,15 @@ class Team extends Component {
       let isMember = team.requesterIsMember
       let teamModerators = await getTeamModerators(id)
       let teamProfile = []
-      let orgBadges = []
       teamProfile = await getTeamProfile(id)
 
       let orgOwners = []
       if (team.org) {
-        orgOwners = (await getOrgStaff(team.org.organization_id)).owners
-
-        orgBadges = await getOrgBadges(team.org.organization_id)
+        try {
+          orgOwners = (await getOrgStaff(team.org.organization_id)).owners
+        } catch (e) {
+          logger.error("Can't fetch organization owners", e)
+        }
       }
       this.setState({
         team,
@@ -123,7 +123,6 @@ class Team extends Component {
         isMember,
         teamModerators,
         orgOwners,
-        orgBadges,
         loading: false,
       })
     } catch (e) {
@@ -454,6 +453,8 @@ class Team extends Component {
                 </Flex>
                 <MembersTable
                   teamId={this.props.id}
+                  displayBadges={!isNil(prop('org', team))}
+                  onActionsClick={this.openProfileModal.bind(this)}
                   moderators={teamModerators}
                 />
                 <ProfileModal

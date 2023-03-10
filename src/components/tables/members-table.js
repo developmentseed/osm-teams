@@ -10,11 +10,11 @@ import ExternalProfileButton from '../external-profile-button'
 import Badge from '../badge'
 import { makeTitleCase } from '../../../app/lib/utils'
 import { Flex, useToken } from '@chakra-ui/react'
-import { includes, map, prop } from 'ramda'
+import { includes, map, prop, insert } from 'ramda'
 const SCOREBOARD_URL = process.env.SCOREBOARD_URL
 const HDYC_URL = process.env.HDYC_URL
 
-function MembersTable({ teamId, moderators, onRowClick }) {
+function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState(null)
   const [sort, setSort] = useState({
@@ -71,31 +71,12 @@ function MembersTable({ teamId, moderators, onRowClick }) {
     emptyTableMessage = 'Search returned no results.'
   }
 
-  const columns = [
+  let columns = [
     { key: 'name', sortable: true },
     { key: 'id', sortable: true },
     {
-      key: 'badges',
-      render: ({ badges }) => (
-        <>
-          {badges?.length > 0 &&
-            badges.slice(0, MAX_BADGES_COLUMN).map((b) => (
-              <Badge dot color={b.color} key={b.id}>
-                {b.name}
-              </Badge>
-            ))}
-          {badges?.length > MAX_BADGES_COLUMN && (
-            <Badge color='#222'>
-              +{badges.slice(MAX_BADGES_COLUMN).length}
-            </Badge>
-          )}
-        </>
-      ),
-    },
-    {
       key: 'role',
       label: 'role',
-      sortable: true,
       render: ({ role }) => (
         <Badge color={roleBgColor[role.toLowerCase()]}>
           {makeTitleCase(role)}
@@ -115,7 +96,34 @@ function MembersTable({ teamId, moderators, onRowClick }) {
         </Flex>
       ),
     },
+    {
+      key: 'Profile',
+      render: (user) => (
+        <button onClick={() => onActionsClick(user)}>Actions</button>
+      ),
+    },
   ]
+
+  let badgesColumn = {
+    key: 'badges',
+    render: ({ badges }) => (
+      <>
+        {badges?.length > 0 &&
+          badges.slice(0, MAX_BADGES_COLUMN).map((b) => (
+            <Badge dot color={b.color} key={b.name}>
+              {b.name}
+            </Badge>
+          ))}
+        {badges?.length > MAX_BADGES_COLUMN && (
+          <Badge color='#222'>+{badges.slice(MAX_BADGES_COLUMN).length}</Badge>
+        )}
+      </>
+    ),
+  }
+
+  if (displayBadges) {
+    columns = insert(2, badgesColumn, columns)
+  }
 
   return (
     <>
@@ -136,7 +144,6 @@ function MembersTable({ teamId, moderators, onRowClick }) {
         rows={memberData}
         sort={sort}
         setSort={setSort}
-        onRowClick={onRowClick}
       />
       {pagination?.total > 0 && (
         <Pagination
