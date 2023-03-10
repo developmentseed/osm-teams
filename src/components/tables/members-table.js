@@ -11,6 +11,7 @@ import Badge from '../badge'
 import { makeTitleCase } from '../../../app/lib/utils'
 import { Flex, useToken } from '@chakra-ui/react'
 import { includes, map, prop, insert } from 'ramda'
+import { Button } from '@chakra-ui/react'
 const SCOREBOARD_URL = process.env.SCOREBOARD_URL
 const HDYC_URL = process.env.HDYC_URL
 
@@ -99,7 +100,9 @@ function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
     {
       key: 'Profile',
       render: (user) => (
-        <button onClick={() => onActionsClick(user)}>Actions</button>
+        <Button size='md' variant='ghost' onClick={() => onActionsClick(user)}>
+          ⋮
+        </Button>
       ),
     },
   ]

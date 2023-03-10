@@ -277,11 +277,13 @@ class Team extends Component {
 
     const userId = this.state.session?.user_id
     const moderators = map(prop('osm_id'), teamModerators)
-    const owners = map(prop('osm_id'), orgOwners)
+    const owners = map(prop('id'), orgOwners)
 
     const isUserModerator =
       contains(parseInt(userId), moderators) ||
       contains(parseInt(userId), owners)
+
+    const isUserOrgOwner = contains(parseInt(userId), owners)
 
     let profileActions = []
 
@@ -307,6 +309,19 @@ class Team extends Component {
           onClick: async () => {
             this.removeModerator(this.state.profileMeta.id)
           },
+        })
+      }
+
+      if (team.org && isUserOrgOwner) {
+        profileActions.push({
+          name: 'Assign a badge',
+          onClick: () =>
+            this.props.router.push(
+              join(
+                APP_URL,
+                `/organizations/${team.org.organization_id}/badges/assign/${this.state.profileMeta.id}`
+              )
+            ),
         })
       }
     }
