@@ -21,7 +21,7 @@ async function canEditTeam(req, res, next) {
   const org = await associatedOrg(teamId)
   const ownerOfTeam = org && (await isOwner(org.organization_id, userId))
 
-  if (ownerOfTeam || isModerator(teamId, userId)) {
+  if (ownerOfTeam || (await isModerator(teamId, userId))) {
     return next()
   } else {
     throw Boom.unauthorized()
