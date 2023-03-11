@@ -321,12 +321,7 @@ class Team extends Component {
               <Flex gap={[4, 8]}>
                 {team.hashtag && (
                   <Stack as='dl' spacing={1}>
-                    <Text
-                      fontFamily='mono'
-                      as='dt'
-                      fontSize='sm'
-                      textTransform={'uppercase'}
-                    >
+                    <Text as='dt' variant='overline'>
                       Hashtag
                     </Text>
                     <Text as='dd'>{team.hashtag}</Text>
@@ -334,16 +329,14 @@ class Team extends Component {
                 )}
                 {team.org && (
                   <Stack as='dl' spacing={1}>
-                    <Text
-                      fontFamily='mono'
-                      as='dt'
-                      fontSize='sm'
-                      textTransform={'uppercase'}
-                    >
+                    <Text as='dt' variant='overline'>
                       Organization
                     </Text>
                     <Text as='dd'>
-                      <Link href={`/organizations/${team.org.organization_id}`}>
+                      <Link
+                        href={`/organizations/${team.org.organization_id}`}
+                        style={{ textDecoration: 'underline' }}
+                      >
                         {team.org.name}
                       </Link>
                     </Text>

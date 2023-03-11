@@ -35,6 +35,12 @@ const VHS = keyframes`
     text-shadow: -1px 0 red, 1px 0 blue;
   }
 `
+const Links = [
+  { url: '/teams', name: 'Explore all teams' },
+  { url: '/teams/create', name: 'Create new team' },
+  { url: '/profile', name: 'dashboard' },
+]
+
 export default function Home() {
   const { data: session, status } = useSession()
 
@@ -120,39 +126,25 @@ export default function Home() {
               py='2'
               m={0}
               spacing={2}
+              color='white'
             >
-              <ListItem
-                _before={{
-                  content: '"--"',
-                  lineHeight: 1,
-                  marginRight: '10px',
-                  color: 'red.500',
-                }}
-              >
-                <Link color='white' href={join(APP_URL, '/teams/create')}>
-                  Create New Team
-                </Link>
-              </ListItem>
-              <ListItem
-                _before={{
-                  content: '"--"',
-                  lineHeight: 1,
-                  marginRight: '10px',
-                  color: 'red.500',
-                }}
-              >
-                <Link href={join(APP_URL, '/teams')}>Explore All Teams</Link>
-              </ListItem>
-              <ListItem
-                _before={{
-                  content: '"--"',
-                  lineHeight: 1,
-                  marginRight: '10px',
-                  color: 'red.500',
-                }}
-              >
-                <Link href={join(APP_URL, '/profile')}>Dashboard</Link>
-              </ListItem>
+              {Links.map((link) => {
+                return (
+                  <ListItem
+                    key={link.name}
+                    _before={{
+                      content: '"--"',
+                      lineHeight: 1,
+                      marginRight: '10px',
+                      color: 'red.500',
+                    }}
+                  >
+                    <Link style={{ color: 'white ' }} href={link.url}>
+                      {link.name}
+                    </Link>
+                  </ListItem>
+                )
+              })}
             </UnorderedList>
           </Box>
         ) : (

@@ -87,9 +87,7 @@ export default class NewBadgeAssignment extends Component {
     return (
       <Box as='main' mb={16}>
         <InpageHeader>
-          <Link href={join(URL, `/organizations/${orgId}`)}>
-            ← Back to Organization
-          </Link>
+          <Link href={`/organizations/${orgId}`}>← Back to Organization</Link>
           <Heading color='white'>Badge Assignment</Heading>
         </InpageHeader>
         <Container maxW='container.xl' as='section'>

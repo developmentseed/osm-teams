@@ -83,10 +83,8 @@ export default function ProfileModal({
                 <Flex direction='column' gap={2} as='dl' key={attribute.name}>
                   <Text
                     as='dt'
-                    fontFamily={'mono'}
+                    variant='overline'
                     fontWeight='bold'
-                    letterSpacing={'0.5px'}
-                    textTransform='uppercase'
                     fontSize='sm'
                   >
                     {attribute.name}:

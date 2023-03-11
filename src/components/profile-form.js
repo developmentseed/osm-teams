@@ -244,9 +244,7 @@ export default class ProfileForm extends Component {
         <InpageHeader>
           <Link href={returnUrl}>← Back to Team Page</Link>
           <Heading color='white'>{teamName}</Heading>
-          <Text fontFamily='mono' fontSize='sm' textTransform={'uppercase'}>
-            Editing Profile
-          </Text>
+          <Text variant='overline'>Editing Profile</Text>
         </InpageHeader>
         <Container maxW='container.xl' as='section'>
           <Box layerStyle={'shadowed'} as='article'>
