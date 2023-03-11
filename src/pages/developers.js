@@ -40,7 +40,7 @@ class Developers extends Component {
               </ListItem>
               <ListItem>
                 <a
-                  href='https://github.com/thadk/osm-teams-python-example'
+                  href='https://github.com/developmentseed/osm-teams-python-example'
                   target='_blank'
                   rel='noreferrer'
                 >
