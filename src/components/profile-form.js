@@ -16,11 +16,16 @@ import {
   Button,
   Container,
   Flex,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
   Heading,
   Text,
-  Tooltip,
+  Checkbox,
+  Input,
+  VStack,
 } from '@chakra-ui/react'
-import { QuestionOutlineIcon } from '@chakra-ui/icons'
 import { propOr, prop } from 'ramda'
 import logger from '../lib/logger'
 import Link from 'next/link'
@@ -70,7 +75,7 @@ function GenderSelectField(props) {
   }
 
   return (
-    <div>
+    <FormControl isInvalid={meta.error}>
       <CreatableSelect
         styles={styles}
         isClearable
@@ -82,11 +87,9 @@ function GenderSelectField(props) {
         onBlur={setTouched}
       />
       {meta.touched && meta.error ? (
-        <div className='form--error'>
-          <ErrorMessage name={props.name} />
-        </div>
+        <ErrorMessage as={FormErrorMessage} name={props.name} />
       ) : null}
-    </div>
+    </FormControl>
   )
 }
 
@@ -244,9 +247,7 @@ export default class ProfileForm extends Component {
         <InpageHeader>
           <Link href={returnUrl}>← Back to Team Page</Link>
           <Heading color='white'>{teamName}</Heading>
-          <Text fontFamily='mono' fontSize='sm' textTransform={'uppercase'}>
-            Editing Profile
-          </Text>
+          <Text variant='overline'>Editing Profile</Text>
         </InpageHeader>
         <Container maxW='container.xl' as='section'>
           <Box layerStyle={'shadowed'} as='article'>
@@ -274,7 +275,7 @@ export default class ProfileForm extends Component {
               render={({ status, isSubmitting }) => {
                 const addProfileText = `Submit ${isSubmitting ? ' 🕙' : ''}`
                 return (
-                  <Form>
+                  <VStack as={Form} gap={2} alignItems='flex-start'>
                     {orgAttributes.length > 0 ? (
                       <>
                         <Heading variant='sectionHead'>
@@ -282,49 +283,45 @@ export default class ProfileForm extends Component {
                         </Heading>
                         {orgAttributes.map((attribute) => {
                           return (
-                            <div
+                            <FormControl
                               key={attribute.name}
-                              className='form-control form-control__vertical'
+                              isRequired={attribute.required}
                             >
-                              <label>
+                              <FormLabel htmlFor={attribute.id}>
                                 {attribute.name}
-                                {attribute.required ? (
-                                  <span className='form--required'>*</span>
-                                ) : (
-                                  ''
-                                )}
-                                {attribute.description ? (
-                                  <Tooltip
-                                    label={attribute.description}
-                                    aria-label='tooltip'
-                                  >
-                                    <QuestionOutlineIcon />
-                                  </Tooltip>
-                                ) : (
-                                  ''
-                                )}
-                              </label>
+                              </FormLabel>
                               {attribute.key_type === 'gender' ? (
-                                <label>
-                                  Type in or select your gender from the
-                                  drop-down.
-                                </label>
-                              ) : null}
-                              {attribute.key_type === 'gender' ? (
-                                <GenderSelectField name={attribute.id} />
+                                <>
+                                  <GenderSelectField
+                                    name={attribute.id}
+                                    id={attribute.id}
+                                  />
+                                  <FormHelperText>
+                                    Type in or select your gender from the
+                                    drop-down.
+                                  </FormHelperText>
+                                </>
                               ) : (
                                 <>
                                   <Field
+                                    as={Input}
                                     type={attribute.key_type}
                                     name={attribute.id}
+                                    id={attribute.id}
                                     required={attribute.required}
                                   />
-                                  <div className='form--error'>
-                                    <ErrorMessage name={attribute.id} />
-                                  </div>
+                                  <ErrorMessage
+                                    as={FormErrorMessage}
+                                    name={attribute.id}
+                                  />
                                 </>
                               )}
-                            </div>
+                              {attribute.description && (
+                                <FormHelperText>
+                                  {attribute.description}
+                                </FormHelperText>
+                              )}
+                            </FormControl>
                           )
                         })}
                       </>
@@ -337,87 +334,95 @@ export default class ProfileForm extends Component {
                     {memberAttributes.length > 0
                       ? memberAttributes.map((attribute) => {
                           return (
-                            <div
+                            <FormControl
                               key={attribute.name}
-                              className='form-control form-control__vertical'
+                              isRequired={attribute.required}
                             >
-                              <label>
+                              <FormLabel htmlFor={attribute.id}>
                                 {attribute.name}
-                                {attribute.required ? (
-                                  <span className='form--required'>*</span>
-                                ) : (
-                                  ''
-                                )}
-                                {attribute.description ? (
-                                  <Tooltip
-                                    label={attribute.description}
-                                    aria-label='tooltip'
-                                  >
-                                    <QuestionOutlineIcon />
-                                  </Tooltip>
-                                ) : (
-                                  ''
-                                )}
-                              </label>
+                              </FormLabel>
+
                               {attribute.key_type === 'gender' ? (
-                                <label>
-                                  Type in or select your gender from the
-                                  drop-down.
-                                </label>
-                              ) : null}
-                              {attribute.key_type === 'gender' ? (
-                                <GenderSelectField name={attribute.id} />
+                                <>
+                                  <FormLabel htmlFor={attribute.id}>
+                                    Type in or select your gender from the
+                                    drop-down.
+                                  </FormLabel>
+                                  <GenderSelectField
+                                    name={attribute.id}
+                                    id={attribute.id}
+                                  />
+                                </>
                               ) : (
                                 <>
                                   <Field
+                                    as={Input}
                                     type={attribute.key_type}
                                     name={attribute.id}
+                                    id={attribute.id}
                                     required={attribute.required}
                                   />
-                                  <div className='form--error'>
-                                    <ErrorMessage name={attribute.id} />
-                                  </div>
+                                  <ErrorMessage
+                                    as={FormErrorMessage}
+                                    name={attribute.id}
+                                  />
                                 </>
                               )}
-                            </div>
+                              {attribute.description && (
+                                <FormHelperText>
+                                  {attribute.description}
+                                </FormHelperText>
+                              )}
+                            </FormControl>
                           )
                         })
                       : 'No profile form to fill yet'}
-                    {org && org.privacy_policy ? (
-                      <div>
-                        <h2>Privacy Policy</h2>
-                        <div
-                          style={{
-                            maxHeight: '100px',
-                            width: '80%',
-                            overflow: 'scroll',
-                            marginBottom: '1rem',
-                          }}
+                    {org && org.privacy_policy && (
+                      <VStack gap={2} alignItems='flex-start'>
+                        <Heading variant='sectionHead' as='h2'>
+                          Privacy Policy
+                        </Heading>
+                        <Container
+                          maxW='container.sm'
+                          overflow={'scroll'}
+                          maxH={'24vh'}
+                          mb={4}
+                          p={2}
+                          border='2px solid'
+                          borderColor='brand.50'
                         >
                           {org.privacy_policy.body}
-                        </div>
-                        <div
-                          style={{
-                            maxHeight: '100px',
-                            width: '80%',
-                            overflow: 'scroll',
-                          }}
+                        </Container>
+                        <Container
+                          maxW='container.sm'
+                          overflow={'scroll'}
+                          maxH={'24vh'}
+                          mb={4}
+                          p={2}
+                          border='2px solid'
+                          borderColor='brand.50'
                         >
-                          <input
-                            type='checkbox'
-                            checked={consentChecked}
-                            onChange={(e) =>
-                              this.setConsentChecked(e.target.checked)
-                            }
-                          />
-                          {org.privacy_policy.consentText}
-                          <span className='form--required'>*</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div />
+                          <FormControl isRequired>
+                            <FormLabel
+                              display='flex'
+                              alignItems={'center'}
+                              gap={2}
+                            >
+                              <Checkbox
+                                checked={consentChecked}
+                                onChange={(e) =>
+                                  this.setConsentChecked(e.target.checked)
+                                }
+                              />
+                              {org.privacy_policy.consentText}
+                            </FormLabel>
+                          </FormControl>
+                        </Container>
+                      </VStack>
                     )}
-                    {status && status.msg && <div>{status.msg}</div>}
+                    {status && status.msg && (
+                      <FormErrorMessage>{status.msg}</FormErrorMessage>
+                    )}
                     <Flex gap={4}>
                       <Button
                         type='submit'
@@ -434,7 +439,7 @@ export default class ProfileForm extends Component {
                         Cancel
                       </Button>
                     </Flex>
-                  </Form>
+                  </VStack>
                 )
               }}
             />

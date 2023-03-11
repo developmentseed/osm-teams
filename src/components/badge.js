@@ -21,6 +21,7 @@ export default function Badge({ color, dot, children }) {
       boxShadow={`0 0 0 1px rgba(${hexToRgb(color)}, 0.25)`}
       mr={2}
       overflow='hidden'
+      lineHeight={'initial'}
       _before={
         dot && {
           content: '""',

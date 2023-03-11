@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Field, Form, Formik, useFormikContext } from 'formik'
-import { Button } from '@chakra-ui/react'
+import { Flex, IconButton, Input } from '@chakra-ui/react'
+import { Search2Icon } from '@chakra-ui/icons'
 
 /**
  * This is a helper component to auto-submit search values after a timeout
@@ -43,27 +44,24 @@ const SearchInput = ({ onSearch, placeholder, 'data-cy': dataCy }) => {
       initialValues={{ search: '' }}
       onSubmit={({ search }) => onSearch(search)}
     >
-      <Form
-        className='form-control justify-start'
-        style={{ alignItems: 'stretch' }}
-      >
+      <Flex as={Form}>
         <Field
           data-cy={`${dataCy}-search-input`}
+          as={Input}
           type='search'
           name='search'
           id='search'
           placeholder={placeholder}
           style={{ width: '14rem' }}
         />
-        <Button
+        <IconButton
           data-cy={`${dataCy}-search-submit`}
           type='submit'
-          variant='solid'
-          useIcon='magnifier-left'
-          flat
+          icon={<Search2Icon />}
+          aria-label='Search'
         />
         <AutoSubmitSearch />
-      </Form>
+      </Flex>
     </Formik>
   )
 }

@@ -10,8 +10,13 @@ export default function InpageHeader({ children }) {
       pt={12}
       pb={24}
       mb={-12}
+      __css={{
+        a: { color: 'white' },
+      }}
     >
-      <Container maxW='container.xl'>{children}</Container>
+      <Container maxW='container.xl' color='white'>
+        {children}
+      </Container>
     </Box>
   )
 }

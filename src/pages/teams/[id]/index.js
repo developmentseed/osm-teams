@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import join from 'url-join'
-import { map, prop, contains, reverse, isNil } from 'ramda'
+import { map, prop, contains, reverse, assoc, isNil } from 'ramda'
 import dynamic from 'next/dynamic'
 import { getSession } from 'next-auth/react'
 import { withRouter } from 'next/router'
@@ -13,6 +13,7 @@ import {
   Flex,
   Stack,
 } from '@chakra-ui/react'
+
 import AddMemberForm from '../../../components/add-member-form'
 import ProfileModal from '../../../components/profile-modal'
 
@@ -24,8 +25,6 @@ import {
   joinTeam,
   assignModerator,
   removeModerator,
-  getTeamJoinInvitations,
-  createTeamJoinInvitation,
 } from '../../../lib/teams-api'
 import {
   getTeamProfile,
@@ -33,13 +32,12 @@ import {
   getUserTeamProfile,
 } from '../../../lib/profiles-api'
 import { getOrgStaff } from '../../../lib/org-api'
-import { toast } from 'react-toastify'
 import logger from '../../../lib/logger'
 import MembersTable from '../../../components/tables/members-table'
 import Link from 'next/link'
 import InpageHeader from '../../../components/inpage-header'
+import JoinLink from '../../../components/join-link'
 
-const APP_URL = process.env.APP_URL
 const Map = dynamic(() => import('../../../components/team-map'), {
   ssr: false,
 })
@@ -54,7 +52,6 @@ class Team extends Component {
     this.state = {
       profileInfo: [],
       profileUserId: '',
-      joinLink: null,
       loading: true,
       error: undefined,
     }
@@ -64,40 +61,7 @@ class Team extends Component {
 
   async componentDidMount() {
     this.getTeam()
-    this.getTeamJoinLink()
     this.setState({ session: await getSession() })
-  }
-
-  async getTeamJoinLink() {
-    const { id } = this.props
-    try {
-      const invitations = await getTeamJoinInvitations(id)
-      if (invitations.length) {
-        this.setState({
-          joinLink: join(
-            APP_URL,
-            'teams',
-            id,
-            'invitations',
-            invitations[0].id
-          ),
-        })
-      }
-    } catch (e) {
-      logger.error(e)
-      toast.error(e)
-    }
-  }
-
-  async createJoinLink() {
-    const { id } = this.props
-    try {
-      await createTeamJoinInvitation(id)
-      this.getTeamJoinLink()
-    } catch (e) {
-      logger.error(e)
-      toast.error(e)
-    }
   }
 
   async getTeam() {
@@ -248,7 +212,6 @@ class Team extends Component {
       teamProfile,
       teamModerators,
       orgOwners,
-      joinLink,
     } = this.state
 
     if (error) {
@@ -330,7 +293,7 @@ class Team extends Component {
       <Box as='main' mb={16}>
         <InpageHeader>
           <Flex
-            direction={['column', 'row']}
+            direction={['column', null, 'row']}
             justifyContent={'space-between'}
             gap={4}
           >
@@ -339,12 +302,7 @@ class Team extends Component {
               <Flex gap={[4, 8]}>
                 {team.hashtag && (
                   <Stack as='dl' spacing={1}>
-                    <Text
-                      fontFamily='mono'
-                      as='dt'
-                      fontSize='sm'
-                      textTransform={'uppercase'}
-                    >
+                    <Text as='dt' variant='overline'>
                       Hashtag
                     </Text>
                     <Text as='dd'>{team.hashtag}</Text>
@@ -352,16 +310,14 @@ class Team extends Component {
                 )}
                 {team.org && (
                   <Stack as='dl' spacing={1}>
-                    <Text
-                      fontFamily='mono'
-                      as='dt'
-                      fontSize='sm'
-                      textTransform={'uppercase'}
-                    >
+                    <Text as='dt' variant='overline'>
                       Organization
                     </Text>
                     <Text as='dd'>
-                      <Link href={`/organizations/${team.org.organization_id}`}>
+                      <Link
+                        href={`/organizations/${team.org.organization_id}`}
+                        style={{ textDecoration: 'underline' }}
+                      >
                         {team.org.name}
                       </Link>
                     </Text>
@@ -395,25 +351,34 @@ class Team extends Component {
                 )}
               </Flex>
             </Flex>
-            <Flex gap={4}>
-              {isMember ? (
-                <Button
-                  variant='solid'
-                  as={Link}
-                  href={`/teams/${team.id}/profile`}
-                >
-                  Edit Your Profile
-                </Button>
-              ) : (
-                ' '
-              )}
-              {isUserModerator ? (
-                <Button as={Link} href={`/teams/${team.id}/edit`}>
-                  Edit
-                </Button>
-              ) : (
-                ''
-              )}
+            <Flex direction='column' alignItems={['stretch', null, 'flex-end']}>
+              <Flex direction={['column', null, 'row']} gap={2}>
+                {isMember ? (
+                  <Button
+                    variant='outline'
+                    colorScheme='white'
+                    as={Link}
+                    href={`/teams/${team.id}/profile`}
+                  >
+                    Edit Your Profile
+                  </Button>
+                ) : (
+                  ' '
+                )}
+                {isUserModerator ? (
+                  <Button
+                    variant='outline'
+                    colorScheme='white'
+                    as={Link}
+                    href={`/teams/${team.id}/edit`}
+                  >
+                    Edit Team
+                  </Button>
+                ) : (
+                  ''
+                )}
+              </Flex>
+              {isUserModerator && <JoinLink id={team.id} />}
             </Flex>
           </Flex>
         </InpageHeader>
@@ -430,22 +395,6 @@ class Team extends Component {
               <Heading variant='sectionHead'>Location</Heading>
               {this.renderMap(team.location)}
             </Box>
-            {isUserModerator ? (
-              <div style={{ marginTop: '1rem' }}>
-                <Heading variant='sectionHead'>Join Link</Heading>
-                {joinLink ? (
-                  <fieldset style={{ borderColor: '#384A9E' }}>
-                    {joinLink}
-                  </fieldset>
-                ) : (
-                  <Button onClick={() => this.createJoinLink()}>
-                    Create Join Link
-                  </Button>
-                )}
-              </div>
-            ) : (
-              ''
-            )}
           </Box>
           {teamModerators.length ? (
             <Box as='section' layerStyle={'shadowed'}>

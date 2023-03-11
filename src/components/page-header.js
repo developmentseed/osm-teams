@@ -27,6 +27,7 @@ import NavLink from '../components/Link'
 
 const Links = [
   { url: '/teams', name: 'Explore' },
+  { url: '/about', name: 'About' },
   { url: '/developers', name: 'Developers' },
 ]
 
@@ -79,7 +80,7 @@ export default function PageHeader() {
             </NavLink>
             <HStack
               as={'nav'}
-              spacing={8}
+              spacing={4}
               display={{ base: 'none', md: 'flex' }}
             >
               {Links.map((link) => (
@@ -88,6 +89,7 @@ export default function PageHeader() {
                     as='a'
                     variant='outline'
                     textTransform={'lowercase'}
+                    size='sm'
                     _hover={{ background: 'brand.200', textDecoration: 'none' }}
                     sx={{
                       '.active&': {
@@ -106,6 +108,7 @@ export default function PageHeader() {
                   <Button
                     as='a'
                     variant='outline'
+                    size='sm'
                     textTransform={'lowercase'}
                     _hover={{ background: 'brand.200', textDecoration: 'none' }}
                     sx={{
