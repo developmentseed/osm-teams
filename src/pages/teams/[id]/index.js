@@ -234,6 +234,32 @@ class Team extends Component {
       })
     }
   }
+  async reverseGeocode(location) {
+    if (location === null) return
+    try {
+      let coords = JSON.parse(location).coordinates
+      const [lon, lat] = coords
+      const result = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`
+      )
+      if (!result.ok) throw new Error('Unable to geocode location')
+      const geoData = await result.json()
+      const {
+        address: { country, county, state, city },
+      } = await geoData
+      this.setState((prevState) => ({
+        team: {
+          ...prevState.team,
+          country: country,
+          county: county,
+          state: state,
+          city: city,
+        },
+      }))
+    } catch (e) {
+      logger.error(e)
+    }
+  }
 
   render() {
     const { team, error, teamProfile, teamMembers, orgOwners, joinLink } =
@@ -307,6 +333,7 @@ class Team extends Component {
         })
       }
     }
+    this.reverseGeocode(this.state.team.location)
 
     return (
       <Box as='main' mb={16}>
@@ -347,6 +374,21 @@ class Team extends Component {
                         {team.org.name}
                       </Link>
                     </Text>
+                  </Stack>
+                )}
+                {team.location && (
+                  <Stack as='dl' spacing={1}>
+                    <Text
+                      fontFamily='mono'
+                      as='dt'
+                      fontSize='sm'
+                      textTransform={'uppercase'}
+                    >
+                      Location
+                    </Text>
+                    <Text as='dd'>{`${team.city ?? team.state}, ${
+                      team.state
+                    }, ${team.country}`}</Text>
                   </Stack>
                 )}
                 {teamProfile &&
