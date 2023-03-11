@@ -58,15 +58,21 @@ function TableHead({ dataCy, columns, sort, setSort, onClick }) {
               borderBottom='4px solid var(--chakra-colors-brand-600)'
               cursor={sortable && 'pointer'}
               _hover={sortable && { fontWeight: 'bold', color: 'brand.500' }}
-              _first={[
-                null,
-                {
+              _first={{
+                base: {
                   position: 'sticky',
                   left: '0',
                   zIndex: '2',
+                  background: 'brand.50',
                   borderRight: '2px solid var(--chakra-colors-brand-100)',
                 },
-              ]}
+                md: {
+                  position: 'initial',
+                  left: 'initial',
+                  zIndex: 'initial',
+                  borderRight: 'none',
+                },
+              }}
             >
               {label || key}
               {sortable && sortIcon}
@@ -107,16 +113,21 @@ function Row({ columns, row, index, onRowClick, showRowNumber }) {
                 color: 'brand.500',
               }
             }
-            _first={[
-              null,
-              {
+            _first={{
+              base: {
                 position: 'sticky',
                 left: '0',
-                background: 'white',
                 zIndex: '2',
+                bg: 'white',
                 borderRight: '2px solid var(--chakra-colors-brand-100)',
               },
-            ]}
+              md: {
+                position: 'initial',
+                left: 'initial',
+                zIndex: 'initial',
+                borderRight: 'none',
+              },
+            }}
             key={`row-${index}-key-${key}`}
           >
             {item}
@@ -185,11 +196,14 @@ export default function Table({
     >
       <BaseTable
         data-cy={dataCy}
-        borderCollapse={['collapse', 'separate']}
-        borderSpacing='0'
         marginBottom={2}
         tableLayout='fixed'
-        whiteSpace='pre'
+        size='sm'
+        sx={{
+          whiteSpace: 'pre',
+          borderSpacing: '0',
+          borderCollapse: 'separate',
+        }}
       >
         <TableHead
           dataCy={dataCy}

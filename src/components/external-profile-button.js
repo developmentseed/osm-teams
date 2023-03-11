@@ -60,6 +60,7 @@ const ExternalProfileButton = ({ type, userId }) => {
       target='_blank'
       title={title}
       size='sm'
+      bg='white'
       variant='ghost'
     >
       <img

@@ -9,7 +9,7 @@ import { useFetchList } from '../../hooks/use-fetch-list'
 import ExternalProfileButton from '../external-profile-button'
 import Badge from '../badge'
 import { makeTitleCase } from '../../../app/lib/utils'
-import { Flex, useToken } from '@chakra-ui/react'
+import { Flex, useToken, Text } from '@chakra-ui/react'
 import { includes, map, prop, insert } from 'ramda'
 import { Button } from '@chakra-ui/react'
 const SCOREBOARD_URL = process.env.SCOREBOARD_URL
@@ -73,8 +73,16 @@ function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
   }
 
   let columns = [
-    { key: 'name', sortable: true },
-    { key: 'id', sortable: true },
+    {
+      key: 'name',
+      sortable: true,
+      render: ({ name, id }) => (
+        <Flex flexDir='column'>
+          <Text fontWeight='bold'>{name}</Text>
+          <Text>{id}</Text>
+        </Flex>
+      ),
+    },
     {
       key: 'role',
       label: 'role',
@@ -87,7 +95,7 @@ function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
     {
       key: 'External Profiles',
       render: ({ id, name }) => (
-        <Flex>
+        <Flex gap={1}>
           <ExternalProfileButton type='osm-profile' userId={name} />
           {SCOREBOARD_URL && (
             <ExternalProfileButton type='scoreboard' userId={id} />
