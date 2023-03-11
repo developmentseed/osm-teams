@@ -57,9 +57,7 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
           sortable: true,
           render: ({ name, id }) => (
             <Flex flexDir='column'>
-              <Text fontWeight='bold' color='brand.600'>
-                {name}
-              </Text>
+              <Text fontWeight='bold'>{name}</Text>
               <Text>{id}</Text>
             </Flex>
           ),
@@ -106,9 +104,7 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
           sortable: true,
           render: ({ name, id }) => (
             <Flex flexDir='column'>
-              <Text fontWeight='bold' color='brand.600'>
-                {name}
-              </Text>
+              <Text fontWeight='bold'>{name}</Text>
               <Text>{id}</Text>
             </Flex>
           ),

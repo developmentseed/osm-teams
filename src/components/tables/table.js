@@ -197,12 +197,15 @@ export default function Table({
       <BaseTable
         data-cy={dataCy}
         marginBottom={2}
-        tableLayout='fixed'
+        layout='fixed'
         size='sm'
+        width='initial'
         sx={{
-          whiteSpace: 'pre',
-          borderSpacing: '0',
-          borderCollapse: 'separate',
+          base: {
+            borderSpacing: '0',
+            borderCollapse: 'separate',
+          },
+          md: { borderCollapse: 'collapse' },
         }}
       >
         <TableHead
