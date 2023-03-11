@@ -2,7 +2,18 @@ import React, { Component } from 'react'
 import * as Yup from 'yup'
 import { Formik, Field, Form } from 'formik'
 import APIClient from '../../../../../../lib/api-client'
-import { Box, Button, Container, Flex, Heading } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Input,
+  Heading,
+  VStack,
+} from '@chakra-ui/react'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import join from 'url-join'
@@ -73,7 +84,15 @@ export default class EditBadgeAssignment extends Component {
 
   renderPageInner() {
     if (this.state.error) {
-      return <div>An unexpected error occurred, please try again later.</div>
+      return (
+        <Box as='main' mb={16}>
+          <InpageHeader>
+            <Heading color='white' size='xs'>
+              An unexpected error occurred, please try again later
+            </Heading>
+          </InpageHeader>
+        </Box>
+      )
     }
 
     if (!this.state.org && (!this.state.badge || !this.state.badges)) {
@@ -148,43 +167,51 @@ export default class EditBadgeAssignment extends Component {
               }}
               render={({ isSubmitting, values, errors }) => {
                 return (
-                  <Form>
-                    <dl>
-                      <dt>OSM User ID:</dt>
-                      <dd> {userId}</dd>
-                      {badge && (
-                        <>
-                          <dt>Badge:</dt>
-                          <dd>
-                            <Badge dot color={badge.color}>
-                              {badge.name}
-                            </Badge>
-                          </dd>
-                        </>
-                      )}
-                    </dl>
-                    <div className='form-control form-control__vertical'>
-                      <label htmlFor='assignedAt'>Assigned At (required)</label>
+                  <VStack as={Form} gap={2} alignItems='flex-start'>
+                    <FormControl>
+                      <FormLabel>OSM User ID:</FormLabel>
+                      <Input
+                        isReadOnly
+                        isDisabled
+                        color={'brand.600'}
+                        opacity='1 !important'
+                        value={userId}
+                      />
+                    </FormControl>
+                    {badge && (
+                      <FormControl>
+                        <FormLabel>Badge:</FormLabel>
+                        <Badge dot color={badge.color}>
+                          {badge.name}
+                        </Badge>
+                      </FormControl>
+                    )}
+                    <FormControl isRequired isInvalid={errors.assignedAt}>
+                      <FormLabel htmlFor='assignedAt'>Assigned At</FormLabel>
                       <Field
+                        as={Input}
                         name='assignedAt'
+                        id='assignedAt'
                         type='date'
                         value={values.assignedAt}
                       />
                       {errors.assignedAt && (
-                        <div className='form--error'>{errors.assignedAt}</div>
+                        <FormErrorMessage>{errors.assignedAt}</FormErrorMessage>
                       )}
-                    </div>
-                    <div className='form-control form-control__vertical'>
-                      <label htmlFor='validUntil'>Valid Until</label>
+                    </FormControl>
+                    <FormControl isInvalid={errors.validUntil}>
+                      <FormLabel htmlFor='validUntil'>Valid Until</FormLabel>
                       <Field
+                        as={Input}
                         name='validUntil'
+                        id='validUntil'
                         type='date'
                         value={values.validUntil}
                       />
                       {errors.validUntil && (
-                        <div className='form--error'>{errors.validUntil}</div>
+                        <FormErrorMessage>{errors.validUntil}</FormErrorMessage>
                       )}
-                    </div>
+                    </FormControl>
                     <Flex gap={4}>
                       <Button isDisabled={isSubmitting} type='submit'>
                         {badge ? 'Update' : 'Assign'}
@@ -197,80 +224,78 @@ export default class EditBadgeAssignment extends Component {
                         Return to Organization
                       </Button>
                     </Flex>
-                  </Form>
+                  </VStack>
                 )
               }}
             />
           </Box>
           {badge && (
-            <Box mb={8}>
-              <div>
-                {this.state.isDeleting ? (
-                  <Flex gap={4}>
-                    <Button
-                      onClick={() => {
-                        this.setState({
-                          isDeleting: false,
-                        })
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      colorScheme='red'
-                      variant='outline'
-                      onClick={async (e) => {
-                        e.preventDefault()
-                        try {
-                          await apiClient.delete(
-                            `/organizations/${orgId}/member/${userId}/badge/${badge.id}`
-                          )
-                          Router.push(join(URL, `/organizations/${orgId}`))
-                        } catch (error) {
-                          toast.error(
-                            `There was an error unassigning the badge. Please try again later.`
-                          )
-                          logger.error(error)
-                        }
-                      }}
-                    >
-                      Confirm Unassign
-                    </Button>
-                  </Flex>
-                ) : (
+            <Box
+              layerStyle='shadowed'
+              as='article'
+              borderColor='red.500'
+              boxShadow='4px 4px 0 0 var(--chakra-colors-red-500)'
+              display='flex'
+              flexDirection={'column'}
+              alignItems='flex-start'
+              gap={2}
+            >
+              <Heading
+                as='h2'
+                variant='sectionHead'
+                fontSize='md'
+                color='red.600'
+              >
+                Remove badge assignment
+              </Heading>
+              {this.state.isDeleting ? (
+                <Flex gap={4}>
                   <Button
-                    colorScheme='red'
-                    variant='outline'
-                    type='submit'
-                    onClick={async () => {
+                    onClick={() => {
                       this.setState({
-                        isDeleting: true,
+                        isDeleting: false,
                       })
                     }}
                   >
-                    Unassign this badge
+                    Cancel
                   </Button>
-                )}
-              </div>
+                  <Button
+                    colorScheme='red'
+                    variant='outline'
+                    onClick={async (e) => {
+                      e.preventDefault()
+                      try {
+                        await apiClient.delete(
+                          `/organizations/${orgId}/member/${userId}/badge/${badge.id}`
+                        )
+                        Router.push(join(URL, `/organizations/${orgId}`))
+                      } catch (error) {
+                        toast.error(
+                          `There was an error unassigning the badge. Please try again later.`
+                        )
+                        logger.error(error)
+                      }
+                    }}
+                  >
+                    Confirm Unassign
+                  </Button>
+                </Flex>
+              ) : (
+                <Button
+                  colorScheme='red'
+                  variant='outline'
+                  type='submit'
+                  onClick={async () => {
+                    this.setState({
+                      isDeleting: true,
+                    })
+                  }}
+                >
+                  Unassign this badge
+                </Button>
+              )}
             </Box>
           )}
-          {/* <style jsx>
-          {`
-            dl {
-              display: grid;
-              grid-template-columns: max-content 1fr;
-              gap: 0.25rem 1rem;
-            }
-
-            dt {
-              font-family: ${theme.typography.headingFontFamily};
-              text-transform: uppercase;
-            }
-            dd {
-              font-weight: ${theme.typography.baseFontSemiBold};
-            }
-          `}
-        </style> */}
         </Container>
       </Box>
     )

@@ -1,6 +1,13 @@
 import React from 'react'
 import { Formik, Field, Form } from 'formik'
-import { Button } from '@chakra-ui/react'
+import {
+  Button,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Textarea,
+  VStack,
+} from '@chakra-ui/react'
 
 function validateBody(value) {
   if (!value) return 'Body of privacy policy is required'
@@ -11,7 +18,7 @@ function validateConsentText(value) {
 }
 
 function renderError(text) {
-  return <div className='form--error'>{text}</div>
+  return <FormErrorMessage>{text}</FormErrorMessage>
 }
 
 function renderErrors(errors) {
@@ -36,39 +43,38 @@ export default function PrivacyPolicyForm({ initialValues, onSubmit }) {
         setStatus,
       }) => {
         return (
-          <Form>
-            <div className='form-control form-control__vertical'>
-              <label htmlFor='body'>
-                Body<span className='form--required'>*</span>
-              </label>
+          <VStack as={Form} alignItems='flex-start'>
+            <FormControl>
+              <FormLabel isRequired isInvalid={errors.body}>
+                Body
+              </FormLabel>
               <Field
                 cols={40}
                 rows={6}
-                component='textarea'
+                as={Textarea}
                 name='body'
+                id='body'
                 value={values.body}
                 required
                 className={errors.body ? 'form-error' : ''}
                 validate={validateBody}
               />
-            </div>
-            <div className='form-control form-control__vertical'>
-              <label htmlFor='consentText'>
-                Consent Text<span className='form--required'>*</span>
-              </label>
+            </FormControl>
+            <FormControl isRequired isInvalid={errors.consentText}>
+              <FormLabel>Consent Text</FormLabel>
               <Field
                 cols={40}
                 rows={6}
-                component='textarea'
+                as={Textarea}
                 name='consentText'
+                id='consentText'
                 value={values.consentText}
                 required
                 className={errors.consentText ? 'form-error' : ''}
                 validate={validateConsentText}
               />
-            </div>
-            <div className='form-control form-control__vertical'>
-              {status && status.errors && renderErrors(status.errors)}
+            </FormControl>
+            <FormControl>
               <Button
                 isDisabled={isSubmitting}
                 onClick={() => {
@@ -84,8 +90,9 @@ export default function PrivacyPolicyForm({ initialValues, onSubmit }) {
               >
                 Submit
               </Button>
-            </div>
-          </Form>
+              {status && status.errors && renderErrors(status.errors)}
+            </FormControl>
+          </VStack>
         )
       }}
     />
