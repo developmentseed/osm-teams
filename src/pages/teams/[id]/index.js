@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import join from 'url-join'
-import { map, prop, contains, reverse, assoc, isNil } from 'ramda'
+import { map, prop, contains, reverse, isNil } from 'ramda'
 import dynamic from 'next/dynamic'
 import { getSession } from 'next-auth/react'
 import { withRouter } from 'next/router'
@@ -41,6 +41,8 @@ import JoinLink from '../../../components/join-link'
 const Map = dynamic(() => import('../../../components/team-map'), {
   ssr: false,
 })
+
+const APP_URL = process.env.APP_URL
 
 class Team extends Component {
   static getInitialProps({ query }) {
@@ -205,14 +207,8 @@ class Team extends Component {
   }
 
   render() {
-    const {
-      team,
-      error,
-      isMember,
-      teamProfile,
-      teamModerators,
-      orgOwners,
-    } = this.state
+    const { team, error, isMember, teamProfile, teamModerators, orgOwners } =
+      this.state
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
