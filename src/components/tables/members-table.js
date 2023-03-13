@@ -9,9 +9,8 @@ import { useFetchList } from '../../hooks/use-fetch-list'
 import ExternalProfileButton from '../external-profile-button'
 import Badge from '../badge'
 import { makeTitleCase } from '../../../app/lib/utils'
-import { Flex, useToken, Text } from '@chakra-ui/react'
+import { Button, Flex, useToken, Text } from '@chakra-ui/react'
 import { includes, map, prop, insert } from 'ramda'
-import { Button } from '@chakra-ui/react'
 const SCOREBOARD_URL = process.env.SCOREBOARD_URL
 const HDYC_URL = process.env.HDYC_URL
 
