@@ -22,7 +22,9 @@ export default function TeamCreate({ staff }) {
       <Container maxW='container.xl' as='section'>
         <Box as='section' layerStyle='shadowed'>
           <EditTeamForm
-            initialValues={{ location: undefined }}
+            initialValues={{
+              location: `{"type":"Point","coordinates":[-73.968056,40.749444]}`,
+            }}
             isCreateForm
             staff={staff}
             onSubmit={async (values, actions) => {

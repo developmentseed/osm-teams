@@ -8,7 +8,7 @@ export default class FormMap extends Component {
     super(props)
     this.map = React.createRef()
     this.state = {
-      zoom: 15,
+      zoom: 10,
     }
   }
 
