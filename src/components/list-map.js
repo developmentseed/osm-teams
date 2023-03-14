@@ -1,5 +1,9 @@
 import React, { Component, createRef } from 'react'
-import { Map, CircleMarker, TileLayer } from 'react-leaflet'
+import { Map, CircleMarker, TileLayer, Tooltip } from 'react-leaflet'
+import Router from 'next/router'
+import join from 'url-join'
+
+const APP_URL = process.env.APP_URL
 
 export default class ListMap extends Component {
   constructor(props) {
@@ -12,9 +16,14 @@ export default class ListMap extends Component {
       <CircleMarker
         key={marker.id}
         center={marker.center}
-        color='blue'
+        color='var(--chakra-colors-brand-500)'
         radius={2}
-      />
+        onclick={() => {
+          Router.push(join(APP_URL, `/teams/${marker.id}`))
+        }}
+      >
+        <Tooltip>{marker.name}</Tooltip>
+      </CircleMarker>
     ))
 
     return (

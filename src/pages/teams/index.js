@@ -153,11 +153,12 @@ export default class TeamList extends Component {
     const { teams } = this.state
     if (!teams) return null
 
-    const teamLocations = map(pick(['location', 'id']), teams)
+    const teamLocations = map(pick(['location', 'id', 'name']), teams)
     const locations = teamLocations.filter(({ location }) => !!location) // reject nulls
     const centers = map(
-      ({ location, id }) => ({
+      ({ location, id, name }) => ({
         id,
+        name,
         center: JSON.parse(location).coordinates.reverse(),
       }),
       locations
