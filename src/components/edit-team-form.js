@@ -83,13 +83,13 @@ export default function EditTeamForm({
         }
         if (orgTeamTags.length > 0) {
           extraOrgTeamFields = orgTeamTags.map(
-            ({ id, name, required, description }) => {
+            ({ id, name, key_type, required, description }) => {
               return (
                 <FormControl isRequired={required} key={`extra-tag-${id}`}>
                   <FormLabel htmlFor={`extra-tag-${id}`}>{name}</FormLabel>
                   <Field
                     as={Input}
-                    type='text'
+                    type={key_type}
                     name={`tags.key-${id}`}
                     id={`extra-tag-${id}`}
                     required={required}
@@ -106,13 +106,13 @@ export default function EditTeamForm({
 
         if (teamTags.length > 0) {
           extraTeamFields = teamTags.map(
-            ({ id, name, required, description }) => {
+            ({ id, name, key_type, required, description }) => {
               return (
                 <FormControl isRequired={required} key={`extra-tag-${id}`}>
                   <FormLabel htmlFor={`extra-tag-${id}`}>{name}</FormLabel>
                   <Field
                     as={Input}
-                    type='text'
+                    type={key_type}
                     name={`tags.key-${id}`}
                     id={`extra-tag-${id}`}
                     required={required}
@@ -130,7 +130,7 @@ export default function EditTeamForm({
         return (
           <Form>
             <VStack alignItems={'flex-start'}>
-              <Heading variant='sectionHead'>Details</Heading>
+              <Heading variant='sectionHead'>Team Details</Heading>
               <FormControl isRequired isInvalid={errors.name}>
                 <FormLabel htmlFor='name'>Name</FormLabel>
                 <Field
@@ -223,7 +223,7 @@ export default function EditTeamForm({
               )}
               {extraOrgTeamFields.length > 0 ? (
                 <>
-                  <Heading as='h3' size='sm'>
+                  <Heading as='h3' size='sm' variant='sectionHead'>
                     Organization Attributes
                   </Heading>
                   {extraOrgTeamFields}
@@ -233,7 +233,7 @@ export default function EditTeamForm({
               )}
               {extraTeamFields.length > 0 ? (
                 <>
-                  <Heading as='h3' size='sm'>
+                  <Heading as='h3' size='sm' variant='sectionHead'>
                     Other Team Attributes
                   </Heading>
                   {extraTeamFields}
