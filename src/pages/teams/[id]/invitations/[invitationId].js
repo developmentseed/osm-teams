@@ -8,9 +8,10 @@ import { getServerSession } from 'next-auth'
 import * as TeamInvitation from '../../../../models/team-invitation'
 import * as Team from '../../../../models/team'
 import logger from '../../../../lib/logger'
-import { Box, Button, Heading } from '@chakra-ui/react'
+import { Box, Button, ButtonGroup, Flex, Heading, Text } from '@chakra-ui/react'
 import { authOptions } from '../../../api/auth/[...nextauth]'
 import InpageHeader from '../../../../components/inpage-header'
+import Link from 'next/link'
 
 const APP_URL = process.env.APP_URL
 
@@ -31,8 +32,8 @@ export default function TeamInvitationPage({
     // only redirect on successful invite acceptance
     if (!errorCode) {
       setTimeout(() => {
-        router.push(join(APP_URL, `/teams/${teamId}`))
-      }, 3000)
+        router.push(join(APP_URL, `/teams/${teamId}/profile`))
+      }, 5000)
     }
   }, [])
 
@@ -54,11 +55,35 @@ export default function TeamInvitationPage({
   }
 
   return (
-    <Box as='main' mb={16}>
+    <Box as='main'>
       <InpageHeader>
-        <Heading color='white' data-cy='invite-accepted'>
+        <Heading color='white' data-cy='invite-accepted' size='3xl'>
           Invitation accepted successfully
         </Heading>
+        <Text fontSize='lg'>Redirecting to your team profile...</Text>
+        <Flex flexDirection={'column'} my={16} gap={4}>
+          <Text fontSize='sm'>If you are not redirected, click to</Text>
+          <ButtonGroup gap={2}>
+            <Button
+              variant='outline'
+              colorScheme='white'
+              as={Link}
+              size='sm'
+              href={`/teams/${teamId}/profile`}
+            >
+              Edit your team profile
+            </Button>
+            <Button
+              variant='outline'
+              colorScheme='white'
+              as={Link}
+              size='sm'
+              href={`/teams/${teamId}`}
+            >
+              View team page
+            </Button>
+          </ButtonGroup>
+        </Flex>
       </InpageHeader>
     </Box>
   )
