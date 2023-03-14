@@ -44,6 +44,7 @@ export default function EditTeamForm({
   initialValues,
   onSubmit,
   staff,
+  team,
   isCreateForm,
   orgTeamTags = [],
   teamTags = [],
@@ -224,7 +225,7 @@ export default function EditTeamForm({
               {extraOrgTeamFields.length > 0 ? (
                 <>
                   <Heading as='h3' size='sm' variant='sectionHead'>
-                    Organization Attributes
+                    {team.org?.name} Details
                   </Heading>
                   {extraOrgTeamFields}
                 </>
