@@ -225,7 +225,7 @@ class Team extends Component {
 
     if (!team) return null
 
-    const userId = this.state.session?.user_id
+    const userId = +this.state.session?.user_id
     const members = map(prop('id'), teamMembers.members)
     const moderators = map(prop('osm_id'), teamMembers.moderators)
 
@@ -260,7 +260,7 @@ class Team extends Component {
             this.addModerator(this.state.profileMeta.id)
           },
         })
-      } else {
+      } else if (moderators.length > 1) {
         profileActions.push({
           name: 'Remove moderator',
           onClick: async () => {
