@@ -104,7 +104,7 @@ export default function PageHeader() {
                 </NavLink>
               ))}
               {isAuthenticated && (
-                <NavLink href={'/profile'} passHref legacyBehavior>
+                <NavLink href={'/dashboard'} passHref legacyBehavior>
                   <Button
                     as='a'
                     variant='outline'
@@ -175,7 +175,7 @@ export default function PageHeader() {
                     <MenuDivider />
 
                     <MenuItem bg='inherit'>
-                      <NavLink href='/profile'>
+                      <NavLink href='/dashboard'>
                         <span>Dashboard</span>
                       </NavLink>
                     </MenuItem>
@@ -229,7 +229,7 @@ export default function PageHeader() {
                   ))}
                   {isAuthenticated && (
                     <ListItem>
-                      <NavLink href={'/profile'}>
+                      <NavLink href={'/dashboard'}>
                         <span>Dashboard</span>
                       </NavLink>
                     </ListItem>

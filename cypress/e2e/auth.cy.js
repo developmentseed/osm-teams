@@ -15,7 +15,7 @@ describe('Check protected routes', () => {
     '/organizations/1/edit',
     '/organizations/1/profile',
     '/organizations/create',
-    '/profile',
+    '/dashboard',
   ]
 
   protectedRoutes.forEach((testRoute) => {
