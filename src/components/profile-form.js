@@ -158,6 +158,7 @@ export default class ProfileForm extends Component {
       this.setState({
         error: e,
         loading: false,
+        returnUrl: '/',
       })
     }
   }
@@ -172,6 +173,7 @@ export default class ProfileForm extends Component {
       returnUrl,
       consentChecked,
       loading,
+      error,
     } = this.state
     profileValues = profileValues || {}
 
@@ -180,6 +182,21 @@ export default class ProfileForm extends Component {
         <Box as='main' mb={16}>
           <InpageHeader>
             <Heading color='white'>Loading...</Heading>
+          </InpageHeader>
+        </Box>
+      )
+    }
+    if (error) {
+      return (
+        <Box as='main' mb={16}>
+          <InpageHeader>
+            <Heading color='white'>Error loading team...</Heading>
+            <Text py={4}>
+              This team can not be loaded, or you don&apos;t have permission to
+              access this team. Contact the team moderator to ensure you have
+              the correct permissions.
+            </Text>
+            <Link href='/dashboard'>← Return to your dashboard</Link>
           </InpageHeader>
         </Box>
       )
