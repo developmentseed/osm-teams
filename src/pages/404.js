@@ -8,7 +8,7 @@ export default class UhOh extends Component {
       <Box as='main' mb={8}>
         <InpageHeader>
           <Heading color='white' mb={2}>
-            Page Not Found
+            404 - Page Not Found
           </Heading>
         </InpageHeader>
         <Container maxW='container.xl' as='section'>
