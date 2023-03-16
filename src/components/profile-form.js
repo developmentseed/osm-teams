@@ -158,6 +158,7 @@ export default class ProfileForm extends Component {
       this.setState({
         error: e,
         loading: false,
+        returnUrl: '/',
       })
     }
   }
@@ -172,6 +173,7 @@ export default class ProfileForm extends Component {
       returnUrl,
       consentChecked,
       loading,
+      error,
     } = this.state
     profileValues = profileValues || {}
 
@@ -180,6 +182,21 @@ export default class ProfileForm extends Component {
         <Box as='main' mb={16}>
           <InpageHeader>
             <Heading color='white'>Loading...</Heading>
+          </InpageHeader>
+        </Box>
+      )
+    }
+    if (error) {
+      return (
+        <Box as='main' mb={16}>
+          <InpageHeader>
+            <Heading color='white'>Error loading team...</Heading>
+            <Text py={4}>
+              This team can not be loaded, or you don&apos;t have permission to
+              access this team. Contact the team moderator to ensure you have
+              the correct permissions.
+            </Text>
+            <Link href='/dashboard'>← Return to your dashboard</Link>
           </InpageHeader>
         </Box>
       )
@@ -331,52 +348,54 @@ export default class ProfileForm extends Component {
                     <Heading as='h2' variant='sectionHead'>
                       Details for <b>{teamName}</b>
                     </Heading>
-                    {memberAttributes.length > 0
-                      ? memberAttributes.map((attribute) => {
-                          return (
-                            <FormControl
-                              key={attribute.name}
-                              isRequired={attribute.required}
-                            >
-                              <FormLabel htmlFor={attribute.id}>
-                                {attribute.name}
-                              </FormLabel>
+                    {memberAttributes.length > 0 ? (
+                      memberAttributes.map((attribute) => {
+                        return (
+                          <FormControl
+                            key={attribute.name}
+                            isRequired={attribute.required}
+                          >
+                            <FormLabel htmlFor={attribute.id}>
+                              {attribute.name}
+                            </FormLabel>
 
-                              {attribute.key_type === 'gender' ? (
-                                <>
-                                  <FormLabel htmlFor={attribute.id}>
-                                    Type in or select your gender from the
-                                    drop-down.
-                                  </FormLabel>
-                                  <GenderSelectField
-                                    name={attribute.id}
-                                    id={attribute.id}
-                                  />
-                                </>
-                              ) : (
-                                <>
-                                  <Field
-                                    as={Input}
-                                    type={attribute.key_type}
-                                    name={attribute.id}
-                                    id={attribute.id}
-                                    required={attribute.required}
-                                  />
-                                  <ErrorMessage
-                                    as={FormErrorMessage}
-                                    name={attribute.id}
-                                  />
-                                </>
-                              )}
-                              {attribute.description && (
-                                <FormHelperText>
-                                  {attribute.description}
-                                </FormHelperText>
-                              )}
-                            </FormControl>
-                          )
-                        })
-                      : 'No profile form to fill yet'}
+                            {attribute.key_type === 'gender' ? (
+                              <>
+                                <FormLabel htmlFor={attribute.id}>
+                                  Type in or select your gender from the
+                                  drop-down.
+                                </FormLabel>
+                                <GenderSelectField
+                                  name={attribute.id}
+                                  id={attribute.id}
+                                />
+                              </>
+                            ) : (
+                              <>
+                                <Field
+                                  as={Input}
+                                  type={attribute.key_type}
+                                  name={attribute.id}
+                                  id={attribute.id}
+                                  required={attribute.required}
+                                />
+                                <ErrorMessage
+                                  as={FormErrorMessage}
+                                  name={attribute.id}
+                                />
+                              </>
+                            )}
+                            {attribute.description && (
+                              <FormHelperText>
+                                {attribute.description}
+                              </FormHelperText>
+                            )}
+                          </FormControl>
+                        )
+                      })
+                    ) : (
+                      <p>This team has not requested any profile details</p>
+                    )}
                     {org && org.privacy_policy && (
                       <VStack gap={2} alignItems='flex-start'>
                         <Heading variant='sectionHead' as='h2'>
@@ -423,7 +442,7 @@ export default class ProfileForm extends Component {
                     {status && status.msg && (
                       <FormErrorMessage>{status.msg}</FormErrorMessage>
                     )}
-                    <Flex gap={4}>
+                    <Flex gap={4} mt={4}>
                       <Button
                         type='submit'
                         isDisabled={!consentChecked || isSubmitting}

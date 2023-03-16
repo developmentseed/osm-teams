@@ -14,6 +14,7 @@ import {
   Checkbox,
   VStack,
   Flex,
+  Text,
 } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 import { uniqBy, prop } from 'ramda'
@@ -45,6 +46,7 @@ export default function EditTeamForm({
   initialValues,
   onSubmit,
   staff,
+  team,
   isCreateForm,
   orgTeamTags = [],
   teamTags = [],
@@ -85,13 +87,13 @@ export default function EditTeamForm({
         }
         if (orgTeamTags.length > 0) {
           extraOrgTeamFields = orgTeamTags.map(
-            ({ id, name, required, description }) => {
+            ({ id, name, key_type, required, description }) => {
               return (
                 <FormControl isRequired={required} key={`extra-tag-${id}`}>
                   <FormLabel htmlFor={`extra-tag-${id}`}>{name}</FormLabel>
                   <Field
                     as={Input}
-                    type='text'
+                    type={key_type}
                     name={`tags.key-${id}`}
                     id={`extra-tag-${id}`}
                     required={required}
@@ -108,13 +110,13 @@ export default function EditTeamForm({
 
         if (teamTags.length > 0) {
           extraTeamFields = teamTags.map(
-            ({ id, name, required, description }) => {
+            ({ id, name, key_type, required, description }) => {
               return (
                 <FormControl isRequired={required} key={`extra-tag-${id}`}>
                   <FormLabel htmlFor={`extra-tag-${id}`}>{name}</FormLabel>
                   <Field
                     as={Input}
-                    type='text'
+                    type={key_type}
                     name={`tags.key-${id}`}
                     id={`extra-tag-${id}`}
                     required={required}
@@ -131,8 +133,8 @@ export default function EditTeamForm({
 
         return (
           <Form>
-            <VStack alignItems={'flex-start'}>
-              <Heading variant='sectionHead'>Details</Heading>
+            <VStack alignItems={'flex-start'} spacing={4}>
+              <Heading variant='sectionHead'>Team Details</Heading>
               <FormControl isRequired isInvalid={errors.name}>
                 <FormLabel htmlFor='name'>Name</FormLabel>
                 <Field
@@ -226,18 +228,29 @@ export default function EditTeamForm({
                 </FormControl>
               )}
               {extraOrgTeamFields.length > 0 ? (
-                <>
-                  <Heading as='h3' size='sm'>
-                    Organization Attributes
+                <Flex
+                  flexDir='column'
+                  alignItems='flex-start'
+                  border={'1px'}
+                  borderRadius='base'
+                  p={8}
+                  borderColor='brand.50'
+                >
+                  <Heading as='h3' size='sm' variant='sectionHead'>
+                    {team.org?.name} Details
                   </Heading>
+                  <Text fontSize='sm' pb={4}>
+                    Organization {team.org?.name} requests the following
+                    additional details
+                  </Text>
                   {extraOrgTeamFields}
-                </>
+                </Flex>
               ) : (
                 ''
               )}
               {extraTeamFields.length > 0 ? (
                 <>
-                  <Heading as='h3' size='sm'>
+                  <Heading as='h3' size='sm' variant='sectionHead'>
                     Other Team Attributes
                   </Heading>
                   {extraTeamFields}

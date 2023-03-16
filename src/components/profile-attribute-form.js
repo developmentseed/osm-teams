@@ -27,7 +27,7 @@ const defaultValues = {
   description: '',
   visibility: 'team',
   required: [],
-  key_type: 'text',
+  key_type: '',
 }
 
 export default function ProfileAttributeForm({
@@ -76,10 +76,8 @@ export default function ProfileAttributeForm({
 
         return (
           <VStack as={Form} alignItems='flex-start'>
-            <FormControl>
-              <FormLabel htmlFor='name' isRequired isInvalid={errors.name}>
-                Name of attribute
-              </FormLabel>
+            <FormControl isRequired isInvalid={errors.name}>
+              <FormLabel htmlFor='name'>Name of attribute</FormLabel>
               <Field
                 as={Input}
                 type='text'
@@ -87,6 +85,7 @@ export default function ProfileAttributeForm({
                 id='name'
                 placeholder='Name of the attribute'
                 value={values.name}
+                required
               />
               {errors.name ? (
                 <FormErrorMessage>{errors.name}</FormErrorMessage>
@@ -117,7 +116,7 @@ export default function ProfileAttributeForm({
                 <option value='public'>Public</option>
               </Field>
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel>Type:</FormLabel>
               <Field
                 as={Select}
@@ -125,6 +124,8 @@ export default function ProfileAttributeForm({
                 name='key_type'
                 id='key_type'
                 value={values.key_type}
+                isDisabled={values.key_type}
+                placeholder='Select type'
               >
                 <option value='text'>Text</option>
                 <option value='number'>Number</option>

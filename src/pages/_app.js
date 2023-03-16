@@ -13,6 +13,7 @@ import { SessionProvider } from 'next-auth/react'
 
 import theme from '../styles/theme'
 import PageHeader from '../components/page-header'
+import ErrorBoundary from '../components/error-boundary'
 const BASE_PATH = process.env.BASE_PATH || ''
 
 export default function App({
@@ -36,7 +37,9 @@ export default function App({
           padding='0'
         >
           <PageHeader />
-          <Component {...pageProps} />
+          <ErrorBoundary>
+            <Component {...pageProps} />
+          </ErrorBoundary>
         </Box>
         <ToastContainer position='bottom-right' />
       </SessionProvider>

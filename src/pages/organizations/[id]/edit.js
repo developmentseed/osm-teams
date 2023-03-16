@@ -52,9 +52,9 @@ export default class OrgEdit extends Component {
     try {
       const res = await destroyOrg(id)
       if (res.ok) {
-        Router.push(join(APP_URL, `/profile`))
+        Router.push(join(APP_URL, `/dashboard`))
       } else {
-        throw new Error('Could not delete team')
+        throw new Error('Could not delete organization')
       }
     } catch (e) {
       logger.error(e)

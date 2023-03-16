@@ -183,6 +183,7 @@ export default class TeamEdit extends Component {
               profileValues={profileValues}
               teamTags={teamAttributes}
               orgTeamTags={orgTeamAttributes}
+              team={team}
               onSubmit={async (values, actions) => {
                 try {
                   let tags = Object.keys(values.tags).map((key) => {
