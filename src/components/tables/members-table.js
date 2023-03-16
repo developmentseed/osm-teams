@@ -23,6 +23,7 @@ import Badge from '../badge'
 import { makeTitleCase } from '../../../app/lib/utils'
 import { includes, map, prop, insert, append, contains } from 'ramda'
 import { IoEllipsisHorizontal } from 'react-icons/io5'
+import { InfoOutlineIcon } from '@chakra-ui/icons'
 
 const SCOREBOARD_URL = process.env.SCOREBOARD_URL
 const HDYC_URL = process.env.HDYC_URL
@@ -108,11 +109,24 @@ function MembersTable({
             fontWeight='bold'
             fontFamily={'body'}
             as='a'
+            display='flex'
+            gap={1}
             onClick={() => onUsernameClick(user)}
             _hover={{ cursor: 'pointer' }}
             title='Display user profile'
+            data-component-name='username'
           >
             {user.name}
+            <InfoOutlineIcon
+              opacity={0}
+              transition='opacity 0.12s ease-in'
+              sx={{
+                '[data-component-name="username"]:hover &': {
+                  opacity: 'initial',
+                },
+              }}
+              alignSelf='center'
+            />
           </Text>
           <Text>{user.id}</Text>
         </Flex>
@@ -212,7 +226,8 @@ function MembersTable({
             as={IconButton}
             size='sm'
             variant='ghost'
-            aria-label='user menu'
+            aria-label='User actions menu'
+            title='Display user actions menu'
             icon={<IoEllipsisHorizontal />}
           />
           <MenuList>
