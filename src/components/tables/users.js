@@ -3,15 +3,17 @@ import join from 'url-join'
 import Table from './table'
 import Badge from '../badge'
 import {
-  Button,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
   useToken,
   IconButton,
+  Text,
+  Flex,
 } from '@chakra-ui/react'
 import { IoEllipsisHorizontal } from 'react-icons/io5'
+import { InfoOutlineIcon } from '@chakra-ui/icons'
 import { useFetchList } from '../../hooks/use-fetch-list'
 import { useState } from 'react'
 import { contains, append } from 'ramda'
@@ -84,16 +86,34 @@ function UsersTable({
           key: 'name',
           sortable: true,
           render: (user) => (
-            <Button
-              size='md'
-              variant='link'
-              onClick={() => onUsernameClick(user)}
-            >
-              {user.name}
-            </Button>
+            <Flex flexDir='column'>
+              <Text
+                fontWeight='bold'
+                fontFamily={'body'}
+                as='a'
+                display='flex'
+                gap={1}
+                onClick={() => onUsernameClick(user)}
+                _hover={{ cursor: 'pointer' }}
+                title='Display user profile'
+                data-component-name='username'
+              >
+                {user.name}
+                <InfoOutlineIcon
+                  opacity={0}
+                  transition='opacity 0.12s ease-in'
+                  sx={{
+                    '[data-component-name="username"]:hover &': {
+                      opacity: 'initial',
+                    },
+                  }}
+                  alignSelf='center'
+                />
+              </Text>
+              <Text color='blackAlpha.600'>{user.id}</Text>
+            </Flex>
           ),
         },
-        { key: 'id', label: 'OSM ID', sortable: true },
         {
           key: 'badges',
           render: ({ badges }) => (
@@ -116,14 +136,33 @@ function UsersTable({
           key: 'External Profiles',
           render: ({ id, name }) => (
             <>
-              <ExternalProfileButton type='osm-profile' userId={name} />
+              <ExternalProfileButton
+                type='osm-profile'
+                userId={name}
+                title='Visit OSM profile'
+              />
               {SCOREBOARD_URL && (
-                <ExternalProfileButton type='scoreboard' userId={id} />
+                <ExternalProfileButton
+                  type='scoreboard'
+                  userId={id}
+                  title='Visit Scoreboard profile'
+                />
               )}
-              {HDYC_URL && <ExternalProfileButton type='hdyc' userId={name} />}
-              <ExternalProfileButton type='osmcha' userId={name} />
+              {HDYC_URL && (
+                <ExternalProfileButton
+                  type='hdyc'
+                  userId={name}
+                  title='Visit HDYC profile'
+                />
+              )}
+              <ExternalProfileButton
+                type='osmcha'
+                userId={name}
+                title='Visit OSMCha profile'
+              />
             </>
           ),
+          alignment: 'center',
         },
       ]
       break
@@ -135,16 +174,34 @@ function UsersTable({
           key: 'name',
           sortable: true,
           render: (user) => (
-            <Button
-              size='md'
-              variant='link'
-              onClick={() => onUsernameClick(user)}
-            >
-              {user.name}
-            </Button>
+            <Flex flexDir='column'>
+              <Text
+                fontWeight='bold'
+                fontFamily={'body'}
+                as='a'
+                display='flex'
+                gap={1}
+                onClick={() => onUsernameClick(user)}
+                _hover={{ cursor: 'pointer' }}
+                title='Display user profile'
+                data-component-name='username'
+              >
+                {user.name}
+                <InfoOutlineIcon
+                  opacity={0}
+                  transition='opacity 0.12s ease-in'
+                  sx={{
+                    '[data-component-name="username"]:hover &': {
+                      opacity: 'initial',
+                    },
+                  }}
+                  alignSelf='center'
+                />
+              </Text>
+              <Text color='blackAlpha.600'>{user.id}</Text>
+            </Flex>
           ),
         },
-        { key: 'id', label: 'OSM ID', sortable: true },
         {
           key: 'type',
           label: 'role',
@@ -159,14 +216,33 @@ function UsersTable({
           key: 'External Profiles',
           render: ({ id, name }) => (
             <>
-              <ExternalProfileButton type='osm-profile' userId={name} />
+              <ExternalProfileButton
+                type='osm-profile'
+                userId={name}
+                title='Visit OSM profile'
+              />
               {SCOREBOARD_URL && (
-                <ExternalProfileButton type='scoreboard' userId={id} />
+                <ExternalProfileButton
+                  type='scoreboard'
+                  userId={id}
+                  title='Visit Scoreboard profile'
+                />
               )}
-              {HDYC_URL && <ExternalProfileButton type='hdyc' userId={name} />}
-              <ExternalProfileButton type='osmcha' userId={name} />
+              {HDYC_URL && (
+                <ExternalProfileButton
+                  type='hdyc'
+                  userId={name}
+                  title='Visit HDYC profile'
+                />
+              )}
+              <ExternalProfileButton
+                type='osmcha'
+                userId={name}
+                title='Visit OSMCha profile'
+              />
             </>
           ),
+          alignment: 'center',
         },
       ]
       break
@@ -272,6 +348,7 @@ function UsersTable({
             </Menu>
           )
         },
+        alignment: 'center',
       },
       columns
     )
