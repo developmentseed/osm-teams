@@ -382,7 +382,7 @@ export default class ProfileForm extends Component {
                             </div>
                           )
                         })
-                      : 'No profile form to fill yet'}
+                      : 'This team has not requested any profile details'}
                     {org && org.privacy_policy ? (
                       <div>
                         <h2>Privacy Policy</h2>
@@ -418,7 +418,7 @@ export default class ProfileForm extends Component {
                       <div />
                     )}
                     {status && status.msg && <div>{status.msg}</div>}
-                    <Flex gap={4}>
+                    <Flex gap={4} mt={4}>
                       <Button
                         type='submit'
                         isDisabled={!consentChecked || isSubmitting}
