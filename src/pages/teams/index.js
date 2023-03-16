@@ -153,11 +153,12 @@ export default class TeamList extends Component {
     const { teams } = this.state
     if (!teams) return null
 
-    const teamLocations = map(pick(['location', 'id']), teams)
+    const teamLocations = map(pick(['location', 'id', 'name']), teams)
     const locations = teamLocations.filter(({ location }) => !!location) // reject nulls
     const centers = map(
-      ({ location, id }) => ({
+      ({ location, id, name }) => ({
         id,
+        name,
         center: JSON.parse(location).coordinates.reverse(),
       }),
       locations
@@ -208,7 +209,7 @@ export default class TeamList extends Component {
             id='map-bounds-filter'
             type='checkbox'
             colorScheme={'brand'}
-            checked={searchOnMapMove}
+            isChecked={searchOnMapMove}
             onChange={(e) => this.setSearchOnMapMove(e)}
           >
             Filter teams by map

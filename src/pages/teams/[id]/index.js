@@ -145,12 +145,12 @@ class Team extends Component {
 
   renderMap(location) {
     if (!location) {
-      return <div>No location specified</div>
+      return
     }
     let centerGeojson = location
     let center = reverse(JSON.parse(centerGeojson).coordinates)
 
-    return <Map marker={{ center }} style={{ height: '200px' }} />
+    return <Map marker={{ center }} style={{ height: '260px' }} />
   }
 
   async addModerator(osmId) {
@@ -395,13 +395,12 @@ class Team extends Component {
               </SimpleGrid>
             </Box>
           )}
-
-          <Box my={8}>
+          {team.location && (
             <Box as='section' layerStyle='shadowed'>
               <Heading variant='sectionHead'>Location</Heading>
               {this.renderMap(team.location)}
             </Box>
-          </Box>
+          )}
           <Box as='section' layerStyle={'shadowed'}>
             {memberRows.length > 0 ? (
               <Box mb={2} data-cy='team-members-section'>

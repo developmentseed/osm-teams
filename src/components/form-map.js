@@ -2,13 +2,14 @@ import React, { Component } from 'react'
 import { Map, CircleMarker, TileLayer } from 'react-leaflet'
 import { reverse } from 'ramda'
 import Geocoder from 'leaflet-control-geocoder'
+import 'leaflet-gesture-handling'
 
 export default class FormMap extends Component {
   constructor(props) {
     super(props)
     this.map = React.createRef()
     this.state = {
-      zoom: 15,
+      zoom: 10,
     }
   }
 
@@ -51,6 +52,7 @@ export default class FormMap extends Component {
           this.setZoom(zoom)
           this.props.onChange(this.props.name, toGeojson)
         }}
+        gestureHandling={true}
       >
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
