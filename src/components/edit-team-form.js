@@ -13,6 +13,7 @@ import {
   Select,
   Checkbox,
   VStack,
+  Flex,
 } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 import { uniqBy, prop } from 'ramda'
@@ -50,6 +51,7 @@ export default function EditTeamForm({
   profileValues,
 }) {
   const [orgTeam, setOrgTeam] = useState(false)
+  const [hasLocation, setHasLocation] = useState(initialValues.location)
   if (profileValues) {
     initialValues.tags = {}
     profileValues.forEach(({ id, value }) => {
@@ -192,18 +194,20 @@ export default function EditTeamForm({
                 </FormHelperText>
               </FormControl>
               {staff && isCreateForm && (
-                <FormControl>
-                  <FormLabel htmlFor='orgTeam-checkbox'>
+                <FormControl pt={4}>
+                  <Flex alignItems='center' gap={2}>
                     <Checkbox
                       id='orgTeam-checkbox'
                       name='orgTeam-checkbox'
                       type='checkbox'
-                      checked={orgTeam}
+                      isChecked={orgTeam}
                       style={{ minWidth: '1rem' }}
                       onChange={(e) => setOrgTeam(e.target.checked)}
                     />
-                    This team belongs to an organization
-                  </FormLabel>
+                    <FormLabel htmlFor='orgTeam-checkbox' m={0}>
+                      This team belongs to an organization
+                    </FormLabel>
+                  </Flex>
                   {orgTeam && (
                     <Field
                       as={Select}
@@ -242,12 +246,32 @@ export default function EditTeamForm({
                 ''
               )}
               <Heading variant='sectionHead'>Location</Heading>
-              <FormMap
-                style={{ height: '300px', width: '100%' }}
-                name='location'
-                value={values.location}
-                onChange={setFieldValue}
-              />
+              <FormControl>
+                <Flex alignItems='center' gap={2}>
+                  <Checkbox
+                    id='hasLocation-checkbox'
+                    name='hasLocation-checkbox'
+                    type='checkbox'
+                    isChecked={hasLocation}
+                    style={{ minWidth: '1rem' }}
+                    onChange={(e) => {
+                      setHasLocation(e.target.checked)
+                      setFieldValue('location', undefined)
+                    }}
+                  />
+                  <FormLabel htmlFor='hasLocation-checkbox' m={0}>
+                    This team has a location
+                  </FormLabel>
+                </Flex>
+              </FormControl>
+              {hasLocation && (
+                <FormMap
+                  style={{ height: '300px', width: '100%' }}
+                  name='location'
+                  value={values.location}
+                  onChange={setFieldValue}
+                />
+              )}
               <FormControl>
                 <Button
                   isDisabled={isSubmitting}

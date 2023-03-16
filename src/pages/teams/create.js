@@ -23,7 +23,7 @@ export default function TeamCreate({ staff }) {
         <Box as='section' layerStyle='shadowed'>
           <EditTeamForm
             initialValues={{
-              location: `{"type":"Point","coordinates":[-73.968056,40.749444]}`,
+              location: undefined,
             }}
             isCreateForm
             staff={staff}
