@@ -217,7 +217,7 @@ function MembersTable({
             addModerator(user.id)
           },
         })
-      } else {
+      } else if (moderators.length > 1) {
         actions.push({
           name: 'Remove moderator',
           onClick: async () => {
@@ -245,7 +245,12 @@ function MembersTable({
             size='sm'
             variant='ghost'
             aria-label='User actions menu'
-            title='Display user actions menu'
+            title={
+              actions?.length > 0
+                ? 'Display user actions menu'
+                : 'No actions for this user'
+            }
+            isDisabled={actions?.length === 0}
             icon={<IoEllipsisHorizontal />}
           />
           <MenuList>

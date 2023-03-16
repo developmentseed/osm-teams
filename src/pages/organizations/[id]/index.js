@@ -13,7 +13,6 @@ import { Box, Container, Heading, Button, Flex } from '@chakra-ui/react'
 import Table from '../../../components/tables/table'
 import AddMemberForm from '../../../components/add-member-form'
 import ProfileModal from '../../../components/profile-modal'
-import { contains, prop, map } from 'ramda'
 import join from 'url-join'
 import { getSession } from 'next-auth/react'
 import { getOrgBadges, getUserBadges } from '../../../lib/badges-api'
@@ -115,10 +114,11 @@ class Organization extends Component {
   async getOrgStaff() {
     const { id } = this.props
     try {
-      let { managers, owners } = await getOrgStaff(id)
+      let staff = await getOrgStaff(id)
+
       this.setState({
-        managers,
-        owners,
+        managers: staff.managers,
+        owners: staff.owners,
       })
     } catch (e) {
       logger.error(e)
@@ -237,6 +237,7 @@ class Organization extends Component {
 
   render() {
     const { org, managers, owners, error } = this.state
+    const userId = parseInt(this.state?.session?.user_id)
 
     // Handle org loading errors
     if (org.status === 'error') {
@@ -259,10 +260,6 @@ class Organization extends Component {
     if (org.status !== 'success') {
       return null
     }
-
-    const userId = parseInt(this.state.session.user_id)
-    const ownerIds = map(parseInt, map(prop('id'), owners))
-    const managerIds = map(parseInt, map(prop('id'), managers))
 
     const { isManager, isOwner } = org.data
     const isStaff = isManager || isOwner
@@ -287,52 +284,6 @@ class Organization extends Component {
           </InpageHeader>
         )
       }
-    }
-
-    let profileActions = []
-
-    if (this.state.modalIsOpen && isOwner) {
-      const profileId = parseInt(this.state.profileMeta.id)
-      const isProfileManager = contains(profileId, managerIds)
-      const isProfileOwner = contains(profileId, ownerIds)
-      if (profileId !== userId && isProfileOwner) {
-        profileActions.push({
-          name: 'Remove owner',
-          onClick: async () => {
-            await removeOwner(org.data.id, profileId)
-            this.getOrg()
-          },
-        })
-      }
-      if (profileId !== userId && isProfileManager) {
-        if (!isProfileOwner) {
-          profileActions.push({
-            name: 'Promote to owner',
-            onClick: async () => {
-              await addOwner(org.data.id, profileId)
-              this.getOrg()
-            },
-          })
-          profileActions.push({
-            name: 'Remove manager',
-            onClick: async () => {
-              await removeManager(org.data.id, profileId)
-              this.getOrg()
-            },
-          })
-        }
-      }
-
-      profileActions.push({
-        name: 'Assign a Badge',
-        onClick: () =>
-          Router.push(
-            join(
-              URL,
-              `/organizations/${org.data.id}/badges/assign/${profileId}`
-            )
-          ),
-      })
     }
 
     return (
@@ -385,7 +336,15 @@ class Organization extends Component {
                 isSearchable
                 type='org-staff'
                 orgId={org.data.id}
-                onRowClick={(row) => this.openProfileModal(row)}
+                isRequesterOwner={isOwner}
+                removeOwner={removeOwner}
+                addOwner={addOwner}
+                addManager={addManager}
+                removeManager={removeManager}
+                managerIds={managers.map((x) => +x.id)}
+                ownerIds={owners.map((x) => +x.id)}
+                onAction={() => this.getOrg()}
+                onUsernameClick={(row) => this.openProfileModal(row)}
               />
             </Box>
           ) : (
@@ -398,7 +357,16 @@ class Organization extends Component {
                 isSearchable
                 type='org-members'
                 orgId={org.data.id}
-                onRowClick={(row) => this.openProfileModal(row)}
+                isRequesterOwner={isOwner}
+                removeOwner={removeOwner}
+                addOwner={addOwner}
+                addManager={addManager}
+                removeManager={removeManager}
+                requesterId={+userId}
+                managerIds={managers.map((x) => +x.id)}
+                ownerIds={owners.map((x) => +x.id)}
+                onAction={() => this.getOrg()}
+                onUsernameClick={(row) => this.openProfileModal(row)}
               />
             </Box>
           ) : (
@@ -412,7 +380,6 @@ class Organization extends Component {
             attributes={this.state.profileInfo}
             isOpen={this.state.modalIsOpen}
             onClose={this.closeProfileModal}
-            actions={profileActions}
           />
         </Container>
       </Box>
