@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import { Map, CircleMarker, TileLayer } from 'react-leaflet'
 import 'leaflet-gesture-handling'
 
-export default class ListMap extends Component {
+export default class TeamMap extends Component {
   render() {
     return (
       <Map
         center={this.props.marker.center}
-        zoom={13}
+        zoom={10}
         style={this.props.style}
         gestureHandling={true}
       >
