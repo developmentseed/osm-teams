@@ -1,7 +1,7 @@
 import T from 'prop-types'
 import Table from './table'
 import Badge from '../badge'
-import { useToken } from '@chakra-ui/react'
+import { useToken, Flex, Text } from '@chakra-ui/react'
 import { useFetchList } from '../../hooks/use-fetch-list'
 import { useState } from 'react'
 import Pagination from '../pagination'
@@ -52,8 +52,16 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
       apiBasePath = `/organizations/${orgId}/members`
       emptyMessage = 'No members yet.'
       columns = [
-        { key: 'name', sortable: true },
-        { key: 'id', label: 'OSM ID', sortable: true },
+        {
+          key: 'name',
+          sortable: true,
+          render: ({ name, id }) => (
+            <Flex flexDir='column'>
+              <Text fontWeight='bold'>{name}</Text>
+              <Text>{id}</Text>
+            </Flex>
+          ),
+        },
         {
           key: 'badges',
           render: ({ badges }) => (
@@ -75,15 +83,34 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
         {
           key: 'External Profiles',
           render: ({ id, name }) => (
-            <>
-              <ExternalProfileButton type='osm-profile' userId={name} />
+            <Flex gap={1} justifyContent='center'>
+              <ExternalProfileButton
+                type='osm-profile'
+                userId={name}
+                title='Visit OSM profile'
+              />
               {SCOREBOARD_URL && (
-                <ExternalProfileButton type='scoreboard' userId={id} />
+                <ExternalProfileButton
+                  type='scoreboard'
+                  userId={id}
+                  title='Visit Scoreboard profile'
+                />
               )}
-              {HDYC_URL && <ExternalProfileButton type='hdyc' userId={name} />}
-              <ExternalProfileButton type='osmcha' userId={name} />
-            </>
+              {HDYC_URL && (
+                <ExternalProfileButton
+                  type='hdyc'
+                  userId={name}
+                  title='Visit HDYC profile'
+                />
+              )}
+              <ExternalProfileButton
+                type='osmcha'
+                userId={name}
+                title='Visit OSMCha profile'
+              />
+            </Flex>
           ),
+          alignment: 'center',
         },
       ]
       break
@@ -91,8 +118,16 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
       apiBasePath = `/organizations/${orgId}/staff`
       emptyMessage = 'No staff found.'
       columns = [
-        { key: 'name', sortable: true },
-        { key: 'id', label: 'OSM ID', sortable: true },
+        {
+          key: 'name',
+          sortable: true,
+          render: ({ name, id }) => (
+            <Flex flexDir='column'>
+              <Text fontWeight='bold'>{name}</Text>
+              <Text>{id}</Text>
+            </Flex>
+          ),
+        },
         {
           key: 'type',
           label: 'role',
@@ -106,15 +141,34 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
         {
           key: 'External Profiles',
           render: ({ id, name }) => (
-            <>
-              <ExternalProfileButton type='osm-profile' userId={name} />
+            <Flex gap={1} justifyContent='center'>
+              <ExternalProfileButton
+                type='osm-profile'
+                userId={name}
+                title='Visit OSM profile'
+              />
               {SCOREBOARD_URL && (
-                <ExternalProfileButton type='scoreboard' userId={id} />
+                <ExternalProfileButton
+                  type='scoreboard'
+                  userId={id}
+                  title='Visit Scoreboard profile'
+                />
               )}
-              {HDYC_URL && <ExternalProfileButton type='hdyc' userId={name} />}
-              <ExternalProfileButton type='osmcha' userId={name} />
-            </>
+              {HDYC_URL && (
+                <ExternalProfileButton
+                  type='hdyc'
+                  userId={name}
+                  title='Visit HDYC profile'
+                />
+              )}
+              <ExternalProfileButton
+                type='osmcha'
+                userId={name}
+                title='Visit OSMCha profile'
+              />
+            </Flex>
           ),
+          alignment: 'center',
         },
       ]
       break

@@ -198,6 +198,7 @@ class Organization extends Component {
             Edit
           </Button>
         ),
+        alignment: 'center',
       },
     ]
 

@@ -4,13 +4,14 @@ import Table from './table'
 import join from 'url-join'
 import { useState } from 'react'
 import {
-  Button,
   Flex,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
   useToken,
+  Text,
+  IconButton,
 } from '@chakra-ui/react'
 
 import Pagination from '../pagination'
@@ -21,6 +22,9 @@ import ExternalProfileButton from '../external-profile-button'
 import Badge from '../badge'
 import { makeTitleCase } from '../../../app/lib/utils'
 import { includes, map, prop, insert, append, contains } from 'ramda'
+import { IoEllipsisHorizontal } from 'react-icons/io5'
+import { InfoOutlineIcon } from '@chakra-ui/icons'
+
 const SCOREBOARD_URL = process.env.SCOREBOARD_URL
 const HDYC_URL = process.env.HDYC_URL
 const APP_URL = process.env.APP_URL
@@ -100,12 +104,34 @@ function MembersTable({
       key: 'name',
       sortable: true,
       render: (user) => (
-        <Button size='md' variant='link' onClick={() => onUsernameClick(user)}>
-          {user.name}
-        </Button>
+        <Flex flexDir='column'>
+          <Text
+            fontWeight='bold'
+            fontFamily={'body'}
+            as='a'
+            display='flex'
+            gap={1}
+            onClick={() => onUsernameClick(user)}
+            _hover={{ cursor: 'pointer' }}
+            title='Display user profile'
+            data-component-name='username'
+          >
+            {user.name}
+            <InfoOutlineIcon
+              opacity={0}
+              transition='opacity 0.12s ease-in'
+              sx={{
+                '[data-component-name="username"]:hover &': {
+                  opacity: 'initial',
+                },
+              }}
+              alignSelf='center'
+            />
+          </Text>
+          <Text color='blackAlpha.600'>{user.id}</Text>
+        </Flex>
       ),
     },
-    { key: 'id', sortable: true },
     {
       key: 'role',
       label: 'role',
@@ -118,15 +144,34 @@ function MembersTable({
     {
       key: 'External Profiles',
       render: ({ id, name }) => (
-        <Flex>
-          <ExternalProfileButton type='osm-profile' userId={name} />
+        <Flex gap={1} justifyContent='center'>
+          <ExternalProfileButton
+            type='osm-profile'
+            userId={name}
+            title='Visit OSM profile'
+          />
           {SCOREBOARD_URL && (
-            <ExternalProfileButton type='scoreboard' userId={id} />
+            <ExternalProfileButton
+              type='scoreboard'
+              userId={id}
+              title='Visit Scoreboard profile'
+            />
           )}
-          {HDYC_URL && <ExternalProfileButton type='hdyc' userId={name} />}
-          <ExternalProfileButton type='osmcha' userId={name} />
+          {HDYC_URL && (
+            <ExternalProfileButton
+              type='hdyc'
+              userId={name}
+              title='Visit HDYC profile'
+            />
+          )}
+          <ExternalProfileButton
+            type='osmcha'
+            userId={name}
+            title='Visit OSMCha profile'
+          />
         </Flex>
       ),
+      alignment: 'center',
     },
   ]
 
@@ -195,9 +240,14 @@ function MembersTable({
       }
       return (
         <Menu>
-          <MenuButton as={Button} size='sm' variant='outline'>
-            ⋮
-          </MenuButton>
+          <MenuButton
+            as={IconButton}
+            size='sm'
+            variant='ghost'
+            aria-label='User actions menu'
+            title='Display user actions menu'
+            icon={<IoEllipsisHorizontal />}
+          />
           <MenuList>
             {actions.map((action) => {
               return (
@@ -214,6 +264,7 @@ function MembersTable({
         </Menu>
       )
     },
+    alignment: 'center',
   }
 
   if (displayBadges) {
