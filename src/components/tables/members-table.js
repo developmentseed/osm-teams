@@ -128,7 +128,7 @@ function MembersTable({
               alignSelf='center'
             />
           </Text>
-          <Text>{user.id}</Text>
+          <Text color='blackAlpha.600'>{user.id}</Text>
         </Flex>
       ),
     },

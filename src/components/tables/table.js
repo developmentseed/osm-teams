@@ -103,8 +103,7 @@ function Row({ columns, row, index, onRowClick, showRowNumber }) {
           <Td
             width={showRowNumber && key === ' ' && '1rem'}
             padding='0.875rem'
-            borderBottom={1}
-            borderColor='brand.800'
+            boxShadow='inset 0 -1px 0 0 var(--chakra-colors-brand-50)'
             fontSize='0.9rem'
             textAlign={alignment ? alignment : 'left'}
             _groupHover={
