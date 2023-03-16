@@ -126,7 +126,7 @@ export default class TeamEditProfile extends Component {
       { key: 'visibility' },
       { key: 'key_type', header: 'type' },
       { key: 'required' },
-      { key: 'actions', render: this.renderActions },
+      { key: 'actions', render: this.renderActions, alignment: 'center' },
     ]
 
     let rows = []

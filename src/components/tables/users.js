@@ -83,7 +83,7 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
         {
           key: 'External Profiles',
           render: ({ id, name }) => (
-            <Flex gap={1}>
+            <Flex gap={1} justifyContent='center'>
               <ExternalProfileButton type='osm-profile' userId={name} />
               {SCOREBOARD_URL && (
                 <ExternalProfileButton type='scoreboard' userId={id} />
@@ -92,6 +92,7 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
               <ExternalProfileButton type='osmcha' userId={name} />
             </Flex>
           ),
+          alignment: 'center',
         },
       ]
       break
@@ -122,7 +123,7 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
         {
           key: 'External Profiles',
           render: ({ id, name }) => (
-            <Flex gap={1}>
+            <Flex gap={1} justifyContent='center'>
               <ExternalProfileButton type='osm-profile' userId={name} />
               {SCOREBOARD_URL && (
                 <ExternalProfileButton type='scoreboard' userId={id} />
@@ -131,6 +132,7 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
               <ExternalProfileButton type='osmcha' userId={name} />
             </Flex>
           ),
+          alignment: 'center',
         },
       ]
       break

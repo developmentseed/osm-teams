@@ -14,7 +14,7 @@ function TableHead({ dataCy, columns, sort, setSort, onClick }) {
   return (
     <Thead>
       <Tr>
-        {columns.map(({ sortable, label, key }) => {
+        {columns.map(({ sortable, label, key, alignment }) => {
           const isSorted = sortable && sort.key === key
           const currentSortDirection = (isSorted && sort.direction) || 'none'
           const nextSortDirection =
@@ -49,7 +49,7 @@ function TableHead({ dataCy, columns, sort, setSort, onClick }) {
               verticalAlign='middle'
               position='relative'
               textTransform='uppercase'
-              textAlign='left'
+              textAlign={alignment ? alignment : 'left'}
               fontFamily='mono'
               fontWeight='base'
               fontSize='sm'
@@ -93,7 +93,7 @@ function Row({ columns, row, index, onRowClick, showRowNumber }) {
       }}
       role='group'
     >
-      {columns.map(({ key, render }) => {
+      {columns.map(({ key, render, alignment }) => {
         let item =
           typeof render === 'function' ? render(row, index, columns) : row[key]
         if (showRowNumber && key === ' ') {
@@ -106,6 +106,7 @@ function Row({ columns, row, index, onRowClick, showRowNumber }) {
             borderBottom={1}
             borderColor='brand.800'
             fontSize='0.9rem'
+            textAlign={alignment ? alignment : 'left'}
             _groupHover={
               onRowClick && {
                 cursor: 'pointer',

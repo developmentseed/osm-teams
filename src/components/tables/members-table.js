@@ -94,7 +94,7 @@ function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
     {
       key: 'External Profiles',
       render: ({ id, name }) => (
-        <Flex gap={1}>
+        <Flex gap={1} justifyContent='center'>
           <ExternalProfileButton type='osm-profile' userId={name} />
           {SCOREBOARD_URL && (
             <ExternalProfileButton type='scoreboard' userId={id} />
@@ -103,6 +103,7 @@ function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
           <ExternalProfileButton type='osmcha' userId={name} />
         </Flex>
       ),
+      alignment: 'center',
     },
     {
       key: 'Profile',
@@ -111,6 +112,7 @@ function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
           ⋮
         </Button>
       ),
+      alignment: 'center',
     },
   ]
 
