@@ -331,52 +331,54 @@ export default class ProfileForm extends Component {
                     <Heading as='h2' variant='sectionHead'>
                       Details for <b>{teamName}</b>
                     </Heading>
-                    {memberAttributes.length > 0
-                      ? memberAttributes.map((attribute) => {
-                          return (
-                            <FormControl
-                              key={attribute.name}
-                              isRequired={attribute.required}
-                            >
-                              <FormLabel htmlFor={attribute.id}>
-                                {attribute.name}
-                              </FormLabel>
+                    {memberAttributes.length > 0 ? (
+                      memberAttributes.map((attribute) => {
+                        return (
+                          <FormControl
+                            key={attribute.name}
+                            isRequired={attribute.required}
+                          >
+                            <FormLabel htmlFor={attribute.id}>
+                              {attribute.name}
+                            </FormLabel>
 
-                              {attribute.key_type === 'gender' ? (
-                                <>
-                                  <FormLabel htmlFor={attribute.id}>
-                                    Type in or select your gender from the
-                                    drop-down.
-                                  </FormLabel>
-                                  <GenderSelectField
-                                    name={attribute.id}
-                                    id={attribute.id}
-                                  />
-                                </>
-                              ) : (
-                                <>
-                                  <Field
-                                    as={Input}
-                                    type={attribute.key_type}
-                                    name={attribute.id}
-                                    id={attribute.id}
-                                    required={attribute.required}
-                                  />
-                                  <ErrorMessage
-                                    as={FormErrorMessage}
-                                    name={attribute.id}
-                                  />
-                                </>
-                              )}
-                              {attribute.description && (
-                                <FormHelperText>
-                                  {attribute.description}
-                                </FormHelperText>
-                              )}
-                            </FormControl>
-                          )
-                        })
-                      : 'This team has not requested any profile details'}
+                            {attribute.key_type === 'gender' ? (
+                              <>
+                                <FormLabel htmlFor={attribute.id}>
+                                  Type in or select your gender from the
+                                  drop-down.
+                                </FormLabel>
+                                <GenderSelectField
+                                  name={attribute.id}
+                                  id={attribute.id}
+                                />
+                              </>
+                            ) : (
+                              <>
+                                <Field
+                                  as={Input}
+                                  type={attribute.key_type}
+                                  name={attribute.id}
+                                  id={attribute.id}
+                                  required={attribute.required}
+                                />
+                                <ErrorMessage
+                                  as={FormErrorMessage}
+                                  name={attribute.id}
+                                />
+                              </>
+                            )}
+                            {attribute.description && (
+                              <FormHelperText>
+                                {attribute.description}
+                              </FormHelperText>
+                            )}
+                          </FormControl>
+                        )
+                      })
+                    ) : (
+                      <p>This team has not requested any profile details</p>
+                    )}
                     {org && org.privacy_policy && (
                       <VStack gap={2} alignItems='flex-start'>
                         <Heading variant='sectionHead' as='h2'>
