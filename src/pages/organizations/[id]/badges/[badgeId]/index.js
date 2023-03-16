@@ -3,7 +3,19 @@ import join from 'url-join'
 import { Formik, Field, Form } from 'formik'
 import APIClient from '../../../../../lib/api-client'
 import { getOrg } from '../../../../../lib/org-api'
-import { Box, Button, Container, Flex, Heading, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  Heading,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Input,
+  VStack,
+  Text,
+} from '@chakra-ui/react'
 import Router from 'next/router'
 import { toast } from 'react-toastify'
 
@@ -22,7 +34,7 @@ function validateName(value) {
 }
 
 function renderError(text) {
-  return <div className='form--error'>{text}</div>
+  return <FormErrorMessage>{text}</FormErrorMessage>
 }
 
 export default class EditBadge extends Component {
@@ -141,13 +153,11 @@ export default class EditBadge extends Component {
     return (
       <Box as='main' mb={16}>
         <InpageHeader>
-          <Link href={join(URL, `/organizations/${orgId}`)}>
+          <Link href={`/organizations/${orgId}`}>
             ← Back to Organization Page
           </Link>
           <Heading color='white'>Edit badge</Heading>
-          <Text fontFamily='mono' fontSize='sm' textTransform={'uppercase'}>
-            {this.state.org.name}
-          </Text>
+          <Text variant='overline'>{this.state.org.name}</Text>
         </InpageHeader>
         <Container maxW='container.xl' as='section'>
           <Box as='article' layerStyle={'shadowed'}>
@@ -172,31 +182,34 @@ export default class EditBadge extends Component {
               }}
               render={({ isSubmitting, values, errors }) => {
                 return (
-                  <Form>
-                    <div className='form-control form-control__vertical'>
-                      <label htmlFor='name'>
-                        Name<span className='form--required'>*</span>
-                      </label>
+                  <VStack as={Form} gap={2} alignItems='flex-start'>
+                    <FormControl isInvalid={errors.name} isRequired>
+                      <FormLabel htmlFor='name'>Name</FormLabel>
                       <Field
+                        as={Input}
                         type='text'
                         name='name'
+                        id='name'
                         value={values.name}
                         required
                         className={errors.name ? 'form--error' : ''}
                         validate={validateName}
                       />
                       {errors.name && renderError(errors.name)}
-                    </div>
-                    <div className='form-control form-control__vertical'>
-                      <label htmlFor='color'>Color: {values.color}</label>
+                    </FormControl>
+                    <FormControl isInvalid={errors.color} isRequired>
+                      <FormLabel htmlFor='color'>
+                        Color: {values.color}
+                      </FormLabel>
                       <Field
                         type='color'
                         name='color'
+                        id='color'
                         value={values.color}
                         required
                       />
                       {errors.color && renderError(errors.color)}
-                    </div>
+                    </FormControl>
                     <Flex gap={4}>
                       <Button isDisabled={isSubmitting} type='submit'>
                         Update
@@ -209,7 +222,7 @@ export default class EditBadge extends Component {
                         Return to Organization
                       </Button>
                     </Flex>
-                  </Form>
+                  </VStack>
                 )
               }}
             />

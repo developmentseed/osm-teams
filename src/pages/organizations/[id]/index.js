@@ -12,7 +12,6 @@ import { getUserOrgProfile } from '../../../lib/profiles-api'
 import { Box, Container, Heading, Button, Flex } from '@chakra-ui/react'
 import Table from '../../../components/tables/table'
 import AddMemberForm from '../../../components/add-member-form'
-import SvgSquare from '../../../components/svg-square'
 import ProfileModal from '../../../components/profile-modal'
 import { contains, prop, map } from 'ramda'
 import APIClient from '../../../lib/api-client'
@@ -23,6 +22,7 @@ import UsersTable from '../../../components/tables/users'
 import logger from '../../../lib/logger'
 import Link from 'next/link'
 import InpageHeader from '../../../components/inpage-header'
+import Badge from '../../../components/badge'
 
 const URL = process.env.APP_URL
 
@@ -164,8 +164,28 @@ class Organization extends Component {
   renderBadges() {
     const { id: orgId } = this.props
     const columns = [
-      { key: 'name' },
-      { key: 'color', render: ({ color }) => <SvgSquare color={color} /> },
+      {
+        key: 'name',
+        render: ({ name, color }) => (
+          <Badge dot color={color}>
+            {name}
+          </Badge>
+        ),
+      },
+      {
+        key: '',
+        render: ({ id: badgeId }) => (
+          <Button
+            size='sm'
+            color='gray.500'
+            variant='outline'
+            as={Link}
+            href={`/organizations/${orgId}/badges/${badgeId}`}
+          >
+            Edit
+          </Button>
+        ),
+      },
     ]
 
     // Do not render section if badges list cannot be fetched. This might happen
@@ -307,7 +327,12 @@ class Organization extends Component {
           <Flex justifyContent={'space-between'}>
             <Heading color='white'>{org.data.name}</Heading>
             {isOwner ? (
-              <Button as={Link} href={`/organizations/${org.data.id}/edit`}>
+              <Button
+                as={Link}
+                variant='outline'
+                colorScheme='white'
+                href={`/organizations/${org.data.id}/edit`}
+              >
                 Edit
               </Button>
             ) : (
@@ -354,16 +379,7 @@ class Organization extends Component {
           )}
           {isStaff ? (
             <Box layerStyle={'shadowed'} as='section'>
-              <Heading
-                colorScheme='brand'
-                fontFamily='mono'
-                fontSize='lg'
-                textTransform={'uppercase'}
-                letterSpacing='0.5px'
-                mb={1}
-              >
-                Organization Members
-              </Heading>
+              <Heading variant='sectionHead'>Organization Members</Heading>
               <UsersTable
                 isSearchable
                 type='org-members'

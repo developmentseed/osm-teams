@@ -2,7 +2,19 @@ import React, { Component } from 'react'
 import * as Yup from 'yup'
 import { Formik, Field, Form } from 'formik'
 import APIClient from '../../../../../lib/api-client'
-import { Box, Button, Container, Flex, Heading } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Input,
+  Heading,
+  VStack,
+  Select,
+} from '@chakra-ui/react'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import join from 'url-join'
@@ -87,9 +99,7 @@ export default class NewBadgeAssignment extends Component {
     return (
       <Box as='main' mb={16}>
         <InpageHeader>
-          <Link href={join(URL, `/organizations/${orgId}`)}>
-            ← Back to Organization
-          </Link>
+          <Link href={`/organizations/${orgId}`}>← Back to Organization</Link>
           <Heading color='white'>Badge Assignment</Heading>
         </InpageHeader>
         <Container maxW='container.xl' as='section'>
@@ -144,16 +154,26 @@ export default class NewBadgeAssignment extends Component {
               }}
               render={({ isSubmitting, values, errors }) => {
                 return (
-                  <Form>
-                    <dl>
-                      <dt>OSM User ID:</dt>
-                      <dd>{userId}</dd>
-                    </dl>
+                  <VStack as={Form} gap={2} alignItems='flex-start'>
+                    <FormControl>
+                      <FormLabel>OSM User ID:</FormLabel>
+                      <Input
+                        isReadOnly
+                        isDisabled
+                        color={'brand.600'}
+                        opacity='1 !important'
+                        value={userId}
+                      />
+                    </FormControl>
 
-                    <div className='form-control form-control__vertical'>
-                      <label htmlFor='badgeId'>Badge:</label>
-                      <Field as='select' name='badgeId'>
-                        <option value=''>Select a badge</option>
+                    <FormControl isInvalid={errors.badgeId}>
+                      <FormLabel htmlFor='badgeId'>Badge:</FormLabel>
+                      <Field
+                        as={Select}
+                        name='badgeId'
+                        id='badgeId'
+                        placeholder='Select a badge'
+                      >
                         {badges.map((b) => (
                           <option key={b.id} value={b.id}>
                             {b.name}
@@ -161,31 +181,35 @@ export default class NewBadgeAssignment extends Component {
                         ))}
                       </Field>
                       {errors.badgeId && (
-                        <div className='form--error'>{errors.badgeId}</div>
+                        <FormErrorMessage>{errors.badgeId}</FormErrorMessage>
                       )}
-                    </div>
-                    <div className='form-control form-control__vertical'>
-                      <label htmlFor='assignedAt'>Assigned At (required)</label>
+                    </FormControl>
+                    <FormControl isRequired isInvalid={errors.assignedAt}>
+                      <FormLabel htmlFor='assignedAt'>Assigned At</FormLabel>
                       <Field
+                        as={Input}
                         name='assignedAt'
+                        id='assignedAt'
                         type='date'
                         value={values.assignedAt}
                       />
                       {errors.assignedAt && (
-                        <div className='form--error'>{errors.assignedAt}</div>
+                        <FormErrorMessage>{errors.assignedAt}</FormErrorMessage>
                       )}
-                    </div>
-                    <div className='form-control form-control__vertical'>
-                      <label htmlFor='validUntil'>Valid Until</label>
+                    </FormControl>
+                    <FormControl isInvalid={errors.validUntil}>
+                      <FormLabel htmlFor='validUntil'>Valid Until</FormLabel>
                       <Field
+                        as={Input}
                         name='validUntil'
+                        id='validUntil'
                         type='date'
                         value={values.validUntil}
                       />
                       {errors.validUntil && (
-                        <div className='form--error'>{errors.validUntil}</div>
+                        <FormErrorMessage>{errors.validUntil}</FormErrorMessage>
                       )}
-                    </div>
+                    </FormControl>
                     <Flex gap={4}>
                       <Button isDisabled={isSubmitting} type='submit'>
                         Assign
@@ -198,29 +222,11 @@ export default class NewBadgeAssignment extends Component {
                         Go to organization view
                       </Button>
                     </Flex>
-                  </Form>
+                  </VStack>
                 )
               }}
             />
           </Box>
-          {/* <style jsx>
-          {`
-            dl {
-              display: grid;
-              grid-template-columns: max-content 1fr;
-              gap: 0.25rem 1rem;
-            }
-
-            dt {
-              font-family: ${theme.typography.headingFontFamily};
-              text-transform: uppercase;
-            }
-
-            .team__table {
-              grid-column: 1 / span 12;
-            }
-          `}
-        </style> */}
         </Container>
       </Box>
     )

@@ -1,5 +1,22 @@
 import { cssVar, extendTheme, withDefaultColorScheme } from '@chakra-ui/react'
 
+export const formStyles = {
+  parts: ['container', 'requiredIndicator', 'helperText'],
+  baseStyle: {
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 1,
+      alignItems: 'flex-start',
+      width: 'initial',
+      label: {
+        fontSize: 'sm',
+        fontWeight: 'bold',
+      },
+    },
+  },
+}
+
 const theme = extendTheme(
   {
     styles: {
@@ -9,6 +26,7 @@ const theme = extendTheme(
         },
         a: {
           fontFamily: `'Inconsolata', monospace`,
+          color: 'brand.500',
           _hover: {
             textDecoration: 'underline',
           },
@@ -79,6 +97,7 @@ const theme = extendTheme(
       },
     },
     components: {
+      Form: formStyles,
       Heading: {
         baseStyle: {
           color: 'brand.600',
@@ -117,6 +136,16 @@ const theme = extendTheme(
             textTransform: 'uppercase',
             letterSpacing: 0.5,
             mb: 1,
+          },
+        },
+      },
+      Text: {
+        variants: {
+          overline: {
+            fontFamily: 'mono',
+            fontSize: 'sm',
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
           },
         },
       },
