@@ -13,6 +13,8 @@ import {
   Select,
   Checkbox,
   VStack,
+  Flex,
+  Text,
 } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 import { uniqBy, prop } from 'ramda'
@@ -44,6 +46,7 @@ export default function EditTeamForm({
   initialValues,
   onSubmit,
   staff,
+  team,
   isCreateForm,
   orgTeamTags = [],
   teamTags = [],
@@ -129,7 +132,7 @@ export default function EditTeamForm({
 
         return (
           <Form>
-            <VStack alignItems={'flex-start'}>
+            <VStack alignItems={'flex-start'} spacing={4}>
               <Heading variant='sectionHead'>Team Details</Heading>
               <FormControl isRequired isInvalid={errors.name}>
                 <FormLabel htmlFor='name'>Name</FormLabel>
@@ -222,12 +225,23 @@ export default function EditTeamForm({
                 </FormControl>
               )}
               {extraOrgTeamFields.length > 0 ? (
-                <>
+                <Flex
+                  flexDir='column'
+                  alignItems='flex-start'
+                  border={'1px'}
+                  borderRadius='base'
+                  p={8}
+                  borderColor='brand.50'
+                >
                   <Heading as='h3' size='sm' variant='sectionHead'>
-                    Organization Attributes
+                    {team.org?.name} Details
                   </Heading>
+                  <Text fontSize='sm' pb={4}>
+                    Organization {team.org?.name} requests the following
+                    additional details
+                  </Text>
                   {extraOrgTeamFields}
-                </>
+                </Flex>
               ) : (
                 ''
               )}

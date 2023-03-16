@@ -44,16 +44,15 @@ export default function PrivacyPolicyForm({ initialValues, onSubmit }) {
       }) => {
         return (
           <VStack as={Form} alignItems='flex-start'>
-            <FormControl>
-              <FormLabel isRequired isInvalid={errors.body}>
-                Body
-              </FormLabel>
+            <FormControl isRequired isInvalid={errors.body}>
+              <FormLabel>Body</FormLabel>
               <Field
                 cols={40}
                 rows={6}
                 as={Textarea}
                 name='body'
                 id='body'
+                placeholder='Privacy policy text body'
                 value={values.body}
                 required
                 className={errors.body ? 'form-error' : ''}
@@ -68,6 +67,7 @@ export default function PrivacyPolicyForm({ initialValues, onSubmit }) {
                 as={Textarea}
                 name='consentText'
                 id='consentText'
+                placeholder='Consent text body'
                 value={values.consentText}
                 required
                 className={errors.consentText ? 'form-error' : ''}
