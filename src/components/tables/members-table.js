@@ -1,6 +1,17 @@
 import T from 'prop-types'
+import { useRouter } from 'next/router'
 import Table from './table'
+import join from 'url-join'
 import { useState } from 'react'
+import {
+  Button,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  useToken,
+} from '@chakra-ui/react'
 
 import Pagination from '../pagination'
 import qs from 'qs'
@@ -9,13 +20,25 @@ import { useFetchList } from '../../hooks/use-fetch-list'
 import ExternalProfileButton from '../external-profile-button'
 import Badge from '../badge'
 import { makeTitleCase } from '../../../app/lib/utils'
-import { Flex, useToken } from '@chakra-ui/react'
-import { includes, map, prop, insert } from 'ramda'
-import { Button } from '@chakra-ui/react'
+import { includes, map, prop, insert, append, contains } from 'ramda'
 const SCOREBOARD_URL = process.env.SCOREBOARD_URL
 const HDYC_URL = process.env.HDYC_URL
+const APP_URL = process.env.APP_URL
 
-function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
+function MembersTable({
+  teamId,
+  moderators,
+  onUsernameClick,
+  displayBadges,
+  requesterId,
+  organizationId,
+  removeMember,
+  addModerator,
+  removeModerator,
+  isRequesterModerator,
+  isRequesterOrgOwner,
+}) {
+  const router = useRouter()
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState(null)
   const [sort, setSort] = useState({
@@ -73,7 +96,15 @@ function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
   }
 
   let columns = [
-    { key: 'name', sortable: true },
+    {
+      key: 'name',
+      sortable: true,
+      render: (user) => (
+        <Button size='md' variant='link' onClick={() => onUsernameClick(user)}>
+          {user.name}
+        </Button>
+      ),
+    },
     { key: 'id', sortable: true },
     {
       key: 'role',
@@ -97,14 +128,6 @@ function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
         </Flex>
       ),
     },
-    {
-      key: 'Profile',
-      render: (user) => (
-        <Button size='md' variant='ghost' onClick={() => onActionsClick(user)}>
-          ⋮
-        </Button>
-      ),
-    },
   ]
 
   let badgesColumn = {
@@ -124,8 +147,81 @@ function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
     ),
   }
 
+  let actionsColumn = {
+    key: 'Actions',
+    render: (user) => {
+      let actions = []
+
+      if (Number(user.id) !== Number(requesterId)) {
+        actions.push({
+          name: 'Remove team member',
+          onClick: async () => {
+            removeMember(user.id)
+          },
+        })
+      }
+      if (
+        !contains(
+          Number(user.id),
+          moderators.map((m) => Number(m.osm_id))
+        )
+      ) {
+        actions.push({
+          name: 'Promote to moderator',
+          onClick: async () => {
+            addModerator(user.id)
+          },
+        })
+      } else {
+        actions.push({
+          name: 'Remove moderator',
+          onClick: async () => {
+            removeModerator(user.id)
+          },
+        })
+      }
+
+      if (organizationId && isRequesterOrgOwner) {
+        actions.push({
+          name: 'Assign a badge',
+          onClick: () =>
+            router.push(
+              join(
+                APP_URL,
+                `/organizations/${organizationId}/badges/assign/${user.id}`
+              )
+            ),
+        })
+      }
+      return (
+        <Menu>
+          <MenuButton as={Button} size='sm' variant='outline'>
+            ⋮
+          </MenuButton>
+          <MenuList>
+            {actions.map((action) => {
+              return (
+                <MenuItem
+                  fontSize='sm'
+                  onClick={() => action.onClick()}
+                  key={action.name}
+                >
+                  {action.name}
+                </MenuItem>
+              )
+            })}
+          </MenuList>
+        </Menu>
+      )
+    },
+  }
+
   if (displayBadges) {
     columns = insert(2, badgesColumn, columns)
+  }
+
+  if (isRequesterModerator) {
+    columns = append(actionsColumn, columns)
   }
 
   return (

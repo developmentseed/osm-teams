@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import join from 'url-join'
 import { map, prop, contains, reverse, isNil } from 'ramda'
 import dynamic from 'next/dynamic'
 import { getSession } from 'next-auth/react'
@@ -41,8 +40,6 @@ import JoinLink from '../../../components/join-link'
 const Map = dynamic(() => import('../../../components/team-map'), {
   ssr: false,
 })
-
-const APP_URL = process.env.APP_URL
 
 class Team extends Component {
   static getInitialProps({ query }) {
@@ -244,47 +241,6 @@ class Team extends Component {
 
     const isUserOrgOwner = contains(parseInt(userId), owners)
 
-    let profileActions = []
-
-    if (this.state.modalIsOpen && isUserModerator) {
-      if (this.state.profileMeta.id !== userId) {
-        profileActions.push({
-          name: 'Remove team member',
-          onClick: async () => {
-            this.removeMember(this.state.profileMeta.id)
-          },
-        })
-      }
-      if (!contains(parseInt(this.state.profileMeta.id), moderators)) {
-        profileActions.push({
-          name: 'Promote to moderator',
-          onClick: async () => {
-            this.addModerator(this.state.profileMeta.id)
-          },
-        })
-      } else {
-        profileActions.push({
-          name: 'Remove moderator',
-          onClick: async () => {
-            this.removeModerator(this.state.profileMeta.id)
-          },
-        })
-      }
-
-      if (team.org && isUserOrgOwner) {
-        profileActions.push({
-          name: 'Assign a badge',
-          onClick: () =>
-            this.props.router.push(
-              join(
-                APP_URL,
-                `/organizations/${team.org.organization_id}/badges/assign/${this.state.profileMeta.id}`
-              )
-            ),
-        })
-      }
-    }
-
     return (
       <Box as='main' mb={16}>
         <InpageHeader>
@@ -413,15 +369,21 @@ class Team extends Component {
                 </Flex>
                 <MembersTable
                   teamId={this.props.id}
+                  organizationId={team.org?.organization_id}
+                  requesterId={userId}
                   displayBadges={!isNil(prop('org', team))}
-                  onActionsClick={this.openProfileModal.bind(this)}
+                  onUsernameClick={this.openProfileModal.bind(this)}
                   moderators={teamModerators}
+                  isRequesterModerator={isUserModerator}
+                  isRequesterOrgOwner={isUserOrgOwner}
+                  removeMember={this.removeMember.bind(this)}
+                  addModerator={this.addModerator.bind(this)}
+                  removeModerator={this.removeModerator.bind(this)}
                 />
                 <ProfileModal
                   user={this.state.profileMeta}
                   attributes={this.state.profileInfo}
                   onClose={this.closeProfileModal}
-                  actions={profileActions}
                   isOpen={this.state.modalIsOpen}
                 />
               </Box>
