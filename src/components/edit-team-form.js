@@ -269,7 +269,7 @@ export default function EditTeamForm({
                     style={{ minWidth: '1rem' }}
                     onChange={(e) => {
                       setHasLocation(e.target.checked)
-                      setFieldValue('location', undefined)
+                      setFieldValue('location', null)
                     }}
                   />
                   <FormLabel htmlFor='hasLocation-checkbox' m={0}>
