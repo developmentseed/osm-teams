@@ -4,6 +4,7 @@ import '@fontsource/work-sans/400.css'
 import '@fontsource/work-sans/700.css'
 import '@fontsource/inconsolata/400.css'
 import '@fontsource/inconsolata/700.css'
+import 'leaflet-gesture-handling/dist/leaflet-gesture-handling.css'
 
 import Head from 'next/head'
 import { Box } from '@chakra-ui/react'
