@@ -387,9 +387,7 @@ async function isOrgTeamModerator(organizationId, osmId) {
   const subquery = db('organization_team')
     .select('team_id')
     .where('organization_id', organizationId)
-  const isModeratorOfAny = await db('moderator')
-    .whereIn('team_id', subquery)
-    .debug()
+  const isModeratorOfAny = await db('moderator').whereIn('team_id', subquery)
   return isModeratorOfAny.length > 0
 }
 
