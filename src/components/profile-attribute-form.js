@@ -149,7 +149,7 @@ export default function ProfileAttributeForm({
                   name='required'
                   id='required'
                   value='required'
-                  checked={values.required.includes('required')}
+                  isChecked={values.required.includes('required')}
                 />
                 Is this attribute required?
               </FormLabel>

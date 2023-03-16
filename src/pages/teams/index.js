@@ -209,7 +209,7 @@ export default class TeamList extends Component {
             id='map-bounds-filter'
             type='checkbox'
             colorScheme={'brand'}
-            checked={searchOnMapMove}
+            isChecked={searchOnMapMove}
             onChange={(e) => this.setSearchOnMapMove(e)}
           >
             Filter teams by map
