@@ -145,12 +145,30 @@ function MembersTable({
       key: 'External Profiles',
       render: ({ id, name }) => (
         <Flex gap={1} justifyContent='center'>
-          <ExternalProfileButton type='osm-profile' userId={name} />
+          <ExternalProfileButton
+            type='osm-profile'
+            userId={name}
+            title='Visit OSM profile'
+          />
           {SCOREBOARD_URL && (
-            <ExternalProfileButton type='scoreboard' userId={id} />
+            <ExternalProfileButton
+              type='scoreboard'
+              userId={id}
+              title='Visit Scoreboard profile'
+            />
           )}
-          {HDYC_URL && <ExternalProfileButton type='hdyc' userId={name} />}
-          <ExternalProfileButton type='osmcha' userId={name} />
+          {HDYC_URL && (
+            <ExternalProfileButton
+              type='hdyc'
+              userId={name}
+              title='Visit HDYC profile'
+            />
+          )}
+          <ExternalProfileButton
+            type='osmcha'
+            userId={name}
+            title='Visit OSMCha profile'
+          />
         </Flex>
       ),
       alignment: 'center',
