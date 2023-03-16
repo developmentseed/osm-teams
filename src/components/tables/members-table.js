@@ -1,6 +1,18 @@
 import T from 'prop-types'
+import { useRouter } from 'next/router'
 import Table from './table'
+import join from 'url-join'
 import { useState } from 'react'
+import {
+  Flex,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  useToken,
+  Text,
+  IconButton,
+} from '@chakra-ui/react'
 
 import Pagination from '../pagination'
 import qs from 'qs'
@@ -9,12 +21,27 @@ import { useFetchList } from '../../hooks/use-fetch-list'
 import ExternalProfileButton from '../external-profile-button'
 import Badge from '../badge'
 import { makeTitleCase } from '../../../app/lib/utils'
-import { Button, Flex, useToken, Text } from '@chakra-ui/react'
-import { includes, map, prop, insert } from 'ramda'
+import { includes, map, prop, insert, append, contains } from 'ramda'
+import { IoEllipsisHorizontal } from 'react-icons/io5'
+
 const SCOREBOARD_URL = process.env.SCOREBOARD_URL
 const HDYC_URL = process.env.HDYC_URL
+const APP_URL = process.env.APP_URL
 
-function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
+function MembersTable({
+  teamId,
+  moderators,
+  onUsernameClick,
+  displayBadges,
+  requesterId,
+  organizationId,
+  removeMember,
+  addModerator,
+  removeModerator,
+  isRequesterModerator,
+  isRequesterOrgOwner,
+}) {
+  const router = useRouter()
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState(null)
   const [sort, setSort] = useState({
@@ -75,10 +102,19 @@ function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
     {
       key: 'name',
       sortable: true,
-      render: ({ name, id }) => (
+      render: (user) => (
         <Flex flexDir='column'>
-          <Text fontWeight='bold'>{name}</Text>
-          <Text>{id}</Text>
+          <Text
+            fontWeight='bold'
+            fontFamily={'body'}
+            as='a'
+            onClick={() => onUsernameClick(user)}
+            _hover={{ cursor: 'pointer' }}
+            title='Display user profile'
+          >
+            {user.name}
+          </Text>
+          <Text>{user.id}</Text>
         </Flex>
       ),
     },
@@ -105,15 +141,6 @@ function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
       ),
       alignment: 'center',
     },
-    {
-      key: 'Profile',
-      render: (user) => (
-        <Button size='md' variant='ghost' onClick={() => onActionsClick(user)}>
-          ⋮
-        </Button>
-      ),
-      alignment: 'center',
-    },
   ]
 
   let badgesColumn = {
@@ -133,8 +160,86 @@ function MembersTable({ teamId, moderators, onActionsClick, displayBadges }) {
     ),
   }
 
+  let actionsColumn = {
+    key: 'Actions',
+    render: (user) => {
+      let actions = []
+
+      if (Number(user.id) !== Number(requesterId)) {
+        actions.push({
+          name: 'Remove team member',
+          onClick: async () => {
+            removeMember(user.id)
+          },
+        })
+      }
+      if (
+        !contains(
+          Number(user.id),
+          moderators.map((m) => Number(m.osm_id))
+        )
+      ) {
+        actions.push({
+          name: 'Promote to moderator',
+          onClick: async () => {
+            addModerator(user.id)
+          },
+        })
+      } else {
+        actions.push({
+          name: 'Remove moderator',
+          onClick: async () => {
+            removeModerator(user.id)
+          },
+        })
+      }
+
+      if (organizationId && isRequesterOrgOwner) {
+        actions.push({
+          name: 'Assign a badge',
+          onClick: () =>
+            router.push(
+              join(
+                APP_URL,
+                `/organizations/${organizationId}/badges/assign/${user.id}`
+              )
+            ),
+        })
+      }
+      return (
+        <Menu>
+          <MenuButton
+            as={IconButton}
+            size='sm'
+            variant='ghost'
+            aria-label='user menu'
+            icon={<IoEllipsisHorizontal />}
+          />
+          <MenuList>
+            {actions.map((action) => {
+              return (
+                <MenuItem
+                  fontSize='sm'
+                  onClick={() => action.onClick()}
+                  key={action.name}
+                >
+                  {action.name}
+                </MenuItem>
+              )
+            })}
+          </MenuList>
+        </Menu>
+      )
+    },
+    alignment: 'center',
+  }
+
   if (displayBadges) {
     columns = insert(2, badgesColumn, columns)
+  }
+
+  if (isRequesterModerator) {
+    columns = append(actionsColumn, columns)
   }
 
   return (
