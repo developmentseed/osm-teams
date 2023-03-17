@@ -14,7 +14,7 @@ function TableHead({ dataCy, columns, sort, setSort, onClick }) {
   return (
     <Thead>
       <Tr>
-        {columns.map(({ sortable, label, key }) => {
+        {columns.map(({ sortable, label, key, alignment }) => {
           const isSorted = sortable && sort.key === key
           const currentSortDirection = (isSorted && sort.direction) || 'none'
           const nextSortDirection =
@@ -49,7 +49,7 @@ function TableHead({ dataCy, columns, sort, setSort, onClick }) {
               verticalAlign='middle'
               position='relative'
               textTransform='uppercase'
-              textAlign='left'
+              textAlign={alignment ? alignment : 'left'}
               fontFamily='mono'
               fontWeight='base'
               fontSize='sm'
@@ -58,15 +58,21 @@ function TableHead({ dataCy, columns, sort, setSort, onClick }) {
               borderBottom='4px solid var(--chakra-colors-brand-600)'
               cursor={sortable && 'pointer'}
               _hover={sortable && { fontWeight: 'bold', color: 'brand.500' }}
-              _first={[
-                null,
-                {
+              _first={{
+                base: {
                   position: 'sticky',
                   left: '0',
                   zIndex: '2',
+                  background: 'brand.50',
                   borderRight: '2px solid var(--chakra-colors-brand-100)',
                 },
-              ]}
+                md: {
+                  position: 'initial',
+                  left: 'initial',
+                  zIndex: 'initial',
+                  borderRight: 'none',
+                },
+              }}
             >
               {label || key}
               {sortable && sortIcon}
@@ -87,7 +93,7 @@ function Row({ columns, row, index, onRowClick, showRowNumber }) {
       }}
       role='group'
     >
-      {columns.map(({ key, render }) => {
+      {columns.map(({ key, render, alignment }) => {
         let item =
           typeof render === 'function' ? render(row, index, columns) : row[key]
         if (showRowNumber && key === ' ') {
@@ -97,9 +103,9 @@ function Row({ columns, row, index, onRowClick, showRowNumber }) {
           <Td
             width={showRowNumber && key === ' ' && '1rem'}
             padding='0.875rem'
-            borderBottom={1}
-            borderColor='brand.800'
+            boxShadow='inset 0 -1px 0 0 var(--chakra-colors-brand-50)'
             fontSize='0.9rem'
+            textAlign={alignment ? alignment : 'left'}
             _groupHover={
               onRowClick && {
                 cursor: 'pointer',
@@ -107,16 +113,21 @@ function Row({ columns, row, index, onRowClick, showRowNumber }) {
                 color: 'brand.500',
               }
             }
-            _first={[
-              null,
-              {
+            _first={{
+              base: {
                 position: 'sticky',
                 left: '0',
-                background: 'white',
                 zIndex: '2',
+                bg: 'white',
                 borderRight: '2px solid var(--chakra-colors-brand-100)',
               },
-            ]}
+              md: {
+                position: 'initial',
+                left: 'initial',
+                zIndex: 'initial',
+                borderRight: 'none',
+              },
+            }}
             key={`row-${index}-key-${key}`}
           >
             {item}
@@ -180,16 +191,21 @@ export default function Table({
       display='grid'
       gridTemplateColumns='minmax(0, 1fr)'
       overflowX='auto'
-      position='relative'
       my={2}
     >
       <BaseTable
         data-cy={dataCy}
-        borderCollapse={['collapse', 'separate']}
-        borderSpacing='0'
         marginBottom={2}
-        tableLayout='fixed'
-        whiteSpace='pre'
+        layout='fixed'
+        size='sm'
+        width='initial'
+        sx={{
+          base: {
+            borderSpacing: '0',
+            borderCollapse: 'separate',
+          },
+          md: { borderCollapse: 'collapse' },
+        }}
       >
         <TableHead
           dataCy={dataCy}

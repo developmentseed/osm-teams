@@ -17,7 +17,7 @@ export default function Badge({ color, dot, children }) {
       color={color}
       bg={`rgba(${hexToRgb(color)}, 0.125)`}
       size='sm'
-      borderRadius={'full'}
+      borderRadius={dot ? 'full' : 'sm'}
       boxShadow={`0 0 0 1px rgba(${hexToRgb(color)}, 0.25)`}
       mr={2}
       overflow='hidden'

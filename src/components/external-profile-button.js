@@ -43,7 +43,7 @@ const ExternalProfileButton = ({ type, userId }) => {
       title = 'View profile on OSMCha'
       label = 'OSMCha'
       altText = 'OSMCha Logo'
-      logoImg = 'icon-osmcha-logo.svg'
+      logoImg = 'osmcha-logo.svg'
       break
     default:
       return null
@@ -60,6 +60,7 @@ const ExternalProfileButton = ({ type, userId }) => {
       target='_blank'
       title={title}
       size='sm'
+      bg='white'
       variant='ghost'
     >
       <img

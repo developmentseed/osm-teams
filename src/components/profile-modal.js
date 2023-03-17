@@ -1,14 +1,9 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import { isEmpty } from 'ramda'
 import {
   Avatar,
-  Button,
   Flex,
   Heading,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   Text,
   Wrap,
   ModalContent,
@@ -20,29 +15,6 @@ import {
   ModalFooter,
 } from '@chakra-ui/react'
 import Badge from './badge'
-
-function renderActions(actions) {
-  return (
-    <Menu>
-      <MenuButton as={Button} size='sm' variant='outline'>
-        Edit user access
-      </MenuButton>
-      <MenuList>
-        {actions.map((action) => {
-          return (
-            <MenuItem
-              fontSize='sm'
-              onClick={() => action.onClick()}
-              key={action.name}
-            >
-              {action.name}
-            </MenuItem>
-          )
-        })}
-      </MenuList>
-    </Menu>
-  )
-}
 
 function renderBadges(badges) {
   if (!badges || badges.length === 0) {
@@ -69,9 +41,7 @@ export default function ProfileModal({
   badges,
   onClose,
   isOpen,
-  actions,
 }) {
-  actions = actions || []
   let profileContent = <dl>User does not have a profile</dl>
   if (!isEmpty(attributes)) {
     profileContent = (
@@ -97,7 +67,6 @@ export default function ProfileModal({
       </Flex>
     )
   }
-  const ref = useRef()
   return (
     <Modal
       isCentered
@@ -124,7 +93,6 @@ export default function ProfileModal({
               {user?.name}
             </Heading>
           </Flex>
-          {!isEmpty(actions) && renderActions(actions, ref)}
           <ModalCloseButton onClick={() => onClose()} />
         </ModalHeader>
         <ModalBody>{profileContent}</ModalBody>

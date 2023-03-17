@@ -116,22 +116,22 @@ export async function destroyTeam(id) {
 }
 
 /**
- * getMembers
- * Get a team's members
+ * getModerators
+ * Get a team's moderators
  *
  * @param id - Team id
  * @returns {Response}
  */
-export async function getTeamMembers(id) {
-  let res = await fetch(join(TEAMS_URL, `${id}`, 'members'))
+export async function getTeamModerators(id) {
+  let res = await fetch(join(TEAMS_URL, `${id}`, 'moderators'))
   if (res.status === 200) {
     return res.json()
   }
   if (res.status === 401) {
-    // If unauthorized, don't display team members
-    return { members: [], moderators: [] }
+    // If unauthorized, don't display team moderators
+    return []
   } else {
-    const err = new Error('could not retrieve team members')
+    const err = new Error('could not retrieve team moderators')
     err.status = res.status
     throw err
   }

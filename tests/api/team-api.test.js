@@ -1,4 +1,5 @@
 const test = require('ava')
+const logger = require('../../src/lib/logger')
 const { any } = require('ramda')
 const { resetDb, disconnectDb } = require('../utils/db-helpers')
 const createAgent = require('../utils/create-agent')
@@ -12,6 +13,31 @@ test.before(async () => {
 })
 
 test.after.always(disconnectDb)
+
+async function getAllMembers(userAgent, teamId) {
+  let page = 0
+  let members = []
+  let currentPagination = {}
+  do {
+    // try catch to catch any errors in the async api call
+    try {
+      // use node-fetch to make api call
+      const resp = await userAgent.get(`/api/teams/${teamId}/members?${page}`)
+      const { data, pagination } = resp.body.members
+      currentPagination = pagination
+      data.forEach((member) => {
+        members.push(member)
+      })
+      // increment the page with 1 on each loop
+      page++
+    } catch (err) {
+      logger.error(err)
+    }
+    // keep running until there's no next page
+  } while (currentPagination.currentPage < currentPagination.lastPage)
+
+  return members
+}
 
 test('create a team', async (t) => {
   let res = await user1Agent
@@ -102,13 +128,10 @@ test('add member to team', async (t) => {
 
   await user1Agent.put(`/api/teams/add/${team.body.id}/1`).expect(200)
 
-  let updatedTeam = await user1Agent
-    .get(`/api/teams/${team.body.id}/members`)
-    .expect(200)
+  const updatedMembers = await getAllMembers(user1Agent, team.body.id)
 
-  t.is(updatedTeam.body.teamId, team.body.id)
-  t.is(updatedTeam.body.members.length, 1)
-  t.is(updatedTeam.body.members[0].id, 1)
+  t.is(updatedMembers.length, 1)
+  t.is(updatedMembers[0].id, 1)
 })
 
 test('remove member from team', async (t) => {
@@ -124,11 +147,9 @@ test('remove member from team', async (t) => {
   await user1Agent
     .put(`/api/teams/remove/${teamId}/${osmIdToCheck}`)
     .expect(200)
-  let updated = await user1Agent.get(`/api/teams/${teamId}/members`).expect(200)
-  t.is(updated.body.teamId, teamId)
-  const { members } = updated.body
-  t.is(members.length, 1)
-  t.false(members[0].osm_id === osmIdToCheck)
+  let updatedMembers = await getAllMembers(user1Agent, teamId)
+  t.is(updatedMembers.length, 1)
+  t.false(updatedMembers[0].osm_id === osmIdToCheck)
 })
 
 test('updated members in team', async (t) => {
@@ -142,12 +163,9 @@ test('updated members in team', async (t) => {
     .send({ add: [1, 2, 3] })
     .expect(200)
 
-  let updated = await user1Agent
-    .get(`/api/teams/${team.body.id}/members`)
-    .expect(200)
+  let updatedMembers = await getAllMembers(user1Agent, team.body.id)
 
-  t.is(updated.body.teamId, team.body.id)
-  t.is(updated.body.members.length, 3)
+  t.is(updatedMembers.length, 3)
 })
 
 test('get list of teams by osm id', async (t) => {
@@ -192,9 +210,8 @@ test('assign moderator to team', async (t) => {
   await user1Agent
     .put(`/api/teams/${teamId}/assignModerator/${osmIdToAdd}`)
     .expect(200)
-  team = await user1Agent.get(`/api/teams/${teamId}/members`).expect(200)
-  const { moderators } = team.body
-  t.is(team.body.teamId, teamId)
+  team = await user1Agent.get(`/api/teams/${teamId}/moderators`).expect(200)
+  const moderators = team.body
   const matchOsmIdAssigned = (data) => data.osm_id === osmIdToAdd
   t.true(any(matchOsmIdAssigned, moderators))
 })
@@ -215,11 +232,10 @@ test('remove moderator from team', async (t) => {
     .put(`/api/teams/${teamId}/removeModerator/${osmId}`)
     .expect(200)
   const { body } = await user1Agent
-    .get(`/api/teams/${teamId}/members`)
+    .get(`/api/teams/${teamId}/moderators`)
     .expect(200)
-  t.is(body.teamId, teamId)
   const matchOsmIdAssigned = (data) => data.osm_id === osmId
-  t.false(any(matchOsmIdAssigned, body.moderators))
+  t.false(any(matchOsmIdAssigned, body))
 })
 
 test('get my teams list', async (t) => {

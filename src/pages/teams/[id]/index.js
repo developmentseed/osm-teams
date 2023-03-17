@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { map, prop, contains, reverse, assoc } from 'ramda'
+import { map, prop, contains, reverse, isNil } from 'ramda'
 import dynamic from 'next/dynamic'
 import { getSession } from 'next-auth/react'
 import { withRouter } from 'next/router'
@@ -19,7 +19,7 @@ import ProfileModal from '../../../components/profile-modal'
 
 import {
   getTeam,
-  getTeamMembers,
+  getTeamModerators,
   addMember,
   removeMember,
   joinTeam,
@@ -33,7 +33,7 @@ import {
 } from '../../../lib/profiles-api'
 import { getOrgStaff } from '../../../lib/org-api'
 import logger from '../../../lib/logger'
-import MembersTable from './members-table'
+import MembersTable from '../../../components/tables/members-table'
 import Link from 'next/link'
 import InpageHeader from '../../../components/inpage-header'
 import JoinLink from '../../../components/join-link'
@@ -68,19 +68,24 @@ class Team extends Component {
     const { id } = this.props
     try {
       let team = await getTeam(id)
-      let teamMembers = { moderators: [], members: [] }
+      let isMember = team.requesterIsMember
+      let teamModerators = await getTeamModerators(id)
       let teamProfile = []
-      teamMembers = await getTeamMembers(id)
       teamProfile = await getTeamProfile(id)
 
       let orgOwners = []
       if (team.org) {
-        orgOwners = (await getOrgStaff(team.org.organization_id)).owners
+        try {
+          orgOwners = (await getOrgStaff(team.org.organization_id)).owners
+        } catch (e) {
+          logger.error("Can't fetch organization owners", e)
+        }
       }
       this.setState({
         team,
         teamProfile,
-        teamMembers,
+        isMember,
+        teamModerators,
         orgOwners,
         loading: false,
       })
@@ -200,7 +205,8 @@ class Team extends Component {
   }
 
   render() {
-    const { team, error, teamProfile, teamMembers, orgOwners } = this.state
+    const { team, error, isMember, teamProfile, teamModerators, orgOwners } =
+      this.state
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
@@ -227,49 +233,14 @@ class Team extends Component {
     if (!team) return null
 
     const userId = this.state.session?.user_id
-    const members = map(prop('id'), teamMembers.members)
-    const moderators = map(prop('osm_id'), teamMembers.moderators)
+    const moderators = map(prop('osm_id'), teamModerators)
+    const owners = map(prop('id'), orgOwners)
 
-    // TODO: moderators is an array of ints while members are an array of strings. fix this.
     const isUserModerator =
       contains(parseInt(userId), moderators) ||
-      contains(parseInt(userId), orgOwners)
-    const isMember = contains(Number(userId), members)
+      contains(parseInt(userId), owners)
 
-    let memberRows = teamMembers.members.map((member) => {
-      const role = contains(parseInt(member.id), moderators)
-        ? 'Moderator'
-        : 'Member'
-      return assoc('role', role, member)
-    })
-
-    let profileActions = []
-
-    if (this.state.modalIsOpen && isUserModerator) {
-      if (this.state.profileMeta.id !== userId) {
-        profileActions.push({
-          name: 'Remove team member',
-          onClick: async () => {
-            this.removeMember(this.state.profileMeta.id)
-          },
-        })
-      }
-      if (!contains(parseInt(this.state.profileMeta.id), moderators)) {
-        profileActions.push({
-          name: 'Promote to moderator',
-          onClick: async () => {
-            this.addModerator(this.state.profileMeta.id)
-          },
-        })
-      } else {
-        profileActions.push({
-          name: 'Remove moderator',
-          onClick: async () => {
-            this.removeModerator(this.state.profileMeta.id)
-          },
-        })
-      }
-    }
+    const isUserOrgOwner = contains(parseInt(userId), owners)
 
     return (
       <Box as='main' mb={16}>
@@ -401,8 +372,8 @@ class Team extends Component {
               {this.renderMap(team.location)}
             </Box>
           )}
-          <Box as='section' layerStyle={'shadowed'}>
-            {memberRows.length > 0 ? (
+          {teamModerators.length ? (
+            <Box as='section' layerStyle={'shadowed'}>
               <Box mb={2} data-cy='team-members-section'>
                 <Flex
                   direction={['column', 'row']}
@@ -421,23 +392,29 @@ class Team extends Component {
                   </div>
                 </Flex>
                 <MembersTable
-                  rows={memberRows}
-                  onRowClick={(row) => {
-                    this.openProfileModal(row)
-                  }}
+                  teamId={this.props.id}
+                  organizationId={team.org?.organization_id}
+                  requesterId={userId}
+                  displayBadges={!isNil(prop('org', team))}
+                  onUsernameClick={this.openProfileModal.bind(this)}
+                  moderators={teamModerators}
+                  isRequesterModerator={isUserModerator}
+                  isRequesterOrgOwner={isUserOrgOwner}
+                  removeMember={this.removeMember.bind(this)}
+                  addModerator={this.addModerator.bind(this)}
+                  removeModerator={this.removeModerator.bind(this)}
                 />
                 <ProfileModal
                   user={this.state.profileMeta}
                   attributes={this.state.profileInfo}
                   onClose={this.closeProfileModal}
-                  actions={profileActions}
                   isOpen={this.state.modalIsOpen}
                 />
               </Box>
-            ) : (
-              <div />
-            )}
-          </Box>
+            </Box>
+          ) : (
+            <div />
+          )}
         </Container>
       </Box>
     )

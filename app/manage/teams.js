@@ -3,14 +3,10 @@ const db = require('../../src/lib/db')
 const yup = require('yup')
 const crypto = require('crypto')
 const { routeWrapper } = require('./utils')
-const { prop, map, dissoc } = require('ramda')
 const urlRegex = require('url-regex')
-const profile = require('../../src/models/profile')
 const Boom = require('@hapi/boom')
 const logger = require('../../src/lib/logger')
-
 const isUrl = urlRegex({ exact: true })
-const getOsmId = prop('osm_id')
 
 async function listTeams(req, res) {
   const { osmId, bbox } = req.query
@@ -29,58 +25,6 @@ async function listTeams(req, res) {
   return res.send(data)
 }
 
-async function getTeam(req, reply) {
-  const { id } = req.params
-
-  if (!id) {
-    throw Boom.badRequest('Team id is required')
-  }
-
-  try {
-    const teamData = await team.get(id)
-    const associatedOrg = await team.associatedOrg(id)
-
-    if (!teamData) {
-      throw Boom.notFound()
-    }
-
-    return reply.send(Object.assign({}, teamData, { org: associatedOrg }))
-  } catch (err) {
-    logger.error(err)
-    throw Boom.badRequest(err.message)
-  }
-}
-
-const getTeamMembers = routeWrapper({
-  validate: {
-    params: yup
-      .object({
-        id: yup.number().required().positive().integer(),
-      })
-      .required(),
-  },
-  handler: async (req, reply) => {
-    const { id } = req.params
-
-    if (!id) {
-      throw Boom.badRequest('team id is required')
-    }
-
-    try {
-      const memberIds = map(getOsmId, await team.getMembers(id))
-      const members = await team.resolveMemberNames(memberIds)
-      const moderators = await team.getModerators(id)
-
-      return reply.send(
-        Object.assign({}, { teamId: id }, { members, moderators })
-      )
-    } catch (err) {
-      logger.error(err)
-      throw Boom.badRequest(err.message)
-    }
-  },
-})
-
 async function createTeam(req, reply) {
   const { body } = req
   const { user_id } = req.session
@@ -91,35 +35,6 @@ async function createTeam(req, reply) {
   try {
     const data = await team.create(body, user_id)
     reply.send(data)
-  } catch (err) {
-    logger.error(err)
-    throw Boom.badRequest(err.message)
-  }
-}
-
-async function updateTeam(req, reply) {
-  const { id } = req.params
-  const { body } = req
-
-  if (!id) {
-    throw Boom.badRequest('team id is required')
-  }
-
-  if (body.editing_policy && !isUrl.test(body.editing_policy)) {
-    throw Boom.badRequest('editing_policy must be a valid url')
-  }
-
-  try {
-    const tags = prop('tags', body)
-    if (tags) {
-      await profile.setProfile(tags, 'team', id)
-    }
-    const teamData = dissoc('tags', body)
-    let updatedTeam = {}
-    if (teamData) {
-      updatedTeam = await team.update(id, teamData)
-    }
-    reply.send(updatedTeam)
   } catch (err) {
     logger.error(err)
     throw Boom.badRequest(err.message)
@@ -170,22 +85,6 @@ async function removeModerator(req, reply) {
   }
 }
 
-async function destroyTeam(req, reply) {
-  const { id } = req.params
-
-  if (!id) {
-    throw Boom.badRequest('team id is required')
-  }
-
-  try {
-    await team.destroy(id)
-    return reply.status(200).send()
-  } catch (err) {
-    logger.error(err)
-    throw Boom.badRequest(err.message)
-  }
-}
-
 async function addMember(req, reply) {
   const { id, osmId } = req.params
 
@@ -199,37 +98,6 @@ async function addMember(req, reply) {
 
   try {
     await team.addMember(id, osmId)
-    return reply.status(200).send()
-  } catch (err) {
-    logger.error(err)
-    throw Boom.badRequest(err.message)
-  }
-}
-
-async function updateMembers(req, reply) {
-  const { id } = req.params
-  const { add, remove } = req.body
-
-  if (!id) {
-    throw Boom.badRequest('team id is required')
-  }
-
-  if (!add && !remove) {
-    throw Boom.badRequest('osm ids are required')
-  }
-
-  try {
-    let members = []
-    if (add) {
-      members = members.concat(add)
-    }
-    if (remove) {
-      members = members.concat(remove)
-    }
-    // Check if these are OSM users
-    await team.resolveMemberNames(members)
-
-    await team.updateMembers(id, add, remove)
     return reply.status(200).send()
   } catch (err) {
     logger.error(err)
@@ -386,15 +254,10 @@ module.exports = {
   addMember,
   assignModerator,
   createTeam,
-  destroyTeam,
-  getTeam,
-  getTeamMembers,
   joinTeam,
   listTeams,
   removeMember,
   removeModerator,
-  updateMembers,
-  updateTeam,
   getJoinInvitations,
   createJoinInvitation,
   deleteJoinInvitation,

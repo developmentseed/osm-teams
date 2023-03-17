@@ -124,7 +124,7 @@ export default class OrgEditTeamProfile extends Component {
       { key: 'visibility' },
       { key: 'key_type', label: 'type' },
       { key: 'required' },
-      { key: 'actions', render: this.renderActions },
+      { key: 'actions', render: this.renderActions, alignment: 'center' },
     ]
 
     let rows = []
