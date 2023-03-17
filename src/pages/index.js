@@ -38,7 +38,7 @@ const VHS = keyframes`
 const Links = [
   { url: '/teams', name: 'Explore all teams' },
   { url: '/teams/create', name: 'Create new team' },
-  { url: '/profile', name: 'dashboard' },
+  { url: '/dashboard', name: 'dashboard' },
 ]
 
 export default function Home() {

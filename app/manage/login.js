@@ -77,7 +77,7 @@ async function loginAccept(req, res) {
 
       // Store id token in session
       req.session.idToken = result.id_token
-      return res.redirect(`${APP_URL}/profile`)
+      return res.redirect(`${APP_URL}/dashboard`)
     } catch (error) {
       logger.error(error)
       return res.status(500).json('Authentication failed')

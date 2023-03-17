@@ -13,6 +13,8 @@ import {
   Select,
   Checkbox,
   VStack,
+  Flex,
+  Text,
 } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 import { uniqBy, prop } from 'ramda'
@@ -44,12 +46,14 @@ export default function EditTeamForm({
   initialValues,
   onSubmit,
   staff,
+  team,
   isCreateForm,
   orgTeamTags = [],
   teamTags = [],
   profileValues,
 }) {
   const [orgTeam, setOrgTeam] = useState(false)
+  const [hasLocation, setHasLocation] = useState(initialValues.location)
   if (profileValues) {
     initialValues.tags = {}
     profileValues.forEach(({ id, value }) => {
@@ -83,13 +87,13 @@ export default function EditTeamForm({
         }
         if (orgTeamTags.length > 0) {
           extraOrgTeamFields = orgTeamTags.map(
-            ({ id, name, required, description }) => {
+            ({ id, name, key_type, required, description }) => {
               return (
                 <FormControl isRequired={required} key={`extra-tag-${id}`}>
                   <FormLabel htmlFor={`extra-tag-${id}`}>{name}</FormLabel>
                   <Field
                     as={Input}
-                    type='text'
+                    type={key_type}
                     name={`tags.key-${id}`}
                     id={`extra-tag-${id}`}
                     required={required}
@@ -106,13 +110,13 @@ export default function EditTeamForm({
 
         if (teamTags.length > 0) {
           extraTeamFields = teamTags.map(
-            ({ id, name, required, description }) => {
+            ({ id, name, key_type, required, description }) => {
               return (
                 <FormControl isRequired={required} key={`extra-tag-${id}`}>
                   <FormLabel htmlFor={`extra-tag-${id}`}>{name}</FormLabel>
                   <Field
                     as={Input}
-                    type='text'
+                    type={key_type}
                     name={`tags.key-${id}`}
                     id={`extra-tag-${id}`}
                     required={required}
@@ -129,8 +133,8 @@ export default function EditTeamForm({
 
         return (
           <Form>
-            <VStack alignItems={'flex-start'}>
-              <Heading variant='sectionHead'>Details</Heading>
+            <VStack alignItems={'flex-start'} spacing={4}>
+              <Heading variant='sectionHead'>Team Details</Heading>
               <FormControl isRequired isInvalid={errors.name}>
                 <FormLabel htmlFor='name'>Name</FormLabel>
                 <Field
@@ -192,18 +196,20 @@ export default function EditTeamForm({
                 </FormHelperText>
               </FormControl>
               {staff && isCreateForm && (
-                <FormControl>
-                  <FormLabel htmlFor='orgTeam-checkbox'>
+                <FormControl pt={4}>
+                  <Flex alignItems='center' gap={2}>
                     <Checkbox
                       id='orgTeam-checkbox'
                       name='orgTeam-checkbox'
                       type='checkbox'
-                      checked={orgTeam}
+                      isChecked={orgTeam}
                       style={{ minWidth: '1rem' }}
                       onChange={(e) => setOrgTeam(e.target.checked)}
                     />
-                    This team belongs to an organization
-                  </FormLabel>
+                    <FormLabel htmlFor='orgTeam-checkbox' m={0}>
+                      This team belongs to an organization
+                    </FormLabel>
+                  </Flex>
                   {orgTeam && (
                     <Field
                       as={Select}
@@ -222,18 +228,29 @@ export default function EditTeamForm({
                 </FormControl>
               )}
               {extraOrgTeamFields.length > 0 ? (
-                <>
-                  <Heading as='h3' size='sm'>
-                    Organization Attributes
+                <Flex
+                  flexDir='column'
+                  alignItems='flex-start'
+                  border={'1px'}
+                  borderRadius='base'
+                  p={8}
+                  borderColor='brand.50'
+                >
+                  <Heading as='h3' size='sm' variant='sectionHead'>
+                    {team.org?.name} Details
                   </Heading>
+                  <Text fontSize='sm' pb={4}>
+                    Organization {team.org?.name} requests the following
+                    additional details
+                  </Text>
                   {extraOrgTeamFields}
-                </>
+                </Flex>
               ) : (
                 ''
               )}
               {extraTeamFields.length > 0 ? (
                 <>
-                  <Heading as='h3' size='sm'>
+                  <Heading as='h3' size='sm' variant='sectionHead'>
                     Other Team Attributes
                   </Heading>
                   {extraTeamFields}
@@ -242,12 +259,32 @@ export default function EditTeamForm({
                 ''
               )}
               <Heading variant='sectionHead'>Location</Heading>
-              <FormMap
-                style={{ height: '300px', width: '100%' }}
-                name='location'
-                value={values.location}
-                onChange={setFieldValue}
-              />
+              <FormControl>
+                <Flex alignItems='center' gap={2}>
+                  <Checkbox
+                    id='hasLocation-checkbox'
+                    name='hasLocation-checkbox'
+                    type='checkbox'
+                    isChecked={hasLocation}
+                    style={{ minWidth: '1rem' }}
+                    onChange={(e) => {
+                      setHasLocation(e.target.checked)
+                      setFieldValue('location', null)
+                    }}
+                  />
+                  <FormLabel htmlFor='hasLocation-checkbox' m={0}>
+                    This team has a location
+                  </FormLabel>
+                </Flex>
+              </FormControl>
+              {hasLocation && (
+                <FormMap
+                  style={{ height: '300px', width: '100%' }}
+                  name='location'
+                  value={values.location}
+                  onChange={setFieldValue}
+                />
+              )}
               <FormControl>
                 <Button
                   isDisabled={isSubmitting}

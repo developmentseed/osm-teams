@@ -191,7 +191,6 @@ export default function Table({
       display='grid'
       gridTemplateColumns='minmax(0, 1fr)'
       overflowX='auto'
-      position='relative'
       my={2}
     >
       <BaseTable

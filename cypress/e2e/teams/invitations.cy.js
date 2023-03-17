@@ -81,11 +81,15 @@ describe('Team invitation page', () => {
     cy.visit(
       `/teams/${validInvitation.teamId}/invitations/${validInvitation.uuid}`
     )
-    cy.get('body').contains('Invitation accepted successfully.')
+    cy.get('[data-cy=invite-accepted]').contains(
+      'Invitation accepted successfully'
+    )
 
     cy.visit(
       `/teams/${anotherValidInvitation.teamId}/invitations/${anotherValidInvitation.uuid}`
     )
-    cy.get('body').contains('Invitation accepted successfully.')
+    cy.get('[data-cy=invite-accepted]').contains(
+      'Invitation accepted successfully'
+    )
   })
 })

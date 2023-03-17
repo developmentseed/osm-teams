@@ -73,6 +73,7 @@
     "knex-postgis": "^0.14.3",
     "leaflet": "^1.7.1",
     "leaflet-control-geocoder": "^1.13.0",
+    "leaflet-gesture-handling": "^1.2.2",
     "next": "^13.0.1",
     "next-auth": "^4.18.8",
     "next-connect": "^0.13.0",

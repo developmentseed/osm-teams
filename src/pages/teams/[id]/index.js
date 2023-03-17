@@ -11,6 +11,7 @@ import {
   Text,
   Flex,
   Stack,
+  SimpleGrid,
 } from '@chakra-ui/react'
 
 import AddMemberForm from '../../../components/add-member-form'
@@ -149,12 +150,12 @@ class Team extends Component {
 
   renderMap(location) {
     if (!location) {
-      return <div>No location specified</div>
+      return
     }
     let centerGeojson = location
     let center = reverse(JSON.parse(centerGeojson).coordinates)
 
-    return <Map marker={{ center }} style={{ height: '200px' }} />
+    return <Map marker={{ center }} style={{ height: '260px' }} />
   }
 
   async addModerator(osmId) {
@@ -252,14 +253,6 @@ class Team extends Component {
             <Flex direction='column' gap={2}>
               <Heading color='white'>{team.name}</Heading>
               <Flex gap={[4, 8]}>
-                {team.hashtag && (
-                  <Stack as='dl' spacing={1}>
-                    <Text as='dt' variant='overline'>
-                      Hashtag
-                    </Text>
-                    <Text as='dd'>{team.hashtag}</Text>
-                  </Stack>
-                )}
                 {team.org && (
                   <Stack as='dl' spacing={1}>
                     <Text as='dt' variant='overline'>
@@ -275,31 +268,13 @@ class Team extends Component {
                     </Text>
                   </Stack>
                 )}
-                {teamProfile &&
-                  teamProfile.map((key) => {
-                    if (key.value) {
-                      return (
-                        <Stack as='dl' spacing={1} key={key}>
-                          <Text
-                            fontFamily='mono'
-                            as='dt'
-                            fontSize='sm'
-                            textTransform={'uppercase'}
-                          >
-                            {key.name}
-                          </Text>
-                          <Text as='dd'>{key.value}</Text>
-                        </Stack>
-                      )
-                    }
-                  })}
-                {team.editing_policy && (
-                  <a
-                    href={team.editing_policy}
-                    className='team__editing_policy'
-                  >
-                    Organized editing policy
-                  </a>
+                {team.hashtag && (
+                  <Stack as='dl' spacing={1}>
+                    <Text as='dt' variant='overline'>
+                      Hashtag
+                    </Text>
+                    <Text as='dd'>{team.hashtag}</Text>
+                  </Stack>
                 )}
               </Flex>
             </Flex>
@@ -341,13 +316,62 @@ class Team extends Component {
               <Text>{team.bio}</Text>
             </Box>
           )}
-
-          <Box my={8}>
+          {teamProfile.length > 0 && (
+            <Box as='section' layerStyle='shadowed'>
+              <Heading variant='sectionHead'>Team Details</Heading>
+              <SimpleGrid columns={[2, null, 3]} spacing={2}>
+                {team.org && (
+                  <Stack as='dl' spacing={0}>
+                    <Text as='dt' variant='overline'>
+                      Organization
+                    </Text>
+                    <Text as='dd'>
+                      <Link
+                        href={`/organizations/${team.org.organization_id}`}
+                        style={{ textDecoration: 'underline' }}
+                      >
+                        {team.org.name}
+                      </Link>
+                    </Text>
+                  </Stack>
+                )}
+                {team.hashtag && (
+                  <Stack as='dl' spacing={0}>
+                    <Text as='dt' variant='overline'>
+                      Hashtag
+                    </Text>
+                    <Text as='dd'>{team.hashtag}</Text>
+                  </Stack>
+                )}
+                {team.editing_policy && (
+                  <a
+                    href={team.editing_policy}
+                    className='team__editing_policy'
+                  >
+                    Organized editing policy
+                  </a>
+                )}
+                {teamProfile.map((key) => {
+                  if (key.value) {
+                    return (
+                      <Stack as='dl' spacing={0} key={key}>
+                        <Text variant={'overline'} as='dt'>
+                          {key.name}
+                        </Text>
+                        <Text as='dd'>{key.value}</Text>
+                      </Stack>
+                    )
+                  }
+                })}
+              </SimpleGrid>
+            </Box>
+          )}
+          {team.location && (
             <Box as='section' layerStyle='shadowed'>
               <Heading variant='sectionHead'>Location</Heading>
               {this.renderMap(team.location)}
             </Box>
-          </Box>
+          )}
           {teamModerators.length ? (
             <Box as='section' layerStyle={'shadowed'}>
               <Box mb={2} data-cy='team-members-section'>

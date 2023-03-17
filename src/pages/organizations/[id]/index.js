@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
 import Router, { withRouter } from 'next/router'
+import dynamic from 'next/dynamic'
 import {
   getOrg,
   addManager,
   removeManager,
   addOwner,
   removeOwner,
+  getOrgTeams,
   getOrgStaff,
 } from '../../../lib/org-api'
 import { getUserOrgProfile } from '../../../lib/profiles-api'
@@ -13,6 +15,7 @@ import { Box, Container, Heading, Button, Flex } from '@chakra-ui/react'
 import Table from '../../../components/tables/table'
 import AddMemberForm from '../../../components/add-member-form'
 import ProfileModal from '../../../components/profile-modal'
+import { map, pick } from 'ramda'
 import join from 'url-join'
 import { getSession } from 'next-auth/react'
 import { getOrgBadges, getUserBadges } from '../../../lib/badges-api'
@@ -22,6 +25,10 @@ import logger from '../../../lib/logger'
 import Link from 'next/link'
 import InpageHeader from '../../../components/inpage-header'
 import Badge from '../../../components/badge'
+
+const Map = dynamic(import('../../../components/list-map'), {
+  ssr: false,
+})
 
 const URL = process.env.APP_URL
 
@@ -75,6 +82,7 @@ class Organization extends Component {
     await this.getOrg()
     await this.getOrgStaff()
     await this.getBadges()
+    await this.getOrgTeams()
   }
 
   async openProfileModal(user) {
@@ -157,6 +165,21 @@ class Organization extends Component {
     }
   }
 
+  async getOrgTeams() {
+    const { id } = this.props
+    try {
+      let teams = await getOrgTeams(id)
+      this.setState({
+        teams,
+      })
+    } catch (e) {
+      this.setState({
+        error: e,
+        teams: [],
+      })
+    }
+  }
+
   async getBadges() {
     try {
       const { id: orgId } = this.props
@@ -235,8 +258,37 @@ class Organization extends Component {
     ) : null
   }
 
+  renderMap(teams) {
+    const { data } = teams
+
+    if (!data) return null
+
+    const teamLocations = map(pick(['location', 'id', 'name']), data)
+    const locations = teamLocations.filter(({ location }) => !!location) // reject nulls
+    const centers = map(
+      ({ location, id, name }) => ({
+        id,
+        name,
+        center: JSON.parse(location).coordinates.reverse(),
+      }),
+      locations
+    )
+
+    return (
+      <Map
+        markers={centers}
+        style={{
+          height: '360px',
+          zIndex: '10',
+          marginBottom: '1rem',
+        }}
+        onBoundsChange={() => {}}
+      />
+    )
+  }
+
   render() {
-    const { org, managers, owners, error } = this.state
+    const { org, managers, owners, error, teams } = this.state
     const userId = parseInt(this.state?.session?.user_id)
 
     // Handle org loading errors
@@ -312,9 +364,9 @@ class Organization extends Component {
               {org.data.description}
             </Box>
           )}
-
           <Box layerStyle={'shadowed'} as='section'>
             <Heading variant='sectionHead'>Teams</Heading>
+            {this.renderMap(teams)}
             <TeamsTable type='org-teams' orgId={org.data.id} />
           </Box>
 

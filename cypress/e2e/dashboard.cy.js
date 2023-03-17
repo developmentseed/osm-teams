@@ -34,7 +34,7 @@ const user3teams = generateSequenceArray(TEAMS_COUNT, 2 * TEAMS_COUNT).map(
   })
 )
 
-describe('Profile page', () => {
+describe('Dashboard page', () => {
   before(() => {
     cy.task('db:reset')
   })
@@ -43,7 +43,7 @@ describe('Profile page', () => {
     cy.login(user1)
 
     // Check state when no teams are available
-    cy.visit('/profile')
+    cy.visit('/dashboard')
     cy.get('[data-cy=my-teams-table]').contains(
       'You are not part of a team yet.'
     )
@@ -73,9 +73,9 @@ describe('Profile page', () => {
       moderatorId: user3.id,
     })
 
-    // Log in and visit profile
+    // Log in and visit dashboard
     cy.login(user1)
-    cy.visit('/profile')
+    cy.visit('/dashboard')
 
     // Check page and total count
     cy.get('[data-cy=my-teams-table-pagination]').contains('Showing 1-10 of 50')
