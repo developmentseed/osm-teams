@@ -427,7 +427,8 @@ export default class ProfileForm extends Component {
                               alignItems={'center'}
                               gap={2}
                             >
-                              <Checkbox
+                              <Field
+                                as={Checkbox}
                                 checked={consentChecked}
                                 onChange={(e) =>
                                   this.setConsentChecked(e.target.checked)

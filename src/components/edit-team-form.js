@@ -198,7 +198,8 @@ export default function EditTeamForm({
               {staff && isCreateForm && (
                 <FormControl pt={4}>
                   <Flex alignItems='center' gap={2}>
-                    <Checkbox
+                    <Field
+                      as={Checkbox}
                       id='orgTeam-checkbox'
                       name='orgTeam-checkbox'
                       type='checkbox'
@@ -261,7 +262,8 @@ export default function EditTeamForm({
               <Heading variant='sectionHead'>Location</Heading>
               <FormControl>
                 <Flex alignItems='center' gap={2}>
-                  <Checkbox
+                  <Field
+                    as={Checkbox}
                     id='hasLocation-checkbox'
                     name='hasLocation-checkbox'
                     type='checkbox'
