@@ -145,7 +145,8 @@ export default function ProfileAttributeForm({
                 alignItems='center'
                 htmlFor='required'
               >
-                <Checkbox
+                <Field
+                  as={Checkbox}
                   type='checkbox'
                   name='required'
                   id='required'
