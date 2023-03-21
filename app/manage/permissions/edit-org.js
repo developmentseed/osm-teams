@@ -12,6 +12,9 @@ const { isOwner } = require('../../../src/models/organization')
  * @returns {Promise<boolean>}
  */
 async function editOrg(uid, { id }) {
+  if (!uid) {
+    return false
+  }
   return isOwner(id, uid)
 }
 

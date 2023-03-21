@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
-import theme from '../styles/theme'
 import CreatableSelect from 'react-select/creatable'
 import * as Yup from 'yup'
 import Router from 'next/router'
-import descriptionPopup from './description-popup'
 import { Formik, Field, useField, Form, ErrorMessage } from 'formik'
 import {
   getOrgMemberAttributes,
@@ -13,10 +11,25 @@ import {
 } from '../lib/profiles-api'
 import { getOrg } from '../lib/org-api'
 import { getTeam } from '../lib/teams-api'
-import Button from '../components/button'
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
+  Heading,
+  Text,
+  Checkbox,
+  Input,
+  VStack,
+} from '@chakra-ui/react'
 import { propOr, prop } from 'ramda'
 import logger from '../lib/logger'
 import Link from 'next/link'
+import InpageHeader from './inpage-header'
 
 function GenderSelectField(props) {
   const [field, meta, { setValue, setTouched }] = useField(props.name)
@@ -52,7 +65,7 @@ function GenderSelectField(props) {
       ...provided,
       minWidth: '220px',
       width: '220px',
-      border: `2px solid ${theme.colors.primaryColor}`,
+      border: `2px solid brand.600`,
     }),
     option: (provided) => ({
       ...provided,
@@ -62,7 +75,7 @@ function GenderSelectField(props) {
   }
 
   return (
-    <div>
+    <FormControl isInvalid={meta.error}>
       <CreatableSelect
         styles={styles}
         isClearable
@@ -74,11 +87,9 @@ function GenderSelectField(props) {
         onBlur={setTouched}
       />
       {meta.touched && meta.error ? (
-        <div className='form--error'>
-          <ErrorMessage name={props.name} />
-        </div>
+        <ErrorMessage as={FormErrorMessage} name={props.name} />
       ) : null}
-    </div>
+    </FormControl>
   )
 }
 
@@ -147,6 +158,7 @@ export default class ProfileForm extends Component {
       this.setState({
         error: e,
         loading: false,
+        returnUrl: '/',
       })
     }
   }
@@ -161,14 +173,32 @@ export default class ProfileForm extends Component {
       returnUrl,
       consentChecked,
       loading,
+      error,
     } = this.state
     profileValues = profileValues || {}
 
     if (loading) {
       return (
-        <article className='inner page'>
-          <div>Loading...</div>
-        </article>
+        <Box as='main' mb={16}>
+          <InpageHeader>
+            <Heading color='white'>Loading...</Heading>
+          </InpageHeader>
+        </Box>
+      )
+    }
+    if (error) {
+      return (
+        <Box as='main' mb={16}>
+          <InpageHeader>
+            <Heading color='white'>Error loading team...</Heading>
+            <Text py={4}>
+              This team can not be loaded, or you don&apos;t have permission to
+              access this team. Contact the team moderator to ensure you have
+              the correct permissions.
+            </Text>
+            <Link href='/dashboard'>← Return to your dashboard</Link>
+          </InpageHeader>
+        </Box>
       )
     }
 
@@ -230,185 +260,212 @@ export default class ProfileForm extends Component {
     const orgName = prop('name', org) || 'org'
 
     return (
-      <article className='inner page'>
-        <Link href={returnUrl}>← Back to Team Page</Link>
-        <section>
-          <h1>Edit your profile details</h1>
-          <Formik
-            enableReinitialize
-            validateOnBlur
-            validationSchema={yupSchema}
-            initialValues={initialValues}
-            onSubmit={async (values, actions) => {
-              const data = Object.keys(values).map((key) => ({
-                key_id: key,
-                value: values[key],
-              }))
-              actions.setSubmitting(true)
-              try {
-                await setMyProfile(data)
-                actions.setSubmitting(false)
-                Router.push(returnUrl)
-              } catch (e) {
-                logger.error(e)
-                actions.setSubmitting(false)
-                actions.setStatus(e.message)
-              }
-            }}
-            render={({ status, isSubmitting }) => {
-              const addProfileText = `Submit ${isSubmitting ? ' 🕙' : ''}`
-              return (
-                <Form>
-                  {orgAttributes.length > 0 ? (
-                    <>
-                      <h2>
-                        Details for <b>{orgName}</b>
-                      </h2>
-                      {orgAttributes.map((attribute) => {
-                        return (
-                          <div
-                            key={attribute.name}
-                            className='form-control form-control__vertical'
-                          >
-                            <label>
-                              {attribute.name}
-                              {attribute.required ? (
-                                <span className='form--required'>*</span>
+      <Box as='main' mb={16}>
+        <InpageHeader>
+          <Link href={returnUrl}>← Back to Team Page</Link>
+          <Heading color='white'>{teamName}</Heading>
+          <Text variant='overline'>Editing Profile</Text>
+        </InpageHeader>
+        <Container maxW='container.xl' as='section'>
+          <Box layerStyle={'shadowed'} as='article'>
+            <Formik
+              enableReinitialize
+              validateOnBlur
+              validationSchema={yupSchema}
+              initialValues={initialValues}
+              onSubmit={async (values, actions) => {
+                const data = Object.keys(values).map((key) => ({
+                  key_id: key,
+                  value: values[key],
+                }))
+                actions.setSubmitting(true)
+                try {
+                  await setMyProfile(data)
+                  actions.setSubmitting(false)
+                  Router.push(returnUrl)
+                } catch (e) {
+                  logger.error(e)
+                  actions.setSubmitting(false)
+                  actions.setStatus(e.message)
+                }
+              }}
+              render={({ status, isSubmitting }) => {
+                const addProfileText = `Submit ${isSubmitting ? ' 🕙' : ''}`
+                return (
+                  <VStack as={Form} gap={2} alignItems='flex-start'>
+                    {orgAttributes.length > 0 ? (
+                      <>
+                        <Heading variant='sectionHead'>
+                          Details for <b>{orgName}</b>
+                        </Heading>
+                        {orgAttributes.map((attribute) => {
+                          return (
+                            <FormControl
+                              key={attribute.name}
+                              isRequired={attribute.required}
+                            >
+                              <FormLabel htmlFor={attribute.id}>
+                                {attribute.name}
+                              </FormLabel>
+                              {attribute.key_type === 'gender' ? (
+                                <>
+                                  <GenderSelectField
+                                    name={attribute.id}
+                                    id={attribute.id}
+                                  />
+                                  <FormHelperText>
+                                    Type in or select your gender from the
+                                    drop-down.
+                                  </FormHelperText>
+                                </>
                               ) : (
-                                ''
+                                <>
+                                  <Field
+                                    as={Input}
+                                    type={attribute.key_type}
+                                    name={attribute.id}
+                                    id={attribute.id}
+                                    required={attribute.required}
+                                  />
+                                  <ErrorMessage
+                                    as={FormErrorMessage}
+                                    name={attribute.id}
+                                  />
+                                </>
                               )}
-                              {attribute.description
-                                ? descriptionPopup(attribute.description)
-                                : ''}
-                            </label>
+                              {attribute.description && (
+                                <FormHelperText>
+                                  {attribute.description}
+                                </FormHelperText>
+                              )}
+                            </FormControl>
+                          )
+                        })}
+                      </>
+                    ) : (
+                      ''
+                    )}
+                    <Heading as='h2' variant='sectionHead'>
+                      Details for <b>{teamName}</b>
+                    </Heading>
+                    {memberAttributes.length > 0 ? (
+                      memberAttributes.map((attribute) => {
+                        return (
+                          <FormControl
+                            key={attribute.name}
+                            isRequired={attribute.required}
+                          >
+                            <FormLabel htmlFor={attribute.id}>
+                              {attribute.name}
+                            </FormLabel>
+
                             {attribute.key_type === 'gender' ? (
-                              <label>
-                                Type in or select your gender from the
-                                drop-down.
-                              </label>
-                            ) : null}
-                            {attribute.key_type === 'gender' ? (
-                              <GenderSelectField name={attribute.id} />
+                              <>
+                                <FormLabel htmlFor={attribute.id}>
+                                  Type in or select your gender from the
+                                  drop-down.
+                                </FormLabel>
+                                <GenderSelectField
+                                  name={attribute.id}
+                                  id={attribute.id}
+                                />
+                              </>
                             ) : (
                               <>
                                 <Field
+                                  as={Input}
                                   type={attribute.key_type}
                                   name={attribute.id}
+                                  id={attribute.id}
                                   required={attribute.required}
                                 />
-                                <div className='form--error'>
-                                  <ErrorMessage name={attribute.id} />
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        )
-                      })}
-                    </>
-                  ) : (
-                    ''
-                  )}
-                  <h2>
-                    Details for <b>{teamName}</b>
-                  </h2>
-                  {memberAttributes.length > 0
-                    ? memberAttributes.map((attribute) => {
-                        return (
-                          <div
-                            key={attribute.name}
-                            className='form-control form-control__vertical'
-                          >
-                            <label>
-                              {attribute.name}
-                              {attribute.required ? (
-                                <span className='form--required'>*</span>
-                              ) : (
-                                ''
-                              )}
-                              {attribute.description
-                                ? descriptionPopup(attribute.description)
-                                : ''}
-                            </label>
-                            {attribute.key_type === 'gender' ? (
-                              <label>
-                                Type in or select your gender from the
-                                drop-down.
-                              </label>
-                            ) : null}
-                            {attribute.key_type === 'gender' ? (
-                              <GenderSelectField name={attribute.id} />
-                            ) : (
-                              <>
-                                <Field
-                                  type={attribute.key_type}
+                                <ErrorMessage
+                                  as={FormErrorMessage}
                                   name={attribute.id}
-                                  required={attribute.required}
                                 />
-                                <div className='form--error'>
-                                  <ErrorMessage name={attribute.id} />
-                                </div>
                               </>
                             )}
-                          </div>
+                            {attribute.description && (
+                              <FormHelperText>
+                                {attribute.description}
+                              </FormHelperText>
+                            )}
+                          </FormControl>
                         )
                       })
-                    : 'No profile form to fill yet'}
-                  {org && org.privacy_policy ? (
-                    <div>
-                      <h2>Privacy Policy</h2>
-                      <div
-                        style={{
-                          maxHeight: '100px',
-                          width: '80%',
-                          overflow: 'scroll',
-                          marginBottom: '1rem',
-                        }}
+                    ) : (
+                      <p>This team has not requested any profile details</p>
+                    )}
+                    {org && org.privacy_policy && (
+                      <VStack gap={2} alignItems='flex-start'>
+                        <Heading variant='sectionHead' as='h2'>
+                          Privacy Policy
+                        </Heading>
+                        <Container
+                          maxW='container.sm'
+                          overflow={'scroll'}
+                          maxH={'24vh'}
+                          mb={4}
+                          p={2}
+                          border='2px solid'
+                          borderColor='brand.50'
+                        >
+                          {org.privacy_policy.body}
+                        </Container>
+                        <Container
+                          maxW='container.sm'
+                          overflow={'scroll'}
+                          maxH={'24vh'}
+                          mb={4}
+                          p={2}
+                          border='2px solid'
+                          borderColor='brand.50'
+                        >
+                          <FormControl isRequired>
+                            <FormLabel
+                              display='flex'
+                              alignItems={'center'}
+                              gap={2}
+                            >
+                              <Field
+                                as={Checkbox}
+                                checked={consentChecked}
+                                onChange={(e) =>
+                                  this.setConsentChecked(e.target.checked)
+                                }
+                              />
+                              {org.privacy_policy.consentText}
+                            </FormLabel>
+                          </FormControl>
+                        </Container>
+                      </VStack>
+                    )}
+                    {status && status.msg && (
+                      <FormErrorMessage>{status.msg}</FormErrorMessage>
+                    )}
+                    <Flex gap={4} mt={4}>
+                      <Button
+                        type='submit'
+                        isDisabled={!consentChecked || isSubmitting}
                       >
-                        {org.privacy_policy.body}
-                      </div>
-                      <div
-                        style={{
-                          maxHeight: '100px',
-                          width: '80%',
-                          overflow: 'scroll',
-                        }}
+                        {addProfileText}
+                      </Button>
+                      <Button
+                        variant='outline'
+                        colorScheme={'red'}
+                        href={returnUrl}
+                        as={Link}
                       >
-                        <input
-                          type='checkbox'
-                          checked={consentChecked}
-                          onChange={(e) =>
-                            this.setConsentChecked(e.target.checked)
-                          }
-                        />
-                        {org.privacy_policy.consentText}
-                        <span className='form--required'>*</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div />
-                  )}
-                  {status && status.msg && <div>{status.msg}</div>}
-                  <div
-                    style={{ marginTop: '1rem' }}
-                    className='section-actions'
-                  >
-                    <Button
-                      type='submit'
-                      variant='submit'
-                      disabled={!consentChecked || isSubmitting}
-                    >
-                      {addProfileText}
-                    </Button>
-                    <Button variant='secondary' href={returnUrl}>
-                      Cancel
-                    </Button>
-                  </div>
-                </Form>
-              )
-            }}
-          />
-        </section>
-      </article>
+                        Cancel
+                      </Button>
+                    </Flex>
+                  </VStack>
+                )
+              }}
+            />
+          </Box>
+        </Container>
+      </Box>
     )
   }
 }

@@ -278,7 +278,7 @@ async function getProfile(profileType, id) {
 }
 
 async function getUserManageToken(id) {
-  return unpack(db('users').select('manageToken').where('id', id).debug())
+  return unpack(db('users').select('manageToken').where('id', id))
 }
 
 async function getUserBadges(id) {

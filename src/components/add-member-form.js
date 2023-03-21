@@ -1,6 +1,6 @@
 import React from 'react'
-import { Formik, Field, Form } from 'formik'
-import Button from './button'
+import { Formik, Field, Form, FormErrorMessage } from 'formik'
+import { Button, Flex, Input } from '@chakra-ui/react'
 import logger from '../lib/logger'
 
 export default function AddMemberForm({ onSubmit }) {
@@ -24,8 +24,9 @@ export default function AddMemberForm({ onSubmit }) {
         const addMemberText = `Add Member ${isSubmitting ? ' 🕙' : ''}`
 
         return (
-          <Form className='form-control'>
+          <Flex as={Form} alignItems='center'>
             <Field
+              as={Input}
               type='text'
               name='osmId'
               id='osmId'
@@ -33,11 +34,20 @@ export default function AddMemberForm({ onSubmit }) {
               value={values.osmId}
               style={{ width: '6rem' }}
             />
-            {status && status.msg && <div>{status.msg}</div>}
-            <Button type='submit' variant='submit' disabled={isSubmitting}>
+            {status && status.msg && (
+              <FormErrorMessage>{status.msg}</FormErrorMessage>
+            )}
+            <Button
+              textTransform={'lowercase'}
+              type='submit'
+              variant='outline'
+              isLoading={isSubmitting}
+              loadingText='Adding'
+              isDisabled={isSubmitting}
+            >
               {addMemberText}
             </Button>
-          </Form>
+          </Flex>
         )
       }}
     />

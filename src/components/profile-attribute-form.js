@@ -1,7 +1,17 @@
 import React from 'react'
 import { Formik, Field, Form } from 'formik'
 import { assoc } from 'ramda'
-import Button from './button'
+import {
+  Button,
+  Checkbox,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Input,
+  Textarea,
+  Select,
+  VStack,
+} from '@chakra-ui/react'
 import logger from '../lib/logger'
 
 const validate = (values) => {
@@ -17,7 +27,7 @@ const defaultValues = {
   description: '',
   visibility: 'team',
   required: [],
-  key_type: 'text',
+  key_type: '',
 }
 
 export default function ProfileAttributeForm({
@@ -65,36 +75,38 @@ export default function ProfileAttributeForm({
         }
 
         return (
-          <Form>
-            <div className='form-control form-control__vertical'>
-              <label htmlFor='name'>
-                Name of attribute<span className='form--required'>*</span>
-              </label>
+          <VStack as={Form} alignItems='flex-start'>
+            <FormControl isRequired isInvalid={errors.name}>
+              <FormLabel htmlFor='name'>Name of attribute</FormLabel>
               <Field
+                as={Input}
                 type='text'
                 name='name'
                 id='name'
-                placeholder='Favorite Color'
+                placeholder='Name of the attribute'
                 value={values.name}
+                required
               />
               {errors.name ? (
-                <div className='form--error'>{errors.name}</div>
+                <FormErrorMessage>{errors.name}</FormErrorMessage>
               ) : null}
-            </div>
-            <div className='form-control form-control__vertical'>
-              <label>Description of attribute:</label>
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor='description'>
+                Description of attribute:
+              </FormLabel>
               <Field
-                component='textarea'
+                as={Textarea}
                 name='description'
-                id='name'
+                id='description'
                 placeholder='Describe the attribute'
                 value={values.description}
               />
-            </div>
-            <div className='form-control form-control__vertical'>
-              <label>Visibility:</label>
+            </FormControl>
+            <FormControl>
+              <FormLabel>Visibility:</FormLabel>
               <Field
-                as='select'
+                as={Select}
                 type='text'
                 name='visibility'
                 id='visibility'
@@ -103,15 +115,17 @@ export default function ProfileAttributeForm({
                 {typeOption}
                 <option value='public'>Public</option>
               </Field>
-            </div>
-            <div className='form-control form-control__vertical'>
-              <label>Type:</label>
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Type:</FormLabel>
               <Field
-                as='select'
+                as={Select}
                 type='text'
                 name='key_type'
                 id='key_type'
                 value={values.key_type}
+                isDisabled={values.key_type}
+                placeholder='Select type'
               >
                 <option value='text'>Text</option>
                 <option value='number'>Number</option>
@@ -122,27 +136,35 @@ export default function ProfileAttributeForm({
                 <option value='color'>Color</option>
                 <option value='gender'>Gender</option>
               </Field>
-            </div>
+            </FormControl>
 
-            <div className='form-control'>
-              <label>
-                Is this attribute required?
+            <FormControl>
+              <FormLabel
+                display='flex'
+                gap={2}
+                alignItems='center'
+                htmlFor='required'
+              >
                 <Field
+                  as={Checkbox}
                   type='checkbox'
                   name='required'
                   id='required'
                   value='required'
-                  checked={values.required.includes('required')}
+                  isChecked={values.required.includes('required')}
                 />
-              </label>
-            </div>
-            {status && status.msg && <div>{status.msg}</div>}
-            <div className='form-control form-control__vertical'>
-              <Button type='submit' variant='submit' disabled={isSubmitting}>
+                Is this attribute required?
+              </FormLabel>
+            </FormControl>
+            <FormControl>
+              <Button type='submit' isDisabled={isSubmitting}>
                 {addAttributeText}
               </Button>
-            </div>
-          </Form>
+              {status && status.msg && (
+                <FormErrorMessage>{status.msg}</FormErrorMessage>
+              )}
+            </FormControl>
+          </VStack>
         )
       }}
     />

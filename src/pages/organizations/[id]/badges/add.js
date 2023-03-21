@@ -3,12 +3,25 @@ import join from 'url-join'
 import { Formik, Field, Form } from 'formik'
 import APIClient from '../../../../lib/api-client'
 import { getOrg } from '../../../../lib/org-api'
-import Button from '../../../../components/button'
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Heading,
+  Input,
+  VStack,
+  Text,
+} from '@chakra-ui/react'
 import Router from 'next/router'
 import { getRandomColor } from '../../../../lib/utils'
 import { toast } from 'react-toastify'
 import logger from '../../../../lib/logger'
 import Link from 'next/link'
+import InpageHeader from '../../../../components/inpage-header'
 
 const URL = process.env.APP_URL
 
@@ -19,20 +32,7 @@ function validateName(value) {
 }
 
 function renderError(text) {
-  return <div className='form--error'>{text}</div>
-}
-
-function ButtonWrapper({ children }) {
-  return (
-    <div>
-      {children}
-      <style jsx global>{`
-      .button {
-        margin-right: 10px;
-      }
-    }`}</style>
-    </div>
-  )
+  return <FormErrorMessage>{text}</FormErrorMessage>
 }
 
 export default class AddBadge extends Component {
@@ -76,91 +76,94 @@ export default class AddBadge extends Component {
 
     if (!this.state.org) {
       return (
-        <article className='inner page'>
-          <div>Loading...</div>
-        </article>
+        <InpageHeader>
+          <Heading color='white'>Loading</Heading>
+        </InpageHeader>
       )
     }
 
     return (
-      <article className='inner page'>
-        <Link href={join(URL, `/organizations/${orgId}`)}>
-          ← Back to Organization Page
-        </Link>
-        <section>
-          <h3>{this.state.org.name}</h3>
-          <div className='page__heading'>
-            <h1>New badge</h1>
-          </div>
-
-          <Formik
-            initialValues={{ name: '', color: getRandomColor() }}
-            onSubmit={async ({ name, color }, actions) => {
-              actions.setSubmitting(true)
-              try {
-                await apiClient.post(`/organizations/${orgId}/badges`, {
-                  name,
-                  color,
-                })
-                Router.push(join(URL, `/organizations/${orgId}`))
-              } catch (error) {
-                logger.error(error)
-                toast.error(
-                  `There was an error creating badge '${name}'. Please try again later.`
+      <Box as='main' mb={16}>
+        <InpageHeader>
+          <Link href={`/organizations/${orgId}`}>← Back to Organization</Link>
+          <Heading color='white'>New Badge</Heading>
+          <Text variant='overline'>{this.state.org.name}</Text>
+        </InpageHeader>
+        <Container maxW='container.xl' as='section'>
+          <Box as='article' layerStyle={'shadowed'}>
+            <Formik
+              initialValues={{ name: '', color: getRandomColor() }}
+              onSubmit={async ({ name, color }, actions) => {
+                actions.setSubmitting(true)
+                try {
+                  await apiClient.post(`/organizations/${orgId}/badges`, {
+                    name,
+                    color,
+                  })
+                  Router.push(join(URL, `/organizations/${orgId}`))
+                } catch (error) {
+                  logger.error(error)
+                  toast.error(
+                    `There was an error creating badge '${name}'. Please try again later.`
+                  )
+                } finally {
+                  actions.setSubmitting(false)
+                }
+              }}
+              render={({ isSubmitting, values, errors }) => {
+                return (
+                  <VStack as={Form} gap={2} alignItems='flex-start'>
+                    <FormControl isRequired isInvalid={errors.name}>
+                      <FormLabel htmlFor='name'>Name</FormLabel>
+                      <Field
+                        as={Input}
+                        type='text'
+                        name='name'
+                        id='name'
+                        value={values.name}
+                        required
+                        className={errors.name ? 'form--error' : ''}
+                        validate={validateName}
+                      />
+                      {errors.name && renderError(errors.name)}
+                    </FormControl>
+                    <FormControl isRequired isInvalid={errors.color}>
+                      <FormLabel htmlFor='color'>
+                        Color: {values.color}
+                      </FormLabel>
+                      <Field
+                        type='color'
+                        name='color'
+                        id='color'
+                        value={values.color}
+                        required
+                      />
+                      {errors.color && renderError(errors.color)}
+                    </FormControl>
+                    <Flex gap={4}>
+                      <Button
+                        isDisabled={isSubmitting}
+                        type='submit'
+                        value='submit'
+                      >
+                        Submit
+                      </Button>
+                      <Button
+                        variant='outline'
+                        as={Link}
+                        href={`/organizations/${orgId}`}
+                        type='submit'
+                      >
+                        Cancel
+                      </Button>
+                    </Flex>
+                  </VStack>
                 )
-              } finally {
-                actions.setSubmitting(false)
-              }
-            }}
-            render={({ isSubmitting, values, errors }) => {
-              return (
-                <Form>
-                  <div className='form-control form-control__vertical'>
-                    <label htmlFor='name'>
-                      Name<span className='form--required'>*</span>
-                    </label>
-                    <Field
-                      type='text'
-                      name='name'
-                      value={values.name}
-                      required
-                      className={errors.name ? 'form--error' : ''}
-                      validate={validateName}
-                    />
-                    {errors.name && renderError(errors.name)}
-                  </div>
-                  <div className='form-control form-control__vertical'>
-                    <label htmlFor='color'>Color: {values.color}</label>
-                    <Field
-                      type='color'
-                      name='color'
-                      value={values.color}
-                      required
-                    />
-                    {errors.color && renderError(errors.color)}
-                  </div>
-                  <ButtonWrapper>
-                    <Button
-                      disabled={isSubmitting}
-                      variant='primary'
-                      type='submit'
-                      value='submit'
-                    />
-                    <Button
-                      variant='disable small'
-                      onClick={() => {
-                        Router.push(join(URL, `/organizations/${orgId}`))
-                      }}
-                      type='submit'
-                      value='cancel'
-                    />
-                  </ButtonWrapper>
-                </Form>
-              )
-            }}
-          />
-        </section>
-      </article>
+              }}
+            />
+          </Box>
+        </Container>
+      </Box>
     )
   }
 }

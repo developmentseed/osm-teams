@@ -2,45 +2,30 @@ import React, { Component } from 'react'
 import * as Yup from 'yup'
 import { Formik, Field, Form } from 'formik'
 import APIClient from '../../../../../../lib/api-client'
-import Button from '../../../../../../components/button'
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Input,
+  Heading,
+  VStack,
+} from '@chakra-ui/react'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import join from 'url-join'
 import Router from 'next/router'
 import logger from '../../../../../../lib/logger'
 import Link from 'next/link'
-import theme from '../../../../../../styles/theme'
 import Badge from '../../../../../../components/badge'
+import InpageHeader from '../../../../../../components/inpage-header'
 
 const URL = process.env.APP_URL
 
 const apiClient = new APIClient()
-
-function ButtonWrapper({ children }) {
-  return (
-    <div>
-      {children}
-      <style jsx global>{`
-      .button {
-        margin-right: 10px;
-      }
-    }`}</style>
-    </div>
-  )
-}
-
-function Section({ children }) {
-  return (
-    <section>
-      {children}
-      <style jsx global>{`
-      section {
-        margin-bottom: 20px;
-      }
-    }`}</style>
-    </section>
-  )
-}
 
 export default class EditBadgeAssignment extends Component {
   static async getInitialProps({ query }) {
@@ -99,129 +84,172 @@ export default class EditBadgeAssignment extends Component {
 
   renderPageInner() {
     if (this.state.error) {
-      return <div>An unexpected error occurred, please try again later.</div>
+      return (
+        <Box as='main' mb={16}>
+          <InpageHeader>
+            <Heading color='white' size='xs'>
+              An unexpected error occurred, please try again later
+            </Heading>
+          </InpageHeader>
+        </Box>
+      )
     }
 
     if (!this.state.org && (!this.state.badge || !this.state.badges)) {
-      return <div>Loading...</div>
+      return (
+        <Box as='main' mb={16}>
+          <InpageHeader>
+            <Heading color='white' size='xs'>
+              ...loading
+            </Heading>
+          </InpageHeader>
+        </Box>
+      )
     }
 
     const { orgId, userId, badgeId } = this.props
     const { badge, assignment } = this.state
 
     return (
-      <>
-        <Link href={join(URL, `/organizations/${orgId}/badges/${badgeId}`)}>
-          ← Back to Badge
-        </Link>
-        <Section>
-          <h1>Badge Assignment</h1>
-          <Formik
-            initialValues={{
-              assignedAt:
-                (assignment &&
-                  assignment.assignedAt &&
-                  assignment.assignedAt.substring(0, 10)) ||
-                format(Date.now(), 'yyyy-MM-dd'),
-              validUntil:
-                (assignment &&
-                  assignment.validUntil &&
-                  assignment.validUntil.substring(0, 10)) ||
-                '',
-            }}
-            validationSchema={Yup.object().shape({
-              assignedAt: Yup.date().required(
-                'Please select an assignment date.'
-              ),
-              validUntil: Yup.date().when(
-                'assignedAt',
-                (assignedAt, schema) =>
-                  assignedAt &&
-                  schema.min(
-                    assignedAt,
-                    'End date must be after the start date.'
-                  )
-              ),
-            })}
-            onSubmit={async ({ assignedAt, validUntil }) => {
-              try {
-                const payload = {
-                  assigned_at: assignedAt,
-                  valid_until: validUntil !== '' ? validUntil : null,
-                }
+      <Box as='main' mb={16}>
+        <InpageHeader>
+          <Link href={`/organizations/${orgId}/badges/${badgeId}`}>
+            ← Back to Badge
+          </Link>
+          <Heading color='white'>Badge Assignment</Heading>
+        </InpageHeader>
+        <Container maxW='container.xl' as='section'>
+          <Box mb={8} as='article' layerStyle='shadowed'>
+            <Formik
+              initialValues={{
+                assignedAt:
+                  (assignment &&
+                    assignment.assignedAt &&
+                    assignment.assignedAt.substring(0, 10)) ||
+                  format(Date.now(), 'yyyy-MM-dd'),
+                validUntil:
+                  (assignment &&
+                    assignment.validUntil &&
+                    assignment.validUntil.substring(0, 10)) ||
+                  '',
+              }}
+              validationSchema={Yup.object().shape({
+                assignedAt: Yup.date().required(
+                  'Please select an assignment date.'
+                ),
+                validUntil: Yup.date().when(
+                  'assignedAt',
+                  (assignedAt, schema) =>
+                    assignedAt &&
+                    schema.min(
+                      assignedAt,
+                      'End date must be after the start date.'
+                    )
+                ),
+              })}
+              onSubmit={async ({ assignedAt, validUntil }) => {
+                try {
+                  const payload = {
+                    assigned_at: assignedAt,
+                    valid_until: validUntil !== '' ? validUntil : null,
+                  }
 
-                await apiClient.patch(
-                  `/organizations/${orgId}/member/${userId}/badge/${badgeId}`,
-                  payload
-                )
-                toast.info('Badge updated successfully.')
-                this.loadData()
-              } catch (error) {
-                logger.error(error)
-                toast.error(`Unexpected error, please try again later.`)
-              }
-            }}
-            render={({ isSubmitting, values, errors }) => {
-              return (
-                <Form>
-                  <dl>
-                    <dt>OSM User ID:</dt>
-                    <dd> {userId}</dd>
+                  await apiClient.patch(
+                    `/organizations/${orgId}/member/${userId}/badge/${badgeId}`,
+                    payload
+                  )
+                  toast.info('Badge updated successfully.')
+                  this.loadData()
+                } catch (error) {
+                  logger.error(error)
+                  toast.error(`Unexpected error, please try again later.`)
+                }
+              }}
+              render={({ isSubmitting, values, errors }) => {
+                return (
+                  <VStack as={Form} gap={2} alignItems='flex-start'>
+                    <FormControl>
+                      <FormLabel>OSM User ID:</FormLabel>
+                      <Input
+                        isReadOnly
+                        isDisabled
+                        color={'brand.600'}
+                        opacity='1 !important'
+                        value={userId}
+                      />
+                    </FormControl>
                     {badge && (
-                      <>
-                        <dt>Badge:</dt>
-                        <dd>
-                          <Badge dot color={badge.color}>
-                            {badge.name}
-                          </Badge>
-                        </dd>
-                      </>
+                      <FormControl>
+                        <FormLabel>Badge:</FormLabel>
+                        <Badge dot color={badge.color}>
+                          {badge.name}
+                        </Badge>
+                      </FormControl>
                     )}
-                  </dl>
-                  <div className='form-control form-control__vertical'>
-                    <label htmlFor='assignedAt'>Assigned At (required)</label>
-                    <Field
-                      name='assignedAt'
-                      type='date'
-                      value={values.assignedAt}
-                    />
-                    {errors.assignedAt && (
-                      <div className='form--error'>{errors.assignedAt}</div>
-                    )}
-                  </div>
-                  <div className='form-control form-control__vertical'>
-                    <label htmlFor='validUntil'>Valid Until</label>
-                    <Field
-                      name='validUntil'
-                      type='date'
-                      value={values.validUntil}
-                    />
-                    {errors.validUntil && (
-                      <div className='form--error'>{errors.validUntil}</div>
-                    )}
-                  </div>
-                  <ButtonWrapper>
-                    <Button
-                      disabled={isSubmitting}
-                      variant='primary'
-                      type='submit'
-                      value={badge ? 'Update' : 'Assign'}
-                    />
-                    <Button
-                      href={`/organizations/${orgId}`}
-                      value='Go to organization view'
-                    />
-                  </ButtonWrapper>
-                </Form>
-              )
-            }}
-          />
-        </Section>
-        {badge && (
-          <Section>
-            <div>
+                    <FormControl isRequired isInvalid={errors.assignedAt}>
+                      <FormLabel htmlFor='assignedAt'>Assigned At</FormLabel>
+                      <Field
+                        as={Input}
+                        name='assignedAt'
+                        id='assignedAt'
+                        type='date'
+                        value={values.assignedAt}
+                      />
+                      {errors.assignedAt && (
+                        <FormErrorMessage>{errors.assignedAt}</FormErrorMessage>
+                      )}
+                    </FormControl>
+                    <FormControl isInvalid={errors.validUntil}>
+                      <FormLabel htmlFor='validUntil'>Valid Until</FormLabel>
+                      <Field
+                        as={Input}
+                        name='validUntil'
+                        id='validUntil'
+                        type='date'
+                        value={values.validUntil}
+                      />
+                      {errors.validUntil && (
+                        <FormErrorMessage>{errors.validUntil}</FormErrorMessage>
+                      )}
+                    </FormControl>
+                    <Flex gap={4}>
+                      <Button isDisabled={isSubmitting} type='submit'>
+                        {badge ? 'Update' : 'Assign'}
+                      </Button>
+                      <Button
+                        variant='outline'
+                        as={Link}
+                        href={`/organizations/${orgId}`}
+                      >
+                        Return to Organization
+                      </Button>
+                    </Flex>
+                  </VStack>
+                )
+              }}
+            />
+          </Box>
+          {badge && (
+            <Box
+              layerStyle='shadowed'
+              as='article'
+              borderColor='red.500'
+              boxShadow='4px 4px 0 0 var(--chakra-colors-red-500)'
+              display='flex'
+              flexDirection={'column'}
+              alignItems='flex-start'
+              gap={2}
+            >
+              <Heading
+                as='h2'
+                variant='sectionHead'
+                fontSize='md'
+                color='red.600'
+              >
+                Remove badge assignment
+              </Heading>
               {this.state.isDeleting ? (
-                <>
+                <Flex gap={4}>
                   <Button
                     onClick={() => {
                       this.setState({
@@ -232,7 +260,8 @@ export default class EditBadgeAssignment extends Component {
                     Cancel
                   </Button>
                   <Button
-                    variant='danger'
+                    colorScheme='red'
+                    variant='outline'
                     onClick={async (e) => {
                       e.preventDefault()
                       try {
@@ -250,40 +279,25 @@ export default class EditBadgeAssignment extends Component {
                   >
                     Confirm Unassign
                   </Button>
-                </>
+                </Flex>
               ) : (
                 <Button
-                  variant='danger'
+                  colorScheme='red'
+                  variant='outline'
                   type='submit'
-                  value='Unassign this badge'
                   onClick={async () => {
                     this.setState({
                       isDeleting: true,
                     })
                   }}
-                />
+                >
+                  Unassign this badge
+                </Button>
               )}
-            </div>
-          </Section>
-        )}
-        <style jsx>
-          {`
-            dl {
-              display: grid;
-              grid-template-columns: max-content 1fr;
-              gap: 0.25rem 1rem;
-            }
-
-            dt {
-              font-family: ${theme.typography.headingFontFamily};
-              text-transform: uppercase;
-            }
-            dd {
-              font-weight: ${theme.typography.baseFontSemiBold};
-            }
-          `}
-        </style>
-      </>
+            </Box>
+          )}
+        </Container>
+      </Box>
     )
   }
 

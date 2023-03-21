@@ -1,9 +1,19 @@
 import React, { Component } from 'react'
 import { assoc, isEmpty } from 'ramda'
-import Popup from 'reactjs-popup'
 
 import ProfileAttributeForm from '../../../components/profile-attribute-form'
-import Button from '../../../components/button'
+import {
+  Box,
+  Button,
+  Container,
+  Heading,
+  Flex,
+  Menu,
+  MenuList,
+  MenuItem,
+  MenuButton,
+  Portal,
+} from '@chakra-ui/react'
 import Table from '../../../components/tables/table'
 import {
   addOrgMemberAttributes,
@@ -11,9 +21,10 @@ import {
   modifyAttribute,
   deleteAttribute,
 } from '../../../lib/profiles-api'
-import theme from '../../../styles/theme'
+
 import logger from '../../../lib/logger'
 import Link from 'next/link'
+import InpageHeader from '../../../components/inpage-header'
 
 export default class OrgEditProfile extends Component {
   static async getInitialProps({ query }) {
@@ -45,61 +56,45 @@ export default class OrgEditProfile extends Component {
 
   renderActions(row) {
     return (
-      <Popup
-        trigger={<span>⚙️</span>}
-        position='left top'
-        on='click'
-        closeOnDocumentClick
-        contentStyle={{ padding: '10px', border: 'none' }}
-      >
-        <ul>
-          <li
-            onClick={async () => {
-              this.setState({
-                isModifying: true,
-                isAdding: false,
-                isDeleting: false,
-                rowToModify: assoc(
-                  'required',
-                  row.required === 'true' ? ['required'] : [],
-                  row
-                ),
-              })
-            }}
-          >
-            Modify
-          </li>
-          <li
-            onClick={async () => {
-              this.setState({
-                isModifying: false,
-                isAdding: false,
-                isDeleting: true,
-                rowToDelete: row,
-              })
-            }}
-          >
-            Delete
-          </li>
-        </ul>
-        <style jsx>
-          {`
-            ul {
-              list-style: none;
-              padding: 0;
-              margin: 0;
-            }
-
-            li {
-              padding-left: 0.5rem;
-            }
-
-            li:hover {
-              color: ${theme.colors.secondaryColor};
-            }
-          `}
-        </style>
-      </Popup>
+      <Menu>
+        <MenuButton as={Button} size='sm' variant='outline'>
+          Edit
+        </MenuButton>
+        <Portal>
+          <MenuList>
+            <MenuItem
+              fontSize='sm'
+              onClick={async () => {
+                this.setState({
+                  isModifying: true,
+                  isAdding: false,
+                  isDeleting: false,
+                  rowToModify: assoc(
+                    'required',
+                    row.required === 'true' ? ['required'] : [],
+                    row
+                  ),
+                })
+              }}
+            >
+              Modify
+            </MenuItem>
+            <MenuItem
+              fontSize='sm'
+              onClick={async () => {
+                this.setState({
+                  isModifying: false,
+                  isAdding: false,
+                  isDeleting: true,
+                  rowToDelete: row,
+                })
+              }}
+            >
+              Delete
+            </MenuItem>
+          </MenuList>
+        </Portal>
+      </Menu>
     )
   }
 
@@ -131,7 +126,7 @@ export default class OrgEditProfile extends Component {
       { key: 'visibility' },
       { key: 'key_type', label: 'type' },
       { key: 'required' },
-      { key: 'actions' },
+      { key: 'actions', render: this.renderActions, alignment: 'center' },
     ]
 
     let rows = []
@@ -145,6 +140,7 @@ export default class OrgEditProfile extends Component {
 
     const CancelButton = (
       <Button
+        variant='outline'
         onClick={() =>
           this.setState({
             isModifying: false,
@@ -158,87 +154,100 @@ export default class OrgEditProfile extends Component {
     )
 
     return (
-      <article className='inner page'>
-        <Link href={`/organizations/${orgId}/edit`}>
-          ← Back to Edit Organization
-        </Link>
-        <section>
-          <h2>Current Attributes</h2>
-          <p>
-            Members of your organization will be able to add these attributes to
-            their profile.
-          </p>
-          {memberAttributes && isEmpty(memberAttributes) ? (
-            "You haven't added any attributes yet!"
-          ) : (
-            <Table rows={rows} columns={columns} />
-          )}
-        </section>
-        <section>
-          {this.state.isModifying ? (
-            <>
-              <h2>Modify attribute</h2>
-              <ProfileAttributeForm
-                formType='org'
-                initialValues={this.state.rowToModify}
-                onSubmit={async (attribute) => {
-                  await modifyAttribute(attribute.id, attribute)
-                  this.setState({ isModifying: false })
-                  return this.getAttributes()
-                }}
-              />
-              {CancelButton}
-            </>
-          ) : (
-            ''
-          )}
-          {this.state.isAdding ? (
-            <>
-              <h2>Add an attribute</h2>
-              <p>Add an attribute to your org member&apos;s profile</p>
-              <ProfileAttributeForm
-                formType='org'
-                onSubmit={async (attributes) => {
-                  await addOrgMemberAttributes(orgId, attributes)
-                  this.setState({ isAdding: false })
-                  return this.getAttributes()
-                }}
-              />
-              {CancelButton}
-            </>
-          ) : (
-            !(this.state.isModifying || this.state.isDeleting) && (
-              <Button
-                onClick={() =>
-                  this.setState({
-                    isAdding: true,
-                    isModifying: false,
-                  })
-                }
-              >
-                Add attribute
-              </Button>
-            )
-          )}
-          {this.state.isDeleting ? (
-            <>
-              <Button
-                variant='danger'
-                onClick={async () => {
-                  await deleteAttribute(this.state.rowToDelete.id)
-                  this.setState({ isDeleting: false })
-                  return this.getAttributes()
-                }}
-              >
-                Confirm Delete
-              </Button>
-              <span style={{ marginLeft: '1rem' }}>{CancelButton}</span>
-            </>
-          ) : (
-            ''
-          )}
-        </section>
-      </article>
+      <Box as='main' mb={16}>
+        <InpageHeader>
+          <Link href={`/organizations/${orgId}/edit`}>
+            ← Back to Edit Organization
+          </Link>
+          <Heading color='white'>
+            Editing Organization Member Attributes
+          </Heading>
+        </InpageHeader>
+        <Container maxW='container.xl'>
+          <Box layerStyle='shadowed' as='section'>
+            <Heading variant='sectionHead' as='h2'>
+              Current Attributes
+            </Heading>
+            <p>
+              Members of your organization will be able to add these attributes
+              to their profile.
+            </p>
+            {memberAttributes && isEmpty(memberAttributes) ? (
+              "You haven't added any attributes yet!"
+            ) : (
+              <Table rows={rows} columns={columns} />
+            )}
+          </Box>
+          <Box layerStyle='shadowed' as='section'>
+            {this.state.isModifying ? (
+              <>
+                <Heading as='h3' variant='sectionHead'>
+                  Modify attribute
+                </Heading>
+                <ProfileAttributeForm
+                  formType='org'
+                  initialValues={this.state.rowToModify}
+                  onSubmit={async (attribute) => {
+                    await modifyAttribute(attribute.id, attribute)
+                    this.setState({ isModifying: false })
+                    return this.getAttributes()
+                  }}
+                />
+                {CancelButton}
+              </>
+            ) : (
+              ''
+            )}
+            {this.state.isAdding ? (
+              <>
+                <Heading as='h3' variant='sectionHead'>
+                  Add an attribute
+                </Heading>
+                <p>Add an attribute to your org member&apos;s profile</p>
+                <ProfileAttributeForm
+                  formType='org'
+                  onSubmit={async (attributes) => {
+                    await addOrgMemberAttributes(orgId, attributes)
+                    this.setState({ isAdding: false })
+                    return this.getAttributes()
+                  }}
+                />
+                {CancelButton}
+              </>
+            ) : (
+              !(this.state.isModifying || this.state.isDeleting) && (
+                <Button
+                  onClick={() =>
+                    this.setState({
+                      isAdding: true,
+                      isModifying: false,
+                    })
+                  }
+                >
+                  Add attribute
+                </Button>
+              )
+            )}
+            {this.state.isDeleting ? (
+              <Flex gap={4}>
+                <Button
+                  colorScheme='red'
+                  onClick={async () => {
+                    await deleteAttribute(this.state.rowToDelete.id)
+                    this.setState({ isDeleting: false })
+                    return this.getAttributes()
+                  }}
+                >
+                  Confirm Delete
+                </Button>
+                {CancelButton}
+              </Flex>
+            ) : (
+              ''
+            )}
+          </Box>
+        </Container>
+      </Box>
     )
   }
 }

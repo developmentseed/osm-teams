@@ -2,8 +2,7 @@ const db = require('../lib/db')
 const team = require('./team')
 const { map, prop, includes, has, isNil } = require('ramda')
 const { unpack, PropertyRequiredError } = require('../../app/lib/utils')
-const { serverRuntimeConfig } = require('../../next.config')
-const { DEFAULT_PAGE_SIZE } = serverRuntimeConfig
+const DEFAULT_PAGE_SIZE = process.env.DEFAULT_PAGE_SIZE
 
 // Organization attributes (without profile)
 const orgAttributes = [
@@ -322,6 +321,7 @@ async function getMembersPaginated(organizationId, options) {
       'organization_badge.color'
     )
     .join('organization_badge', 'user_badges.badge_id', 'organization_badge.id')
+    .where('organization_badge.organization_id', organizationId)
     .whereIn(
       'user_badges.user_id',
       membersPage.data.map((u) => u.id)
@@ -387,9 +387,7 @@ async function isOrgTeamModerator(organizationId, osmId) {
   const subquery = db('organization_team')
     .select('team_id')
     .where('organization_id', organizationId)
-  const isModeratorOfAny = await db('moderator')
-    .whereIn('team_id', subquery)
-    .debug()
+  const isModeratorOfAny = await db('moderator').whereIn('team_id', subquery)
   return isModeratorOfAny.length > 0
 }
 

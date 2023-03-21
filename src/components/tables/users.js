@@ -1,30 +1,70 @@
 import T from 'prop-types'
+import join from 'url-join'
 import Table from './table'
 import Badge from '../badge'
+import {
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  useToken,
+  IconButton,
+  Text,
+  Flex,
+} from '@chakra-ui/react'
+import { IoEllipsisHorizontal } from 'react-icons/io5'
+import { InfoOutlineIcon } from '@chakra-ui/icons'
 import { useFetchList } from '../../hooks/use-fetch-list'
 import { useState } from 'react'
+import { contains, append } from 'ramda'
 import Pagination from '../pagination'
 import qs from 'qs'
 import SearchInput from './search-input'
 import ExternalProfileButton from '../external-profile-button'
 import { makeTitleCase } from '../../../app/lib/utils'
-import theme from '../../styles/theme'
+import { useRouter } from 'next/router'
 
-function UsersTable({ type, orgId, onRowClick, isSearchable }) {
+const SCOREBOARD_URL = process.env.SCOREBOARD_URL
+const HDYC_URL = process.env.HDYC_URL
+const URL = process.env.APP_URL
+
+function UsersTable({
+  type,
+  orgId,
+  requesterId,
+  onUsernameClick,
+  isSearchable,
+  addOwner,
+  removeOwner,
+  addManager,
+  removeManager,
+  isRequesterOwner,
+  managerIds,
+  ownerIds,
+  onAction,
+}) {
+  const router = useRouter()
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState(null)
   const [sort, setSort] = useState({
     key: 'name',
     direction: 'asc',
   })
+  const [brand500, brand700, red600, red700, blue400] = useToken('colors', [
+    'brand.500',
+    'brand.700',
+    'red.600',
+    'red.700',
+    'blue.400',
+  ])
 
   const MAX_BADGES_COLUMN = 3
   const roleBgColor = {
-    member: theme.colors.primaryColor,
-    moderator: theme.colors.infoColor,
-    manager: theme.colors.infoColor,
-    owner: theme.colors.secondaryColor,
-    undefined: theme.colors.primaryDark,
+    member: brand500,
+    moderator: red600,
+    manager: brand700,
+    owner: red700,
+    undefined: blue400,
   }
   let apiBasePath
   let emptyMessage
@@ -42,8 +82,38 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
       apiBasePath = `/organizations/${orgId}/members`
       emptyMessage = 'No members yet.'
       columns = [
-        { key: 'name', sortable: true },
-        { key: 'id', label: 'OSM ID', sortable: true },
+        {
+          key: 'name',
+          sortable: true,
+          render: (user) => (
+            <Flex flexDir='column'>
+              <Text
+                fontWeight='bold'
+                fontFamily={'body'}
+                as='a'
+                display='flex'
+                gap={1}
+                onClick={() => onUsernameClick(user)}
+                _hover={{ cursor: 'pointer' }}
+                title='Display user profile'
+                data-component-name='username'
+              >
+                {user.name}
+                <InfoOutlineIcon
+                  opacity={0}
+                  transition='opacity 0.12s ease-in'
+                  sx={{
+                    '[data-component-name="username"]:hover &': {
+                      opacity: 'initial',
+                    },
+                  }}
+                  alignSelf='center'
+                />
+              </Text>
+              <Text color='blackAlpha.600'>{user.id}</Text>
+            </Flex>
+          ),
+        },
         {
           key: 'badges',
           render: ({ badges }) => (
@@ -64,13 +134,35 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
         },
         {
           key: 'External Profiles',
-          render: ({ name }) => (
+          render: ({ id, name }) => (
             <>
-              <ExternalProfileButton type='osm-profile' userId={name} />
-              <ExternalProfileButton type='hdyc' userId={name} />
-              <ExternalProfileButton type='osmcha' userId={name} />
+              <ExternalProfileButton
+                type='osm-profile'
+                userId={name}
+                title='Visit OSM profile'
+              />
+              {SCOREBOARD_URL && (
+                <ExternalProfileButton
+                  type='scoreboard'
+                  userId={id}
+                  title='Visit Scoreboard profile'
+                />
+              )}
+              {HDYC_URL && (
+                <ExternalProfileButton
+                  type='hdyc'
+                  userId={name}
+                  title='Visit HDYC profile'
+                />
+              )}
+              <ExternalProfileButton
+                type='osmcha'
+                userId={name}
+                title='Visit OSMCha profile'
+              />
             </>
           ),
+          alignment: 'center',
         },
       ]
       break
@@ -78,8 +170,38 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
       apiBasePath = `/organizations/${orgId}/staff`
       emptyMessage = 'No staff found.'
       columns = [
-        { key: 'name', sortable: true },
-        { key: 'id', label: 'OSM ID', sortable: true },
+        {
+          key: 'name',
+          sortable: true,
+          render: (user) => (
+            <Flex flexDir='column'>
+              <Text
+                fontWeight='bold'
+                fontFamily={'body'}
+                as='a'
+                display='flex'
+                gap={1}
+                onClick={() => onUsernameClick(user)}
+                _hover={{ cursor: 'pointer' }}
+                title='Display user profile'
+                data-component-name='username'
+              >
+                {user.name}
+                <InfoOutlineIcon
+                  opacity={0}
+                  transition='opacity 0.12s ease-in'
+                  sx={{
+                    '[data-component-name="username"]:hover &': {
+                      opacity: 'initial',
+                    },
+                  }}
+                  alignSelf='center'
+                />
+              </Text>
+              <Text color='blackAlpha.600'>{user.id}</Text>
+            </Flex>
+          ),
+        },
         {
           key: 'type',
           label: 'role',
@@ -92,13 +214,35 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
         },
         {
           key: 'External Profiles',
-          render: ({ name }) => (
+          render: ({ id, name }) => (
             <>
-              <ExternalProfileButton type='osm-profile' userId={name} />
-              <ExternalProfileButton type='hdyc' userId={name} />
-              <ExternalProfileButton type='osmcha' userId={name} />
+              <ExternalProfileButton
+                type='osm-profile'
+                userId={name}
+                title='Visit OSM profile'
+              />
+              {SCOREBOARD_URL && (
+                <ExternalProfileButton
+                  type='scoreboard'
+                  userId={id}
+                  title='Visit Scoreboard profile'
+                />
+              )}
+              {HDYC_URL && (
+                <ExternalProfileButton
+                  type='hdyc'
+                  userId={name}
+                  title='Visit HDYC profile'
+                />
+              )}
+              <ExternalProfileButton
+                type='osmcha'
+                userId={name}
+                title='Visit OSMCha profile'
+              />
             </>
           ),
+          alignment: 'center',
         },
       ]
       break
@@ -113,6 +257,101 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
 
   if (!isLoading && search?.length > 0) {
     emptyMessage = 'Search returned no results.'
+  }
+
+  if (isRequesterOwner) {
+    columns = append(
+      {
+        key: 'actions',
+        render: (user) => {
+          let actions = []
+          const profileId = +user.id
+          const isProfileManager = contains(profileId, managerIds)
+          const isProfileOwner = contains(profileId, ownerIds)
+
+          actions.push({
+            name: 'Assign a Badge',
+            onClick: () =>
+              router.push(
+                join(URL, `/organizations/${orgId}/badges/assign/${profileId}`)
+              ),
+          })
+
+          if (
+            profileId !== requesterId &&
+            isProfileOwner &&
+            ownerIds.length > 1
+          ) {
+            actions.push({
+              name: 'Remove owner',
+              onClick: async () => {
+                await removeOwner(orgId, profileId)
+                onAction()
+              },
+            })
+          }
+          if (profileId !== requesterId && isProfileManager) {
+            if (!isProfileOwner) {
+              actions.push({
+                name: 'Promote to owner',
+                onClick: async () => {
+                  await addOwner(orgId, profileId)
+                  onAction()
+                },
+              })
+              actions.push({
+                name: 'Remove manager',
+                onClick: async () => {
+                  await removeManager(orgId, profileId)
+                  onAction()
+                },
+              })
+            }
+          }
+          if (!isProfileManager && !isProfileOwner) {
+            actions.push({
+              name: 'Add manager',
+              onClick: async () => {
+                await addManager(orgId, profileId)
+                onAction()
+              },
+            })
+          }
+          return (
+            <Menu>
+              <MenuButton
+                as={IconButton}
+                size='sm'
+                variant='ghost'
+                aria-label='User actions menu'
+                title={
+                  actions?.length > 0
+                    ? 'Display user actions menu'
+                    : 'No actions for this user'
+                }
+                isDisabled={actions?.length === 0}
+                icon={<IoEllipsisHorizontal />}
+              />
+              <MenuList>
+                {actions.map((action) => {
+                  return (
+                    <MenuItem
+                      fontSize='sm'
+                      onClick={() => action.onClick()}
+                      key={action.name}
+                    >
+                      {action.name}
+                    </MenuItem>
+                  )
+                })}
+              </MenuList>
+            </Menu>
+          )
+        },
+        alignment: 'center',
+      },
+      columns
+    )
   }
 
   return (
@@ -135,7 +374,6 @@ function UsersTable({ type, orgId, onRowClick, isSearchable }) {
         rows={data}
         columns={columns}
         emptyPlaceHolder={isLoading ? 'Loading...' : emptyMessage}
-        onRowClick={onRowClick}
       />
       {pagination?.total > 0 && (
         <Pagination

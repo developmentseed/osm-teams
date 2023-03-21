@@ -1,28 +1,30 @@
 import React, { Component } from 'react'
-import join from 'url-join'
-import { map, prop, contains, reverse, assoc } from 'ramda'
-import Modal from 'react-modal'
+import { map, prop, contains, reverse, isNil } from 'ramda'
 import dynamic from 'next/dynamic'
 import { getSession } from 'next-auth/react'
 import { withRouter } from 'next/router'
+import {
+  Box,
+  Container,
+  Heading,
+  Button,
+  Text,
+  Flex,
+  Stack,
+  SimpleGrid,
+} from '@chakra-ui/react'
 
-import Section from '../../../components/section'
-import SectionHeader from '../../../components/section-header'
-import Button from '../../../components/button'
 import AddMemberForm from '../../../components/add-member-form'
 import ProfileModal from '../../../components/profile-modal'
-import theme from '../../../styles/theme'
 
 import {
   getTeam,
-  getTeamMembers,
+  getTeamModerators,
   addMember,
   removeMember,
   joinTeam,
   assignModerator,
   removeModerator,
-  getTeamJoinInvitations,
-  createTeamJoinInvitation,
 } from '../../../lib/teams-api'
 import {
   getTeamProfile,
@@ -30,11 +32,12 @@ import {
   getUserTeamProfile,
 } from '../../../lib/profiles-api'
 import { getOrgStaff } from '../../../lib/org-api'
-import { toast } from 'react-toastify'
 import logger from '../../../lib/logger'
-import MembersTable from './members-table'
+import MembersTable from '../../../components/tables/members-table'
+import Link from 'next/link'
+import InpageHeader from '../../../components/inpage-header'
+import JoinLink from '../../../components/join-link'
 
-const APP_URL = process.env.APP_URL
 const Map = dynamic(() => import('../../../components/team-map'), {
   ssr: false,
 })
@@ -49,7 +52,6 @@ class Team extends Component {
     this.state = {
       profileInfo: [],
       profileUserId: '',
-      joinLink: null,
       loading: true,
       error: undefined,
     }
@@ -59,59 +61,31 @@ class Team extends Component {
 
   async componentDidMount() {
     this.getTeam()
-    this.getTeamJoinLink()
     this.setState({ session: await getSession() })
-  }
-
-  async getTeamJoinLink() {
-    const { id } = this.props
-    try {
-      const invitations = await getTeamJoinInvitations(id)
-      if (invitations.length) {
-        this.setState({
-          joinLink: join(
-            APP_URL,
-            'teams',
-            id,
-            'invitations',
-            invitations[0].id
-          ),
-        })
-      }
-    } catch (e) {
-      logger.error(e)
-      toast.error(e)
-    }
-  }
-
-  async createJoinLink() {
-    const { id } = this.props
-    try {
-      await createTeamJoinInvitation(id)
-      this.getTeamJoinLink()
-    } catch (e) {
-      logger.error(e)
-      toast.error(e)
-    }
   }
 
   async getTeam() {
     const { id } = this.props
     try {
       let team = await getTeam(id)
-      let teamMembers = { moderators: [], members: [] }
+      let isMember = team.requesterIsMember
+      let teamModerators = await getTeamModerators(id)
       let teamProfile = []
-      teamMembers = await getTeamMembers(id)
       teamProfile = await getTeamProfile(id)
 
       let orgOwners = []
       if (team.org) {
-        orgOwners = (await getOrgStaff(team.org.organization_id)).owners
+        try {
+          orgOwners = (await getOrgStaff(team.org.organization_id)).owners
+        } catch (e) {
+          logger.error("Can't fetch organization owners", e)
+        }
       }
       this.setState({
         team,
         teamProfile,
-        teamMembers,
+        isMember,
+        teamModerators,
         orgOwners,
         loading: false,
       })
@@ -176,12 +150,12 @@ class Team extends Component {
 
   renderMap(location) {
     if (!location) {
-      return <div>No location specified</div>
+      return
     }
     let centerGeojson = location
     let center = reverse(JSON.parse(centerGeojson).coordinates)
 
-    return <Map marker={{ center }} style={{ height: '200px' }} />
+    return <Map marker={{ center }} style={{ height: '260px' }} />
   }
 
   async addModerator(osmId) {
@@ -231,27 +205,27 @@ class Team extends Component {
   }
 
   render() {
-    const { team, error, teamProfile, teamMembers, orgOwners, joinLink } =
+    const { team, error, isMember, teamProfile, teamModerators, orgOwners } =
       this.state
 
     if (error) {
       if (error.status === 401 || error.status === 403) {
         return (
-          <article className='inner page'>
-            <h1>Unauthorized</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Unauthorized</Heading>
+          </InpageHeader>
         )
       } else if (error.status === 404) {
         return (
-          <article className='inner page'>
-            <h1>Team not found</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Team not found</Heading>
+          </InpageHeader>
         )
       } else {
         return (
-          <article className='inner page'>
-            <h1>Error: {error.message}</h1>
-          </article>
+          <InpageHeader>
+            <Heading color='white'>Error: {error.message}</Heading>
+          </InpageHeader>
         )
       }
     }
@@ -259,226 +233,190 @@ class Team extends Component {
     if (!team) return null
 
     const userId = this.state.session?.user_id
-    const members = map(prop('id'), teamMembers.members)
-    const moderators = map(prop('osm_id'), teamMembers.moderators)
+    const moderators = map(prop('osm_id'), teamModerators)
+    const owners = map(prop('id'), orgOwners)
 
-    // TODO: moderators is an array of ints while members are an array of strings. fix this.
     const isUserModerator =
       contains(parseInt(userId), moderators) ||
-      contains(parseInt(userId), orgOwners)
-    const isMember = contains(Number(userId), members)
+      contains(parseInt(userId), owners)
 
-    let memberRows = teamMembers.members.map((member) => {
-      const role = contains(parseInt(member.id), moderators)
-        ? 'Moderator'
-        : 'Member'
-      return assoc('role', role, member)
-    })
-
-    let profileActions = []
-
-    if (this.state.modalIsOpen && isUserModerator) {
-      if (this.state.profileMeta.id !== userId) {
-        profileActions.push({
-          name: 'Remove team member',
-          onClick: async () => {
-            this.removeMember(this.state.profileMeta.id)
-          },
-        })
-      }
-      if (!contains(parseInt(this.state.profileMeta.id), moderators)) {
-        profileActions.push({
-          name: 'Promote to moderator',
-          onClick: async () => {
-            this.addModerator(this.state.profileMeta.id)
-          },
-        })
-      } else {
-        profileActions.push({
-          name: 'Remove moderator',
-          onClick: async () => {
-            this.removeModerator(this.state.profileMeta.id)
-          },
-        })
-      }
-    }
+    const isUserOrgOwner = contains(parseInt(userId), owners)
 
     return (
-      <article className='inner page team'>
-        <div className='page__heading'>
-          <h1>{team.name}</h1>
-          {isMember ? (
-            <Button variant='primary' href={`/teams/${team.id}/profile`}>
-              Edit Your Profile
-            </Button>
-          ) : (
-            ' '
-          )}
-        </div>
-        <div className='team__details'>
-          <Section>
-            <div className='section-actions'>
-              <SectionHeader>Team Details</SectionHeader>
-              {isUserModerator ? (
-                <Button href={`/teams/${team.id}/edit`}>Edit</Button>
-              ) : (
-                ''
-              )}
-            </div>
-            <dl>
-              {team.bio ? (
-                <>
-                  <dt>Bio: </dt>
-                  <dd>{team.bio}</dd>
-                </>
-              ) : (
-                ''
-              )}
-              {team.hashtag ? (
-                <>
-                  <dt>Hashtag: </dt>
-                  <dd>{team.hashtag}</dd>
-                </>
-              ) : (
-                ''
-              )}
-            </dl>
-            {team.editing_policy && (
-              <a href={team.editing_policy} className='team__editing_policy'>
-                Organized editing policy
-              </a>
-            )}
-            {team.org ? (
-              <dl>
-                <dt>Organization:</dt>
-                <dd>
-                  <a href={`/organizations/${team.org.organization_id}`}>
-                    {team.org.name}
-                  </a>
-                </dd>
-                {teamProfile
-                  ? teamProfile.map((key) => {
-                      if (key.value) {
-                        return (
-                          <>
-                            <dt>{key.name}:</dt>
-                            <dd>{key.value}</dd>
-                          </>
-                        )
-                      }
-                    })
-                  : ''}
-              </dl>
-            ) : (
-              ''
-            )}
-            <SectionHeader>Location</SectionHeader>
-            {this.renderMap(team.location)}
-            {isUserModerator ? (
-              <div style={{ marginTop: '1rem' }}>
-                <SectionHeader>Join Link</SectionHeader>
-                {joinLink ? (
-                  <fieldset style={{ borderColor: '#384A9E' }}>
-                    {joinLink}
-                  </fieldset>
-                ) : (
-                  <Button onClick={() => this.createJoinLink()}>
-                    Create Join Link
-                  </Button>
+      <Box as='main' mb={16}>
+        <InpageHeader>
+          <Flex
+            direction={['column', null, 'row']}
+            justifyContent={'space-between'}
+            gap={4}
+          >
+            <Flex direction='column' gap={2}>
+              <Heading color='white'>{team.name}</Heading>
+              <Flex gap={[4, 8]}>
+                {team.org && (
+                  <Stack as='dl' spacing={1}>
+                    <Text as='dt' variant='overline'>
+                      Organization
+                    </Text>
+                    <Text as='dd'>
+                      <Link
+                        href={`/organizations/${team.org.organization_id}`}
+                        style={{ textDecoration: 'underline' }}
+                      >
+                        {team.org.name}
+                      </Link>
+                    </Text>
+                  </Stack>
                 )}
-              </div>
-            ) : (
-              ''
-            )}
-          </Section>
-        </div>
-        <div className='team__table'>
-          {memberRows.length > 0 ? (
-            <Section data-cy='team-members-section'>
-              <div className='section-actions'>
-                <SectionHeader>Team Members</SectionHeader>
-                <div>
-                  {isUserModerator && (
-                    <AddMemberForm
-                      onSubmit={async ({ osmId }) => {
-                        await addMember(team.id, osmId)
-                        return this.getTeam()
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
-              <MembersTable
-                rows={memberRows}
-                onRowClick={(row) => {
-                  this.openProfileModal(row)
-                }}
-              />
-              <Modal
-                style={{
-                  content: {
-                    maxWidth: '400px',
-                    maxHeight: '600px',
-                    left: 'calc(50% - 200px)',
-                    top: 'calc(50% - 300px)',
-                  },
-                  overlay: {
-                    zIndex: 10000,
-                  },
-                }}
-                isOpen={this.state.modalIsOpen}
-              >
+                {team.hashtag && (
+                  <Stack as='dl' spacing={1}>
+                    <Text as='dt' variant='overline'>
+                      Hashtag
+                    </Text>
+                    <Text as='dd'>{team.hashtag}</Text>
+                  </Stack>
+                )}
+              </Flex>
+            </Flex>
+            <Flex direction='column' alignItems={['stretch', null, 'flex-end']}>
+              <Flex direction={['column', null, 'row']} gap={2}>
+                {isMember ? (
+                  <Button
+                    variant='outline'
+                    colorScheme='white'
+                    as={Link}
+                    href={`/teams/${team.id}/profile`}
+                  >
+                    Edit Your Profile
+                  </Button>
+                ) : (
+                  ' '
+                )}
+                {isUserModerator ? (
+                  <Button
+                    variant='outline'
+                    colorScheme='white'
+                    as={Link}
+                    href={`/teams/${team.id}/edit`}
+                  >
+                    Edit Team
+                  </Button>
+                ) : (
+                  ''
+                )}
+              </Flex>
+              {isUserModerator && <JoinLink id={team.id} />}
+            </Flex>
+          </Flex>
+        </InpageHeader>
+        <Container maxW='container.xl' as='section'>
+          {team.bio && (
+            <Box as='section' layerStyle='shadowed'>
+              <Heading variant='sectionHead'>Team Description</Heading>
+              <Text>{team.bio}</Text>
+            </Box>
+          )}
+          {teamProfile.length > 0 && (
+            <Box as='section' layerStyle='shadowed'>
+              <Heading variant='sectionHead'>Team Details</Heading>
+              <SimpleGrid columns={[2, null, 3]} spacing={2}>
+                {team.org && (
+                  <Stack as='dl' spacing={0}>
+                    <Text as='dt' variant='overline'>
+                      Organization
+                    </Text>
+                    <Text as='dd'>
+                      <Link
+                        href={`/organizations/${team.org.organization_id}`}
+                        style={{ textDecoration: 'underline' }}
+                      >
+                        {team.org.name}
+                      </Link>
+                    </Text>
+                  </Stack>
+                )}
+                {team.hashtag && (
+                  <Stack as='dl' spacing={0}>
+                    <Text as='dt' variant='overline'>
+                      Hashtag
+                    </Text>
+                    <Text as='dd'>{team.hashtag}</Text>
+                  </Stack>
+                )}
+                {team.editing_policy && (
+                  <a
+                    href={team.editing_policy}
+                    className='team__editing_policy'
+                  >
+                    Organized editing policy
+                  </a>
+                )}
+                {teamProfile.map((key) => {
+                  if (key.value) {
+                    return (
+                      <Stack as='dl' spacing={0} key={key}>
+                        <Text variant={'overline'} as='dt'>
+                          {key.name}
+                        </Text>
+                        <Text as='dd'>{key.value}</Text>
+                      </Stack>
+                    )
+                  }
+                })}
+              </SimpleGrid>
+            </Box>
+          )}
+          {team.location && (
+            <Box as='section' layerStyle='shadowed'>
+              <Heading variant='sectionHead'>Location</Heading>
+              {this.renderMap(team.location)}
+            </Box>
+          )}
+          {teamModerators.length ? (
+            <Box as='section' layerStyle={'shadowed'}>
+              <Box mb={2} data-cy='team-members-section'>
+                <Flex
+                  direction={['column', 'row']}
+                  justifyContent={['space-between']}
+                >
+                  <Heading variant='sectionHead'>Team Members</Heading>
+                  <div>
+                    {isUserModerator && (
+                      <AddMemberForm
+                        onSubmit={async ({ osmId }) => {
+                          await addMember(team.id, osmId)
+                          return this.getTeam()
+                        }}
+                      />
+                    )}
+                  </div>
+                </Flex>
+                <MembersTable
+                  teamId={this.props.id}
+                  organizationId={team.org?.organization_id}
+                  requesterId={userId}
+                  displayBadges={!isNil(prop('org', team))}
+                  onUsernameClick={this.openProfileModal.bind(this)}
+                  moderators={teamModerators}
+                  isRequesterModerator={isUserModerator}
+                  isRequesterOrgOwner={isUserOrgOwner}
+                  removeMember={this.removeMember.bind(this)}
+                  addModerator={this.addModerator.bind(this)}
+                  removeModerator={this.removeModerator.bind(this)}
+                />
                 <ProfileModal
                   user={this.state.profileMeta}
                   attributes={this.state.profileInfo}
                   onClose={this.closeProfileModal}
-                  actions={profileActions}
+                  isOpen={this.state.modalIsOpen}
                 />
-              </Modal>
-            </Section>
+              </Box>
+            </Box>
           ) : (
             <div />
           )}
-        </div>
-        <style jsx>
-          {`
-            .inner.team {
-              display: grid;
-              grid-template-columns: repeat(12, 1fr);
-              grid-gap: ${theme.layout.globalSpacing};
-              align-content: baseline;
-            }
-
-            .page__heading {
-              grid-column: 1 / span 12;
-            }
-
-            .team__details {
-              grid-column: 1 / span 12;
-            }
-
-            .team__editing_policy {
-              margin-bottom: 2rem;
-              display: block;
-            }
-
-            dl {
-              display: grid;
-              grid-template-columns: 6rem 1fr;
-              gap: 0.25rem 1rem;
-            }
-
-            dt {
-              font-family: ${theme.typography.headingFontFamily};
-              text-transform: uppercase;
-            }
-
-            .team__table {
-              grid-column: 1 / span 12;
-            }
-          `}
-        </style>
-      </article>
+        </Container>
+      </Box>
     )
   }
 }

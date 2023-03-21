@@ -1,9 +1,18 @@
 import React from 'react'
-import css from 'styled-jsx/css'
-import Button from '../components/button'
+import {
+  Box,
+  Button,
+  Card,
+  Grid,
+  Text,
+  UnorderedList,
+  ListItem,
+  keyframes,
+  Code,
+} from '@chakra-ui/react'
 import join from 'url-join'
-import theme from '../styles/theme'
 import { useSession, signIn } from 'next-auth/react'
+import Link from 'next/link'
 
 const OSM_NAME = process.env.OSM_NAME
 const APP_URL = process.env.APP_URL
@@ -15,201 +24,134 @@ const title = String.raw`
 / /_/ /___/ / /  / /    / / / /___/ ___ |/ /  / /___/ /
 \____//____/_/  /_/    /_/ /_____/_/  |_/_/  /_//____/
 `
-
-const homeStyles = css`
-  main {
-    background: ${theme.colors.primaryDark};
-    background-image: radial-gradient(white 5%, transparent 0);
-    background-repeat: repeat;
-    background-size: 30px 30px;
-    font-family: ${theme.typography.headingFontFamily};
-    position: relative;
-    z-index: 1;
-    grid-area: main;
-    overflow: inherit;
-    display: grid;
-    place-content: center;
+const VHS = keyframes`
+  0% {
+    text-shadow: -4px -1px 1px blue, 4px 1px 1px red;
   }
-  main:after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 100%;
-    width: 100%;
-    opacity: 0.8;
-    z-index: -1;
-    background: url(${join(APP_URL, '/static/grid-map.svg')});
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center center;
-    overflow: hidden;
+  10% {
+    text-shadow: -2px 0 blue, 2px 0 red;
   }
-
-  .card,
-  .card h1,
-  .card h2,
-  .card a {
-    color: white;
-  }
-
-  .welcome .card {
-    display: flex;
-    flex-flow: column wrap;
-    text-align: left;
-    max-width: 48rem;
-    padding: 2rem;
-    background: rgba(25, 51, 130, 0.9);
-    border: 4px solid white;
-    position: relative;
-    box-shadow: 12px 12px 0 ${theme.colors.primaryDark}, 12px 12px 0 3px white;
-  }
-
-  .welcome__intro {
-    font-size: 0.8rem;
-    font-size: 2.75vw;
-    width: 100%;
-    margin-bottom: 1rem;
-  }
-
-  pre {
-    max-width: 100%;
-    line-height: 1;
-    margin: 0;
-    font-family: ${theme.typography.headingFontFamily};
-  }
-
-  pre,
-  .welcome__intro + p,
-  .welcome__user h2,
-  .welcome__user--actions {
-    animation: VHS 2s cubic-bezier(0, 1.21, 0.84, 1.04) 5 alternate;
-    transition: text-shadow 0.5s ease;
-    overflow: hidden;
-  }
-
-  pre:hover,
-  .welcome__intro + p:hover,
-  .welcome__user h2:hover,
-  .welcome__user--actions:hover {
-    text-shadow: -1px 0 blue, 1px 0 red;
-  }
-
-  @keyframes VHS {
-    0% {
-      text-shadow: -4px -1px 1px blue, 4px 1px 1px red;
-    }
-    10% {
-      text-shadow: -2px 0 blue, 2px 0 red;
-    }
-    100% {
-      text-shadow: -1px 0 red, 1px 0 blue;
-    }
-  }
-
-  .welcome__intro + p {
-    padding-bottom: 2rem;
-  }
-
-  .welcome__user {
-    align-self: flex-start;
-    width: 100%;
-    border: 2px dashed white;
-    padding: 2rem;
-  }
-
-  .welcome__user--actions {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    margin-block-start: 0;
-    margin-block-end: 0;
-    padding-inline-start: 0;
-    padding: ${theme.layout.globalSpacing} 0;
-    text-transform: uppercase;
-  }
-
-  .welcome__user--actions li {
-    padding-bottom: calc(${theme.layout.globalSpacing} / 2);
-  }
-
-  .welcome__user--actions li:before {
-    content: '--';
-    line-height: 1;
-    margin-right: 10px;
-    color: ${theme.colors.secondaryColor};
-  }
-
-  .welcome__user--actions a:hover {
-    text-decoration: underline;
-  }
-
-  @media screen and (min-width: ${theme.mediaRanges.small}) {
-    .welcome__intro {
-      font-size: 1rem;
-    }
-  }
-
-  @media screen and (min-width: ${theme.mediaRanges.large}) {
-    main:after {
-      background-position: center center;
-    }
-    .inner.page.welcome {
-      margin-left: 0;
-    }
-    .welcome__intro {
-      font-size: 1.25rem;
-    }
+  100% {
+    text-shadow: -1px 0 red, 1px 0 blue;
   }
 `
+const Links = [
+  { url: '/teams', name: 'Explore all teams' },
+  { url: '/teams/create', name: 'Create new team' },
+  { url: '/dashboard', name: 'dashboard' },
+]
+
 export default function Home() {
   const { data: session, status } = useSession()
 
   return (
-    <main>
-      <section className='page welcome'>
-        <div className='card'>
-          <h1 className='welcome__intro'>
-            <pre>{title}</pre>
-          </h1>
-          <p>
-            Create teams of {OSM_NAME} users and import them into your apps.
-            Making maps better, together. Enable teams in OpenStreetMap
-            applications, or build your team here. It’s dangerous to map alone!
-          </p>
-          {status === 'authenticated' ? (
-            <div className='welcome__user'>
-              <h2>Welcome, {session?.user?.name || 'mapper'}!</h2>
-              <ul className='welcome__user--actions'>
-                <li>
-                  <a href={join(APP_URL, '/teams/create')}>Create New Team</a>
-                </li>
-                <li>
-                  <a href={join(APP_URL, '/teams')} className=''>
-                    All Teams
-                  </a>
-                </li>
-                <li>
-                  <a href={join(APP_URL, '/profile')} className=''>
-                    Profile
-                  </a>
-                </li>
-                <li>
-                  <a href={join(APP_URL, '/clients')} className=''>
-                    Connected Apps
-                  </a>
-                </li>
-              </ul>
-            </div>
-          ) : (
-            <Button onClick={() => signIn('osm-teams')}>Sign in →</Button>
-          )}
-        </div>
-        <div className='map-bg' />
-      </section>
-      <style jsx>{homeStyles}</style>
-    </main>
+    <Grid
+      as='main'
+      placeContent={'center'}
+      bg='brand.700'
+      backgroundImage='radial-gradient(white 5%, transparent 0)'
+      backgroundRepeat='repeat'
+      backgroundSize='30px 30px'
+      fontFamily='mono'
+      position='relative'
+      overflow='inherit'
+      _after={{
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: '100%',
+        width: '100%',
+        opacity: '0.8',
+        zIndex: '0',
+        background: `url(${join(APP_URL, '/static/grid-map.svg')})`,
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center center',
+        overflow: 'hidden',
+      }}
+    >
+      <Card
+        bg={'rgba(25, 51, 130, 0.9)'}
+        color='white'
+        border={'4px'}
+        borderColor='white'
+        boxShadow='12px 12px 0 var(--chakra-colors-brand-700), 12px 12px 0 3px white'
+        display='flex'
+        flexFlow='column wrap'
+        textAlign='left'
+        maxWidth='48rem'
+        padding={8}
+        position='relative'
+        zIndex='10'
+        animation={`${VHS} 2s cubic-bezier(0, 1.21, 0.84, 1.04) 5 alternate`}
+        fontWeight={'bold'}
+      >
+        <Code
+          width='100%'
+          fontFamily='mono'
+          marginBottom='1rem'
+          lineHeight={1}
+          transition={'text-shadow 0.5s ease'}
+          variant='outline'
+          colorScheme={'white'}
+          fontSize={[null, '0.8rem', '1rem', '1.25rem']}
+          whiteSpace='pre'
+        >
+          {title}
+        </Code>
+        <Text pb='8' fontFamily='mono'>
+          Create teams of {OSM_NAME} users and import them into your apps.
+          Making maps better, together. Enable teams in OpenStreetMap
+          applications, or build your team here. It’s dangerous to map alone!
+        </Text>
+        {status === 'authenticated' ? (
+          <Box border='1px' borderStyle={'dashed'} borderWidth={2} p={8}>
+            <Code
+              fontSize='xl'
+              fontFamily='mono'
+              marginBottom='1rem'
+              colorScheme={'white'}
+              whiteSpace='pre'
+            >
+              Welcome, {session?.user?.name || 'mapper'}
+            </Code>
+            <UnorderedList
+              display='flex'
+              flexDir='column'
+              listStyleType='none'
+              textTransform='uppercase'
+              py='2'
+              m={0}
+              spacing={2}
+              color='white'
+            >
+              {Links.map((link) => {
+                return (
+                  <ListItem
+                    key={link.name}
+                    _before={{
+                      content: '"--"',
+                      lineHeight: 1,
+                      marginRight: '10px',
+                      color: 'red.500',
+                    }}
+                  >
+                    <Link style={{ color: 'white ' }} href={link.url}>
+                      {link.name}
+                    </Link>
+                  </ListItem>
+                )
+              })}
+            </UnorderedList>
+          </Box>
+        ) : (
+          <Button onClick={() => signIn('osm-teams')}>Sign in →</Button>
+        )}
+      </Card>
+      <div className='map-bg' />
+    </Grid>
   )
 }

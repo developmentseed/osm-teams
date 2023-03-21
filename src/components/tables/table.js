@@ -1,22 +1,36 @@
 import React from 'react'
-import theme from '../../styles/theme'
+import {
+  Table as BaseTable,
+  Thead,
+  Tr,
+  Td,
+  Th,
+  Tbody,
+  Box,
+} from '@chakra-ui/react'
+import { TriangleUpIcon, TriangleDownIcon } from '@chakra-ui/icons'
 
 function TableHead({ dataCy, columns, sort, setSort, onClick }) {
   return (
-    <thead>
-      <tr>
-        {columns.map(({ sortable, label, key }) => {
+    <Thead>
+      <Tr>
+        {columns.map(({ sortable, label, key, alignment }) => {
           const isSorted = sortable && sort.key === key
           const currentSortDirection = (isSorted && sort.direction) || 'none'
           const nextSortDirection =
             currentSortDirection === 'asc' ? 'desc' : 'asc'
           let sortIcon = ''
           if (currentSortDirection !== 'none') {
-            sortIcon = currentSortDirection === 'asc' ? '▲' : '▼'
+            sortIcon =
+              currentSortDirection === 'asc' ? (
+                <TriangleUpIcon />
+              ) : (
+                <TriangleDownIcon />
+              )
           }
 
           return (
-            <th
+            <Th
               key={`table-head-column-${key}`}
               data-cy={`${dataCy}-head-column-${key}`}
               className={sortable && 'sortable'}
@@ -31,41 +45,96 @@ function TableHead({ dataCy, columns, sort, setSort, onClick }) {
                   })
                 }
               }}
+              padding='0.5rem 1rem'
+              verticalAlign='middle'
+              position='relative'
+              textTransform='uppercase'
+              textAlign={alignment ? alignment : 'left'}
+              fontFamily='mono'
+              fontWeight='base'
+              fontSize='sm'
+              letterSpacing='0.125rem'
+              background='brand.50'
+              borderBottom='4px solid var(--chakra-colors-brand-600)'
+              cursor={sortable && 'pointer'}
+              _hover={sortable && { fontWeight: 'bold', color: 'brand.500' }}
+              _first={{
+                base: {
+                  position: 'sticky',
+                  left: '0',
+                  zIndex: '2',
+                  background: 'brand.50',
+                  borderRight: '2px solid var(--chakra-colors-brand-100)',
+                },
+                md: {
+                  position: 'initial',
+                  left: 'initial',
+                  zIndex: 'initial',
+                  borderRight: 'none',
+                },
+              }}
             >
               {label || key}
-              {sortable && ` ${sortIcon}`}
-            </th>
+              {sortable && sortIcon}
+            </Th>
           )
         })}
-      </tr>
-    </thead>
+      </Tr>
+    </Thead>
   )
 }
 
 function Row({ columns, row, index, onRowClick, showRowNumber }) {
   return (
-    <tr
+    <Tr
       key={`row-${index}`}
       onClick={() => {
         onRowClick && onRowClick(row, index)
       }}
+      role='group'
     >
-      {columns.map(({ key, render }) => {
+      {columns.map(({ key, render, alignment }) => {
         let item =
           typeof render === 'function' ? render(row, index, columns) : row[key]
         if (showRowNumber && key === ' ') {
           item = index + 1
         }
         return (
-          <td
+          <Td
             width={showRowNumber && key === ' ' && '1rem'}
+            padding='0.875rem'
+            boxShadow='inset 0 -1px 0 0 var(--chakra-colors-brand-50)'
+            fontSize='0.9rem'
+            textAlign={alignment ? alignment : 'left'}
+            _groupHover={
+              onRowClick && {
+                cursor: 'pointer',
+                background: 'brand.50',
+                color: 'brand.500',
+              }
+            }
+            _first={{
+              base: {
+                position: 'sticky',
+                left: '0',
+                zIndex: '2',
+                bg: 'white',
+                borderRight: '2px solid var(--chakra-colors-brand-100)',
+              },
+              md: {
+                position: 'initial',
+                left: 'initial',
+                zIndex: 'initial',
+                borderRight: 'none',
+              },
+            }}
             key={`row-${index}-key-${key}`}
           >
             {item}
-          </td>
+          </Td>
         )
       })}
-    </tr>
+    </Tr>
   )
 }
 
@@ -78,16 +147,16 @@ function TableBody({
 }) {
   const isEmpty = !rows || rows.length === 0
   return (
-    <tbody
+    <Tbody
       className='lh-copy'
       data-cy={isEmpty ? 'empty-table' : 'not-empty-table'}
     >
       {isEmpty ? (
-        <tr>
-          <td key='empty-row' colSpan={columns.length}>
+        <Tr>
+          <Td key='empty-row' colSpan={columns.length}>
             {emptyPlaceHolder || 'No data available.'}
-          </td>
-        </tr>
+          </Td>
+        </Tr>
       ) : (
         rows.map((row, index) => {
           return (
@@ -102,7 +171,7 @@ function TableBody({
           )
         })
       )}
-    </tbody>
+    </Tbody>
   )
 }
 
@@ -118,8 +187,26 @@ export default function Table({
 }) {
   showRowNumbers && columns.unshift({ key: ' ' })
   return (
-    <div className='table-wrapper'>
-      <table data-cy={dataCy}>
+    <Box
+      display='grid'
+      gridTemplateColumns='minmax(0, 1fr)'
+      overflowX='auto'
+      my={2}
+    >
+      <BaseTable
+        data-cy={dataCy}
+        marginBottom={2}
+        layout='fixed'
+        size='sm'
+        width='initial'
+        sx={{
+          base: {
+            borderSpacing: '0',
+            borderCollapse: 'separate',
+          },
+          md: { borderCollapse: 'collapse' },
+        }}
+      >
         <TableHead
           dataCy={dataCy}
           columns={columns}
@@ -133,73 +220,7 @@ export default function Table({
           emptyPlaceHolder={emptyPlaceHolder}
           showRowNumbers={showRowNumbers}
         />
-        <style jsx global>
-          {`
-            .table-wrapper {
-              display: grid;
-              grid-template-columns: minmax(0, 1fr);
-              overflow-x: scroll;
-              position: relative;
-            }
-            table {
-              border-collapse: collapse;
-              border-spacing: 0;
-              margin-bottom: ${theme.layout.globalSpacing};
-              table-layout: fixed;
-              white-space: pre;
-              overflow-x: scroll;
-            }
-            thead th {
-              padding: 0.5rem 1rem;
-              vertical-align: middle;
-              position: relative;
-              text-transform: uppercase;
-              text-align: left;
-              font-family: ${theme.typography.headingFontFamily};
-              font-weight: ${theme.typography.baseFontWeight};
-              font-size: 0.875rem;
-              letter-spacing: 0.125rem;
-              background: ${theme.colors.primaryLite};
-              border-bottom: 4px solid ${theme.colors.primaryColor};
-            }
-            thead th.sortable {
-              cursor: pointer;
-            }
-
-            tbody tr td {
-              padding: 0.875rem;
-              border-bottom: 1px solid ${theme.colors.baseColorLight};
-              font-size: 0.9rem;
-            }
-
-            tbody tr {
-              background: #fff;
-              ${onRowClick && 'cursor: pointer'}
-            }
-
-            ${onRowClick &&
-            `tbody tr:hover td {
-                background: ${theme.colors.primaryLite};
-              }
-            `}
-            @media (max-width: ${theme.mediaRanges.medium}) {
-              table {
-                border-collapse: separate;
-              }
-              td:first-child,
-              th:first-child {
-                position: sticky;
-                left: 0;
-                z-index: 2;
-                border-right: 2px solid ${theme.colors.primaryLite};
-              }
-              td:first-child {
-                background: #fff;
-              }
-            }
-          `}
-        </style>
-      </table>
-    </div>
+      </BaseTable>
+    </Box>
   )
 }

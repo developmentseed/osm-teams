@@ -1,13 +1,24 @@
 import React from 'react'
 import { Formik, Field, Form } from 'formik'
-import Button from '../components/button'
+import {
+  Button,
+  Heading,
+  VStack,
+  FormControl,
+  FormLabel,
+  FormHelperText,
+  FormErrorMessage,
+  Input,
+  Textarea,
+  Select,
+} from '@chakra-ui/react'
 
 function validateName(value) {
   if (!value) return 'Name field is required'
 }
 
 function renderError(text) {
-  return <div className='form--error'>{text}</div>
+  return <FormErrorMessage>{text}</FormErrorMessage>
 }
 
 function renderErrors(errors) {
@@ -40,56 +51,68 @@ export default function EditOrgForm({
         setStatus,
       }) => {
         return (
-          <Form>
-            <h2>Details</h2>
-            <div className='form-control form-control__vertical'>
-              <label htmlFor='name'>
-                Name<span className='form--required'>*</span>
-              </label>
+          <VStack as={Form} alignItems='flex-start'>
+            <Heading as='h2' variant='sectionHead'>
+              Details
+            </Heading>
+            <FormControl isRequired isInvalid={errors.name}>
+              <FormLabel>Name</FormLabel>
               <Field
+                as={Input}
                 type='text'
                 name='name'
+                id='name'
                 value={values.name}
                 required
                 className={errors.name ? 'form--error' : ''}
                 validate={validateName}
               />
               {errors.name && renderError(errors.name)}
-            </div>
-            <div className='form-control form-control__vertical'>
-              <label htmlFor='description'>Description</label>
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor='description'>Description</FormLabel>
               <Field
                 value={values.description}
-                component='textarea'
+                as={Textarea}
                 name='description'
+                id='description'
               />
-            </div>
-            <div className='form-control form-control__vertical'>
-              <label htmlFor='privacy'>Visibility</label>
-              <Field as='select' name='privacy'>
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor='privacy'>Visibility</FormLabel>
+              <Field
+                as={Select}
+                id='privacy'
+                placeholder='Select organization privacy setting'
+                name='privacy'
+              >
                 <option value='public'>Public</option>
                 <option value='private'>Private</option>
               </Field>
-              <small className='pt1'>
+              <FormHelperText>
                 A private organization does not show its member list or team
                 details to non-members.
-              </small>
-            </div>
-            <div className='form-control form-control__vertical'>
-              <label htmlFor='teams_can_be_public'>Teams can be public</label>
-              <Field as='select' name='teams_can_be_public'>
+              </FormHelperText>
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor='teams_can_be_public'>
+                Teams can be public
+              </FormLabel>
+              <Field
+                as={Select}
+                placeholder='Select team privacy setting'
+                name='teams_can_be_public'
+              >
                 <option value='true'>Yes</option>
                 <option value='false'>No</option>
               </Field>
-              <small className='pt1'>
+              <FormHelperText>
                 This overrides the organization teams visibility setting.
-              </small>
-            </div>
-            <div className='form-control form-control__vertical'>
-              {status && status.errors && renderErrors(status.errors)}
+              </FormHelperText>
+            </FormControl>
+            <FormControl>
               <Button
-                disabled={isSubmitting}
-                variant='primary'
+                isDisabled={isSubmitting}
                 onClick={() => {
                   if (Object.keys(errors).length) {
                     setErrors(errors)
@@ -100,10 +123,12 @@ export default function EditOrgForm({
                   return submitForm()
                 }}
                 type='submit'
-                value='submit'
-              />
-            </div>
-          </Form>
+              >
+                Submit
+              </Button>
+              {status && status.errors && renderErrors(status.errors)}
+            </FormControl>
+          </VStack>
         )
       }}
     />
