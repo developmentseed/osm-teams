@@ -24,6 +24,7 @@ import {
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons'
 import NavLink from '../components/Link'
+import Image from 'next/image'
 
 const Links = [
   { url: '/teams', name: 'Explore' },
@@ -72,9 +73,18 @@ export default function PageHeader() {
                 color='brand.600'
                 fontFamily='mono'
                 size='sm'
+                display='flex'
+                alignItems='center'
+                gap={1}
                 as='a'
                 _hover={{ textDecoration: 'none' }}
               >
+                <Image
+                  src='/static/osmteams_logo--pos.svg'
+                  alt={'OSM Teams Logo'}
+                  width='48'
+                  height='48'
+                />
                 osm_teams
               </Heading>
             </NavLink>
