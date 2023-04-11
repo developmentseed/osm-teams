@@ -14,7 +14,6 @@ import {
   SimpleGrid,
 } from '@chakra-ui/react'
 
-import AddMemberForm from '../../../components/add-member-form'
 import ProfileModal from '../../../components/profile-modal'
 
 import {
@@ -37,6 +36,7 @@ import MembersTable from '../../../components/tables/members-table'
 import Link from 'next/link'
 import InpageHeader from '../../../components/inpage-header'
 import JoinLink from '../../../components/join-link'
+import { AddMemberModal } from '../../../components/add-member-modal'
 
 const Map = dynamic(() => import('../../../components/team-map'), {
   ssr: false,
@@ -54,6 +54,7 @@ class Team extends Component {
       profileUserId: '',
       loading: true,
       error: undefined,
+      showAddMemberModal: false,
     }
 
     this.closeProfileModal = this.closeProfileModal.bind(this)
@@ -139,7 +140,7 @@ class Team extends Component {
 
     try {
       await joinTeam(id, osmId)
-      await this.getTeam(id)
+      await this.getTeam()
     } catch (e) {
       logger.error(e)
       this.setState({
@@ -382,12 +383,17 @@ class Team extends Component {
                   <Heading variant='sectionHead'>Team Members</Heading>
                   <div>
                     {isUserModerator && (
-                      <AddMemberForm
-                        onSubmit={async ({ osmId }) => {
-                          await addMember(team.id, osmId)
-                          return this.getTeam()
-                        }}
-                      />
+                      <Button
+                        textTransform={'lowercase'}
+                        type='submit'
+                        variant='outline'
+                        loadingText='Adding'
+                        onClick={() =>
+                          this.setState({ showAddMemberModal: true })
+                        }
+                      >
+                        Add Member
+                      </Button>
                     )}
                   </div>
                 </Flex>
@@ -409,6 +415,16 @@ class Team extends Component {
                   attributes={this.state.profileInfo}
                   onClose={this.closeProfileModal}
                   isOpen={this.state.modalIsOpen}
+                />
+                <AddMemberModal
+                  isOpen={this.state.showAddMemberModal}
+                  onClose={async () => {
+                    this.setState({ showAddMemberModal: false })
+                  }}
+                  onSubmit={async ({ osmId }) => {
+                    await addMember(team.id, osmId)
+                    this.getTeam()
+                  }}
                 />
               </Box>
             </Box>
