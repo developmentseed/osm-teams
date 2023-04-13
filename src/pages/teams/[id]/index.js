@@ -37,6 +37,7 @@ import Link from 'next/link'
 import InpageHeader from '../../../components/inpage-header'
 import JoinLink from '../../../components/join-link'
 import { AddMemberModal } from '../../../components/add-member-modal'
+import { toast } from 'react-toastify'
 
 const Map = dynamic(() => import('../../../components/team-map'), {
   ssr: false,
@@ -392,7 +393,7 @@ class Team extends Component {
                           this.setState({ showAddMemberModal: true })
                         }
                       >
-                        Add Member
+                        Add Members
                       </Button>
                     )}
                   </div>
@@ -421,9 +422,16 @@ class Team extends Component {
                   onClose={async () => {
                     this.setState({ showAddMemberModal: false })
                   }}
-                  onSubmit={async ({ osmId }) => {
-                    await addMember(team.id, osmId)
-                    this.getTeam()
+                  onSubmit={async ({ osmId, username }) => {
+                    const res = await addMember(team.id, osmId)
+                    if (res.status === 200) {
+                      toast.success(
+                        username
+                          ? `Member ${username} successfully added.`
+                          : `Member ${osmId} successfully added.`
+                      )
+                      this.getTeam()
+                    }
                   }}
                 />
               </Box>

@@ -48,7 +48,7 @@ export function AddMemberByIdForm({ onSubmit }) {
               id='osmId'
               placeholder='OSM ID'
               value={values.osmId}
-              style={{ width: '6rem', marginRight: '0.5rem' }}
+              style={{ width: '8rem', marginRight: '0.5rem' }}
             />
             {status && status.msg && (
               <FormErrorMessage>{status.msg}</FormErrorMessage>
@@ -89,11 +89,11 @@ export function AddMemberByUsernameForm({ onSubmit }) {
       setStatus('noResults')
     }
   }
-  const submit = async (uid, actions) => {
+  const submit = async (uid, username, actions) => {
     actions.setSubmitting(true)
 
     try {
-      await onSubmit({ osmId: uid })
+      await onSubmit({ osmId: uid, username })
       actions.setSubmitting(false)
       actions.resetForm({ username: '' })
       setSearchResult({})
@@ -124,7 +124,7 @@ export function AddMemberByUsernameForm({ onSubmit }) {
                 id='username'
                 placeholder='OSM Username'
                 value={values.username}
-                style={{ width: '6rem', marginRight: '0.5rem' }}
+                style={{ width: '10rem', marginRight: '0.5rem' }}
               />
               {status && status.msg && (
                 <FormErrorMessage>{status.msg}</FormErrorMessage>
@@ -155,7 +155,7 @@ export function AddMemberByUsernameForm({ onSubmit }) {
                     <Button
                       textTransform='lowercase'
                       onClick={async () =>
-                        submit(searchResult.id, {
+                        submit(searchResult.id, searchResult.name, {
                           setStatus,
                           setSubmitting,
                           resetForm,
