@@ -171,7 +171,9 @@ export function AddMemberByUsernameForm({ onSubmit }) {
                   </ListItem>
                 </List>
               )}
-              {status === 'noResults' && <p>No results found</p>}
+              {status === 'noResults' && (
+                <Box fontSize='md'>No results found.</Box>
+              )}
             </Box>
           </>
         )

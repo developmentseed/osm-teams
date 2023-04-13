@@ -431,6 +431,12 @@ class Team extends Component {
                           : `Member ${osmId} successfully added.`
                       )
                       this.getTeam()
+                    } else {
+                      toast.error(
+                        username
+                          ? `Failed to add ${username} as member.`
+                          : `Failed to add ${osmId} as member.`
+                      )
                     }
                   }}
                 />
