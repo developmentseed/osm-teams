@@ -156,27 +156,24 @@ export function AddMemberByUsernameForm({ onSubmit }) {
             <Box display='flex' justifyContent='stretch' py={3} px={1}>
               <List spacing={5} fontSize='sm' width={'100%'}>
                 {searchResult?.length &&
-                  searchResult.map((result) => (
+                  searchResult.map((u) => (
                     <ListItem
-                      key={result.id}
+                      key={u.id}
                       display='flex'
                       alignItems='center'
                       justifyContent='space-between'
                       marginTop='1rem'
                     >
                       <ListIcon as={AtSignIcon} color='brand.600' />
-                      <Link
-                        href={join(OSM_DOMAIN, '/user', result.name)}
-                        isExternal
-                      >
-                        {result.name}
+                      <Link href={join(OSM_DOMAIN, '/user', u.name)} isExternal>
+                        {u.name}
                       </Link>
-                      <Code ml={2}>{result.id}</Code>
+                      <Code ml={2}>{u.id}</Code>
                       <Button
                         ml='auto'
                         textTransform='lowercase'
                         onClick={async () =>
-                          submit(result.id, result.name, {
+                          submit(u.id, u.name, {
                             setStatus,
                             setSubmitting,
                             resetForm,
