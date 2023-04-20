@@ -9,9 +9,9 @@ const db = require('../lib/db')
  **/
 async function list(options = {}) {
   // Apply search
-  let query = db('osm_users')
+  let query = await db('osm_users')
     .select('id', 'name')
-    .where('name', options.username)
+    .whereILike('name', `%${options.username}%`)
 
   return query
 }

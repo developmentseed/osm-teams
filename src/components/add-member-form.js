@@ -10,6 +10,7 @@ import {
   ListIcon,
   Link,
   Code,
+  Text,
 } from '@chakra-ui/react'
 import { AtSignIcon, AddIcon } from '@chakra-ui/icons'
 import join from 'url-join'
@@ -84,14 +85,14 @@ export function AddMemberByUsernameForm({ onSubmit }) {
     if (res.status === 200) {
       const data = await res.json()
       if (data?.users.length) {
-        setSearchResult(data.users[0])
+        setSearchResult(data.users)
         setStatus('successSearch')
       } else {
-        setSearchResult({})
+        setSearchResult([])
         setStatus('noResults')
       }
     } else {
-      setSearchResult({})
+      setSearchResult([])
       setStatus('noResults')
     }
   }
@@ -102,7 +103,7 @@ export function AddMemberByUsernameForm({ onSubmit }) {
       await onSubmit({ osmId: uid, username })
       actions.setSubmitting(false)
       actions.resetForm({ username: '' })
-      setSearchResult({})
+      setSearchResult([])
     } catch (e) {
       logger.error(e)
       actions.setSubmitting(false)
@@ -153,45 +154,50 @@ export function AddMemberByUsernameForm({ onSubmit }) {
               </Button>
             </Flex>
             <Box display='flex' justifyContent='stretch' py={3} px={1}>
-              {searchResult?.id && (
-                <List spacing={5} fontSize='sm' width={'100%'}>
-                  <ListItem
-                    display='flex'
-                    alignItems='center'
-                    justifyContent='space-between'
-                  >
-                    <ListIcon as={AtSignIcon} color='brand.600' />
-                    <Link
-                      href={join(OSM_DOMAIN, '/user', searchResult.name)}
-                      isExternal
+              <List spacing={5} fontSize='sm' width={'100%'}>
+                {searchResult?.length &&
+                  searchResult.map((result) => (
+                    <ListItem
+                      key={result.id}
+                      display='flex'
+                      alignItems='center'
+                      justifyContent='space-between'
+                      marginTop='1rem'
                     >
-                      {searchResult.name}
-                    </Link>
-                    <Code ml={2}>{searchResult.id}</Code>
-                    <Button
-                      ml='auto'
-                      textTransform='lowercase'
-                      onClick={async () =>
-                        submit(searchResult.id, searchResult.name, {
-                          setStatus,
-                          setSubmitting,
-                          resetForm,
-                        })
-                      }
-                      size='sm'
-                      isLoading={isSubmitting}
-                      loadingText='Adding'
-                      isDisabled={isSubmitting}
-                      leftIcon={<AddIcon />}
-                    >
-                      Add
-                    </Button>
-                  </ListItem>
-                </List>
-              )}
-              {status === 'noResults' && (
-                <Box fontSize='md'>No results found.</Box>
-              )}
+                      <ListIcon as={AtSignIcon} color='brand.600' />
+                      <Link
+                        href={join(OSM_DOMAIN, '/user', result.name)}
+                        isExternal
+                      >
+                        {result.name}
+                      </Link>
+                      <Code ml={2}>{result.id}</Code>
+                      <Button
+                        ml='auto'
+                        textTransform='lowercase'
+                        onClick={async () =>
+                          submit(result.id, result.name, {
+                            setStatus,
+                            setSubmitting,
+                            resetForm,
+                          })
+                        }
+                        size='sm'
+                        isLoading={isSubmitting}
+                        loadingText='Adding'
+                        isDisabled={isSubmitting}
+                        leftIcon={<AddIcon />}
+                      >
+                        Add
+                      </Button>
+                    </ListItem>
+                  ))}
+                {status === 'noResults' && (
+                  <Text as='b'>
+                    No results found. Try typing the exact OSM username.
+                  </Text>
+                )}
+              </List>
             </Box>
           </>
         )
