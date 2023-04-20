@@ -13,6 +13,7 @@ import {
   Stack,
   SimpleGrid,
 } from '@chakra-ui/react'
+import { AddIcon } from '@chakra-ui/icons'
 
 import ProfileModal from '../../../components/profile-modal'
 
@@ -392,6 +393,7 @@ class Team extends Component {
                         onClick={() =>
                           this.setState({ showAddMemberModal: true })
                         }
+                        leftIcon={<AddIcon />}
                       >
                         Add Members
                       </Button>

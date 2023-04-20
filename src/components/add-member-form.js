@@ -11,7 +11,7 @@ import {
   Link,
   Code,
 } from '@chakra-ui/react'
-import { AtSignIcon } from '@chakra-ui/icons'
+import { AtSignIcon, AddIcon } from '@chakra-ui/icons'
 import join from 'url-join'
 
 import logger from '../lib/logger'
@@ -40,7 +40,13 @@ export function AddMemberByIdForm({ onSubmit }) {
         const addMemberText = `Add Member ${isSubmitting ? ' 🕙' : ''}`
 
         return (
-          <Flex as={Form} alignItems='center'>
+          <Flex
+            as={Form}
+            alignItems='center'
+            justifyContent='space-between'
+            width={'100%'}
+            gap={2}
+          >
             <Field
               as={Input}
               type='text'
@@ -48,7 +54,7 @@ export function AddMemberByIdForm({ onSubmit }) {
               id='osmId'
               placeholder='OSM ID'
               value={values.osmId}
-              style={{ width: '8rem', marginRight: '0.5rem' }}
+              flex={1}
             />
             {status && status.msg && (
               <FormErrorMessage>{status.msg}</FormErrorMessage>
@@ -116,15 +122,21 @@ export function AddMemberByUsernameForm({ onSubmit }) {
       }) => {
         return (
           <>
-            <Flex as={Form} alignItems='center'>
+            <Flex
+              as={Form}
+              alignItems='center'
+              justifyContent='space-between'
+              width={'100%'}
+              gap={2}
+            >
               <Field
                 as={Input}
                 type='text'
                 name='username'
                 id='username'
-                placeholder='OSM Username'
+                placeholder='Search OSM Username'
                 value={values.username}
-                style={{ width: '10rem', marginRight: '0.5rem' }}
+                flex={1}
               />
               {status && status.msg && (
                 <FormErrorMessage>{status.msg}</FormErrorMessage>
@@ -140,10 +152,14 @@ export function AddMemberByUsernameForm({ onSubmit }) {
                 Search
               </Button>
             </Flex>
-            <Box display='flex' alignItems='baseline' padding='0.75rem 0.5rem'>
+            <Box display='flex' justifyContent='stretch' py={3} px={1}>
               {searchResult?.id && (
-                <List spacing={5} fontSize='sm'>
-                  <ListItem>
+                <List spacing={5} fontSize='sm' width={'100%'}>
+                  <ListItem
+                    display='flex'
+                    alignItems='center'
+                    justifyContent='space-between'
+                  >
                     <ListIcon as={AtSignIcon} color='brand.600' />
                     <Link
                       href={join(OSM_DOMAIN, '/user', searchResult.name)}
@@ -151,8 +167,9 @@ export function AddMemberByUsernameForm({ onSubmit }) {
                     >
                       {searchResult.name}
                     </Link>
-                    <Code margin='0rem 0.5rem'>{searchResult.id}</Code>
+                    <Code ml={2}>{searchResult.id}</Code>
                     <Button
+                      ml='auto'
                       textTransform='lowercase'
                       onClick={async () =>
                         submit(searchResult.id, searchResult.name, {
@@ -165,6 +182,7 @@ export function AddMemberByUsernameForm({ onSubmit }) {
                       isLoading={isSubmitting}
                       loadingText='Adding'
                       isDisabled={isSubmitting}
+                      leftIcon={<AddIcon />}
                     >
                       Add
                     </Button>

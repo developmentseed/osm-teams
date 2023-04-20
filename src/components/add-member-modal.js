@@ -20,16 +20,14 @@ export function AddMemberModal({ isOpen, onClose, onSubmit }) {
       scrollBehavior={'inside'}
     >
       <ModalOverlay />
-      <ModalContent
-        direction={'column'}
-        as='article'
-        gap={2}
-        alignItems='flex-start'
-      >
+      <ModalContent flexDirection={'column'} as='article' gap={2}>
         <ModalHeader gap={4} display='flex' flexDir={'column'}>
           <Heading size='sm' as='h3'>
             Add Member
           </Heading>
+          <ModalCloseButton onClick={() => onClose()} />
+        </ModalHeader>
+        <ModalBody display='flex' flexDirection={'column'} gap={2}>
           <Box>
             <Heading size='sm' as='h4'>
               OSM ID
@@ -42,9 +40,7 @@ export function AddMemberModal({ isOpen, onClose, onSubmit }) {
             </Heading>
             <AddMemberByUsernameForm onSubmit={onSubmit} />
           </Box>
-          <ModalCloseButton onClick={() => onClose()} />
-        </ModalHeader>
-        <ModalBody></ModalBody>
+        </ModalBody>
         <ModalFooter></ModalFooter>
       </ModalContent>
     </Modal>
