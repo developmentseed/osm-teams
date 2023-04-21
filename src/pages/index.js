@@ -36,9 +36,9 @@ const VHS = keyframes`
   }
 `
 const Links = [
+  { url: '/dashboard', name: 'My Dashboard' },
   { url: '/teams', name: 'Explore all teams' },
   { url: '/teams/create', name: 'Create new team' },
-  { url: '/dashboard', name: 'dashboard' },
 ]
 
 export default function Home() {
@@ -97,7 +97,7 @@ export default function Home() {
           transition={'text-shadow 0.5s ease'}
           variant='outline'
           colorScheme={'white'}
-          fontSize={[null, '0.8rem', '1rem', '1.25rem']}
+          fontSize={['0.75rem', '0.8rem', '1rem', '1.25rem']}
           whiteSpace='pre'
         >
           {title}
