@@ -13,7 +13,7 @@ import {
 import { getUserOrgProfile } from '../../../lib/profiles-api'
 import { Box, Container, Heading, Button, Flex } from '@chakra-ui/react'
 import Table from '../../../components/tables/table'
-import AddMemberForm from '../../../components/add-member-form'
+import { AddMemberByIdForm } from '../../../components/add-member-form'
 import ProfileModal from '../../../components/profile-modal'
 import { map, pick } from 'ramda'
 import join from 'url-join'
@@ -375,7 +375,7 @@ class Organization extends Component {
               <Flex justifyContent={'space-between'}>
                 <Heading variant='sectionHead'>Staff Members</Heading>
                 {isOwner && (
-                  <AddMemberForm
+                  <AddMemberByIdForm
                     onSubmit={async ({ osmId }) => {
                       await addManager(org.data.id, osmId)
                       return this.getOrg()
