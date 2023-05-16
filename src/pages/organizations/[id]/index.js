@@ -7,11 +7,18 @@ import {
   removeManager,
   addOwner,
   removeOwner,
-  getOrgTeams,
+  getOrgLocations,
   getOrgStaff,
 } from '../../../lib/org-api'
 import { getUserOrgProfile } from '../../../lib/profiles-api'
-import { Box, Container, Heading, Button, Flex } from '@chakra-ui/react'
+import {
+  Box,
+  Checkbox,
+  Container,
+  Heading,
+  Button,
+  Flex,
+} from '@chakra-ui/react'
 import Table from '../../../components/tables/table'
 import { AddMemberByIdForm } from '../../../components/add-member-form'
 import ProfileModal from '../../../components/profile-modal'
@@ -66,6 +73,8 @@ class Organization extends Component {
       profileInfo: [],
       profileUserId: '',
       teams: [],
+      searchOnMapMove: false,
+      mapBounds: undefined,
       managers: [],
       owners: [],
       page: 0,
@@ -82,7 +91,7 @@ class Organization extends Component {
     await this.getOrg()
     await this.getOrgStaff()
     await this.getBadges()
-    await this.getOrgTeams()
+    await this.getOrgLocations()
   }
 
   async openProfileModal(user) {
@@ -165,10 +174,10 @@ class Organization extends Component {
     }
   }
 
-  async getOrgTeams() {
+  async getOrgLocations() {
     const { id } = this.props
     try {
-      let teams = await getOrgTeams(id)
+      let teams = await getOrgLocations(id)
       this.setState({
         teams,
       })
@@ -258,6 +267,28 @@ class Organization extends Component {
     ) : null
   }
 
+  /**
+   * Bounds is a WESN box, refresh teams
+   */
+  onMapBoundsChange(bounds) {
+    if (this.state.searchOnMapMove) {
+      this.setState({
+        mapBounds: bounds,
+      })
+    } else {
+      this.setState({ mapBounds: null })
+    }
+  }
+
+  setSearchOnMapMove(e) {
+    this.setState(
+      {
+        searchOnMapMove: e.target.checked,
+      },
+      () => this.getOrgLocations()
+    )
+  }
+
   renderMap(teams) {
     const { data } = teams
 
@@ -282,13 +313,14 @@ class Organization extends Component {
           zIndex: '10',
           marginBottom: '1rem',
         }}
-        onBoundsChange={() => {}}
+        onBoundsChange={this.onMapBoundsChange.bind(this)}
       />
     )
   }
 
   render() {
-    const { org, managers, owners, error, teams } = this.state
+    const { org, managers, owners, error, teams, searchOnMapMove, mapBounds } =
+      this.state
     const userId = parseInt(this.state?.session?.user_id)
 
     // Handle org loading errors
@@ -367,7 +399,29 @@ class Organization extends Component {
           <Box layerStyle={'shadowed'} as='section'>
             <Heading variant='sectionHead'>Teams</Heading>
             {this.renderMap(teams)}
-            <TeamsTable type='org-teams' orgId={org.data.id} />
+            <Checkbox
+              border={'2px'}
+              marginTop={'-4rem'}
+              marginLeft={'1rem'}
+              position='absolute'
+              zIndex='2000'
+              borderColor='brand.600'
+              p={2}
+              bg='white'
+              name='map-bounds-filter'
+              id='map-bounds-filter'
+              type='checkbox'
+              colorScheme={'brand'}
+              isChecked={searchOnMapMove}
+              onChange={(e) => this.setSearchOnMapMove(e)}
+            >
+              Filter teams by map
+            </Checkbox>
+            <TeamsTable
+              type='org-teams'
+              orgId={org.data.id}
+              bbox={searchOnMapMove ? mapBounds : null}
+            />
           </Box>
 
           {isStaff ? (
