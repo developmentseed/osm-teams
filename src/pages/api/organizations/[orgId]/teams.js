@@ -2,6 +2,7 @@ import { createBaseHandler } from '../../../../middlewares/base-handler'
 import { validate } from '../../../../middlewares/validation'
 import Organization from '../../../../models/organization'
 import Team from '../../../../models/team'
+import Boom from '@hapi/boom'
 import * as Yup from 'yup'
 import canCreateOrgTeam from '../../../../middlewares/can/create-org-team'
 import canViewOrgTeams from '../../../../middlewares/can/view-org-teams'
@@ -103,15 +104,25 @@ handler.get(
     }).required(),
   }),
   async function (req, res) {
-    const { orgId, page, perPage, search, sort, order } = req.query
+    const { orgId, page, perPage, search, sort, order, bbox } = req.query
     const {
       org: { isMember, isOwner, isManager },
     } = req
+
+    let bounds = bbox || null
+    if (bbox) {
+      bounds = bbox.split(',').map((num) => parseFloat(num))
+      if (bounds.length !== 4) {
+        throw Boom.badRequest('error in bbox param')
+      }
+    }
+
     return res.send(
       await Team.paginatedList({
         organizationId: orgId,
         page,
         perPage,
+        bbox: bounds,
         search,
         sort,
         order,

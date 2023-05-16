@@ -10,7 +10,7 @@ import qs from 'qs'
 
 const APP_URL = process.env.APP_URL
 
-function TeamsTable({ type, orgId }) {
+function TeamsTable({ type, orgId, bbox }) {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState(null)
   const [sort, setSort] = useState({
@@ -18,12 +18,16 @@ function TeamsTable({ type, orgId }) {
     direction: 'asc',
   })
 
-  const querystring = qs.stringify({
-    search,
-    page,
-    sort: sort.key,
-    order: sort.direction,
-  })
+  const querystring = qs.stringify(
+    {
+      search,
+      page,
+      sort: sort.key,
+      order: sort.direction,
+      bbox: bbox,
+    },
+    { arrayFormat: 'comma' }
+  )
 
   let apiBasePath
   let emptyMessage
