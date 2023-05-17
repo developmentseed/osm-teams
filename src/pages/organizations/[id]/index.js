@@ -315,6 +315,25 @@ class Organization extends Component {
         }}
         onBoundsChange={this.onMapBoundsChange.bind(this)}
       />
+      <Checkbox
+          border={'2px'}
+          marginTop={'-5rem'}
+          marginLeft={'1rem'}
+          position='absolute'
+          zIndex='2000'
+          borderColor='brand.600'
+          p={2}
+          bg='white'
+          name='map-bounds-filter'
+          id='map-bounds-filter'
+          type='checkbox'
+          colorScheme={'brand'}
+          isChecked={searchOnMapMove}
+          onChange={(e) => this.setSearchOnMapMove(e)}
+        >
+          Filter teams by map
+        </Checkbox>
+      </>
     )
   }
 
