@@ -84,6 +84,7 @@ class Organization extends Component {
 
     this.closeProfileModal = this.closeProfileModal.bind(this)
     this.renderBadges = this.renderBadges.bind(this)
+    this.renderMap = this.renderMap.bind(this)
   }
 
   async componentDidMount() {
@@ -306,16 +307,17 @@ class Organization extends Component {
     )
 
     return (
-      <Map
-        markers={centers}
-        style={{
-          height: '360px',
-          zIndex: '10',
-          marginBottom: '1rem',
-        }}
-        onBoundsChange={this.onMapBoundsChange.bind(this)}
-      />
-      <Checkbox
+      <>
+        <Map
+          markers={centers}
+          style={{
+            height: '360px',
+            zIndex: '10',
+            marginBottom: '1rem',
+          }}
+          onBoundsChange={this.onMapBoundsChange.bind(this)}
+        />
+        <Checkbox
           border={'2px'}
           marginTop={'-5rem'}
           marginLeft={'1rem'}
@@ -328,7 +330,7 @@ class Organization extends Component {
           id='map-bounds-filter'
           type='checkbox'
           colorScheme={'brand'}
-          isChecked={searchOnMapMove}
+          isChecked={this.state.searchOnMapMove}
           onChange={(e) => this.setSearchOnMapMove(e)}
         >
           Filter teams by map
@@ -418,24 +420,6 @@ class Organization extends Component {
           <Box layerStyle={'shadowed'} as='section'>
             <Heading variant='sectionHead'>Teams</Heading>
             {this.renderMap(teams)}
-            <Checkbox
-              border={'2px'}
-              marginTop={'-4rem'}
-              marginLeft={'1rem'}
-              position='absolute'
-              zIndex='2000'
-              borderColor='brand.600'
-              p={2}
-              bg='white'
-              name='map-bounds-filter'
-              id='map-bounds-filter'
-              type='checkbox'
-              colorScheme={'brand'}
-              isChecked={searchOnMapMove}
-              onChange={(e) => this.setSearchOnMapMove(e)}
-            >
-              Filter teams by map
-            </Checkbox>
             <TeamsTable
               type='org-teams'
               orgId={org.data.id}
