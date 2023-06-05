@@ -81,7 +81,7 @@ HYDRA_AUTHZ_PATH=/hyauth/oauth2/auth
 
 ## Deployment
 
-Once the environment variables, `hydra.yml` and the reverse proxy are created, we can then run:
+Once the environment variables, `hydra-config/hydra.yml` and the reverse proxy are created, we can then run:
 
 ```docker
 docker-compose -f compose.yml -f compose.prod.yml up

@@ -24,10 +24,12 @@ import {
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons'
 import NavLink from '../components/Link'
+import Image from 'next/image'
 
 const Links = [
   { url: '/teams', name: 'Explore' },
   { url: '/about', name: 'About' },
+  { url: '/guide', name: 'User guide' },
   { url: '/developers', name: 'Developers' },
 ]
 
@@ -72,9 +74,18 @@ export default function PageHeader() {
                 color='brand.600'
                 fontFamily='mono'
                 size='sm'
+                display='flex'
+                alignItems='center'
+                gap={1}
                 as='a'
                 _hover={{ textDecoration: 'none' }}
               >
+                <Image
+                  src='/static/osmteams_logo--pos.svg'
+                  alt={'OSM Teams Logo'}
+                  width='48'
+                  height='48'
+                />
                 osm_teams
               </Heading>
             </NavLink>
@@ -83,6 +94,26 @@ export default function PageHeader() {
               spacing={4}
               display={{ base: 'none', md: 'flex' }}
             >
+              {isAuthenticated && (
+                <NavLink href={'/dashboard'} passHref legacyBehavior>
+                  <Button
+                    as='a'
+                    variant='outline'
+                    size='sm'
+                    textTransform={'lowercase'}
+                    _hover={{ background: 'brand.200', textDecoration: 'none' }}
+                    sx={{
+                      '.active&': {
+                        bg: 'brand.500',
+                        color: 'white',
+                        borderColor: 'brand.500',
+                      },
+                    }}
+                  >
+                    My Dashboard
+                  </Button>
+                </NavLink>
+              )}
               {Links.map((link) => (
                 <NavLink href={link.url} passHref key={link.url} legacyBehavior>
                   <Button
@@ -103,26 +134,6 @@ export default function PageHeader() {
                   </Button>
                 </NavLink>
               ))}
-              {isAuthenticated && (
-                <NavLink href={'/dashboard'} passHref legacyBehavior>
-                  <Button
-                    as='a'
-                    variant='outline'
-                    size='sm'
-                    textTransform={'lowercase'}
-                    _hover={{ background: 'brand.200', textDecoration: 'none' }}
-                    sx={{
-                      '.active&': {
-                        bg: 'brand.500',
-                        color: 'white',
-                        borderColor: 'brand.500',
-                      },
-                    }}
-                  >
-                    Dashboard
-                  </Button>
-                </NavLink>
-              )}
             </HStack>
           </HStack>
           <Flex alignItems={'center'} ml={'auto'}>
@@ -176,7 +187,7 @@ export default function PageHeader() {
 
                     <MenuItem bg='inherit'>
                       <NavLink href='/dashboard'>
-                        <span>Dashboard</span>
+                        <span>My Dashboard</span>
                       </NavLink>
                     </MenuItem>
                     <MenuDivider />
@@ -213,13 +224,29 @@ export default function PageHeader() {
                     color='brand.600'
                     fontFamily='mono'
                     size='sm'
+                    display='flex'
+                    alignItems='center'
+                    gap={1}
                     as='a'
                     _hover={{ textDecoration: 'none' }}
                   >
+                    <Image
+                      src='/static/osmteams_logo--pos.svg'
+                      alt={'OSM Teams Logo'}
+                      width='48'
+                      height='48'
+                    />
                     osm_teams
                   </Heading>
                 </NavLink>
                 <List spacing='8' mt={8}>
+                  {isAuthenticated && (
+                    <ListItem>
+                      <NavLink href={'/dashboard'}>
+                        <span>My Dashboard</span>
+                      </NavLink>
+                    </ListItem>
+                  )}
                   {Links.map((link) => (
                     <ListItem key={link.url}>
                       <NavLink href={link.url}>
@@ -227,13 +254,6 @@ export default function PageHeader() {
                       </NavLink>
                     </ListItem>
                   ))}
-                  {isAuthenticated && (
-                    <ListItem>
-                      <NavLink href={'/dashboard'}>
-                        <span>Dashboard</span>
-                      </NavLink>
-                    </ListItem>
-                  )}
                 </List>
               </DrawerBody>
             </DrawerContent>
