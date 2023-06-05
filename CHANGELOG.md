@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.3.0] - 2023-06-04
+
+### Changed
+* [Update favicons and add logo to header](https://github.com/developmentseed/osm-teams/pull/439)
+* [Org Map fixes](https://github.com/developmentseed/osm-teams/pull/445)
+
+### Added
+* [Ability to add OSM users to team by username](https://github.com/developmentseed/osm-teams/pull/438)
+* [Add user guide page](https://github.com/developmentseed/osm-teams/pull/447)
+
+**Full Changelog**: https://github.com/developmentseed/osm-teams/compare/v2.2.0...v2.3.0
+
 ## [v2.2.0] - 2023-03-21
 
 ### Changed
