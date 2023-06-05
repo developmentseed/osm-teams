@@ -29,6 +29,7 @@ import Image from 'next/image'
 const Links = [
   { url: '/teams', name: 'Explore' },
   { url: '/about', name: 'About' },
+  { url: '/guide', name: 'User guide' },
   { url: '/developers', name: 'Developers' },
 ]
 
