@@ -13,6 +13,7 @@ import { SessionProvider } from 'next-auth/react'
 
 import theme from '../styles/theme'
 import PageHeader from '../components/page-header'
+import PageFooter from '../components/page-footer'
 import ErrorBoundary from '../components/error-boundary'
 const BASE_PATH = process.env.BASE_PATH || ''
 
@@ -31,7 +32,7 @@ export default function App({
         <Box
           display='grid'
           position='relative'
-          gridTemplateRows={'4rem 1fr'}
+          gridTemplateRows={'4rem 1fr auto'}
           minHeight='100vh'
           margin='0'
           padding='0'
@@ -40,6 +41,7 @@ export default function App({
           <ErrorBoundary>
             <Component {...pageProps} />
           </ErrorBoundary>
+          <PageFooter />
         </Box>
         <ToastContainer position='bottom-right' />
       </SessionProvider>
