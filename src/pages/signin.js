@@ -18,7 +18,9 @@ export default function SignIn() {
             <Text fontSize='2xl'>
               Sorry, you need to be signed in to view this page.
             </Text>
-            <Button onClick={() => signIn('osm-teams')}>Sign in →</Button>
+            <Button my={4} onClick={() => signIn('osm-teams')}>
+              Sign in →
+            </Button>
             <Text>Still having problems? Contact a system administrator.</Text>
           </Box>
         </Container>
