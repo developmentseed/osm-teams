@@ -400,18 +400,8 @@ export default function About() {
           </Heading>
 
           <Heading size='xs' as='h4'>
-            May 3, 2023_ &mdash; Initial version
+            May 3, 2023 &mdash; Initial version
           </Heading>
-          <p>—-</p>
-          <Text>
-            OSM Teams wants to access resources on your behalf and needs the
-            following permissions:
-          </Text>
-          <List>
-            <ListItem>Your OSM user profile information</ListItem>
-
-            <ListItem>Offline access to your OSM profile</ListItem>
-          </List>
         </Box>
       </Container>
     </Box>
