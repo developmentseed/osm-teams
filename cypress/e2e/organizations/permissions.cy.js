@@ -67,7 +67,7 @@ describe('Organizations page: Permissions', () => {
   it('Org is private', () => {
     // Unauthenticated user cannot access
     cy.visit('/organizations/1')
-    cy.get('body').should('contain', 'Sign in with OSM Teams')
+    cy.get('body').should('contain', 'Sign in')
 
     // Non-member cannot access
     cy.login(nonMember)
@@ -142,7 +142,7 @@ describe('Organizations page: Permissions', () => {
 
     // Unauthenticated can view org
     cy.visit('/organizations/2')
-    cy.get('body').should('contain', 'Sign in with OSM Teams')
+    cy.get('body').should('contain', 'Sign in')
 
     // Non-member can access, but cannot view private teams
     cy.login(nonMember)

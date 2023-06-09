@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.3.1] - 2023-06-09
+
+## Changed
+* [Provides a page for when user is not signed](https://github.com/developmentseed/osm-teams/pull/451)
+* [Add footer and privacy policy page](https://github.com/developmentseed/osm-teams/pull/452)
+
+**Full Changelog**: https://github.com/developmentseed/osm-teams/compare/v2.3.0...v2.3.1
+
 ## [v2.3.0] - 2023-06-04
 
 ### Changed

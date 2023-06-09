@@ -40,6 +40,10 @@ export const authOptions = {
     },
   },
 
+  pages: {
+    signIn: '/signin',
+  },
+
   events: {
     async signIn({ profile }) {
       // On successful sign in we should persist the user to the database
