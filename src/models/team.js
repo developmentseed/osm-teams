@@ -182,9 +182,9 @@ async function getMembersPaginated(teamId, options) {
   // Base query for team members
   let query = db('member')
     .join('osm_users', 'member.osm_id', 'osm_users.id')
-    .select('member.osm_id as id', 'osm_users.name')
+    .select('member.osm_id as id', 'osm_users.name', 'osm_users.image')
     .where('member.team_id', teamId)
-    .groupBy('member.osm_id', 'osm_users.name')
+    .groupBy('member.osm_id', 'osm_users.name', 'osm_users.image')
 
   // Apply search
   if (options.search) {
